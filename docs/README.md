@@ -1,6 +1,6 @@
 **WZK**
 ---
-![WerkZeugKasten Logo](./WerkZeugKasten.png)
+![WerkZeugKasten Logo](./docs/WerkZeugKasten.png)
 
 Abbreviation of the German noun *"WerkZeugKasten"* (~*"toolbox"*)
 
