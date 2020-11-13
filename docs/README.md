@@ -5,16 +5,17 @@
 Abbreviation of the German noun *"WerkZeugKasten"* (~*"toolbox"*)
 
 ---
-A mixed collection of fairly general functions I use across different projects.
+A mixed collection of fairly general convenience functions I use across different projects.
+The functions are structured with respect to the module they extend. 
 
-* Arrays
-* Read / Write Files,
-* Lists, Tuples, Dicts
-* Multiprocessing
-* Math
-* Plotting with matplotlib
-* Timing
+* numpy
+* matplotlib (mpl)
+* multiprocessing
+* math
+* read / write files
+* lists, tuples, dicts
+* timing
 
 ---
 This repo has nothing to do with [Werkzeug](https://pypi.org/project/Werkzeug/). 
-The just seem to have the same humor.
+They just seem to have the same humor.
