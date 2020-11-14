@@ -4,7 +4,7 @@ from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa: F401 unused import
 
 from wzk.dicts_lists_tuples import tuple_extract
-from wzk.nump import align_shapes, get_cropping_indices, flatten_without_last, initialize_array
+from wzk.numpy2 import align_shapes, get_cropping_indices, flatten_without_last, initialize_array
 
 
 def combine_n_voxels_n_dim(n_voxels, n_dim=None):

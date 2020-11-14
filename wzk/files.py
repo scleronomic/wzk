@@ -6,7 +6,7 @@ import platform
 import subprocess
 import numpy as np
 
-from wzk.nump import object2numeric_array
+from wzk.numpy2 import object2numeric_array
 from wzk.printing import print_progress
 from wzk.time import get_timestamp
 

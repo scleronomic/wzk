@@ -2,7 +2,7 @@ from sys import stdout
 
 import numpy as np
 
-from wzk.mathematics import get_stats
+from wzk.math2 import get_stats
 
 
 def print_progress(iteration, total, prefix='', suffix='', decimals=1, bar_length=50):

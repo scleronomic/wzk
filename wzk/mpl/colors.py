@@ -64,5 +64,5 @@ def arr2rgba(*, img, cmap, vmin=None, vmax=None, mask=None, axis_order=None):
 
 def __arr2rgba(arr, cmap, vmin=None, vmax=None):
     norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-    return mpl.cm.ScalarMappable(cmap=cmap, norm=norm).__arr2rgba(arr, bytes=True)
+    return mpl.cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)
 

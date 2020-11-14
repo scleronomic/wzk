@@ -2,7 +2,7 @@ import numpy as np
 from scipy.stats import norm
 from itertools import product
 
-from wzk.nump import shape_wrapper, axis_wrapper, insert
+from wzk.numpy2 import shape_wrapper, axis_wrapper, insert
 from wzk.dicts_lists_tuples import atleast_tuple
 
 # a/b = (a+b) / a -> a / b =

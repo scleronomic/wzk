@@ -7,8 +7,8 @@ from matplotlib import collections
 from wzk.mpl.figure import plt, new_fig, subplot_grid
 from wzk.mpl.colors import arr2rgba
 from wzk.mpl.axes import limits4axes, limits2extent, set_ax_limits, add_safety_limits
-from wzk.mathematics import binomial
-from wzk.nump import safe_scalar2array
+from wzk.math2 import binomial
+from wzk.numpy2 import safe_scalar2array
 from wzk.dicts_lists_tuples import tuple_extract, atleast_tuple
 
 

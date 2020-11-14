@@ -2,7 +2,7 @@ import numpy as np
 
 from matplotlib import patches
 from matplotlib.legend_handler import HandlerPatch
-from wzk.nump import flatten_without_last
+from wzk.numpy2 import flatten_without_last
 
 
 # Annotations

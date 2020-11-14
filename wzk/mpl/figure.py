@@ -5,7 +5,7 @@ from wzk.mpl.backend import plt
 from wzk.mpl.move_figure import move_fig
 
 from wzk.files import start_open, safe_create_directory, copy2clipboard
-from wzk.mathematics import get_mean_divisor_pair, golden_ratio
+from wzk.math2 import get_mean_divisor_pair, golden_ratio
 from wzk.dicts_lists_tuples import atleast_tuple
 
 

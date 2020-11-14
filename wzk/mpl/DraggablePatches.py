@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.patches as patches
 
 from wzk.mpl.axes import get_aspect_ratio
-from wzk.nump import scalar2array, max_size
+from wzk.numpy2 import scalar2array, max_size
 
 
 class DraggablePatch:

@@ -2,7 +2,7 @@ import numpy as np
 
 from matplotlib import transforms
 from wzk.dicts_lists_tuples import atleast_list
-from wzk.nump import np_isinstance
+from wzk.numpy2 import np_isinstance
 
 
 def turn_ticklabels_off(ax, axes='xy'):

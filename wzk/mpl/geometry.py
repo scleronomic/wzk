@@ -2,7 +2,7 @@ import numpy as np
 
 from wzk.mpl import Patches2, size_units2points
 from matplotlib import pyplot as plt, patches
-from wzk.mathematics import circle_circle_intersection
+from wzk.math2 import circle_circle_intersection
 
 
 def angle_resolution_wrapper(n, angle):
