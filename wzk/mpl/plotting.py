@@ -57,7 +57,10 @@ def imshow(*, ax, img, limits=None, cmap=None,
     return ax.imshow(img, extent=extent, origin=origin, **kwargs)
 
 
-def imshow_update(h, img, cmap, axis_order, vmin=None, vmax=None, mask=None):
+def imshow_update(h, img, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, mask=None):
+    if cmap is None:
+        cmap = h.cmap
+
     img = arr2rgba(img=img, cmap=cmap, vmin=vmin, vmax=vmax, mask=mask, axis_order=axis_order)
     h.set_data(img)
 

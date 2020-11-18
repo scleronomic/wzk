@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from wzk.dicts_lists_tuples import atleast_list
 
 def get_pip(ax, x, y, width, height, **kwargs):
     """Picture in Picture.
@@ -29,7 +30,7 @@ def get_xaligned_axes(ax, y_distance, height, factor=1., **kwargs):
     :return:
     """
     p = ax.get_position()
-    x0, y0, width0 = p.x0, p.y0, p.fig_width_inch
+    x0, y0, width0 = p.x0, p.y0, p.width
 
     x0 += (1-factor) * width0 / 2
     width0 *= factor
