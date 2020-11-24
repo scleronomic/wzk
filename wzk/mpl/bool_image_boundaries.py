@@ -1,6 +1,6 @@
+
 """Get boundaries (edges/faces) of boolean images"""
 import numpy as np
-
 
 
 def clean_grid_line(x, n_dim=2, return_indices=False):
