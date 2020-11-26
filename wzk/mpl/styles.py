@@ -15,7 +15,7 @@ def set_style(s=('ieee', )):
         params.update({
             # 'text.usetex': False,
             'font.family': 'serif',
-            'font.serif':  ['Times New Roman'],  # , ['Times', 'Times New Roman']
+            'font.serif':  ['Times New Roman'],  # , ['Times', 'Times New Roman'], cmu serif # Todo
             'font.size': 8,
             'axes.linewidth': 1,
             'axes.labelsize': 8,

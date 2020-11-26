@@ -18,6 +18,25 @@ pallet_blues4 = ['#48466d', '#3d84a8', '#46cdcf', '#abedd8']
 pallet_blues10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
                   '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
+# lisaherbst
+#395e8f
+#97a4bf
+#f1f1f1
+#eeba9c
+#de854b
+
+#395e8f
+#97a4bf
+#f1f1f1
+#f1a994
+#de5e3e
+
+
+# palette_blues = ['#4864b0', '#6e7cb8', '#8f96bf', '#aeb1c6', '#cccccc']
+palette_blues = ['#b3c3e3', '#91a3c9', '#7084b0', '#506697', '#2f4a7e', '#002f66']
+palette_blues = ['#0089b3', '#6f85d7', '#d66cc4', '#ff5d7a','#ff8800']
+
+
 # TUM corporate design colors - http://portal.mytum.de/corporatedesign/index_print/vorlagen/index_farben
 pallet_tum = {'blue_3': '#0065BD',  # Blue ordered from light to dark
               'blue_4':  '#005293',
@@ -30,7 +49,6 @@ pallet_tum = {'blue_3': '#0065BD',  # Blue ordered from light to dark
               'beige':   '#DAD7CB',
               'green':   '#A2AD00',
               'orange':  '#E37222'}
-
 
 tum_blues5 = [pallet_tum['blue_5'],
               pallet_tum['blue_4'],
