@@ -236,7 +236,7 @@ def angle2minuspi_pluspi(x):
 
 
 # Derivative
-def numeric_derivative(*, fun, x, eps=1e-5, axis=-1,
+def numeric_derivative(*, fun, x, eps=1e-5, axis=-1, mode='central',
                        **kwargs_fun):
     """
     Use central difference scheme to calculate the
@@ -256,9 +256,10 @@ def numeric_derivative(*, fun, x, eps=1e-5, axis=-1,
         eps_mat[:] = 0
         insert(eps_mat, val=eps, idx=_idx, axis=axis)
 
-    for idx in product(*(range(s) for s in var_shape)):
-        update_eps_mat(_idx=idx)
-        derv[(Ellipsis,) + idx] = (fun(x + eps_mat, **kwargs_fun) - fun(x - eps_mat, **kwargs_fun)) / (2 * eps)
+    if mode == 'central':
+        for idx in product(*(range(s) for s in var_shape)):
+            update_eps_mat(_idx=idx)
+            derv[(Ellipsis,) + idx] = (fun(x + eps_mat, **kwargs_fun) - fun(x - eps_mat, **kwargs_fun)) / (2 * eps)
 
     return derv
 

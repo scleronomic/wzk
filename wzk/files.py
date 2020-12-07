@@ -168,6 +168,14 @@ def combine_npz_files(*, folder,
     return new_dict
 
 
+def combine_npy_files2(directory, new_name="combined_{new_len}", delete_singles=False, verbose=0):
+    directory = os.path.normpath(path=directory)
+    file_list = [file for file in os.listdir(directory) if '.npy' in file]
+    arr = np.concatenate([np.load(f"{directory}/{file}", allow_pickle=False)
+                          for file in file_list], axis=0)
+    np.save(file=f"{directory}/{new_name.format(new_len=len(arr))}.npy", arr=arr)
+
+
 def combine_npy_files(directory, new_name="combined_{new_len}", delete_singles=False, verbose=0):
 
     directory = os.path.normpath(path=directory)
@@ -177,6 +185,7 @@ def combine_npy_files(directory, new_name="combined_{new_len}", delete_singles=F
 
     arr = np.concatenate([np.load(f"{directory}/{file}", allow_pickle=True)[np.newaxis, :]
                           for file in file_list], axis=0)
+
     if arr.dtype.hasobject:
         arr = [np.concatenate(a) if isinstance(a[0], (tuple, list, np.ndarray)) else a for a in arr.T]
         np.save(file=f"{directory}/{new_name.format(new_len=len(arr[0]))}.npy", arr=arr)

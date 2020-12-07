@@ -676,6 +676,29 @@ def replace_tail_roll_list(arr_list, arr_new_list):
     return (replace_tail_roll(arr=arr, arr_new=arr_new) for (arr, arr_new) in zip(arr_list, arr_new_list))
 
 
+def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
+    n = len(a)
+    m = len(b)
+    assert n == m
+    assert n % block_size == 0
+
+    nn = n // block_size
+    idx = np.empty(nn)
+
+    for i in range(nn):
+        for j in range(nn):
+            d = (a[i * block_size:(i + 1) * block_size] -
+                 b[j * block_size:(j + 1) * block_size])
+
+            d = np.abs(d).max()
+            if d < threshold:
+                idx[i] = j
+                if verbose > 0:
+                    print(i, j, d)
+
+    return idx
+
+
 # grid
 def get_points_inbetween(x, extrapolate=False):
     assert x.ndim == 1
