@@ -361,6 +361,17 @@ def get_dcm2d(theta):
     return dcm
 
 
+def projection_line_point(x0, x1, x2):
+    """
+    http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+    Projection from x0 to the line defined by {x1 + a*x2}
+    """
+    x21 = x2-x1
+    t = np.sum((x1 - x0)*(x21), axis=-1) / np.linalg.norm(x21, axis=-1)**2
+    x0_p = x1 - t * x21
+    return x0_p
+
+
 def distance_line_point(x0, x1, x2):
     """
     http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
