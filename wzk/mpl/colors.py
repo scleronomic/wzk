@@ -6,35 +6,48 @@ import matplotlib as mpl
 # cycler('color', x)
 
 # https://colorhunt.co/palette/15697
-pallet_campfire = ['#311d3f', '#522546', '#88304e', '#e23e57']
+campfire = ['#311d3f', '#522546', '#88304e', '#e23e57']
 
 # https://colorhunt.co/palette/108152
-pallet_sunset = ['#3a0088', '#930077', '#e61c5d', '#ffbd39']
+sunset = ['#3a0088', '#930077', '#e61c5d', '#ffbd39']
 
 # https://colorhunt.co/palette/1504
-pallet_blues4 = ['#48466d', '#3d84a8', '#46cdcf', '#abedd8']
+blues4 = ['#48466d', '#3d84a8', '#46cdcf', '#abedd8']
 
 # https://learnui.design/tools/data-color-picker.html#single
-pallet_blues10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
-                  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
+blues10 = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+           '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']
 
-# lisaherbst
-#395e8f
-#97a4bf
-#f1f1f1
-#eeba9c
-#de854b
+divergent_blue_red13 = np.array(['#395e8f' '#5a749f' '#798caf' '#97a4bf' '#b4bdcf' '#d2d6e0' 
+                                 '#f1f1f1' 
+                                 '#f3d9d1' '#f3c1b2' '#f1a994' '#ec9077' '#e6785a' '#de5e3e'])
 
-#395e8f
-#97a4bf
-#f1f1f1
-#f1a994
-#de5e3e
 
+divergent_br248842_13 = np.array(['#224488', '#4c5e99', '#6e79ab', '#8f95bc', '#afb3cd', '#d0d1df',
+                                  '#f1f1f1',
+                                  '#e2d2cb', '#d3b4a7', '#c29783', '#b07b62', '#9d5f41', '#884422'])
+
+reds824_9 = np.array(['#882244',
+                       '#983b56', '#a75168', '#b6677b', '#c57c8e', '#d492a2', '#e2a8b6', '#f1beca', '#ffd5df'])
+reds842_9 = np.array(['#884422',
+                      '#975634', '#a76747', '#b67a5b', '#c58c6f', '#d39f84', '#e2b299', '#f1c5af', '#ffd9c5'])
+
+greens284_9 = np.array(['#228844',
+                        '#3d9454', '#53a065', '#68ad75', '#7bb986', '#8fc597', '#a2d2a9', '#b6debb', '#c9ebcd'])
+greens482_9 = np.array(['#448822',
+                        '#579438', '#6aa04c', '#7cac60', '#8eb873', '#9fc487', '#b1d09c', '#c2ddb0', '#d4e9c5'])
+
+blues248_9 = np.array(['#224488',
+                       '#3e5596', '#5668a5', '#6c7ab4', '#828ec2', '#98a2d1', '#aeb6e0', '#c5cbf0', '#dbe0ff'])
+blues428_9 = np.array(['#442288',
+                       '#5b3896', '#704ea5', '#8564b4', '#9a7bc3', '#af93d2', '#c4abe1', '#d8c3f0', '#eddcff'])
+
+rgb_248 = np.array(['#884422', '#228844', '#224488'])
+rrggbb_248 = np.array(['#882244', '#884422', '#228844', '#448822', '#224488', '#442288'])
 
 # palette_blues = ['#4864b0', '#6e7cb8', '#8f96bf', '#aeb1c6', '#cccccc']
-palette_blues = ['#b3c3e3', '#91a3c9', '#7084b0', '#506697', '#2f4a7e', '#002f66']
-palette_blues = ['#0089b3', '#6f85d7', '#d66cc4', '#ff5d7a','#ff8800']
+mix6 = ['#b3c3e3', '#91a3c9', '#7084b0', '#506697', '#2f4a7e', '#002f66']
+mix5 = ['#0089b3', '#6f85d7', '#d66cc4', '#ff5d7a','#ff8800']
 
 
 # TUM corporate design colors - http://portal.mytum.de/corporatedesign/index_print/vorlagen/index_farben

@@ -29,7 +29,7 @@ class Test(TestCase):
 
     def test_RelativeArrowPatch(self):
 
-        fig, ax = new_fig(aspect=1, scale=3)
+        fig, ax = new_fig(aspect=1)
         ax.set_xlim(0, 1)
         ax.set_ylim(0, 1)
         arrow1 = RelativeFancyArrow(0.5, 0.5, 0.0, 0.5, width=1, head_length=0.5, head_width=2)
@@ -48,3 +48,9 @@ class Test(TestCase):
                                height=0.5, width=0.5, pad=0.1, corner_size=0))
 
 
+
+if __name__ == '__main__':
+    test = Test()
+    test.test_transform()
+    test.test_RelativeArrowPatch()
+    test.test_AbsoluteFancyBboxPatch()

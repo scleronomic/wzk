@@ -237,6 +237,7 @@ def angle2minuspi_pluspi(x):
 
 # Derivative
 def numeric_derivative(*, fun, x, eps=1e-5, axis=-1, mode='central',
+                       diff=None,
                        **kwargs_fun):
     """
     Use central difference scheme to calculate the
@@ -246,20 +247,34 @@ def numeric_derivative(*, fun, x, eps=1e-5, axis=-1, mode='central',
     """
     axis = axis_wrapper(axis=axis, n_dim=x.ndim)
 
-    fun_shape = np.shape(fun(x, **kwargs_fun))
+    f_x = fun(x, **kwargs_fun)
+    fun_shape = np.shape(f_x)
     var_shape = atleast_tuple(np.array(np.shape(x))[axis])
+    eps_mat = np.empty_like(x, dtype=float)
+
     derv = np.empty(fun_shape + var_shape)
 
-    eps_mat = np.empty_like(x, dtype=float)
+    if diff is None:
+        def diff(a, b):
+            return a - b
 
     def update_eps_mat(_idx):
         eps_mat[:] = 0
         insert(eps_mat, val=eps, idx=_idx, axis=axis)
 
-    if mode == 'central':
-        for idx in product(*(range(s) for s in var_shape)):
-            update_eps_mat(_idx=idx)
-            derv[(Ellipsis,) + idx] = (fun(x + eps_mat, **kwargs_fun) - fun(x - eps_mat, **kwargs_fun)) / (2 * eps)
+    for idx in product(*(range(s) for s in var_shape)):
+        update_eps_mat(_idx=idx)
+
+        if mode == 'central':
+            derv[(Ellipsis,) + idx] = diff(fun(x + eps_mat, **kwargs_fun),
+                                           fun(x - eps_mat, **kwargs_fun)) / (2 * eps)
+
+        elif mode == 'forward':
+            derv[(Ellipsis, ) + idx] = diff(fun(x + eps_mat, **kwargs_fun), f_x) / eps
+
+        elif mode == 'backward':
+            derv[(Ellipsis, ) + idx] = diff(f_x, fun(x - eps_mat, **kwargs_fun)) / eps
+
 
     return derv
 

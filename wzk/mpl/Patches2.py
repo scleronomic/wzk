@@ -1,4 +1,6 @@
 import numpy as np
+from wzk.math2 import projection_line_point
+
 from matplotlib import patches, transforms, pyplot
 
 
@@ -42,7 +44,120 @@ class FancyBbox(patches.FancyBboxPatch):
         super().__init__(xy=(xy[0]+pad, xy[1]+pad), width=width - 2*pad, height=height - 2*pad, boxstyle=bs, **kwargs)
 
 
-# Transformations
+def CurlyBrace(x0, x1, x2, curliness=1/np.e, return_verts=False, **patch_kw):
+    """
+    Create a matplotlib patch corresponding to a curly brace (i.e. this thing: {")
+    Parameters
+    ----------
+    x : float
+     x position of left edge of patch
+    y : float
+     y position of bottom edge of patch
+    width : float
+     horizontal span of patch
+    height : float
+     vertical span of patch
+    curliness : float
+     positive value indicating extent of curliness; default (1/e) tends to look nice
+    pointing : str
+     direction in which the curly brace points (currently supports 'left' and 'right')
+    **patch_kw : any keyword args accepted by matplotlib's Patch
+    Returns
+    -------
+    matplotlib PathPatch corresponding to curly brace
+
+    Notes
+    -----
+    It is useful to supply the `transform` parameter to specify the coordinate system for the Patch.
+    To add to Axes `ax`:
+    cb = CurlyBrace(x, y)
+    ax.add_artist(cb)
+    This has been written as a function that returns a Patch because I saw no use in making it a class, though one could extend matplotlib's Patch as an alternate implementation.
+
+    Thanks to:
+    https://graphicdesign.stackexchange.com/questions/86334/inkscape-easy-way-to-create-curly-brace-bracket
+    http://www.inkscapeforum.com/viewtopic.php?t=11228
+    https://css-tricks.com/svg-path-syntax-illustrated-guide/
+    https://matplotlib.org/users/path_tutorial.html
+    Ben Deverett, 2018.
+    Examples
+    --------
+    >>>from curly_brace_patch import CurlyBrace
+    >>>import matplotlib.pyplot as pl
+    >>>fig,ax = pl.subplots()
+    >>>brace = CurlyBrace(x=.4, y=.2, width=.2, height=.6, pointing='right', transform=ax.transAxes, color='magenta')
+    >>>ax.add_artist(brace)
+    # https://github.com/bensondaled/curly_brace/blob/master/curly_brace_patch.py
+    """
+    x1, x2, x0 = np.atleast_1d(x1, x2, x0)
+
+    x0_p = projection_line_point(x0, x1, x2)
+    x10_p = x1 - x0_p
+    x20_p = x2 - x0_p
+
+    if np.linalg.norm(x10_p) < np.linalg.norm(x20_p):
+        curliness_v = x10_p * curliness
+    else:
+        curliness_v = x20_p * curliness
+
+    verts = np.stack([x1,                   #
+                      x0 + x10_p,
+                      x0_p + curliness_v,
+                      x0,                   #
+                      x0_p - curliness_v,
+                      x0 + x20_p,
+                      x2])                  #
+
+    codes = [patches.Path.MOVETO] + 6 * [patches.Path.CURVE4]
+    path = patches.Path(verts, codes)
+
+    patch_kw['edgecolor'] = patch_kw.pop('color', 'black')
+
+    pp = patches.PathPatch(path, facecolor='none', **patch_kw)
+    if return_verts:
+        return pp, verts
+    else:
+        return pp
+
+
+def test_curly_brace():
+    import matplotlib.pyplot as plt
+    fig, ax = plt.subplots()
+    ax.axis('off')
+
+    for i, (w, h, c) in enumerate(zip(
+            np.linspace(.1, .18, 4),
+            np.linspace(.95, .5, 4),
+            np.linspace(.1, .5, 4))):
+        x = i * .1
+        lw = 3 * i + 1
+        col = plt.cm.plasma(i / 8)
+        brace = CurlyBrace(x0=(x+0.05, h/2), x1=(x, 0.1) , x2=(x, 0.1+h), lw=lw,
+                           curliness=c, color=col)
+        ax.add_artist(brace)
+
+    fig, ax = plt.subplots()
+    ax.axis('off')
+    ax.set_aspect(1)
+    for i in range(10):
+        x = np.random.random((3, 2))
+        x = np.sort(x, axis=0)
+        brace = CurlyBrace(x[1], x[0], x[2])
+        ax.add_artist(brace)
+
+    fig, ax = plt.subplots()
+    ax.set_aspect(1)
+    brace, verts = CurlyBrace(x1=(1, 1), x2=(4, 5), x0=(2.5, 1.5), color='b', return_verts =True)
+    ax.add_artist(brace)
+    ax.plot(*verts.T, ls='', marker='o', alpha=0.5)
+    ax.plot(*verts[[0, 1, 5, 6, 0]].T)
+
+    text = ['a', 'ac0', 'ac1', 'c', 'cb0', 'cb1', 'b']
+    for i, v in enumerate(verts):
+        ax.annotate(xy=v, s=str(i) + '\n' + text[i], ha='center', va='center', zorder=100)
+
+
+2# Transformations
 def do_aff_trafo(patch, theta, xy=None, por=(0, 0)):
     if xy is not None:
         patch.set_xy(xy=xy)

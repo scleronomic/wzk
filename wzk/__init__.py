@@ -10,6 +10,7 @@ from .printing import *
 from .ssh import *
 from .strings import *
 from .time import *
+from .training import *
 
 from .mpl.backend import plt
 from .mpl.figure import *

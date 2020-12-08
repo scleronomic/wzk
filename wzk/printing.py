@@ -59,14 +59,14 @@ def print_dict(d, newline=True, message=None):
             print()
 
 
-def print_stats(*args, names):
+def print_stats(*args, names, dec=4):
     stats = []
     for a in args:
         s = get_stats(a)
         stats.append([s[key] for key in s])
 
     cols = [key for key in s]
-    print_table(rows=names, columns=cols, data=stats)
+    print_table(rows=names, columns=cols, data=stats, cell_format=f'.{dec}f')
     return np.array(stats)
 
 
