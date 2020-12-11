@@ -4,7 +4,7 @@ import numpy as np
 from wzk.mpl.backend import plt
 from wzk.mpl.move_figure import move_fig
 
-from wzk.files import start_open, safe_create_directory, copy2clipboard
+from wzk.files import start_open, safe_create_dir, copy2clipboard
 from wzk.math2 import get_mean_divisor_pair, golden_ratio
 from wzk.dicts_lists_tuples import atleast_tuple
 
@@ -85,7 +85,7 @@ def save_fig(filename=None, fig=None, formats=('png',),
 
     dir_name = os.path.dirname(filename)
     if dir_name != '':
-        safe_create_directory(directory=dir_name)
+        safe_create_dir(directory=dir_name)
 
     formats = atleast_tuple(formats, convert=False)
     for f in formats:

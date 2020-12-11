@@ -65,16 +65,16 @@ def load_pickle(file):
     return ret_di
 
 
-def list_files(folder):
-    return [f for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
+def list_files(directory):
+    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
 
-def safe_create_directory(directory):
+def safe_create_dir(directory):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
 
-def split_directory_file(file):
+def split_dir_file(file):
     d, f = os.path.split(file)
     d += '/'
     return d, f
@@ -116,24 +116,24 @@ def ensure_file_extension(*, file, ext):
     return file
 
 
-def rel2abs_path(path, abs_directory):
-    # abs_directory = '/Hello/HowAre/You/'
+def rel2abs_path(path, abs_dir):
+    # abs_dir = '/Hello/HowAre/You/'
     # path = 'Hello/HowAre/You/good.txt'
     # path = 'good.txt'
 
-    abs_directory = ensure_initial_slash(path=abs_directory)
-    abs_directory = os.path.normpath(path=abs_directory)
+    abs_dir = ensure_initial_slash(path=abs_dir)
+    abs_dir = os.path.normpath(path=abs_dir)
     path = ensure_initial_slash(path=path)
     path = os.path.normpath(path=path)
 
-    if abs_directory in path:
+    if abs_dir in path:
         return path
     else:
-        return os.path.normpath(abs_directory + path)
+        return os.path.normpath(abs_dir + path)
 
 
 # .npz files, maybe own module
-def combine_npz_files(*, folder,
+def combine_npz_files(*, directory,
                       pattern=None, file_list=None,
                       save=True,
                       verbose=0):
@@ -146,7 +146,7 @@ def combine_npz_files(*, folder,
         assert '.npz' in pattern
         pattern = re.compile(pattern=pattern)
 
-        file_list = list_files(folder=folder)
+        file_list = list_files(directory=directory)
         file_list = sorted([file for file in file_list if pattern.match(file)])
 
     new_dict = {}
@@ -155,7 +155,7 @@ def combine_npz_files(*, folder,
         if verbose > 0:
             print_progress(iteration=i, total=len(file_list))
 
-        data = np.load(folder + file)
+        data = np.load(directory + file)
         if i == 0:
             for key in data:
                 new_dict[key] = data[key]
@@ -164,7 +164,7 @@ def combine_npz_files(*, folder,
                 new_dict[key] = np.concatenate([new_dict[key], data[key]])
 
     if save:
-        np.savez(folder + 'combined_' + get_timestamp() + '.npz', **new_dict)
+        np.savez(directory + 'combined_' + get_timestamp() + '.npz', **new_dict)
     return new_dict
 
 
@@ -200,16 +200,16 @@ def combine_npy_files(directory, new_name="combined_{new_len}", delete_singles=F
 
 
 def clip_npz_file(n_samples, file, save=True):
-    folder, file = split_directory_file(file=file)
+    directory, file = split_dir_file(file=file)
     file_name, file_extension = os.path.splitext(file)
     assert file_extension == '.npz'
 
-    data = np.load(folder + file)
+    data = np.load(directory + file)
     new_dict = {}
     for key in data:
         new_dict[key] = data[key][:n_samples]
     if save:
-        np.savez(folder + file_name + 'clipped_' + get_timestamp() + file_extension, **new_dict)
+        np.savez(directory + file_name + 'clipped_' + get_timestamp() + file_extension, **new_dict)
     return new_dict
 
 
@@ -292,4 +292,4 @@ def test_split_files_into_dirs():
 
 # os.path.split(a)
 # os.path.basename()
-# split_directory_file(a)
+# split_dir_file(a)

@@ -21,6 +21,7 @@ def n2train_test(n, split=0.2):
 def train_test_split(*args,
                      split=0.2, shuffle=False, shuffle_block_size=1):
     """
+    if split == -1, use the same set for training and testing
     If shuffle=False, than the first n_train elements are used for training and the remaining n_test for testing
     return in same order as keras / TensorFlow
     (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -36,10 +37,13 @@ def train_test_split(*args,
         idx = block_shuffle(n, block_size=shuffle_block_size)
         args = [a[idx] for a in args]
 
-    n_train, n_test = n2train_test(n=n, split=split)
+    if split == -1:
+        return change_tuple_order((a, a) for a in args)
+    else:
+        n_train, n_test = n2train_test(n=n, split=split)
 
-    train_test_tuple = change_tuple_order(np.split(a, [n_train]) for a in args)
-    return train_test_tuple  # ttt
+        train_test_tuple = change_tuple_order(np.split(a, [n_train]) for a in args)
+        return train_test_tuple  # ttt
 
 
 def test_train_test_split():
