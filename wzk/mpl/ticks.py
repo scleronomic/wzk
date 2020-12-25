@@ -1,6 +1,7 @@
 import numpy as np
-
 from matplotlib import transforms
+from matplotlib import ticker
+
 from wzk.dicts_lists_tuples import atleast_list
 from wzk.numpy2 import np_isinstance
 

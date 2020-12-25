@@ -256,6 +256,10 @@ def allclose(a, b, axis=None, **kwargs):
     return bool_arr
 
 
+def delete_args(*args, obj, axis=None):
+    return tuple(np.delete(a, obj=obj, axis=axis) for a in args)
+
+
 def __fill_index_with(idx, axis, shape, mode='slice'):
     """
     orange <-> orth-range
@@ -575,6 +579,41 @@ def noise(shape, scale, mode='normal'):
         return np.random.normal(loc=0, scale=scale, size=shape)
     else:
         raise ValueError(f"Unknown mode {mode}")
+
+
+def get_sub_set_idx():
+
+    def remove(x, n):
+        for nn in n:
+            x = x[x != nn]
+        return x
+
+    def reduce(x, n):
+        for nn in n:
+            x[x <= nn] -= 1
+        return x
+
+    def remove_reduce(n):
+        for nn in n:
+            x = x[x != nn]
+            x[x <= nn] -= 1
+
+    def keep_delete_wrapper(keep, x):
+        if isinstance(x, int):
+            x = np.arange(x)
+
+        if np_isinstance(keep, bool):
+            bool_keep = keep
+            idx_keep = np.nonzero(keep == 1)
+        elif np_isinstance(keep, int):
+            idx_keep = keep
+            bool_keep = np.zeros(x, dtype=bool)
+            bool_keep[idx_keep] = True
+        else:
+            raise ValueError
+
+        idx_delete = np.nonzero(keep == 0)
+        return bool_keep, idx_keep, idx_delete
 
 
 # Block lists

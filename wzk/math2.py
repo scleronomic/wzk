@@ -235,6 +235,24 @@ def angle2minuspi_pluspi(x):
     # return np.arctan2(np.sin(x), np.cos(x))
 
 
+def log_b(x, base=np.e):
+    return np.log(x) / np.log(base)
+
+
+def assimilate_orders_of_magnitude(a, b, base=10):
+    a_mean = np.abs(a).mean()
+    b_mean = np.abs(b).mean()
+    np.log1p()
+    a_mean_log = np.log(a_mean)
+    b_mean_log = np.log1(b_mean)
+
+    c = np.power(10, (a_mean_log + b_mean_log) / 2)
+
+    aa = a * c / a_mean
+    bb = b * c / b_mean
+
+    return aa, bb, c
+
 # Derivative
 def numeric_derivative(*, fun, x, eps=1e-5, axis=-1, mode='central',
                        diff=None,

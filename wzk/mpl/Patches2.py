@@ -1,7 +1,7 @@
 import numpy as np
-from wzk.math2 import projection_line_point
-
 from matplotlib import patches, transforms, pyplot
+
+from wzk.math2 import projection_line_point
 
 
 class RelativeFancyArrow(patches.FancyArrow):
@@ -89,9 +89,9 @@ def CurlyBrace(x0, x1, x2, curliness=1/np.e, return_verts=False, **patch_kw):
     >>>ax.add_artist(brace)
     # https://github.com/bensondaled/curly_brace/blob/master/curly_brace_patch.py
     """
-    x1, x2, x0 = np.atleast_1d(x1, x2, x0)
+    x0, x1, x2,  = np.atleast_1d(x0, x1, x2)
 
-    x0_p = projection_line_point(x0, x1, x2)
+    x0_p = projection_line_point(x0=x0, x1=x1, x2=x2)
     x10_p = x1 - x0_p
     x20_p = x2 - x0_p
 

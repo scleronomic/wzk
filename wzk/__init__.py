@@ -2,6 +2,7 @@ from .binary import *
 from .dicts_lists_tuples import *
 from .files import *
 from .functions import *
+from .index import *
 from .image import *
 from .math2 import *
 from .multiprocessing2 import *
