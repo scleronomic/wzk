@@ -1,4 +1,4 @@
-import numyp as np
+import numpy as np
 
 
 def combine_iterative_indices(n, idx_list):
