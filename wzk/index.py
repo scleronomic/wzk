@@ -10,4 +10,3 @@ def combine_iterative_indices(n, idx_list):
     i2[i] = 0
     i = np.nonzero(i2)
     return i
-
