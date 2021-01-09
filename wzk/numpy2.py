@@ -94,7 +94,10 @@ def shape_wrapper(shape=None):
 
 # object <-> numeric
 def object2numeric_array(arr):
-    return np.array([v for v in arr])
+    s = arr.shape
+    arr = np.array([v for v in arr.ravel()])
+    arr = arr.reshape(s + arr.shape[1:])
+    return arr
 
 
 def numeric2object_array(arr):
