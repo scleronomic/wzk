@@ -19,7 +19,7 @@ def n2train_test(n, split=0.2):
 
 
 def train_test_split(*args,
-                     split=0.2, shuffle=False, shuffle_block_size=1):
+                     split=0.2, shuffle=False, shuffle_block_size=1, seed=None):
     """
     if split == -1, use the same set for training and testing
     If shuffle=False, than the first n_train elements are used for training and the remaining n_test for testing
@@ -34,6 +34,8 @@ def train_test_split(*args,
         assert np.shape(a)[0] == n
 
     if shuffle:
+        if seed is not None:
+            np.random.seed(seed)
         idx = block_shuffle(n, block_size=shuffle_block_size)
         args = [a[idx] for a in args]
 
