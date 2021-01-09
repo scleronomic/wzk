@@ -11,5 +11,5 @@ def execute_via_ssh(remote_client, cmd):
     return stdout
 
 def test_execute_via_ssh():
-    execute_via_ssh('rmc-lx0144', 'ls')
+    print(execute_via_ssh('rmc-lx0144', 'ls'))
 
