@@ -8,7 +8,7 @@ def execute_via_ssh(remote_client, cmd):
     process = subprocess.Popen(f"ssh {remote_client} -tt; {cmd}", stdout=subprocess.PIPE,  shell=True)
     process = subprocess.Popen(f"{cmd}; {cmd}", stdout=subprocess.PIPE,  shell=True)
     stdout = process.communicate()[0].strip()
-    return proc_stdout
+    return stdout
 
 def test_execute_via_ssh():
     execute_via_ssh('rmc-lx0144', 'ls')
