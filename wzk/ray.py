@@ -12,9 +12,14 @@ __default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
                    'philotes', 'polyxo', 'poros']
 
 
-def start_ray_cluster(head=None, nodes=None):
+def start_ray_cluster(head=None, nodes=None, verbose=1):
+
     if nodes is None:
         nodes = __default_nodes
+
+    if verbose > 0:
+        print('Start Ray-Cluster')
+        print('Nodes: ', *nodes)
 
     if head is None:
         head = socket.gethostname()
@@ -37,12 +42,15 @@ def start_ray_cluster(head=None, nodes=None):
 def stop_ray_cluster(nodes=None):
     if nodes is None:
         nodes = __default_nodes
+
+    if verbose > 0:
+        print('Stop Ray-Cluster')
+        print('Nodes: ', *nodes)
     for node in nodes:
         execute_via_ssh(remote_client=node, cmd='ray stop')
 
 
 def ray_main(mode='start', nodes=None, head=None):
-
     if mode == 'start':
         start_ray_cluster(head=head, nodes=nodes)
     elif mode == 'stop':
