@@ -66,6 +66,11 @@ def tuple_extract(t, default, mode='use_default'):
         raise ValueError(f"Unknown mode {mode}")
 
 
+def safe_squeeze(s):
+    assert len(s) == 1
+    return s[0]
+
+
 def remove_nones(lst):
     return [item for item in lst if item is not None]
 
