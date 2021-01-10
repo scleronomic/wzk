@@ -39,7 +39,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
         execute_via_ssh(remote_client=node, cmd=start_node_cmd)
 
 
-def stop_ray_cluster(nodes=None):
+def stop_ray_cluster(nodes=None, verbose=1):
     if nodes is None:
         nodes = __default_nodes
 
