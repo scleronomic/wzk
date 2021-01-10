@@ -36,8 +36,9 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
 
     start_node_cmd = f"ray start --address='{address}' --redis-password='{password}'"
     for node in nodes:
-        execute_via_ssh(remote_client=node, cmd=start_node_cmd)
-
+        stdout = execute_via_ssh(remote_client=node, cmd=start_node_cmd)
+        if verbose > 1:
+            print(node, ':', stdout)
 
 def stop_ray_cluster(nodes=None, verbose=1):
     if nodes is None:
