@@ -47,14 +47,15 @@ def stop_ray_cluster(nodes=None, verbose=1):
         print('Stop Ray-Cluster')
         print('Nodes: ', *nodes)
     for node in nodes:
-        execute_via_ssh(remote_client=node, cmd='ray stop')
+        stdout = execute_via_ssh(remote_client=node, cmd='ray stop')
+        if verbose > 1:
+            print(node, ':', stdout)
 
-
-def ray_main(mode='start', nodes=None, head=None):
+def ray_main(mode='start', nodes=None, head=None, verbose=1):
     if mode == 'start':
-        start_ray_cluster(head=head, nodes=nodes)
+        start_ray_cluster(head=head, nodes=nodes, verbose=verbose)
     elif mode == 'stop':
-        stop_ray_cluster(nodes=nodes)
+        stop_ray_cluster(nodes=nodes, verbose=verbose)
     else:
         raise ValueError
 
