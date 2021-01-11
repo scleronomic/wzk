@@ -1,15 +1,17 @@
+import os
 import subprocess
 
+from wzk import uuid4
 
-# SSH
-def execute_via_ssh(remote_client, cmd):
-    # ssh -tt for short to force pseudo-tty allocation even if stdin isn't a terminal.
-    # https://stackoverflow.com/questions/7114990/pseudo-terminal-will-not-be-allocated-because-stdin-is-not-a-terminal
-    # process = subprocess.Popen(f"ssh {remote_client} -tt; {cmd}", stdout=subprocess.PIPE,  shell=True)
-    process = subprocess.Popen(f"ssh {remote_client} -tt; {cmd}", shell=True)
-    stdout = process.communicate()[0].strip()
-    return stdout.decode()
+def ssh_cmd(host, cmd, check=False):
+    """Not the most elegant way, bit was not able to get the stdout without error / messed up shells otherwise"""
+    temp = uuid4()
+    with open(temp, 'w') as f:
+        result = subprocess.run(["ssh", host, cmd], stdout=f,
+                                shell=False, check=check)
 
-def test_execute_via_ssh():
-    print(execute_via_ssh('rmc-lx0144', 'ls'))
+    with open(temp, 'r') as f:
+        stdout = temp.read()
 
+    os.remove(temp)
+    return res
