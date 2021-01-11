@@ -52,5 +52,6 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
     np.save(os.path.abspath(os.path.dirname(__file__)) + '/' + 'ray_start.text', log)
 
 
+
 if __name__ == '__main__':
     fire.Fire(start_ray_cluster)
