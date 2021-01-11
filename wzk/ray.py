@@ -44,7 +44,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
 
     start_node_cmd = f"ray start --address='{address}' --redis-password='{password}'"
     for node in nodes:
-        stdout = execute_via_ssh(host=node, cmd=start_node_cmd)
+        stdout = ssh_cmd(host=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
             log += node + ':\n' + stdout + '\n'

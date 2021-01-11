@@ -11,7 +11,7 @@ def ssh_cmd(host, cmd, check=False):
                                 shell=False, check=check)
 
     with open(temp, 'r') as f:
-        stdout = temp.read()
+        stdout = f.read()
 
     os.remove(temp)
-    return res
+    return stdout
