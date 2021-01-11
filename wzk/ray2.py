@@ -16,7 +16,7 @@ __default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
 
 def start_ray_cluster(head=None, nodes=None, verbose=2):
 
-    perc = 0.85
+    perc = 0.8
 
     log = ''
     if nodes is None:
