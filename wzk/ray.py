@@ -3,7 +3,7 @@ import re
 import socket
 
 import fire
-import numpy
+import numpy as np
 
 from wzk.ssh import execute_via_ssh
 from wzk.dicts_lists_tuples import safe_squeeze
