@@ -1,7 +1,8 @@
-import ray
+import os
 import re
 import socket
 
+import ray
 import fire
 import numpy as np
 
