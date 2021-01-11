@@ -14,9 +14,9 @@ __default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
                    'philotes', 'polyxo', 'poros']
 
 
-def start_ray_cluster(head=None, nodes=None, verbose=2):
+def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
 
-    perc = 0.8
+    perc = perc / 100
 
     log = ''
     if nodes is None:
@@ -70,7 +70,7 @@ def stop_ray_cluster(nodes=None, verbose=1):
         if verbose > 1:
             print(node, ':', stdout)
 
-def ray_main(mode='start', nodes=None, head=None, verbose=2):
+def ray_main(mode='start', nodes=None, head=None, verbose=2, perc=80):
     if mode == 'start':
         start_ray_cluster(head=head, nodes=nodes, verbose=verbose)
     elif mode == 'stop':
