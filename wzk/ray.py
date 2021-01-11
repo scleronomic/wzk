@@ -14,7 +14,7 @@ __default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
                    'philotes', 'polyxo', 'poros']
 
 
-def start_ray_cluster(head=None, nodes=None, verbose=1):
+def start_ray_cluster(head=None, nodes=None, verbose=2):
 
     log = ''
     if nodes is None:
@@ -30,7 +30,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
     start_head_cmd = 'ray start --head --port=6379'
     stdout = execute_via_ssh(head, cmd=start_head_cmd)
 
-    log += stdout + '\n'
+    log += head + ':\n' + stdout + '\n'
     if verbose > 1:
         print(head, ':', stdout)
 
@@ -47,31 +47,10 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
         stdout = execute_via_ssh(remote_client=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
-            log += 'node:\n' + stdout + '\n'
+            log += node + ':\n' + stdout + '\n'
 
     np.save(os.path.abspath(os.path.dirname(__file__)) + '/' + 'ray_start.text', log)
 
 
-def stop_ray_cluster(nodes=None, verbose=1):
-    if nodes is None:
-        nodes = __default_nodes
-
-    if verbose > 0:
-        print('Stop Ray-Cluster')
-        print('Nodes: ', *nodes)
-    for node in nodes:
-        stdout = execute_via_ssh(remote_client=node, cmd='ray stop --force')
-        if verbose > 1:
-            print(node, ':', stdout)
-
-def ray_main(mode='start', nodes=None, head=None, verbose=2):
-    if mode == 'start':
-        start_ray_cluster(head=head, nodes=nodes, verbose=verbose)
-    elif mode == 'stop':
-        stop_ray_cluster(nodes=nodes, verbose=verbose)
-    else:
-        raise ValueError
-
-
 if __name__ == '__main__':
-    fire.Fire(ray_main)
+    fire.Fire(start_ray_cluster)
