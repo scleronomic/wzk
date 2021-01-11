@@ -48,7 +48,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
             print(node, ':', stdout)
             log += 'node:\n' + stdout + '\n'
 
-    np.save('os.path.abspath(os.path.dirname(__file__)) + '/' + ray_start.text', log)
+    np.save(os.path.abspath(os.path.dirname(__file__)) + '/' + 'ray_start.text', log)
 
 
 def stop_ray_cluster(nodes=None, verbose=1):
@@ -63,7 +63,7 @@ def stop_ray_cluster(nodes=None, verbose=1):
         if verbose > 1:
             print(node, ':', stdout)
 
-def ray_main(mode='start', nodes=None, head=None, verbose=1):
+def ray_main(mode='start', nodes=None, head=None, verbose=2):
     if mode == 'start':
         start_ray_cluster(head=head, nodes=nodes, verbose=verbose)
     elif mode == 'stop':
