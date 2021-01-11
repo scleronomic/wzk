@@ -14,6 +14,7 @@ __default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
 
 def start_ray_cluster(head=None, nodes=None, verbose=1):
 
+    log = ''
     if nodes is None:
         nodes = __default_nodes
 
@@ -27,6 +28,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
     start_head_cmd = 'ray start --head --port=6379'
     stdout = execute_via_ssh(head, cmd=start_head_cmd)
 
+    log += stdout + '\n'
     if verbose > 1:
         print(head, ':', stdout)
 
@@ -43,6 +45,9 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
         stdout = execute_via_ssh(remote_client=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
+            log += 'node:\n' + stdout + '\n'
+
+    np.save('os.path.abspath(os.path.dirname(__file__)) + '/' + ray_start.text', log)
 
 def stop_ray_cluster(nodes=None, verbose=1):
     if nodes is None:
