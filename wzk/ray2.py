@@ -66,7 +66,7 @@ def stop_ray_cluster(nodes=None, verbose=1):
         if verbose > 1:
             print(node, ':', stdout)
 
-def ray_main(mode='start', nodes=None, head=None, verbose=1):
+def ray_main(mode='start', nodes=None, head=None, verbose=2):
     if mode == 'start':
         start_ray_cluster(head=head, nodes=nodes, verbose=verbose)
     elif mode == 'stop':
