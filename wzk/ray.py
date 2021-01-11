@@ -3,6 +3,7 @@ import re
 import socket
 
 import fire
+import numpy
 
 from wzk.ssh import execute_via_ssh
 from wzk.dicts_lists_tuples import safe_squeeze
@@ -48,6 +49,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
             log += 'node:\n' + stdout + '\n'
 
     np.save('os.path.abspath(os.path.dirname(__file__)) + '/' + ray_start.text', log)
+
 
 def stop_ray_cluster(nodes=None, verbose=1):
     if nodes is None:
