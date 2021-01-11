@@ -27,7 +27,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
     if head is None:
         head = socket.gethostname()
 
-    start_head_cmd = 'ray start --head --port=6379'
+    start_head_cmd = 'ray start --head --port=6379 --num-cpus=8'
     stdout = ssh_cmd(host=head, cmd=start_head_cmd)
 
     log += head + ':\n' + stdout + '\n'
@@ -43,7 +43,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
     password = password[password.find('=')+1:]
 
     nodes = np.setdiff1d(atleast_list(nodes), [head])
-    start_node_cmd = f"ray start --address='{address}' --redis-password='{password}'"
+    start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus=8"
     for node in nodes:
         stdout = ssh_cmd(host=node, cmd=start_node_cmd)
         if verbose > 1:
