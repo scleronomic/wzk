@@ -15,3 +15,8 @@ def ssh_cmd(host, cmd, check=False):
 
     os.remove(temp)
     return stdout
+
+
+def get_n_cpu(host):
+    return int(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
+

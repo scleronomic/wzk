@@ -6,7 +6,7 @@ import ray
 import fire
 import numpy as np
 
-from wzk.ssh import ssh_cmd
+from wzk.ssh import ssh_cmd, get_n_cpu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 
 
@@ -15,6 +15,8 @@ __default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
 
 
 def start_ray_cluster(head=None, nodes=None, verbose=2):
+
+    perc = 0.85
 
     log = ''
     if nodes is None:
@@ -27,7 +29,8 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
     if head is None:
         head = socket.gethostname()
 
-    start_head_cmd = 'ray start --head --port=6379 --num-cpus=8'
+    n_cpu = int(get_n_cpu(head) * perc)
+    start_head_cmd = f'ray start --head --port=6379 --num-cpus={n_cpu}'
     stdout = ssh_cmd(host=head, cmd=start_head_cmd)
 
     log += head + ':\n' + stdout + '\n'
@@ -43,8 +46,9 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
     password = password[password.find('=')+1:]
 
     nodes = np.setdiff1d(atleast_list(nodes), [head])
-    start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus=8"
     for node in nodes:
+        n_cpu = int(get_n_cpu(node) * perc)
+        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu}"
         stdout = ssh_cmd(host=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
