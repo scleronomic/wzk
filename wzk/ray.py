@@ -59,7 +59,7 @@ def stop_ray_cluster(nodes=None, verbose=1):
         print('Stop Ray-Cluster')
         print('Nodes: ', *nodes)
     for node in nodes:
-        stdout = execute_via_ssh(remote_client=node, cmd='ray stop')
+        stdout = execute_via_ssh(remote_client=node, cmd='ray stop --force')
         if verbose > 1:
             print(node, ':', stdout)
 
