@@ -235,6 +235,19 @@ def angle2minuspi_pluspi(x):
     # return np.arctan2(np.sin(x), np.cos(x))
 
 
+# def modulo(x, low, high):  Alternative function
+#     return (x - low) % (high - low) + low
+#
+# def angle2minuspi_pluspi(x):
+#     return modulo(x=x, low=-np.pi, high=+np.pi)
+
+def angle2minuspi_pluspi(x):
+    return np.arctan2(np.sin(x), np.cos(x))
+
+def f(y_true, y_pred):
+    return np.mean(angle2minuspi_pluspi(y_pred - y_true)**2)
+
+
 def log_b(x, base=np.e):
     return np.log(x) / np.log(base)
 

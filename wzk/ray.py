@@ -27,6 +27,10 @@ def start_ray_cluster(head=None, nodes=None, verbose=1):
     start_head_cmd = 'ray start --head --port=6379'
     stdout = execute_via_ssh(head, cmd=start_head_cmd)
 
+    if verbose > 1:
+        print(head, ':', stdout)
+
+
     pattern_adr = r"--address='\S*'"
     pattern_pwd = r"--redis-password='\S*'"
     address = safe_squeeze(re.compile(pattern_adr).findall(stdout))
