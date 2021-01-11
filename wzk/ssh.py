@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from wzk import uuid4
+from wzk.strings import uuid4
 
 def ssh_cmd(host, cmd, check=False):
     """Not the most elegant way, bit was not able to get the stdout without error / messed up shells otherwise"""

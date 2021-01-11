@@ -6,7 +6,7 @@ import ray
 import fire
 import numpy as np
 
-from wzk.ssh import execute_via_ssh
+from wzk.ssh import ssh_cmd
 from wzk.dicts_lists_tuples import safe_squeeze
 
 
@@ -28,7 +28,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
         head = socket.gethostname()
 
     start_head_cmd = 'ray start --head --port=6379'
-    stdout = execute_via_ssh(head, cmd=start_head_cmd)
+    stdout = ssh_cmd(host=head, cmd=start_head_cmd)
 
     log += head + ':\n' + stdout + '\n'
     if verbose > 1:
@@ -44,7 +44,7 @@ def start_ray_cluster(head=None, nodes=None, verbose=2):
 
     start_node_cmd = f"ray start --address='{address}' --redis-password='{password}'"
     for node in nodes:
-        stdout = execute_via_ssh(remote_client=node, cmd=start_node_cmd)
+        stdout = execute_via_ssh(host=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
             log += node + ':\n' + stdout + '\n'
