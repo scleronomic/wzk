@@ -9,11 +9,13 @@ def __no_borders(pad=0.0):
             'figure.subplot.bottom': 0.0 + pad,
             'figure.subplot.top': 1.0 - pad}
 
-def set_borders(left=0.125, right=0.9, bottom=0.1, top=0.9):
+def set_borders(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.2):
     mpl.rcParams.update({'figure.subplot.left': left,
                          'figure.subplot.right': right,
                          'figure.subplot.bottom': bottom,
-                         'figure.subplot.top': top})
+                         'figure.subplot.top': top,
+                         'figure.subplot.wspace': wspace,
+                         'figure.subplot.hspace': hspace})
 
 
 def set_style(s=('ieee', )):
