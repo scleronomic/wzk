@@ -23,11 +23,6 @@ def get_pythonpath():
         return []
 
 
-def get_timestamp_file(directory, **kwargs):
-    ts = get_timestamp(**kwargs)
-    file_list = os.listdir(directory)
-
-
 def safe_remove(file):
     if os.path.exists(file):
         os.remove(file)
@@ -74,12 +69,6 @@ def safe_create_dir(directory):
         os.makedirs(directory)
 
 
-def split_dir_file(file):
-    d, f = os.path.split(file)
-    d += '/'
-    return d, f
-
-
 def ensure_final_slash(path):
     if path[-1] != '/':
         path += '/'
@@ -98,14 +87,14 @@ def ensure_initial_and_final_slash(path):
     return path
 
 
-def point_extension_wrapper(ext):
+def ensure_extension_point(ext):
     if ext[0] != '.':
         ext = '.' + ext
     return ext
 
 
 def ensure_file_extension(*, file, ext):
-    ext = point_extension_wrapper(ext)
+    ext = ensure_extension_point(ext)
 
     if file[-len(ext)] != ext:
         idx_dot = file.find('.')
@@ -200,7 +189,7 @@ def combine_npy_files(directory, new_name="combined_{new_len}", delete_singles=F
 
 
 def clip_npz_file(n_samples, file, save=True):
-    directory, file = split_dir_file(file=file)
+    directory, file = os.path.split(file)
     file_name, file_extension = os.path.splitext(file)
     assert file_extension == '.npz'
 
@@ -290,6 +279,39 @@ def test_split_files_into_dirs():
                           bool_fun=lambda s, i: (s[:len(str(i))] == str(i)) and len(s) == 32 + len(str(i)))
 
 
-# os.path.split(a)
-# os.path.basename()
-# split_dir_file(a)
+
+def dir_dir2file_array(directory=None, combine_str=True):
+    """
+    -directory/
+    ----subA/
+    --------fileA1
+    --------fileA2
+    --------fileA3
+    ----subB/
+    --------fileB1
+    --------fileB2
+
+    # combined_str = False
+    -> [[fileA1, fileA2, fileA3],
+        [fileB1, fileB2]]
+    # combined_str = True
+    -> [[directory/subA/fileA1, directory/subA/fileA2, directory/subA/fileA3],
+        [directory/subB/fileB1, directory/subB/fileB2]]
+    """
+
+    if directory is None:
+        directory = os.getcwd()
+    dir_list = sorted([d for d in os.listdir(directory) if d[0] != '.'])
+
+    file_arr = []
+    for dir_i in dir_list:
+        f_list = sorted([f for f in os.listdir(directory + '/' + dir_i) if f[0] != '.'])
+
+        if combine_str:
+            f_list = [f"{directory}/{dir_i}/{f}" for f in f_list]
+
+        file_arr.append(f_list)
+
+    return file_arr
+
+

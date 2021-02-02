@@ -1,12 +1,15 @@
 import os
+import shutil
 import numpy as np
 
 from wzk.mpl.backend import plt
 from wzk.mpl.move_figure import move_fig
 
+from wzk.dicts_lists_tuples import atleast_tuple
 from wzk.files import start_open, safe_create_dir, copy2clipboard
 from wzk.math2 import get_mean_divisor_pair, golden_ratio
-from wzk.dicts_lists_tuples import atleast_tuple
+from wzk.printing import print_progress
+from wzk.strings import uuid4
 
 
 ieee1c = [3+1/2, (3+1/2)/golden_ratio]
@@ -65,7 +68,7 @@ def new_fig(*, width=ieee2c[0], height=None, h_ratio=1/golden_ratio,
 
 
 def save_fig(filename=None, fig=None, formats=('png',),
-             dpi=600, bbox='tight', pad=0.1,
+             dpi=300, bbox='tight', pad=0.1,
              save=True, replace=True, view=False, copy2cb=False,
              verbose=1, **kwargs):
     """
@@ -103,6 +106,26 @@ def save_fig(filename=None, fig=None, formats=('png',),
 
     if copy2cb:
         copy2clipboard(file=f"{filename}.{formats[0]}")
+
+
+def save_ani(filename, fig, ani, n, dpi=300, bbox=None, fps=30):
+    dir_temp = os.path.split(filename)[0]
+    if dir_temp == '':
+        dir_temp = os.getcwd()
+        filename = dir_temp + '/' + filename
+    dir_temp += '/' + uuid4()
+
+    if isinstance(n, int):
+        n = np.arange(n)
+
+    for nn in n:
+        print_progress(iteration=nn, total=n[-1]+1)
+        ani(nn)
+        save_fig(filename="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats='png', dpi=dpi, bbox=bbox,
+                 verbose=0)
+
+    os.system(f'ffmpeg -r {fps} -i {dir_temp}/frame%06d.png -pix_fmt yuv420p -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2:color=white" {filename}.mp4')
+    shutil.rmtree(dir_temp)
 
 
 def save_all(directory=None, close=False, **kwargs):

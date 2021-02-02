@@ -14,8 +14,8 @@ def get_pip(ax, x, y, width, height, **kwargs):
     # plt.pause(0.01)  # Necessary so
     # toc()
     p = ax.get_position()
-    return plt.axes([p.x0 + x * p.fig_width_inch, p.y0 + y * p.height,
-                     width * p.fig_width_inch, height * p.height], **kwargs)
+    return plt.axes([p.x0 + x * p.width, p.y0 + y * p.height,
+                     width * p.width, height * p.height], **kwargs)
 
 
 # Axes
