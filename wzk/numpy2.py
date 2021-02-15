@@ -620,6 +620,74 @@ def get_sub_set_idx():
 
 
 # Block lists
+def block_view(a, shape, aslist=False, require_aligned_blocks=True):
+    """
+    Return a 2N-D view of the given N-D array, rearranged so each ND block (tile)
+    of the original array is indexed by its block address using the first N
+    indexes of the output array.
+    Note: This function is nearly identical to ``skimage.util.view_as_blocks()``, except:
+          - "imperfect" block shapes are permitted (via require_aligned_blocks=False)
+          - only contiguous arrays are accepted.  (This function will NOT silently copy your array.)
+            As a result, the return value is *always* a view of the input.
+    Args:
+        a: The ND array
+        shape: The tile shape
+        aslist: If True, return all blocks as a list of ND blocks
+                instead of a 2D array indexed by ND block coordinate.
+        require_aligned_blocks: If True, check to make sure no data is "left over"
+                                in each row/column/etc. of the output view.
+                                That is, the blockshape must divide evenly into the full array shape.
+                                If False, "leftover" items that cannot be made into complete blocks
+                                will be discarded from the output view.
+    Here's a 2D example (this function also works for ND):
+    # >>> a = np.rarange(1,21).reshape(4,5)
+    # >>> print(a)
+    [[ 1  2  3  4  5]
+     [ 6  7  8  9 10]
+     [11 12 13 14 15]
+     [16 17 18 19 20]]
+    # >>> view = blockwise_view(a, (2,2), require_aligned_blocks=False)
+    # >>> print(view)
+    [[[[ 1  2]
+       [ 6  7]]
+    <BLANKLINE>
+      [[ 3  4]
+       [ 8  9]]]
+    <BLANKLINE>
+    <BLANKLINE>
+     [[[11 12]
+       [16 17]]
+    <BLANKLINE>
+      [[13 14]
+       [18 19]]]]
+    Inspired by the 2D example shown here: http://stackoverflow.com/a/8070716/162094
+    """
+    assert a.flags["C_CONTIGUOUS"], "This function relies on the memory layout of the array."
+    shape = tuple(shape)
+    outershape = tuple(np.array(a.shape) // shape)
+    view_shape = outershape + shape
+
+    if require_aligned_blocks:
+        assert (np.mod(a.shape, shape) == 0
+                ).all(), "blockshape {} must divide evenly into array shape {}".format(shape, a.shape)
+
+    # inner strides: strides within each block (same as original array)
+    intra_block_strides = a.strides
+
+    # outer strides: strides from one block to another
+    inter_block_strides = tuple(a.strides * np.array(shape))
+
+    # This is where the magic happens.
+    # Generate a view with our new strides (outer+inner).
+    view = np.lib.stride_tricks.as_strided(a, shape=view_shape, strides=(inter_block_strides + intra_block_strides))
+
+    if aslist:
+        return list(map(view.__getitem__, np.rndindex(outershape)))
+    return view
+
+
+
+
 def expand_block_indices(idx_block, block_size, squeeze=True):
     """
     Expand the indices to get an index for each element
