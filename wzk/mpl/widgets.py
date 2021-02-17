@@ -17,7 +17,6 @@ def create_key_slider(ax, callback,
                             valmin=valmin, valmax=valmax, valinit=valinit, valstep=valstep)
 
     def cb_key(event):
-        print('key slider')
         val = slider.val
         if event.key == 'right':
             slider.set_val(modulo(val+valstep, low=valmin, high=valmax))

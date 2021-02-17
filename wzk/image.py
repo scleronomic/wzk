@@ -366,6 +366,13 @@ def safe_add_small2big(idx, small_img, big_img, mode='center'):
             big_img[tuple(map(slice, ll_b, ur_b))] += small_img[tuple(map(slice, ll_s, ur_s))]
 
 
+def sample_from_img(img, range, n, replace=False):
+    bool = np.logical_and(range[0] < img, img < range[1])
+    idx = np.array(np.nonzero(bool)).T
+    i = np.random.choice(a=np.arange(len(idx)), size=n, replace=replace)
+    return idx[i]
+
+
 # Image Compression <-> Decompression
 def img2compressed(*, img, n_dim=-1, level=9):
     """
