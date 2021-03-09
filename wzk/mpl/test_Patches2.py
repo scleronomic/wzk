@@ -48,9 +48,22 @@ class Test(TestCase):
                                height=0.5, width=0.5, pad=0.1, corner_size=0))
 
 
+    def test_RoundePolygon(self):
+        xy = np.array([(0, 0), (0.25, 0), (0.5, -0.25), (0.75, 0),
+                       (1, 0), (1, 0.25), (1.25, 0.5), (1, 0.75),
+                       (1, 1), (0.75, 1), (0.5, 1.25), (0.25, 1),
+                       (0, 1), (0, 0.75), (-0.25, 0.5), (0, 0.25)])
+        rp = RoundedPolygon(xy=xy, pad=0.1, facecolor='red', edgecolor='magenta', lw=3)
+
+        fig, ax = new_fig(aspect=1)
+
+        ax.add_patch(rp)
+        ax.set_xlim(-1, 2)
+        ax.set_ylim(-1, 2)
 
 if __name__ == '__main__':
     test = Test()
     test.test_transform()
     test.test_RelativeArrowPatch()
     test.test_AbsoluteFancyBboxPatch()
+    test.test_RoundePolygon()

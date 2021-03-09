@@ -36,7 +36,7 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
              .transpose(1, 2, 0) % 1
 
     # Gradients
-    angles = 2*np.pi*np.random.rand(res[0]+1, res[1]+1)
+    angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
     gradients = np.dstack((np.cos(angles), np.sin(angles)))
     if tileable[0]:
         gradients[-1,:] = gradients[0,:]
@@ -88,8 +88,10 @@ def perlin_noise_3d(shape, res, tileable=None,
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1], 0:res[2]:delta[2]]
     grid = grid.transpose(1, 2, 3, 0) % 1
     # Gradients
-    theta = 2*np.pi*np.random.rand(res+1)
-    phi = 2*np.pi*np.random.rand(res+1)
+    angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
+
+    theta = 2*np.pi*np.random.random((res[0]+1, res[1]+1, res[2]+1))
+    phi = 2*np.pi*np.random.random((res[0]+1, res[1]+1, res[2]+1))
     gradients = np.stack((np.sin(phi)*np.cos(theta),
                           np.sin(phi)*np.sin(theta),
                           np.cos(phi)), axis=3)

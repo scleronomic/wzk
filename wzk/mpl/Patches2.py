@@ -1,5 +1,5 @@
 import numpy as np
-from matplotlib import patches, transforms, pyplot
+from matplotlib import patches, transforms, pyplot, path
 
 from wzk.math2 import projection_line_point
 
@@ -42,6 +42,35 @@ class FancyBbox(patches.FancyBboxPatch):
             bs = patches.BoxStyle(boxstyle, pad=pad)
 
         super().__init__(xy=(xy[0]+pad, xy[1]+pad), width=width - 2*pad, height=height - 2*pad, boxstyle=bs, **kwargs)
+
+
+class RoundedPolygon(patches.PathPatch):
+    def __init__(self, xy, pad, **kwargs):
+        p = path.Path(*self.round(xy=xy, pad=pad))
+        super().__init__(path=p, **kwargs)
+
+    def round(self, xy, pad):
+        n = len(xy)
+
+        for i in range(0, n):
+
+            x0, x1, x2 = np.atleast_1d(xy[i - 1], xy[i], xy[(i + 1) % n])
+
+            d01, d12 = x1 - x0, x2 - x1
+            d01, d12 = d01 / np.linalg.norm(d01), d12 / np.linalg.norm(d12)
+
+            x00 = x0 + pad * d01
+            x01 = x1 - pad * d01
+            x10 = x1 + pad * d12
+            x11 = x2 - pad * d12
+
+            if i == 0:
+                verts = [x00, x01, x1, x10]
+            else:
+                verts += [x01, x1, x10]
+        codes = [path.Path.MOVETO] + n*[path.Path.LINETO, path.Path.CURVE3, path.Path.CURVE3]
+
+        return np.atleast_1d(verts, codes)
 
 
 def CurlyBrace(x0, x1, x2, curliness=1/np.e, return_verts=False, **patch_kw):
@@ -157,7 +186,7 @@ def test_curly_brace():
         ax.annotate(xy=v, s=str(i) + '\n' + text[i], ha='center', va='center', zorder=100)
 
 
-2# Transformations
+# Transformations
 def do_aff_trafo(patch, theta, xy=None, por=(0, 0)):
     if xy is not None:
         patch.set_xy(xy=xy)
@@ -194,4 +223,5 @@ def get_aff_trafo(xy0=None, xy1=None, theta=0, por=(0, 0), ax=None, patch=None):
     return (transforms.Affine2D().translate(-xy0[0]-por[0], -xy0[1]-por[1])
                                  .rotate_deg_around(0, 0, theta)
                                  .translate(xy1[0], xy1[1]) + ax.transData)
+
 

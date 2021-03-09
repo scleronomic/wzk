@@ -1,4 +1,3 @@
-
 """Get boundaries (edges/faces) of boolean images"""
 import numpy as np
 
@@ -254,7 +253,7 @@ def combine_faces(face_vtx, verbose=0):
                     new_value = list(fd_coord_set_2.difference(fd_coord_set_1))[0]
                     common_value = list(fd_coord_set_2.intersection(fd_coord_set_1))[0]
                     face_vtx[i, :, free_direction] = np.where(face_vtx[i, :, free_direction] == common_value,
-                                                              x=new_value, y=old_value)
+                                                              new_value, old_value)
 
                     # Delete the obsolete faces
                     face_vtx = np.delete(face_vtx, j, axis=0)
@@ -285,8 +284,7 @@ def get_combined_faces(img):
     return combine_faces(face_vtx=face_vtx)
 
 
-# Rectangles  # TODO do not fit quite in this method, the rest is so clean and without connections
-def rectangles2face_vertices(rect_pos, rect_size):
+def cubes2face_vertices(pos, size):
     """
     Get the faces of the obstacles in 3D. It's cheaper to plot the faces instead of the whole volumes
     Returns a list of faces for all obstacles (6 per obstacle * n_obstacles)
@@ -303,21 +301,21 @@ def rectangles2face_vertices(rect_pos, rect_size):
     7  1 1 1
     """
 
-    n_obstacles = rect_pos.shape[0]
+    n_obstacles = pos.shape[0]
     #                        # 6 faces for each cube             # 4 vertices for each face
-    face_vtx = rect_pos.repeat(6, axis=0)[:, np.newaxis, :].repeat(4, axis=1)
+    face_vtx = pos.repeat(6, axis=0)[:, np.newaxis, :].repeat(4, axis=1)
 
     for i in range(n_obstacles):
         # Get the 8 vertices at the nodes of the cube
         ll_vtx = face_vtx[i * 6, 0, :]
         cube_vtx = ll_vtx[np.newaxis, :].repeat(8, axis=0)
-        cube_vtx[1, 2] += rect_size[i, 2]
-        cube_vtx[2, 1] += rect_size[i, 1]
-        cube_vtx[3, [1, 2]] += rect_size[i, [1, 2]]
-        cube_vtx[4, 0] += rect_size[i, 0]
-        cube_vtx[5, [0, 2]] += rect_size[i, [0, 2]]
-        cube_vtx[6, [0, 1]] += rect_size[i, [0, 1]]
-        cube_vtx[7, [0, 1, 2]] += rect_size[i, [0, 1, 2]]
+        cube_vtx[1, 2] += size[i, 2]
+        cube_vtx[2, 1] += size[i, 1]
+        cube_vtx[3, [1, 2]] += size[i, [1, 2]]
+        cube_vtx[4, 0] += size[i, 0]
+        cube_vtx[5, [0, 2]] += size[i, [0, 2]]
+        cube_vtx[6, [0, 1]] += size[i, [0, 1]]
+        cube_vtx[7, [0, 1, 2]] += size[i, [0, 1, 2]]
 
         # Get the 6 faces from the corner nodes
         face_vtx[i * 6+0, :, :] = cube_vtx[[0, 2, 3, 1], :]  # West

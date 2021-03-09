@@ -686,8 +686,6 @@ def block_view(a, shape, aslist=False, require_aligned_blocks=True):
     return view
 
 
-
-
 def expand_block_indices(idx_block, block_size, squeeze=True):
     """
     Expand the indices to get an index for each element
@@ -809,7 +807,7 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
     return idx
 
 
-# grid
+# Grid
 def get_points_inbetween(x, extrapolate=False):
     assert x.ndim == 1
 
@@ -822,6 +820,51 @@ def get_points_inbetween(x, extrapolate=False):
         return x_new
     else:
         return x_new[1:-1]
+
+
+def limits2cell_size(shape, limits):
+    voxel_size = np.diff(limits, axis=-1)[:, 0] / np.array(shape)
+    return safe_unify(x=voxel_size)
+
+
+def __mode2offset(cell_size, mode='c'):
+    """Modes
+        'c': center
+        'b': boundary
+
+    """
+    if mode == 'c':
+        return cell_size / 2
+    elif mode == 'b':
+        return 0
+    else:
+        raise NotImplementedError(f"Unknown offset mode{mode}")
+
+
+def grid_x2i(*, x, cell_size, lower_left):
+    """
+    Get the indices of the grid cell at the coordinates 'x' in a grid with symmetric cells.
+    Always use mode='boundary'
+    """
+
+    if x is None:
+        return None
+
+    return np.asarray((x - lower_left) / cell_size, dtype=int)
+
+
+def grid_i2x(*, i, cell_size, lower_left, mode='c'):
+    """
+    Get the coordinates of the grid at the index 'o' in a grid with symmetric cells.
+    borders: 0 | 2 | 4 | 6 | 8 | 10
+    centers: | 1 | 3 | 5 | 7 | 9 |
+    """
+
+    if i is None:
+        return None
+
+    offset = __mode2offset(cell_size=cell_size, mode=mode)
+    return np.asarray(lower_left + offset + i * cell_size, dtype=float)
 
 
 # def gen_dot_nm(x, y, z):

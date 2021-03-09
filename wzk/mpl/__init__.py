@@ -7,6 +7,7 @@ from .ticks import *
 from .styles import *
 
 from .threed import *  # 3D
+from .bool_image import *
 from .bool_image_boundaries import *
 from .plotting import *
 from .geometry import *
