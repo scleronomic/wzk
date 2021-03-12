@@ -2,7 +2,7 @@ import datetime
 import numpy as np
 from itertools import combinations
 from scipy.stats import linregress
-from matplotlib import collections
+from matplotlib import collections, patches
 
 from wzk.mpl.figure import plt, new_fig, subplot_grid
 from wzk.mpl.colors import arr2rgba
@@ -369,3 +369,29 @@ def correlation_plot(a, b, name_a, name_b,
     ax.set_ylabel(name_b)
 
     return ax
+
+
+def plot_circles(ax,
+                 x, r,
+                 color=None, alpha=None,
+                 h=None,
+                 **kwargs):
+
+    if h is None:
+        h = []
+        for x_i, r_i in zip(x, r):
+            c = patches.Circle(xy=x_i, radius=r_i, alpha=alpha, color=color, **kwargs)
+            ax.add_patch(c)
+            h.append(c)
+        return h
+
+    else:
+        for h_i, x_i in zip(h, x):
+            h_i.set_center(x_i)
+
+            if alpha is not None:
+                h_i.set_alpha(alpha)
+
+            if color is not None:
+                h_i.set_color(color)
+        return h

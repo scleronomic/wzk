@@ -3,6 +3,7 @@ from .cpppy import *
 from .dicts_lists_tuples import *
 from .files import *
 from .functions import *
+from .geometry import *
 from .index import *
 from .image import *
 from .math2 import *

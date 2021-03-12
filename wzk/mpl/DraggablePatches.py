@@ -3,18 +3,21 @@ import matplotlib.patches as patches
 
 from wzk.mpl.axes import get_aspect_ratio
 from wzk.numpy2 import scalar2array, max_size
-
+from wzk.mpl.figure import plt
 
 class DraggablePatch:
     lock = None  # only one can be animated at a time
 
-    def __init__(self, ax, vary_xy=(True, True), limits=None, callback=None, **kwargs):
+    def __init__(self, ax, vary_xy=(True, True), limits=None, callback=None,
+                 wsad=None, **kwargs):
         ax.add_patch(self)
 
         self.vary_xy = np.array(vary_xy)
         self.callback_drag = callback  # Patches already have an attribute callback, add_callback()
         self.limits = limits
 
+        self.wsad = wsad
+        self.__wsad_step = 0.1
         self.press = None
         self.background = None
 
@@ -22,6 +25,7 @@ class DraggablePatch:
         self.cid_press = None
         self.cid_release = None
         self.cid_motion = None
+        self.cid_key = None
         self.connect()
 
     def set_callback_drag(self, callback):
@@ -60,11 +64,15 @@ class DraggablePatch:
         self.cid_press = self.figure.canvas.mpl_connect('button_press_event', self.on_press)
         self.cid_release = self.figure.canvas.mpl_connect('button_release_event', self.on_release)
         self.cid_motion = self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
+        if self.wsad:
+            self.cid_key = self.figure.canvas.mpl_connect('key_press_event', self.on_key)
 
     def disconnect(self):
         self.figure.canvas.mpl_disconnect(self.cid_press)
         self.figure.canvas.mpl_disconnect(self.cid_release)
         self.figure.canvas.mpl_disconnect(self.cid_motion)
+        if self.wsad:
+            self.figure.canvas.mpl_disconnect(self.cid_key)
 
     def on_press(self, event):
         if event.inaxes != self.axes:
@@ -133,6 +141,28 @@ class DraggablePatch:
         if self.callback_drag is not None:
             self.callback_drag()
 
+    def on_key(self, event):
+        xy = self.get_xy_drag()
+        if event.key == 'left':
+            xy = [xy[0] - self.__wsad_step, xy[1]]
+        elif event.key == 'right':
+            xy = [xy[0] + self.__wsad_step, xy[1]]
+        elif event.key == 'up':
+            xy = [xy[0], xy[1] + self.__wsad_step]
+        elif event.key == 'down':
+            xy = [xy[0], xy[1] - self.__wsad_step]
+        elif event.key == 'a':
+            self.__wsad_step *= 0.5
+        elif event.key == 'd':
+            self.__wsad_step *= 2
+
+        self.set_xy_drag(xy=self.apply_limits(xy=xy))
+        if self.callback_drag is not None:
+            self.callback_drag()
+
+        plt.show()
+
+
     def toggle_visibility(self, value=None):
         if value is None:
             self.set_visible(not self.get_visible())
@@ -146,9 +176,10 @@ class DraggableCircle(patches.Circle, DraggablePatch):
                  xy, radius,
                  vary_xy=(True, True), callback=None,
                  limits=None,
+                 wsad=None,
                  **kwargs):
         patches.Circle.__init__(self, xy=xy, radius=radius, **kwargs)
-        DraggablePatch.__init__(self, ax=ax, vary_xy=vary_xy, callback=callback, limits=limits)
+        DraggablePatch.__init__(self, ax=ax, vary_xy=vary_xy, callback=callback, limits=limits, wsad=wsad)
 
     def get_xy_drag(self):
         return np.array(self.get_center()).flatten()

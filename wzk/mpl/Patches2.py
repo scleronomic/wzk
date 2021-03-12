@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import patches, transforms, pyplot, path
 
-from wzk.math2 import projection_line_point
+from wzk.geometry import projection_line_point
 
 
 class RelativeFancyArrow(patches.FancyArrow):
