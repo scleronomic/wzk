@@ -5,31 +5,31 @@ import numpy as np
 from wzk.math2 import get_stats
 
 
-def print_progress(iteration, total, prefix='', suffix='', decimals=1, bar_length=50):
+def print_progress(i, n, prefix='', suffix='', decimals=1, bar_length=50):
     """
     Call in a loop to create terminal progress bar
     @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
+        i           - Required  : current iteration (Int)
+        n           - Required  : total iterations (Int)
         prefix      - Optional  : prefix string (Str)
         suffix      - Optional  : suffix string (Str)
         decimals    - Optional  : positive number of decimals in percent complete (Int)
         bar_length  - Optional  : character length of bar (Int)
     """
 
-    if total == 0:
-        total = 1
-        iteration = 0
+    if n == 0:
+        n = 1
+        i = 0
 
-    iteration += 1
+    i += 1
     str_format = "{0:." + str(decimals) + "f}"
-    percents = str_format.format(100 * (iteration / float(total)))
-    filled_length = int(round(bar_length * iteration / float(total)))
+    percents = str_format.format(100 * (i / float(n)))
+    filled_length = int(round(bar_length * i / float(n)))
     bar = '█' * filled_length + '-' * (bar_length - filled_length)
 
     stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
 
-    if iteration == total:
+    if i == n:
         stdout.write('\n')
     stdout.flush()
 

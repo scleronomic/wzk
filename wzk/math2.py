@@ -280,7 +280,8 @@ def numeric_derivative(*, fun, x, eps=1e-5, axis=-1, mode='central',
 
     f_x = fun(x, **kwargs_fun)
     fun_shape = np.shape(f_x)
-    var_shape = atleast_tuple(np.array(np.shape(x))[axis])
+    # var_shape = atleast_tuple(np.array(np.shape(x))[axis])
+    var_shape = atleast_tuple(np.array(np.shape(x))[(axis,)])
     eps_mat = np.empty_like(x, dtype=float)
 
     derv = np.empty(fun_shape + var_shape)

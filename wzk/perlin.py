@@ -1,6 +1,7 @@
 """https://github.com/pvigier/perlin-numpy/blob/master/perlin_numpy/perlin3d.py"""
 
 import numpy as np
+from wzk.numpy2 import scalar2array
 
 
 def __interpolant(t):
@@ -29,6 +30,7 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
         tileable = (False, False)
 
     shape, res = np.atleast_1d(shape, res)
+    res = scalar2array(v=res, shape=2)
     delta = res / shape
     d = shape // res
 
@@ -59,7 +61,7 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
     return np.sqrt(2)*((1-t[:,:,1])*n0 + t[:,:,1]*n1)
 
 
-def perlin_noise_3d(shape, res, tileable=None,
+def perlin_noise_3d(shape, res=1, tileable=None,
                     interpolant=__interpolant):
     """Generate a 3D numpy array of perlin noise.
     Args:
@@ -82,6 +84,7 @@ def perlin_noise_3d(shape, res, tileable=None,
 
 
     shape, res = np.atleast_1d(shape, res)
+    res = scalar2array(v=res, shape=3)
     delta = res / shape
     d = shape // res
 

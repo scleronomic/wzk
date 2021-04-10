@@ -376,6 +376,7 @@ def plot_circles(ax,
                  color=None, alpha=None,
                  h=None,
                  **kwargs):
+    r = safe_scalar2array(r, shape=len(x))
 
     if h is None:
         h = []

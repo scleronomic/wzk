@@ -110,12 +110,15 @@ def numeric2object_array(arr):
 
 
 # scalar <-> matrix
-def scalar2array(v, shape):
+def scalar2array(v, shape, safe=False):
     if isinstance(shape, int):
         shape = (shape,)
-    if np.shape(v) != shape:
+
+    if np.size(v) == 1:
         return np.full(shape, v)
     else:
+        if safe:
+            assert all(np.shape(v) == shape)
         return v
 
 

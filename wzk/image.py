@@ -2,6 +2,7 @@ import zlib  # Image compression
 import numpy as np
 from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa: F401 unused import
+from skimage import measure
 
 from wzk.dicts_lists_tuples import tuple_extract
 from wzk.numpy2 import align_shapes, get_cropping_indices, flatten_without_last, initialize_array
@@ -417,3 +418,7 @@ def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=bool):
             image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_channels=n_channels))
 
 
+
+def bool_img2surf(img, voxel_size):
+    verts, faces, _, _ = measure.marching_cubes_lewiner(img, level=0, spacing=(voxel_size,) * img.ndim)
+    return verts, faces

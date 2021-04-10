@@ -195,6 +195,10 @@ def tl_add(a, b):
         raise ValueError(f"Unknown type {type(a)}")
 
 
+def depth(a):
+    return isinstance(a, (tuple, list, np.ndarray)) and max(map(depth, a)) + 1
+
+
 def depth_list(lst):
     return isinstance(lst, list) and max(map(depth_list, lst)) + 1
 
