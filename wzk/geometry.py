@@ -35,7 +35,7 @@ def __flip_and_clip_mu(mu):
     diff_mu[b] = mu[b]
     b = mu > 1
     diff_mu[b] = mu[b] - 1
-    return mu
+    return diff_mu
 
 
 def __clip_ppp(o, u, v, uu, vv):
@@ -46,10 +46,9 @@ def __clip_ppp(o, u, v, uu, vv):
     mub = (-n * np.cross(u, o)).sum(axis=-1) / nn
 
     uv = (u*v).sum(axis=-1)
-    mua += uv / uu * __flip_and_clip_mu(mu=mub)
-    mub += uv / vv * __flip_and_clip_mu(mu=mua)
-
-    return np.clip(mua, 0, 1), np.clip(mub, 0, 1)
+    mua2 = mua + uv / uu * __flip_and_clip_mu(mu=mub)
+    mub2 = mub + uv / vv * __flip_and_clip_mu(mu=mua)
+    return np.clip(mua2, 0, 1), np.clip(mub2, 0, 1)
 
 
 def projection_point_plane(p, o, u, v, clip=False):
@@ -138,22 +137,40 @@ def line_line_pairs(lines, pairs, __return_mu=False):
 # ∂a/∂q = (mua-1) ∂Ta/∂q * â0 + (-mua) ∂Ta/∂q * â1
 # ∂a/∂q =  ∂Ta/∂q * [(mua-1)*â0 - mua*â1]
 # ∂b/∂q =  ∂Tb/∂q * [(1-mub)*b^0 + mub*b^1]
-# ∂d /
-# ∂a/∂q = ∂a/∂a0 ∂a0/∂q + ∂a/∂a1 ∂a1/∂q
 
 # ∂d2/∂q = ∂d2/∂a ∂a/dq + ∂d2/∂b ∂b/dq
+
+
+def test_jac_full():
+    from Kinematic.Robots import Justin19
+    robot = Justin19()
+
+    q = robot.sample_q(10)
+    f, j = robot.get_frames_jac(q)
+    pairs = np.array([[13, 22],
+                      [13, 4],
+                      [22, 4],
+                      [10, 20]])
+    capsule_pos = np.random.random((27, 2, 4))
+    capsule_pos[..., -1] = 1
+
+    x_capsules = (f[:, :, np.newaxis, :, :] @ capsule_pos[np.newaxis, :, :, :,  np.newaxis])[..., 0]
+    line_line_pairs_d2_jac(lines=x_capsules, pairs=pairs)
+
+
 def line_line_pairs_d2_jac(lines, pairs):
     (xa, xb), (mua, mub) = line_line_pairs(lines, pairs, __return_mu=False)
 
-    dxaxb_dx = np.zeros(mua.shape + (4,))
-    dxaxb_dx[..., 0] = +mua - 1
-    dxaxb_dx[..., 1] = -mua
-    dxaxb_dx[..., 2] = -mub + 1
-    dxaxb_dx[..., 3] = +mub
+    dxaxb_dx = np.zeros(mua.shape + (2, 2))
+    dxaxb_dx[..., 0, 0] = +mua - 1
+    dxaxb_dx[..., 0, 1] = -mua
+    dxaxb_dx[..., 1, 0] = -mub + 1
+    dxaxb_dx[..., 0, 1] = +mub
 
     d = xb - xa
+    d2 = (d*d).sum(axis=-1)
     dd2_dx = 2*d * dxaxb_dx
-
+    return d2, dd2_dx
 
 def d2_mink(x):
     x1, x2, x3, x4 = x
@@ -432,11 +449,10 @@ def fibonacci_sphere(n=100):
     return np.array((x, y, z)).T
 
 
-def test_lines():
+def test_lines(n=2):
     from Util.Visualization.pyvista2 import plot_connections
     import pyvista as pv
 
-    n = 4
     lines = np.random.random((n, 2, 3))
     pairs = np.array(list(combinations(np.arange(n), 2)))
     pairs2 = np.arange(2*len(pairs)).reshape(len(pairs), 2)
@@ -597,28 +613,16 @@ def test_jac_mink():
 
     n = 1000
     for i in range(n):
-        # print_progress(i, n=n)
+        print_progress(i, n=n)
         x = np.random.random((4, 3))
-        tic()
         j = d2_mink_jac(x)
-        toc()
-
-        tic()
         j_true = numeric_derivative(fun=d2_mink, x=x.copy(), axis=(0, 1))
-        toc()
-        b = np.allclose(j, j_true)
-        if not b:
+        if not np.allclose(j, j_true):
+            print(i)
             raise ValueError('Wrong Derivative')
 
-    #
-    # from wzk import new_fig
-    #
-    # fig, ax = new_fig()
-    # ax.hist(s, bins=100)
-    # mua, mub, ja, jb =  mu_jac(x)
-    # ja_true, jb_true = numeric_derivative(fun=mu, x=x.copy(), axis=(0, 1))
-    # print(np.allclose(ja, ja_true))
-    # print(np.allclose(jb, jb_true))
+    print(f'All {n} tests were equal to the numeric derivative')
+
 
 
 if __name__ == '__main__':
@@ -638,5 +642,5 @@ if __name__ == '__main__':
 
 
     # test_capsules()
-    # test_lines()
-    # # symbolic_jac()
+    # test_lines(n=2)
+    # symbolic_jac()

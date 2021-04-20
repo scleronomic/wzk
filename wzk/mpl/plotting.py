@@ -88,18 +88,6 @@ def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto',
             set_ax_limits(ax=ax[i], limits=limits[c, :])
 
 
-def plot_array(x, y_data, ax=None, **kwargs):
-    """
-    Plot all rows of y_data on the same x axis in a single plot.
-    """
-
-    if ax is None:
-        ax = plt.gca()
-
-    for y in y_data:
-        ax.plot(x, y, **kwargs)
-
-
 def color_plot_connected(y, color_s, x=None, connect_jumps=True, ax=None, **kwargs):
     """
     Parameter
@@ -203,22 +191,6 @@ def draw_lines_between(*, x1=None, x2=None, y1, y2, ax=None, **kwargs):
     return cl
 
 
-def set_cluster_colors(clusters, colors):
-    """
-    Create array for 'cluster colors'.
-    n_clusters == len(colors)
-    """
-
-    cluster_values = np.unique(clusters)
-    assert len(cluster_values) == len(colors)
-
-    cc = np.where(clusters == cluster_values[0], colors[0], colors[1])
-    for i in range(2, len(colors)):
-        cc[np.where(clusters == cluster_values[i])] = colors[i]
-
-    return cc
-
-
 def get_hist(ax):
     """
     https://stackoverflow.com/questions/33888973/get-values-from-matplotlib-axessubplot#33895378
@@ -234,11 +206,26 @@ def get_hist(ax):
     return n, bins
 
 
-def error_area(ax, x, y, y_std, kwargs, kwargs_std):
-    if ax is None:
-        ax = plt.gca()
+def error_area(x, y, y_std,
+               ax,
+               kwargs, kwargs_std):
     ax.plot(x, y, **kwargs)
     ax.fill_between(x, y-y_std, y+y_std, **kwargs_std)
+
+
+def quiver(xy, uv,
+           ax=None, h=None,
+           **kwargs):
+
+    if h is None:
+        h = ax.quiver(xy[..., 0].ravel(), xy[..., 1].ravel(), uv[..., 0].ravel(), uv[..., 1].ravel(),
+                      angles='xy', scale=1, units='xy', scale_units='xy',
+                      **kwargs)
+    else:
+        h.set_offsets(xy)
+        h.set_UVC(*uv.T)
+
+    return h
 
 
 # Grid
@@ -321,6 +308,7 @@ def hist_vlines(x, name, bins=100,
     return ax, perc_i
 
 
+#
 def correlation_plot(a, b, name_a, name_b,
                      regression_line=True,
                      lower_perc=0, upper_perc=100,
@@ -371,10 +359,9 @@ def correlation_plot(a, b, name_a, name_b,
     return ax
 
 
-def plot_circles(ax,
-                 x, r,
+def plot_circles(x, r,
+                 ax=None, h=None,
                  color=None, alpha=None,
-                 h=None,
                  **kwargs):
     r = safe_scalar2array(r, shape=len(x))
 
