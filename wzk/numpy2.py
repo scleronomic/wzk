@@ -58,22 +58,19 @@ def np_isinstance(o, c):
 
 
 # Wrapper for common numpy arguments
-def axis_wrapper(axis, n_dim, sort=True, dtype='tuple'):
+def axis_wrapper(axis, n_dim, invert=False):
 
     if axis is None:
         axis = np.arange(n_dim)
 
     axis = np.atleast_1d(axis).astype(int)
     axis %= n_dim
-    if sort:
-        np.sort(axis)
+    np.sort(axis)
 
-    if dtype == 'tuple':
-        return tuple(axis)
-    elif dtype == 'np.ndarray':
-        return axis
+    if invert:
+       return np.setxor1d(np.arange(n_dim), axis)
     else:
-        raise ValueError(f"Unknown dtype {dtype}")
+        return axis
 
 
 def shape_wrapper(shape=None):
@@ -161,10 +158,6 @@ def args2arrays(*args):
 
 
 # Shapes
-def get_complementary_axis(axis, n_dim):
-    return tuple(set(range(n_dim)).difference(set(axis)))
-
-
 def get_subshape(shape, axis):
     return tuple(np.array(shape)[np.array(axis)])
 
@@ -214,17 +207,19 @@ def fill_with_air_left(arr, out):
 
 def __argfun(a, axis, fun):
 
-    axis = axis_wrapper(axis=axis, n_dim=a.ndim, sort=True)
+    axis = axis_wrapper(axis=axis, n_dim=a.ndim)
     if len(axis) == 1:
         return fun(a, axis=axis)
+
     elif len(axis) == a.ndim:
         np.unravel_index(fun(a), shape=a.shape)
+
     else:
-        axis2 = get_complementary_axis(axis=axis, n_dim=a.ndim)
-        shape2 = get_subshape(shape=a.shape, axis=axis2)
+        axis_inv = axis_wrapper(axis=axis, n_dim=a.ndim, invert=True)
+        shape_inv = get_subshape(shape=a.shape, axis=axis_inv)
         shape = get_subshape(shape=a.shape, axis=axis)
 
-        a2 = np.transpose(a, axes=axis2 + axis).reshape(shape2 + (-1,))
+        a2 = np.transpose(a, axes=np.hstack((axis_inv, axis))).reshape(shape_inv + (-1,))
         idx = fun(a2, axis=-1)
         idx = np.array(np.unravel_index(idx, shape=shape))
 
@@ -250,7 +245,7 @@ def argmin(a, axis=None):
 def allclose(a, b, axis=None, **kwargs):
     assert a.shape == b.shape
 
-    axis = axis_wrapper(axis=axis, n_dim=a.ndim, dtype='np.ndarray')
+    axis = axis_wrapper(axis=axis, n_dim=a.ndim)
     shape = np.array(a.shape)[axis]
     bool_arr = np.zeros(shape, dtype=bool)
 
