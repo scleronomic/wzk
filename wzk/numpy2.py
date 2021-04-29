@@ -63,14 +63,14 @@ def axis_wrapper(axis, n_dim, invert=False):
     if axis is None:
         axis = np.arange(n_dim)
 
-    axis = np.atleast_1d(axis).astype(int)
+    axis = np.atleast_1d(axis)
     axis %= n_dim
     np.sort(axis)
 
     if invert:
-       return np.setxor1d(np.arange(n_dim), axis)
+       return tuple(np.setxor1d(np.arange(n_dim), axis).astype(int))
     else:
-        return axis
+        return tuple(axis)
 
 
 def shape_wrapper(shape=None):
@@ -245,7 +245,7 @@ def argmin(a, axis=None):
 def allclose(a, b, axis=None, **kwargs):
     assert a.shape == b.shape
 
-    axis = axis_wrapper(axis=axis, n_dim=a.ndim)
+    axis = np.array(axis_wrapper(axis=axis, n_dim=a.ndim))
     shape = np.array(a.shape)[axis]
     bool_arr = np.zeros(shape, dtype=bool)
 
