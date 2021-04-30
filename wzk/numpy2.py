@@ -243,7 +243,7 @@ def argmin(a, axis=None):
 
 
 def allclose(a, b, axis=None, **kwargs):
-    assert a.shape == b.shape
+    assert a.shape == b.shape, f"{a.shape} != {b.shape}"
 
     axis = np.array(axis_wrapper(axis=axis, n_dim=a.ndim))
     shape = np.array(a.shape)[axis]
