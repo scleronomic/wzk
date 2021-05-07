@@ -242,7 +242,7 @@ def argmin(a, axis=None):
     return __argfun(a=a, axis=axis, fun=np.argmin)
 
 
-def allclose(a, b, axis=None, **kwargs):
+def allclose(a, b, rtol=1.e-5, atol=1.e-8, axis=None):
     assert a.shape == b.shape, f"{a.shape} != {b.shape}"
 
     axis = np.array(axis_wrapper(axis=axis, n_dim=a.ndim))
@@ -252,7 +252,7 @@ def allclose(a, b, axis=None, **kwargs):
     for i in product(*(range(s) for s in shape)):
         bool_arr[i] = np.allclose(extract(a, idx=i, axis=axis),
                                   extract(b, idx=i, axis=axis),
-                                  **kwargs)
+                                  rtol=rtol, atol=atol)
 
     return bool_arr
 

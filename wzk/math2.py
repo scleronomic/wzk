@@ -74,9 +74,24 @@ def discretize(x, step):
         return x - difference
 
 
-def d_linalg_norm__d_x(x, return_norm=False):
+def dnorm_dx(x, x_norm=None):
+    """ ∂ |x| / ∂ x
+     normilization over last dimension
+     """
+    if x_norm is None:
+        x_norm = np.linalg.norm(x, axis=-1)
+
+    dn_dx = x.copy()
+    i = x_norm != 0  # All steps where there is movement between t, t+1
+    dn_dx[i, :] = dn_dx[i, :] / x_norm[i][..., np.newaxis]
+    return dn_dx
+
+
+def dxnorm_dx(x, return_norm=False):
     """
-    Last dimension is normalized.
+    ∂ (x/|x|) / ∂ x
+    normilization over last dimension
+
     Calculate Jacobian
       xn       =           x * (x^2 + y^2 + z^2)^(-1/2)
     d xn / d x = (y^2 + z^2) * (x^2 + y^2 + z^2)^(-3/2)
@@ -98,26 +113,27 @@ def d_linalg_norm__d_x(x, return_norm=False):
 
     """
 
-    n = x.shape[-1]
+    n_dim = x.shape[-1]
 
-    off_diag_idx = [[j for j in range(n) if i != j] for i in range(n)]
+    off_diag_idx = [[j for j in range(n_dim) if i != j] for i in range(n_dim)]
 
-    jac = np.empty(x.shape + x.shape[-1:])
+    dxn_x = np.empty(x.shape + x.shape[-1:])
     x_squared = x**2
 
     # Diagonal
-    jac[:, np.arange(n), np.arange(n)] = x_squared[..., off_diag_idx].sum(axis=-1)
+    dxn_x[:, np.arange(n_dim), np.arange(n_dim)] = x_squared[..., off_diag_idx].sum(axis=-1)
 
     # Off-Diagonal
-    jac[:, np.arange(n)[:, np.newaxis], off_diag_idx] = -x[..., np.newaxis] * x[:, off_diag_idx]
+    dxn_x[:, np.arange(n_dim)[:, np.newaxis], off_diag_idx] = -x[..., np.newaxis] * x[:, off_diag_idx]
 
-    jac *= (x_squared.sum(axis=-1, keepdims=True)**(-3/2))[..., np.newaxis]
+    dxn_x *= (x_squared.sum(axis=-1, keepdims=True)**(-3/2))[..., np.newaxis]
 
     if return_norm:
         x /= np.sqrt(x_squared.sum(axis=-1, keepdims=True))
-        return x, jac
+        return x, dxn_x
     else:
-        return jac
+        return dxn_x
+
 
 
 # Smooth
@@ -233,19 +249,6 @@ def angle2minuspi_pluspi(x):
     # modulo is faster for larger arrays, for small ones they are similar but arctan is faster in this region
     #  -> as always you have to make an trade-off
     # return np.arctan2(np.sin(x), np.cos(x))
-
-
-# def modulo(x, low, high):  Alternative function
-#     return (x - low) % (high - low) + low
-#
-# def angle2minuspi_pluspi(x):
-#     return modulo(x=x, low=-np.pi, high=+np.pi)
-
-def angle2minuspi_pluspi(x):
-    return np.arctan2(np.sin(x), np.cos(x))
-
-def f(y_true, y_pred):
-    return np.mean(angle2minuspi_pluspi(y_pred - y_true)**2)
 
 
 def log_b(x, base=np.e):
