@@ -1,4 +1,5 @@
 import numpy as np
+
 import wzk.cpp.MinSphere.MinSphere as MinSphere
 from wzk.dicts_lists_tuples import change_tuple_order, depth
 from wzk.numpy2 import safe_scalar2array

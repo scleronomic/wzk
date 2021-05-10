@@ -13,6 +13,7 @@ from .perlin import *
 from .printing import *
 from .ssh import *
 from .strings import *
+from .testing import *
 from .time import *
 from .training import *
 

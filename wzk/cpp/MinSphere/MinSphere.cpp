@@ -27,6 +27,13 @@ typedef Traits4::Sphere Sphere4;
 #include <Python.h>
 
 
+    PyObject * frames;
+    PyObject * joints;
+    int n;
+
+    Py_buffer frames_v;
+    Py_buffer joints_v;
+    static const char * keywords[] = {"frames", "joints", "n", NULL};
 
 PyObject * min_sphere2_py(PyObject * self, PyObject * args, PyObject * kwargs) {
 
@@ -40,8 +47,9 @@ PyObject * min_sphere2_py(PyObject * self, PyObject * args, PyObject * kwargs) {
     Py_buffer x_v;
     Py_buffer r_v;
     Py_buffer res_v;
-    static char * keywords[] = {"x", "r", "n", "res", NULL};
-    PyArg_ParseTupleAndKeywords(args, kwargs, "OOiO", keywords, &x, &r, &n, &res);
+    static const char * keywords[] = {"x", "r", "n", "res", NULL};
+    PyArg_ParseTupleAndKeywords(args, kwargs, "OOiO", const_cast<char **>(keywords),
+                                &x, &r, &n, &res);
 
     PyObject_GetBuffer(x, &x_v, PyBUF_SIMPLE);
     PyObject_GetBuffer(r, &r_v, PyBUF_SIMPLE);
@@ -84,8 +92,8 @@ PyObject * min_sphere3_py(PyObject * self, PyObject * args, PyObject * kwargs) {
     Py_buffer x_v;
     Py_buffer r_v;
     Py_buffer res_v;
-    static char * keywords[] = {"x", "r", "n", "res", NULL};
-    PyArg_ParseTupleAndKeywords(args, kwargs, "OOiO", keywords, &x, &r, &n, &res);
+    static const char * keywords[] = {"x", "r", "n", "res", NULL};
+    PyArg_ParseTupleAndKeywords(args, kwargs, "OOiO", const_cast<char **>(keywords), &x, &r, &n, &res);
 
     PyObject_GetBuffer(x, &x_v, PyBUF_SIMPLE);
     PyObject_GetBuffer(r, &r_v, PyBUF_SIMPLE);
@@ -127,8 +135,8 @@ PyObject * min_sphere4_py(PyObject * self, PyObject * args, PyObject * kwargs) {
     Py_buffer x_v;
     Py_buffer r_v;
     Py_buffer res_v;
-    static char * keywords[] = {"x", "r", "n", "res", NULL};
-    PyArg_ParseTupleAndKeywords(args, kwargs, "OOiO", keywords, &x, &r, &n, &res);
+    static const char * keywords[] = {"x", "r", "n", "res", NULL};
+    PyArg_ParseTupleAndKeywords(args, kwargs, "OOiO", const_cast<char **>(keywords), &x, &r, &n, &res);
 
     PyObject_GetBuffer(x, &x_v, PyBUF_SIMPLE);
     PyObject_GetBuffer(r, &r_v, PyBUF_SIMPLE);

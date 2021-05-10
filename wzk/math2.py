@@ -135,7 +135,6 @@ def dxnorm_dx(x, return_norm=False):
         return dxn_x
 
 
-
 # Smooth
 def smooth_step(x):
     """https://en.wikipedia.org/wiki/Smoothstep
@@ -269,15 +268,16 @@ def assimilate_orders_of_magnitude(a, b, base=10):
 
     return aa, bb, c
 
+
 # Derivative
-def numeric_derivative(*, fun, x, eps=1e-5, axis=-1, mode='central',
+def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode='central',
                        diff=None,
                        **kwargs_fun):
     """
-    Use central difference scheme to calculate the
-    numeric derivative of fun at point x.
-    Axis indicates the dimensions of the free variables.
-    The result has the shape f(x).shape + (x.shape)[axis]
+    Use central, forward or backward difference scheme to calculate the
+    numeric derivative of function at point x.
+    'axis' indicates the dimensions of the free variables.
+    The result has the shape f(x).shape + x.shape[axis]
     """
     axis = axis_wrapper(axis=axis, n_dim=x.ndim)
 
