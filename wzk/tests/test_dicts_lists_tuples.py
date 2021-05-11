@@ -23,13 +23,13 @@ class Test(TestCase):
 
     def test_flatten(self):
         list_nested = [(4, (1, (2, (1, [13, 13]))))]
-        list_flattend = [[4, (1, (2, (1, [13, 13])))],
-                         [4, 1, (2, (1, [13, 13]))],
-                         [4, 1, 2, (1, [13, 13])],
-                         [4, 1, 2, 1, [13, 13]],
-                         [4, 1, 2, 1, 13, 13]]
+        list_flat = [[4, (1, (2, (1, [13, 13])))],
+                     [4, 1, (2, (1, [13, 13]))],
+                     [4, 1, 2, (1, [13, 13])],
+                     [4, 1, 2, 1, [13, 13]],
+                     [4, 1, 2, 1, 13, 13]]
         for i in range(5):
-            self.assertTrue(flatten(list_flattend[i] == list_nested, max_depth=i+1))
+            self.assertTrue(flatten(list_nested, max_depth=i+1) == list_flat[i])
 
     def test_element_at_depth(self):
         test_list = [1, 2, 3, [[4], [[5]], [6, 7]], [[8, 9], [10, 11, [12, [13, 13]]]], 14, [15], [16, 17]]
@@ -44,6 +44,8 @@ class Test(TestCase):
              'b': (5, 4, 3),
              'c': True}
 
-        res = {0: {'a': 'red', 'b': 5, 'c': True}, 1: {'a': 'red', 'b': 4, 'c': True}, 2: {'a': 'red', 'b': 3, 'c': True}}
+        res = {0: {'a': 'red', 'b': 5, 'c': True},
+               1: {'a': 'red', 'b': 4, 'c': True},
+               2: {'a': 'red', 'b': 3, 'c': True}}
         dr = repeat_dict(d=d, n=3)
         self.assertTrue(res == dr)

@@ -3,8 +3,9 @@ import numpy as np
 
 from wzk.functions import common_argument_wrapper
 
+
 class Test(TestCase):
-    def test_common_argument_wrapper():
+    def test_common_argument_wrapper(self):
         def fun(a, b, c, d, e, f, g):
             return a + b + c + d + e + f + g
 
@@ -12,4 +13,4 @@ class Test(TestCase):
 
         fun_c = common_argument_wrapper(fun=fun, a=aa, b=bb, c=cc, d=dd)
 
-        assert fun(a=aa, b=bb, c=cc, d=dd, e=ee, f=ff, g=gg) == fun_c(e=ee, f=ff, g=gg)
+        self.assertTrue(fun(a=aa, b=bb, c=cc, d=dd, e=ee, f=ff, g=gg) == fun_c(e=ee, f=ff, g=gg))

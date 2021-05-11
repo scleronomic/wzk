@@ -63,15 +63,13 @@ def test_solve_tsp(mode='random'):
 
 
 def plot_solution_2d(points, route, title='Traveling Salesman Problem'):
-
     points = np.array(points)
     points_ordered = points[route]
-
     fig, ax = new_fig(title=title)
     ax.plot(*points.T, ls='', marker='o', color='k')
     ax.plot(*points_ordered[[0, -1]].T, ls='', marker='o', color='r', alpha=0.8)
     ax.plot(*points_ordered.T, ls='-', color='b', alpha=0.8)
 
 
-if __name__ == '__main__':
-    test_solve_tsp(mode='circuit')
+# if __name__ == '__main__':
+#     test_solve_tsp(mode='circuit')

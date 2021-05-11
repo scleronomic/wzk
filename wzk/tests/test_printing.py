@@ -1,5 +1,6 @@
 from unittest import TestCase
-import numpy as np
+
+from wzk.printing import *
 
 
 class Test(TestCase):
@@ -11,7 +12,7 @@ class Test(TestCase):
 
         # self.fail()
 
-    def test_print_table():
+    def test_print_table(self):
         print_table(rows=['A', 'BB', 'CCC'], columns=['Some', 'Random', 'Words', 'Foo'],
                     data=np.arange(12).reshape(3, 4), min_cell_size=10, cell_format='.4f')
 

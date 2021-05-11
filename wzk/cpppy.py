@@ -34,4 +34,3 @@ def min_sphere(x, r):
         return x2, r2
     else:
         raise ValueError
-

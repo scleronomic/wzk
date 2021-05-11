@@ -1,6 +1,5 @@
 import json
-import argparse
-import collections
+from collections import Iterable
 import numpy as np
 
 
@@ -208,9 +207,8 @@ def depth_tuple(tpl):
 
 
 def flatten_gen(lst, __cur_depth=0, max_depth=100):
-
     for el in lst:
-        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes)):
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
             __cur_depth += 1
             if __cur_depth <= max_depth:
                 yield from flatten_gen(el, __cur_depth=__cur_depth, max_depth=max_depth)
@@ -242,7 +240,7 @@ def element_at_depth_gen(lst, depth=0, with_index=False, __cur_depth=0):
 
     for i, el in enumerate(lst):
 
-        if isinstance(el, collections.Iterable) and not isinstance(el, (str, bytes)):
+        if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
             __cur_depth += 1
             if __cur_depth < depth:
                 # better yield from ...

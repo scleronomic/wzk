@@ -210,7 +210,7 @@ def get_mean_divisor_pair(n):
     assert n >= 1
 
     div = divisors(n)
-    if n >= 3 and len(div) == 0:  # Prime number -> make at least even
+    if len(div) == 0:
         return 1, n
 
     div.sort()

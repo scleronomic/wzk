@@ -1,5 +1,6 @@
 from unittest import TestCase
-from wzk.nump import *
+from wzk.numpy2 import *
+from wzk.testing import compare_arrays
 
 
 class Test(TestCase):
@@ -7,10 +8,10 @@ class Test(TestCase):
     def test_DummyArray(self):
         arr = np.random.random((4, 4))
         idx = (1, 2, 3, 4)
-        d = DummyArray(arr=arr, shape=(4, 4, 2, 2))
+        d = DummyArray(arr=arr, shape=(4, 5, 6, 6))
         self.assertTrue(np.allclose(arr, d[idx]))
 
-        d = DummyArray(1, shape=(2, 2))
+        d = DummyArray(arr=1, shape=(2, 2))
         self.assertTrue(np.allclose(1, d[1, :]))
 
     def test_initialize_array(self):
@@ -22,64 +23,33 @@ class Test(TestCase):
         for s in shape:
             for d in dtype:
                 for o in order:
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='zeros'),
-                                    np.zeros(shape=s, dtype=d, order='o'))
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='ones'),
-                                    np.ones(shape=s, dtype=d, order='o'))
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='empty'),
-                                    np.empty(shape=s, dtype=d, order='o'))
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='random'),
-                                    np.random.random(s).astype(dtype=d, order=o))
+                    self.assertTrue(compare_arrays(a=initialize_array(shape=s, dtype=d, order=o, mode='zeros'),
+                                                   b=np.zeros(shape=s, dtype=d, order=o)))
+                    self.assertTrue(compare_arrays(a=initialize_array(shape=s, dtype=d, order=o, mode='ones'),
+                                                   b=np.ones(shape=s, dtype=d, order=o)))
+                    self.assertTrue(compare_arrays(a=initialize_array(shape=s, dtype=d, order=o, mode='empty'),
+                                                   b=np.empty(shape=s, dtype=d, order=o)))
 
-    def test_(self):
+                    np.random.seed(0)
+                    a = initialize_array(shape=s, dtype=d, order=o, mode='random')
+                    np.random.seed(0)
+                    b = np.random.random(s).astype(dtype=d, order=o)
+                    self.assertTrue(compare_arrays(a=a, b=b))
 
-        self.assertEqual(np_isinstance(('this', 'that'), tuple))
-        self.assertFalse(np_isinstance(4.4, int))
+    def test_np_isinstance(self):
+
         self.assertTrue(np_isinstance(4.4, float))
-
-        # else
-        np_isinstance(np.ones(4, dtype=int), int)  # True
-        np_isinstance(np.ones(4, dtype=int), float)  # False
-        np_isinstance(np.full((4, 4), 'bert'), str)  # True
-
-    def test_DummyArray(self):
-        arr = np.random.random((4, 4))
-        idx = (1, 2, 3, 4)
-        d = DummyArray(arr=arr, shape=(4, 4, 2, 2))
-        self.assertTrue(np.allclose(arr, d[idx]))
-
-        d = DummyArray(1, shape=(2, 2))
-        self.assertTrue(np.allclose(1, d[1, :]))
-
-    def test_initialize_array(self):
-
-        shape = [4, (4,), (1, 2, 3, 4)]
-        dtype = [float, int, bool]
-        order = ['c', 'f']
-
-        for s in shape:
-            for d in dtype:
-                for o in order:
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='zeros'),
-                                    np.zeros(shape=s, dtype=d, order='o'))
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='ones'),
-                                    np.ones(shape=s, dtype=d, order='o'))
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='empty'),
-                                    np.empty(shape=s, dtype=d, order='o'))
-                    self.assertTrue(initialize_array(shape=s, dtype=d, order=o, mode='random'),
-                                    np.random.random(s).astype(dtype=d, order=o))
-
-    def test_(self):
-
-
-        self.assertEqual(np_isinstance(('this', 'that'), tuple))
         self.assertFalse(np_isinstance(4.4, int))
-        self.assertTrue(np_isinstance(4.4, float))
 
-        # else
-        np_isinstance(np.ones(4, dtype=int), int)  # True
-        np_isinstance(np.ones(4, dtype=int), float)  # False
-        np_isinstance(np.full((4, 4), 'bert'), str)  # True
+        self.assertTrue(np_isinstance(('this', 'that'), tuple))
+        self.assertTrue(np_isinstance(('this', 'that'), tuple))
+
+        self.assertTrue(np_isinstance(np.full((4, 4), 'bert'), str))
+        self.assertTrue(np_isinstance(np.ones((5, 5), dtype=bool), bool))
+
+        self.assertTrue(np_isinstance(np.ones(4, dtype=int), int))
+        self.assertFalse(np_isinstance(np.ones(4, dtype=int), float))
+
 
     def test_insert(self):
         a = np.ones((4, 5, 3))
@@ -88,16 +58,6 @@ class Test(TestCase):
         insert(a=a, idx=(1, 2), axis=(0, 2), val=val)
 
         self.assertTrue(np.allclose(a[1, :, 2], val))
-
-    def test_product2(self):
-
-        sol = np.array([[0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4],
-                        [0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2]])
-
-        it = product((range(5), range(3)))
-        res = np.array([i for i in it]).T
-
-        self.assertTrue(np.allclose(sol, res))
 
     def test_argmax(self):
         n = 100
@@ -142,10 +102,3 @@ class Test(TestCase):
         sol = np.array([True, True, True, False, False, True, True, True, False, False, False])
 
         self.assertTrue(np.array_equal(res, sol))
-
-
-
-
-# if __name__ == '__main__':
-#     t = Test()
-#     t.test_insert()

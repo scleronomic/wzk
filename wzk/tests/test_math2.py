@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-import numpy as np
-from wzk.mathematics import *
+from wzk.math2 import *
 
 
 class Test(TestCase):
@@ -76,7 +75,7 @@ class Test(TestCase):
 
         jac_num = numeric_derivative(fun=linalg_norm, x=x, axis=-1)
         jac_num2 = numeric_derivative(fun=ln2, x=x, axis=-1)
-        jac = d_linalg_norm__d_x(x)
+        jac = dxnorm_dx(x)
 
         jac2 = (jac @ np.arange(1, x.shape[-1] + 1)[:, np.newaxis])[..., 0]
 

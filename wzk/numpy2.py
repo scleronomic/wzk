@@ -9,13 +9,34 @@ class DummyArray:
         self.arr = arr
         self.shape = shape
 
+    def __assert_int(self, item, i):
+        assert item in range(-self.shape[i], self.shape[i])
+
+    def __assert_slice(self, item, i):
+        pass
+
+    def __assert_ellipsis(self, item, i):
+        pass
+
     def __getitem__(self, item):
         if isinstance(item, int):
-            assert item in range(-self.shape[0], self.shape[0])
+            self.__assert_int(item=item, i=0)
+        elif isinstance(item, slice):
+            self.__assert_slice(item=item, i=0)
+        elif isinstance(item, type(...)):
+            self.__assert_ellipsis(item=item, i=0)
+
         else:
             assert len(item) == len(self.shape), f"Incompatible index {item} for array with shape {self.shape}"
-            for i, s in zip(item, self.shape):
-                assert i in range(-s, +s)
+            for i, item_i in enumerate(item):
+                if isinstance(item_i, int):
+                    self.__assert_int(item=item_i, i=i)
+                elif isinstance(item_i, slice):
+                    self.__assert_slice(item=item_i, i=i)
+                elif isinstance(item, type(...)):
+                    self.__assert_ellipsis(item=item, i=i)
+                else:
+                    raise ValueError
 
         return self.arr
 
@@ -47,7 +68,10 @@ def np_isinstance(o, c):
     np_isinstance(np.ones(4, dtype=int), float)  # False
     np_isinstance(np.full((4, 4), 'bert'), str)  # True
     """
-    c2np = {bool: np.bool, int: np.integer, float: np.floating, str: np.str}
+    c2np = {bool: np.bool_,
+            str: np.str_,
+            int: np.integer,
+            float: np.floating}
 
     if isinstance(o, np.ndarray):
         c = (c2np[cc] for cc in c) if isinstance(c, tuple) else c2np[c]
