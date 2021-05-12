@@ -1,8 +1,7 @@
+import numpy as np
 from sys import stdout
 
-import numpy as np
-
-from wzk.math2 import get_stats
+from wzk.numpy2 import get_stats
 
 
 def print_progress(i, n, prefix='', suffix='', decimals=1, bar_length=50):

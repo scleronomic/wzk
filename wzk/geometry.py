@@ -624,7 +624,6 @@ def test_jac_mink():
     print(f'All {n} tests were equal to the numeric derivative')
 
 
-
 if __name__ == '__main__':
     pass
 

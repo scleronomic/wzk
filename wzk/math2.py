@@ -1,8 +1,7 @@
 import numpy as np
-from scipy.stats import norm
 from itertools import product
 
-from wzk.numpy2 import shape_wrapper, axis_wrapper, insert
+from wzk.numpy2 import axis_wrapper, insert
 from wzk.dicts_lists_tuples import atleast_tuple
 
 # a/b = (a+b) / a -> a / b =
@@ -11,11 +10,6 @@ golden_ratio = (np.sqrt(5.0) + 1) / 2
 
 def number2digits(num):
     return [int(x) for x in str(num)]
-
-
-def sin_cos(x):
-    # https: // github.com / numpy / numpy / issues / 2626
-    return np.sin(x), np.cos(x)
 
 
 # Normalize
@@ -137,7 +131,8 @@ def dxnorm_dx(x, return_norm=False):
 
 # Smooth
 def smooth_step(x):
-    """https://en.wikipedia.org/wiki/Smoothstep
+    """
+    https://en.wikipedia.org/wiki/Smoothstep
     Interpolation which has zero 1st-order derivatives at x = 0 and x = 1,
      ~ cubic Hermite interpolation with clamping.
     """
@@ -146,9 +141,11 @@ def smooth_step(x):
 
 
 def smoother_step(x):
-    """https://en.wikipedia.org/wiki/Smoothstep+
+    """
+    https://en.wikipedia.org/wiki/Smoothstep+
     Ken Perlin suggests an improved version of the smooth step function,
-    which has zero 1st- and 2nd-order derivatives at x = 0 and x = 1"""
+    which has zero 1st- and 2nd-order derivatives at x = 0 and x = 1
+    """
     res = +6 * x**5 - 15 * x**4 + 10 * x**3
     return np.clip(res, 0, 1)
 
@@ -310,58 +307,7 @@ def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode='central',
         elif mode == 'backward':
             derv[(Ellipsis, ) + idx] = diff(f_x, fun(x - eps_mat, **kwargs_fun)) / eps
 
-
     return derv
-
-
-# Statistics for distribution of number of obstacles
-def p_normal_skew(x, loc=0.0, scale=1.0, a=0.0):
-    t = (x - loc) / scale
-    return 2 * norm.pdf(t) * norm.cdf(a*t)
-
-
-def normal_skew_int(loc=0.0, scale=1.0, a=0.0, low=None, high=None, size=1):
-    if low is None:
-        low = loc-10*scale
-    if high is None:
-        high = loc+10*scale+1
-
-    p_max = p_normal_skew(x=loc, loc=loc, scale=scale, a=a)
-
-    samples = np.zeros(np.prod(size))
-
-    for i in range(int(np.prod(size))):
-        while True:
-            x = np.random.randint(low=low, high=high)
-            if np.random.rand() <= p_normal_skew(x, loc=loc, scale=scale, a=a) / p_max:
-                samples[i] = x
-                break
-
-    samples = samples.astype(int)
-    if size == 1:
-        samples = samples[0]
-    return samples
-
-
-def random_uniform_ndim(*, low, high, shape=None):
-    n_dim = np.shape(low)[0]
-    x = np.zeros(shape_wrapper(shape) + (n_dim,))
-    for i in range(n_dim):
-        x[..., i] = np.random.uniform(low=low[i], high=high[i], size=shape)
-    return x
-
-
-def get_stats(x, axis=None, return_array=False):
-    stats = {'mean': np.mean(x, axis=axis),
-             'std':  np.std(x, axis=axis),
-             'median': np.median(x, axis=axis),
-             'min': np.min(x, axis=axis),
-             'max': np.max(x, axis=axis)}
-
-    if return_array:
-        return np.array([stats['mean'], stats['std'], stats['median'], stats['min'], stats['max']])
-
-    return stats
 
 
 # Magic
@@ -458,4 +404,3 @@ def binomial(n, k):
 def random_subset(n, k, m, dtype=np.uint16):
     assert n == np.array(n, dtype=dtype)
     return np.array([np.random.choice(n, k, replace=False) for _ in range(m)]).astype(np.uint16)
-

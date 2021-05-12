@@ -41,7 +41,7 @@ class DummyArray:
         return self.arr
 
 
-def initialize_array(*, shape, mode='zeros', dtype=None, order='c'):
+def initialize_array(shape, mode='zeros', dtype=None, order='c'):
 
     if mode == 'zeros':
         return np.zeros(shape, dtype=dtype, order=order)
@@ -79,38 +79,6 @@ def np_isinstance(o, c):
 
     else:
         return isinstance(o, c)
-
-
-# Wrapper for common numpy arguments
-def axis_wrapper(axis, n_dim, invert=False):
-
-    if axis is None:
-        axis = np.arange(n_dim)
-
-    axis = np.atleast_1d(axis)
-    axis %= n_dim
-    np.sort(axis)
-
-    if invert:
-       return tuple(np.setxor1d(np.arange(n_dim), axis).astype(int))
-    else:
-        return tuple(axis)
-
-
-def shape_wrapper(shape=None):
-    """
-    Note the inconsistent usage of shape / shape as function arguments in numpy.
-    https://stackoverflow.com/questions/44804965/numpy-size-vs-shape-in-function-arguments
-    -> use shape
-    """
-    if shape is None:
-        return ()
-    elif isinstance(shape, int):
-        return shape,
-    elif isinstance(shape, tuple):
-        return shape
-    else:
-        raise ValueError(f"Unknown 'shape': {shape}")
 
 
 # object <-> numeric
@@ -181,7 +149,38 @@ def args2arrays(*args):
     return [np.array(a) for a in args]
 
 
-# Shapes
+# Shapes and Axis
+def axis_wrapper(axis, n_dim, invert=False):
+
+    if axis is None:
+        axis = np.arange(n_dim)
+
+    axis = np.atleast_1d(axis)
+    axis %= n_dim
+    np.sort(axis)
+
+    if invert:
+       return tuple(np.setxor1d(np.arange(n_dim), axis).astype(int))
+    else:
+        return tuple(axis)
+
+
+def shape_wrapper(shape=None):
+    """
+    Note the inconsistent usage of shape / shape as function arguments in numpy.
+    https://stackoverflow.com/questions/44804965/numpy-size-vs-shape-in-function-arguments
+    -> use shape
+    """
+    if shape is None:
+        return ()
+    elif isinstance(shape, int):
+        return shape,
+    elif isinstance(shape, tuple):
+        return shape
+    else:
+        raise ValueError(f"Unknown 'shape': {shape}")
+
+
 def get_subshape(shape, axis):
     return tuple(np.array(shape)[np.array(axis)])
 
@@ -486,7 +485,7 @@ def get_interval_indices(bool_array):
     return interval_list.reshape(-1, 2)
 
 
-def get_cropping_indices(*, pos, shape_small, shape_big, mode='lower_left'):
+def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     """
     Adjust the boundaries to fit small array in a larger image.
     :param pos:  idx where the small image should be set in the bigger picture, option A
@@ -589,21 +588,6 @@ def idx2boolmat(idx, n=100):
         print(i, (np.unravel_index(i, shape=s)))
         mat[np.unravel_index(i, shape=s)][idx_i] = True
     return mat
-
-
-def noise(shape, scale, mode='normal'):
-    shape = shape_wrapper(shape)
-
-    if mode == 'constant':  # could argue that this is no noise
-        return np.full(shape=shape, fill_value=+scale)
-    if mode == 'plusminus':
-        return np.where(np.random.random(shape) < 0.5, -scale, +scale)
-    if mode == 'uniform':
-        return np.random.uniform(low=-scale, high=+scale, size=shape)
-    elif mode == 'normal':
-        return np.random.normal(loc=0, scale=scale, size=shape)
-    else:
-        raise ValueError(f"Unknown mode {mode}")
 
 
 def get_sub_set_idx():
@@ -936,3 +920,14 @@ def grid_i2x(*, i, cell_size, lower_left, mode='c'):
 #         return dot_BLAS
 #     else:
 #         return dot_numba
+def get_stats(x, axis=None, return_array=False):
+    stats = {'mean': np.mean(x, axis=axis),
+             'std':  np.std(x, axis=axis),
+             'median': np.median(x, axis=axis),
+             'min': np.min(x, axis=axis),
+             'max': np.max(x, axis=axis)}
+
+    if return_array:
+        return np.array([stats['mean'], stats['std'], stats['median'], stats['min'], stats['max']])
+
+    return stats
