@@ -78,4 +78,4 @@ venv.bak/
 
 ####
 *.so
-*/.idea/
+/.idea/
