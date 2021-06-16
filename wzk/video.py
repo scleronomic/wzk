@@ -6,7 +6,6 @@ from wzk.strings import uuid4
 import fire
 
 
-
 def stack_videos(videos=None, filename=None):
     """
     https://stackoverflow.com/questions/11552565/vertically-or-horizontally-stack-mosaic-several-videos-using-ffmpeg/33764934#33764934
@@ -39,6 +38,5 @@ def stack_videos(videos=None, filename=None):
         os.remove(u)
 
 
-
 if __name__ == '__main__':
-  fire.Fire(stack_videos)
+    fire.Fire(stack_videos)

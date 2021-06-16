@@ -174,7 +174,7 @@ def color_plot(x, y, color_s, plot_fcn, **kwargs):
 
     h = []
     for i in range(len(x)):
-        c = color_s[i%len(color_s)]
+        c = color_s[i % len(color_s)]
         h.append(plot_fcn([x[i]], [y[i]], color=c, **kwargs))
 
     return h
@@ -196,6 +196,7 @@ def get_hist(ax):
     https://stackoverflow.com/questions/33888973/get-values-from-matplotlib-axessubplot#33895378
     """
 
+    x1 = None
     n, bins = [], []
     for rect in ax.patches:
         ((x0, y0), (x1, y1)) = rect.get_bbox().get_points()
@@ -337,6 +338,9 @@ def correlation_plot(a, b, name_a, name_b,
         b += (y_reg,)
         if verbose > 0:
             print("slope: {:.4} | correlation: {:.4} | p {:.4}".format(s, r, p))
+    else:
+        r = None
+
     labels, colors, markers, markersizes, alphas, zorders = \
         safe_scalar2array(labels, colors, markers, markersizes, alphas, zorders, shape=len(a))
 

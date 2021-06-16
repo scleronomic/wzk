@@ -1,7 +1,7 @@
 from unittest import TestCase
+
 from wzk.mpl.DraggablePatches import *
 from wzk import new_fig, close_all
-
 verbose = 1
 
 

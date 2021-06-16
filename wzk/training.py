@@ -46,11 +46,3 @@ def train_test_split(*args,
 
         train_test_tuple = change_tuple_order(np.split(a, [n_train]) for a in args)
         return train_test_tuple  # ttt
-
-
-def test_train_test_split():
-    a = np.ones((10, 1))
-    b = np.ones((10, 2)) * 2
-    c = np.ones((10, 3)) * 3
-
-    train_test_tuple = train_test_split(a, b, c, split=3)

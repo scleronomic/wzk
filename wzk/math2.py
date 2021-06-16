@@ -70,7 +70,7 @@ def discretize(x, step):
 
 def dnorm_dx(x, x_norm=None):
     """ ∂ |x| / ∂ x
-     normilization over last dimension
+     normalization over last dimension
      """
     if x_norm is None:
         x_norm = np.linalg.norm(x, axis=-1)
@@ -84,7 +84,7 @@ def dnorm_dx(x, x_norm=None):
 def dxnorm_dx(x, return_norm=False):
     """
     ∂ (x/|x|) / ∂ x
-    normilization over last dimension
+    normalization over last dimension
 
     Calculate Jacobian
       xn       =           x * (x^2 + y^2 + z^2)^(-1/2)
@@ -258,7 +258,7 @@ def assimilate_orders_of_magnitude(a, b, base=10):
     a_mean_log = np.log(a_mean)
     b_mean_log = np.log1(b_mean)
 
-    c = np.power(10, (a_mean_log + b_mean_log) / 2)
+    c = np.power(base, (a_mean_log + b_mean_log) / 2)
 
     aa = a * c / a_mean
     bb = b * c / b_mean
@@ -276,11 +276,10 @@ def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode='central',
     'axis' indicates the dimensions of the free variables.
     The result has the shape f(x).shape + x.shape[axis]
     """
-    axis = axis_wrapper(axis=axis, n_dim=x.ndim)
+    axis = axis_wrapper(axis=axis, n_dim=np.ndim(x))
 
     f_x = fun(x, **kwargs_fun)
     fun_shape = np.shape(f_x)
-    # var_shape = atleast_tuple(np.array(np.shape(x))[axis])
     var_shape = atleast_tuple(np.array(np.shape(x))[(axis,)])
     eps_mat = np.empty_like(x, dtype=float)
 
@@ -346,25 +345,12 @@ def magic(n):
     return m
 
 
-# Geometry
-def get_dcm2d(theta):
-    s = np.sin(theta)
-    c = np.cos(theta)
-    dcm = np.array([[c, -s],
-                    [s, c]])
-
-    # Make sure the 2x2 matrix is at the last 2 dimensions of the array, even if theta was multidimensional
-    np.moveaxis(np.moveaxis(dcm, 0, -1), 0, -1)
-    return dcm
-
-
 # Clustering
 def k_farthest_neighbors(x, k, weighting=None):
     n = len(x)
 
     m_dist = x[np.newaxis, :, :] - x[:, np.newaxis, :]
     weighting = np.ones(x.shape[-1]) if weighting is None else weighting
-    # m_dist = np.linalg.norm(m_dist * weighting, axis=-1)
     m_dist = ((m_dist * weighting)**2).sum(axis=-1)
 
     cum_dist = m_dist.sum(axis=-1)

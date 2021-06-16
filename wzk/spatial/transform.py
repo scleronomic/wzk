@@ -2,7 +2,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 
 from wzk.numpy2 import shape_wrapper
-from wzk.random2 import random_uniform_ndim, noise
+from wzk.random2 import noise, random_uniform_ndim
 from wzk.geometry import sample_points_on_sphere_3d
 
 # angle axis representation is like a onion, the singularity is the boarder to the next 360 shell
@@ -14,7 +14,7 @@ from wzk.geometry import sample_points_on_sphere_3d
 
 
 # vectorized versions of scipy's Rotation.from_x().to_y()
-def euler2matrix(euler, seq='ZXZ'):
+def euler2matrix(euler, seq='XYZ'):
     return Rotation.from_euler(seq, angles=euler.reshape((-1, 3)),
                                ).as_matrix().reshape(euler.shape[:-1] + (3, 3))
 
@@ -30,31 +30,31 @@ def rotvec2matrix(rotvec):
 
 
 def matrix2euler(matrix, seq='ZXZ'):
-    return Rotation.from_matrix(matrix=matrix.reshape((-1, 3, 3))
+    return Rotation.from_matrix(matrix.reshape((-1, 3, 3))
                                 ).as_euler(seq=seq).reshape(matrix.shape[:-2] + (3,))
 
 
 def matrix2quaternions(matrix):
-    return Rotation.from_matrix(matrix=matrix.reshape((-1, 3, 3))
+    return Rotation.from_matrix(matrix.reshape((-1, 3, 3))
                                 ).as_quat().reshape(matrix.shape[:-2] + (4,))
 
 
 def matrix2rotvec(matrix):
-    return Rotation.from_matrix(matrix=matrix.reshape((-1, 3, 3))
+    return Rotation.from_matrix(matrix.reshape((-1, 3, 3))
                                 ).as_rotvec().reshape(matrix.shape[:-2] + (3,))
 
 
 # frames2rotation
 def frame2quat(f):
-    return matrix2quaternions(matrix=f[..., :3, :3])
+    return matrix2quaternions(f[..., :3, :3])
 
 
 def frame2euler(f, seq='ZXZ'):
-    return matrix2euler(matrix=f[..., :3, :3], seq=seq)
+    return matrix2euler(f[..., :3, :3], seq=seq)
 
 
 def frame2rotvec(f):
-    return matrix2rotvec(matrix=f[..., :3, :3])
+    return matrix2rotvec(f[..., :3, :3])
 
 
 def frame2trans_rotvec(f):
@@ -70,7 +70,7 @@ def __shape_wrapper(a, b):
     return a.shape if a is not None else b.shape
 
 
-def __fill_frames_trans(f, trans=None):
+def fill_frames_trans(f, trans=None):
     if trans is not None:
         f[..., :-1, -1] = trans
 
@@ -79,7 +79,7 @@ def trans_quat2frame(trans=None, quat=None):
     s = __shape_wrapper(trans, quat)
 
     frames = initialize_frames(shape=s[:-1], n_dim=3)
-    __fill_frames_trans(f=frames, trans=trans)
+    fill_frames_trans(f=frames, trans=trans)
     frames[..., :-1, :-1] = quaternions2matrix(quat=quat)
     return frames
 
@@ -88,7 +88,7 @@ def trans_rotvec2frame(trans=None, rotvec=None):
     s = __shape_wrapper(trans, rotvec)
 
     frames = initialize_frames(shape=s[:-1], n_dim=3)
-    __fill_frames_trans(f=frames, trans=trans)
+    fill_frames_trans(f=frames, trans=trans)
     frames[..., :-1, :-1] = rotvec2matrix(rotvec=rotvec)
     return frames
 
@@ -97,7 +97,7 @@ def trans_euler2frame(trans=None, euler=None):
     s = __shape_wrapper(trans, euler)
 
     frames = initialize_frames(shape=s[:-1], n_dim=3)
-    __fill_frames_trans(f=frames, trans=trans)
+    fill_frames_trans(f=frames, trans=trans)
     frames[..., :-1, :-1] = euler2matrix(euler=euler)
     return frames
 
@@ -192,14 +192,19 @@ def round_matrix(matrix, decimals=0):
 
 def sample_frames(x_low=np.zeros(3), x_high=np.ones(3), shape=None):
     assert len(x_low) == 3  # n_dim == 3
-    return trans_euler2frame(trans=random_uniform_ndim(low=x_low, high=x_high, shape=shape),
-                             euler=sample_quaternions(shape=shape))
+    return trans_quat2frame(trans=random_uniform_ndim(low=x_low, high=x_high, shape=shape),
+                            quat=sample_quaternions(shape=shape))
 
 
-def apply_noise(frame, trans, rot, mode='normal'):
-    s = tuple(np.array(np.shape(frame))[:-2])
+def apply_noise(f, trans, rot, mode='normal'):
+    s = tuple(np.array(np.shape(f))[:-2])
 
-    frame2 = frame.copy()
-    frame2[..., :3, 3] += noise(shape=s + (3,), scale=trans, mode=mode)
-    frame2[..., :3, :3] = frame2[..., :3, :3] @ sample_matrix_noise(shape=s, scale=rot, mode=mode)
-    return frame2
+    f2 = f.copy()
+    f2[..., :3, 3] += noise(shape=s + (3,), scale=trans, mode=mode)
+    f2[..., :3, :3] = f2[..., :3, :3] @ sample_matrix_noise(shape=s, scale=rot, mode=mode)
+    return f2
+
+
+def sample_frame_noise(trans, rot, shape, mode='normal'):
+    f = initialize_frames(shape=shape, n_dim=3, mode='eye')
+    return apply_noise(f=f, trans=trans, rot=rot, mode=mode)

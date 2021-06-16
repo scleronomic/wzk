@@ -3,12 +3,12 @@ import subprocess
 
 from wzk.strings import uuid4
 
+
 def ssh_cmd(host, cmd, check=False):
-    """Not the most elegant way, bit was not able to get the stdout without error / messed up shells otherwise"""
+    """Not the most elegant way, but was not able to get the stdout without error / messed up shells otherwise"""
     temp = uuid4()
     with open(temp, 'w') as f:
-        result = subprocess.run(["ssh", host, cmd], stdout=f,
-                                shell=False, check=check)
+        _ = subprocess.run(["ssh", host, cmd], stdout=f, shell=False, check=check)
 
     with open(temp, 'r') as f:
         stdout = f.read()
@@ -17,6 +17,5 @@ def ssh_cmd(host, cmd, check=False):
     return stdout
 
 
-def get_n_cpu(host):
+def get_n_elu(host):
     return int(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
-

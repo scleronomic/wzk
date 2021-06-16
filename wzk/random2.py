@@ -32,12 +32,9 @@ def normal_skew_int(loc=0.0, scale=1.0, a=0.0, low=None, high=None, size=1):
     return samples
 
 
-def random_uniform_ndim(*, low, high, shape=None):
+def random_uniform_ndim(low, high, shape=None):
     n_dim = np.shape(low)[0]
-    x = np.zeros(shape_wrapper(shape) + (n_dim,))
-    for i in range(n_dim):
-        x[..., i] = np.random.uniform(low=low[i], high=high[i], size=shape)
-    return x
+    return np.random.uniform(low=low, high=high, size=shape_wrapper(shape) + (n_dim,))
 
 
 def noise(shape, scale, mode='normal'):

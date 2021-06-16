@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from wzk.dicts_lists_tuples import atleast_list
 
+
 def get_pip(ax, x, y, width, height, **kwargs):
     """Picture in Picture.
     Positions of the new axes as fractions from the parent axis.
@@ -32,7 +33,7 @@ def get_xaligned_axes(ax, y_distance, height, factor=1., **kwargs):
     p = ax.get_position()
     x0, y0, width0 = p.x0, p.y0, p.width
 
-    x0 += (1-factor) * width0 / 2
+    x0 += (1 - factor) * width0 / 2
     width0 *= factor
 
     return plt.axes([x0, y0 - y_distance, width0, height], **kwargs)
@@ -88,7 +89,6 @@ def limits2extent(limits, origin, axis_order):
 
 
 def set_ax_limits(ax, limits, n_dim=2):
-
     mins, maxs = limits4axes(limits=limits, n_dim=n_dim)
 
     if n_dim == 2:
@@ -112,7 +112,6 @@ def add_safety_limits(limits, factor):
 
 # Label
 def set_labels(ax, labels, **kwargs):
-
     ax.set_xlabel(labels[0], **kwargs)
     ax.set_ylabel(labels[1], **kwargs)
 
@@ -154,7 +153,7 @@ def size_units2points(size, ax, reference='y'):
         length = fig.bbox_inches.height * ax.get_position().height
         value_range = np.diff(ax.get_ylim())
     else:
-        raise(ValueError("Pass either 'x' or 'y' as reference"))
+        raise (ValueError("Pass either 'x' or 'y' as reference"))
     # Convert length to points
     length *= 72
     # Scale linewidth to value range
@@ -162,7 +161,6 @@ def size_units2points(size, ax, reference='y'):
 
 
 def size_units2points_listener(ax, h, size, reference='y', mode='ms'):
-
     if mode is None:
         mode = 'ms'
     elif mode == 'both':

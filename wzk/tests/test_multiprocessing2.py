@@ -1,0 +1,64 @@
+from unittest import TestCase
+
+from wzk.multiprocessing2 import *
+from wzk.dicts_lists_tuples import list_allclose
+
+
+class Test(TestCase):
+    def test_mp_wrapper(self):
+
+        def fun__int_in(n):
+            return np.zeros((n, 3))
+
+        def fun__arr_in(arr):
+            arr[:] = 0
+            return arr
+
+        def fun__multiple_arr_in(a1, a2, a3):
+            a4 = a1 + a2 + a3
+            return a4
+
+        def fun__multiple_arr_out(n):
+            return tuple(np.full((n, ii), ii) for ii in range(1, 5))
+
+        def fun__multiple_out(n):
+            return tuple(np.full((n, ii), ii) for ii in range(1, 3)) + (11, 12)
+
+        n_processes = 10
+        z = np.zeros((1000, 3))
+        a = np.ones((1000, 3))
+        b = np.ones((1000, 3)) * 2
+        c = np.ones((1000, 3)) * 3
+
+        res1 = mp_wrapper(999, fun=fun__int_in, n_processes=n_processes)
+        res1b = mp_wrapper(999, fun=fun__int_in, n_processes=n_processes, __debug_loop=True)
+        self.assertTrue(np.allclose(res1, np.zeros((999, 3))))
+        self.assertTrue(list_allclose(res1, res1b))
+
+        res2 = mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes)
+        res2b = mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes, __debug_loop=True)
+        self.assertTrue(np.allclose(res2, z))
+        self.assertTrue(list_allclose(res2, res2b))
+
+        res3 = mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes)
+        res3b = mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes, __debug_loop=True)
+        self.assertTrue(np.allclose(res3, a+b+c))
+        self.assertTrue(list_allclose(res3, res3b))
+
+        res4 = mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes)
+        res4b = mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes, __debug_loop=True)
+        for i in range(1, 5):
+            self.assertTrue(np.allclose(res4[i-1], np.full((989, i), i)))
+        self.assertTrue(all(list_allclose(res4, res4b)))
+
+        res5 = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes)
+        res5b = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, __debug_loop=True)
+        for i in range(1, 3):
+            self.assertTrue(np.allclose(res5[i-1], np.full((1007, i), i)))
+        self.assertTrue(all(list_allclose(res5, res5b)))
+
+        res6 = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, max_chunk_size=10)
+        res6b = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, __debug_loop=True)
+        for i in range(1, 3):
+            self.assertTrue(np.allclose(res6[i-1], np.full((1007, i), i)))
+        self.assertTrue(all(list_allclose(res6[:2], res6b[:2])))

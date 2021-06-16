@@ -1,10 +1,9 @@
-from unittest import TestCase
-import numpy as np
+import unittest
 
 from wzk.functions import common_argument_wrapper
 
 
-class Test(TestCase):
+class Test(unittest.TestCase):
     def test_common_argument_wrapper(self):
         def fun(a, b, c, d, e, f, g):
             return a + b + c + d + e + f + g

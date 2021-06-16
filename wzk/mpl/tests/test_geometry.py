@@ -1,11 +1,13 @@
 import unittest
 
-from wzk.mpl.figure import *
 from wzk.mpl.geometry import *
+
+from wzk.mpl.figure import new_fig
+from wzk.mpl.axes import set_ax_limits
 from wzk.mpl import DraggableCircle
 
-from wzk import get_dcm2d
-from Kinematic.frames import sample_matrix
+from wzk.spatial.transform import sample_matrix
+from wzk.spatial.transform_2d import trans_theta2frame
 
 
 class Test(unittest.TestCase):
@@ -78,8 +80,8 @@ class Test(unittest.TestCase):
         # 2D
         fig, ax = new_fig(aspect=1, title='2D Coordinate Frames')
 
-        h1 = plot_coordinate_frame(ax=ax, x=[1, 1], dcm=get_dcm2d(theta=1), color='bb')
-        h2 = plot_coordinate_frame(ax=ax, dcm=get_dcm2d(theta=2), color='ry')
+        h1 = plot_coordinate_frame(ax=ax, x=[1, 1], dcm=trans_theta2frame(theta=1)[:-1, :-1], color='bb')
+        h2 = plot_coordinate_frame(ax=ax, dcm=trans_theta2frame(theta=2)[:-1, :-1], color='ry')
 
         update_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
@@ -97,6 +99,8 @@ class Test(unittest.TestCase):
         update_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
         self.assertTrue(True)
+
+
 if __name__ == '__main__':
     test = Test()
     test.test_mpl_all()

@@ -7,7 +7,7 @@ except ModuleNotFoundError:
     monitors = [[1440, 900]]
 if screeninfo is not None:
     try:
-        monitors = [(m.fig_width_inch, m.height) for m in screeninfo.get_monitors()]
+        monitors = [(m.width, m.height) for m in screeninfo.get_monitors()]
     except screeninfo.common.ScreenInfoError:
         # Fallback for my mac
         # monitors = [[2560, 1600]]
@@ -126,31 +126,3 @@ def __move_fig(fig, width=None, height=None, offset_x=None, offset_y=None):
         offset_y = c_offset_y
 
     fig.canvas.manager.window.wm_geometry(f"{width}x{height}+{offset_x}+{offset_y}")
-
-
-if __name__ == '__main__':
-    import matplotlib as mpl
-
-    mpl.use('TkAgg')
-    import matplotlib.pyplot as plt
-
-    fig, ax = plt.subplots()
-    move_fig(fig=fig, position='top right')
-
-    fig, ax = plt.subplots()
-    move_fig(fig=fig, position='top left')
-
-    fig, ax = plt.subplots()
-    move_fig(fig=fig, position='bottom right')
-
-    fig, ax = plt.subplots()
-    move_fig(fig=fig, position='bottom left')
-    # plt.pause(0.1)
-    # plt.close('all')
-
-    for i in range(1,10):
-        fig, ax = plt.subplots()
-        move_fig(fig=fig, position=(3, 3, i))
-
-    # plt.pause(0.1)
-    # plt.close('all')

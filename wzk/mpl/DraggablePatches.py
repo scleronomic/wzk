@@ -5,11 +5,22 @@ from wzk.mpl.axes import get_aspect_ratio
 from wzk.numpy2 import scalar2array, max_size
 from wzk.mpl.figure import plt
 
-class DraggablePatch:
+
+class DummyPatch:
+    __slots__ = ('figure',
+                 'axes',
+                 'set_animated',
+                 'contains',
+                 'set_visible',
+                 'get_visible')
+
+
+class DraggablePatch(DummyPatch):
     lock = None  # only one can be animated at a time
 
     def __init__(self, ax, vary_xy=(True, True), limits=None, callback=None,
                  wsad=None, **kwargs):
+        super().__init__()
         ax.add_patch(self)
 
         self.vary_xy = np.array(vary_xy)
@@ -51,7 +62,7 @@ class DraggablePatch:
         raise NotImplementedError
 
     def apply_limits(self, xy):
-        if self.limits is not None and self.limits is not (None, None):
+        if self.limits is not None:
             return np.clip(xy, a_min=self.limits[:, 0], a_max=self.limits[:, 1])
         else:
             return xy
@@ -162,7 +173,6 @@ class DraggablePatch:
 
         plt.show()
 
-
     def toggle_visibility(self, value=None):
         if value is None:
             self.set_visible(not self.get_visible())
@@ -185,6 +195,7 @@ class DraggableCircle(patches.Circle, DraggablePatch):
         return np.array(self.get_center()).flatten()
 
     def set_xy_drag(self, xy):
+        # noinspection PyArgumentList
         self.set_center(xy=np.array(xy).flatten())
 
 
@@ -210,6 +221,7 @@ class DraggableEllipse(patches.Ellipse, DraggablePatch):
         return np.array(self.get_center()).flatten()
 
     def set_xy_drag(self, xy):
+        # noinspection PyArgumentList
         self.set_center(xy=np.array(xy).flatten())
 
 
@@ -226,6 +238,7 @@ class DraggableRectangle(patches.Rectangle, DraggablePatch):
         return np.array(self.get_xy()).flatten()
 
     def set_xy_drag(self, xy):
+        # noinspection PyArgumentList
         self.set_xy(xy=np.array(xy).flatten())
 
 

@@ -33,7 +33,7 @@ class FancyArrowX2(patches.FancyArrow):
 
 
 class FancyBbox(patches.FancyBboxPatch):
-    def __init__(self, xy, width, height, boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
+    def __init__(self, xy=(0., 0.), width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
         if boxstyle in ['Roundtooth', 'Sawtooth']:
             bs = patches.BoxStyle(boxstyle, pad=pad, tooth_size=corner_size)
         elif boxstyle in ['Round', 'Round4']:
@@ -41,7 +41,8 @@ class FancyBbox(patches.FancyBboxPatch):
         else:
             bs = patches.BoxStyle(boxstyle, pad=pad)
 
-        super().__init__(xy=(xy[0]+pad, xy[1]+pad), width=width - 2*pad, height=height - 2*pad, boxstyle=bs, **kwargs)
+        xy = np.array(xy)
+        super().__init__(xy=xy+pad, width=width - 2*pad, height=height - 2*pad, boxstyle=bs, **kwargs)
 
 
 class RoundedPolygon(patches.PathPatch):
@@ -49,9 +50,10 @@ class RoundedPolygon(patches.PathPatch):
         p = path.Path(*self.round(xy=xy, pad=pad))
         super().__init__(path=p, **kwargs)
 
-    def round(self, xy, pad):
+    @staticmethod
+    def round(xy, pad):
+        verts = None
         n = len(xy)
-
         for i in range(0, n):
 
             x0, x1, x2 = np.atleast_1d(xy[i - 1], xy[i], xy[(i + 1) % n])
@@ -62,128 +64,53 @@ class RoundedPolygon(patches.PathPatch):
             x00 = x0 + pad * d01
             x01 = x1 - pad * d01
             x10 = x1 + pad * d12
-            x11 = x2 - pad * d12
+            # x11 = x2 - pad * d12
 
             if i == 0:
                 verts = [x00, x01, x1, x10]
             else:
                 verts += [x01, x1, x10]
+
         codes = [path.Path.MOVETO] + n*[path.Path.LINETO, path.Path.CURVE3, path.Path.CURVE3]
 
         return np.atleast_1d(verts, codes)
 
 
-def CurlyBrace(x0, x1, x2, curliness=1/np.e, return_verts=False, **patch_kw):
+class CurlyBrace(patches.PathPatch):
     """
-    Create a matplotlib patch corresponding to a curly brace (i.e. this thing: {")
-    Parameters
-    ----------
-    x : float
-     x position of left edge of patch
-    y : float
-     y position of bottom edge of patch
-    width : float
-     horizontal span of patch
-    height : float
-     vertical span of patch
-    curliness : float
-     positive value indicating extent of curliness; default (1/e) tends to look nice
-    pointing : str
-     direction in which the curly brace points (currently supports 'left' and 'right')
-    **patch_kw : any keyword args accepted by matplotlib's Patch
-    Returns
-    -------
-    matplotlib PathPatch corresponding to curly brace
+    Create a matplotlib patch corresponding to a curly brace (i.e. this thing: { )
 
-    Notes
-    -----
-    It is useful to supply the `transform` parameter to specify the coordinate system for the Patch.
-    To add to Axes `ax`:
-    cb = CurlyBrace(x, y)
-    ax.add_artist(cb)
-    This has been written as a function that returns a Patch because I saw no use in making it a class, though one could extend matplotlib's Patch as an alternate implementation.
-
-    Thanks to:
-    https://graphicdesign.stackexchange.com/questions/86334/inkscape-easy-way-to-create-curly-brace-bracket
-    http://www.inkscapeforum.com/viewtopic.php?t=11228
-    https://css-tricks.com/svg-path-syntax-illustrated-guide/
-    https://matplotlib.org/users/path_tutorial.html
-    Ben Deverett, 2018.
-    Examples
-    --------
-    >>>from curly_brace_patch import CurlyBrace
-    >>>import matplotlib.pyplot as pl
-    >>>fig,ax = pl.subplots()
-    >>>brace = CurlyBrace(x=.4, y=.2, width=.2, height=.6, pointing='right', transform=ax.transAxes, color='magenta')
-    >>>ax.add_artist(brace)
-    # https://github.com/bensondaled/curly_brace/blob/master/curly_brace_patch.py
+    Adopted from
+    https://github.com/bensondaled/curly_brace/blob/master/curly_brace_patch.py
     """
-    x0, x1, x2,  = np.atleast_1d(x0, x1, x2)
 
-    x0_p = projection_point_line(x0=x0, x1=x1, x2=x2)
-    x10_p = x1 - x0_p
-    x20_p = x2 - x0_p
+    def __init__(self, p, x0, x1,
+                 curliness=1/np.e, **kwargs):
 
-    if np.linalg.norm(x10_p) < np.linalg.norm(x20_p):
-        curliness_v = x10_p * curliness
-    else:
-        curliness_v = x20_p * curliness
+        kwargs['edgecolor'] = kwargs.pop('color', 'black')
+        kwargs['facecolor'] = 'none'
 
-    verts = np.stack([x1,                   #
-                      x0 + x10_p,
-                      x0_p + curliness_v,
-                      x0,                   #
-                      x0_p - curliness_v,
-                      x0 + x20_p,
-                      x2])                  #
+        p, x0, x1, = np.atleast_1d(p, x0, x1)
 
-    codes = [patches.Path.MOVETO] + 6 * [patches.Path.CURVE4]
-    path = patches.Path(verts, codes)
+        pp = projection_point_line(p=p, x0=x0, x1=x1)
+        d0pp = x0 - pp
+        d1pp = x1 - pp
 
-    patch_kw['edgecolor'] = patch_kw.pop('color', 'black')
+        if np.linalg.norm(d0pp) < np.linalg.norm(d1pp):
+            curliness_v = d0pp * curliness
+        else:
+            curliness_v = d1pp * curliness
 
-    pp = patches.PathPatch(path, facecolor='none', **patch_kw)
-    if return_verts:
-        return pp, verts
-    else:
-        return pp
+        self.verts = np.stack([x0,  #
+                               p + d0pp,
+                               pp + curliness_v,
+                               p,  #
+                               pp - curliness_v,
+                               p + d1pp,
+                               x1])  #
 
-
-def test_curly_brace():
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots()
-    ax.axis('off')
-
-    for i, (w, h, c) in enumerate(zip(
-            np.linspace(.1, .18, 4),
-            np.linspace(.95, .5, 4),
-            np.linspace(.1, .5, 4))):
-        x = i * .1
-        lw = 3 * i + 1
-        col = plt.cm.plasma(i / 8)
-        brace = CurlyBrace(x0=(x+0.05, h/2), x1=(x, 0.1) , x2=(x, 0.1+h), lw=lw,
-                           curliness=c, color=col)
-        ax.add_artist(brace)
-
-    fig, ax = plt.subplots()
-    ax.axis('off')
-    ax.set_aspect(1)
-    for i in range(10):
-        x = np.random.random((3, 2))
-        x = np.sort(x, axis=0)
-        brace = CurlyBrace(x[1], x[0], x[2])
-        ax.add_artist(brace)
-
-    fig, ax = plt.subplots()
-    ax.set_aspect(1)
-    brace, verts = CurlyBrace(x1=(1, 1), x2=(4, 5), x0=(2.5, 1.5), color='b', return_verts =True)
-    ax.add_artist(brace)
-    ax.plot(*verts.T, ls='', marker='o', alpha=0.5)
-    ax.plot(*verts[[0, 1, 5, 6, 0]].T)
-
-    text = ['a', 'ac0', 'ac1', 'c', 'cb0', 'cb1', 'b']
-    for i, v in enumerate(verts):
-        ax.annotate(xy=v, s=str(i) + '\n' + text[i], ha='center', va='center', zorder=100)
+        codes = [patches.Path.MOVETO] + 6 * [patches.Path.CURVE4]
+        super().__init__(patches.Path(self.verts, codes), **kwargs)
 
 
 # Transformations
@@ -223,5 +150,3 @@ def get_aff_trafo(xy0=None, xy1=None, theta=0, por=(0, 0), ax=None, patch=None):
     return (transforms.Affine2D().translate(-xy0[0]-por[0], -xy0[1]-por[1])
                                  .rotate_deg_around(0, 0, theta)
                                  .translate(xy1[0], xy1[1]) + ax.transData)
-
-

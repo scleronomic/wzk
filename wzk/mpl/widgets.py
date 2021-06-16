@@ -1,9 +1,10 @@
 from matplotlib import widgets
 from wzk.math2 import modulo
 
+
 # Widgets
-def create_button(axes, listener_fun, name='button'):
-    b_ax = plt.axes(axes)  # TODO change to fig
+def create_button(fig, axes, listener_fun, name='button'):
+    b_ax = fig.axes(axes)
     b = widgets.Button(b_ax, name)
     b.on_clicked(listener_fun)
     return b

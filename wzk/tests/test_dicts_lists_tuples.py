@@ -35,7 +35,7 @@ class Test(TestCase):
         test_list = [1, 2, 3, [[4], [[5]], [6, 7]], [[8, 9], [10, 11, [12, [13, 13]]]], 14, [15], [16, 17]]
 
         res = [((3,), [[4], [[5]], [6, 7]]), ((4,), [[8, 9], [10, 11, [12, [13, 13]]]]), ((6,), [15]), ((7,), [16, 17])]
-        a = element_at_depth(test_list, depth=1, with_index=True)
+        a = element_at_depth(test_list, d=1, with_index=True)
 
         self.assertTrue(res == a)
 

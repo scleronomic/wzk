@@ -10,7 +10,7 @@ class Test(TestCase):
     def test_transform(self):
         height = 0.1
         width = 1
-        fig, ax = plt.subplots()
+        fig, ax = new_fig()
         ax.set_aspect('equal')
         ax.set_xlim([-width * 1.2, width * 1.2])
         ax.set_ylim([-width * 1.2, width * 1.2])
@@ -41,14 +41,11 @@ class Test(TestCase):
         self.assertTrue(True)
 
     def test_AbsoluteFancyBboxPatch(self):
-        from wzk.mpl import new_fig, patches
-
         fig, ax = new_fig(aspect=1)
         ax.add_patch(FancyBbox(xy=(0.1, 0.1), boxstyle='Round4',
                                height=0.5, width=0.5, pad=0.1, corner_size=0))
 
-
-    def test_RoundePolygon(self):
+    def test_RoundedPolygon(self):
         xy = np.array([(0, 0), (0.25, 0), (0.5, -0.25), (0.75, 0),
                        (1, 0), (1, 0.25), (1.25, 0.5), (1, 0.75),
                        (1, 1), (0.75, 1), (0.5, 1.25), (0.25, 1),
@@ -61,9 +58,49 @@ class Test(TestCase):
         ax.set_xlim(-1, 2)
         ax.set_ylim(-1, 2)
 
+    def test_CurlyBrace(self):
+        fig, ax = new_fig()
+        ax.axis('off')
+
+        for i, (w, h, c) in enumerate(zip(
+                np.linspace(.1, .18, 4),
+                np.linspace(.95, .5, 4),
+                np.linspace(.1, .5, 4))):
+            x = i * .1
+            lw = 3 * i + 1
+            # noinspection PyUnresolvedReferences
+            col = plt.cm.plasma(i / 8)
+            brace = CurlyBrace(p=(x + 0.05, h / 2), x0=(x, 0.1), x1=(x, 0.1 + h), lw=lw,
+                               curliness=c, color=col)
+            ax.add_artist(brace)
+
+        fig, ax = new_fig()
+        ax.axis('off')
+        ax.set_aspect(1)
+        for i in range(10):
+            x = np.random.random((3, 2))
+            x = np.sort(x, axis=0)
+            brace = CurlyBrace(x[1], x[0], x[2])
+            ax.add_artist(brace)
+
+        fig, ax = new_fig()
+        ax.set_aspect(1)
+        brace = CurlyBrace(p=(2.5, 1.5), x0=(1, 1), x1=(4, 5), color='b')
+        ax.add_artist(brace)
+        ax.plot(*brace.verts.T, ls='', marker='o', alpha=0.5)
+        ax.plot(*brace.verts[[0, 1, 5, 6, 0]].T)
+
+        text = ['a', 'ac0', 'ac1', 'c', 'cb0', 'cb1', 'b']
+        for i, v in enumerate(brace.verts):
+            ax.annotate(xy=v, text=str(i) + '\n' + text[i], ha='center', va='center', zorder=100)
+
+        self.assertTrue(True)
+
+
 if __name__ == '__main__':
     test = Test()
     test.test_transform()
     test.test_RelativeArrowPatch()
     test.test_AbsoluteFancyBboxPatch()
-    test.test_RoundePolygon()
+    test.test_RoundedPolygon()
+    test.test_CurlyBrace()

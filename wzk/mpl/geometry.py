@@ -94,7 +94,7 @@ def plot_coordinate_frame(ax, x=None, dcm=None, color='k', mode='quiver',
     """
     Assume matrix is a homogeneous matrix
 
-    Remember: the columns of the frame are the vectors x, y, z in the base coordinate frame
+    Note: the columns of the frame are the vectors x, y, z in the base coordinate frame
     """
 
     if x is None and dcm is None:
@@ -104,35 +104,35 @@ def plot_coordinate_frame(ax, x=None, dcm=None, color='k', mode='quiver',
     elif dcm is None:
         dcm = np.eye(3)
 
-    ndim = min(len(x), len(dcm))
-    x = x[:ndim]
+    n_dim = min(len(x), len(dcm))
+    x = x[:n_dim]
 
     if not isinstance(color, list):
         color = [color]
-    if len(color) < ndim:
-        color *= ndim
+    if len(color) < n_dim:
+        color *= n_dim
 
     h = []
-    if mode == 'quiver' or ndim == 3:
-        for i in range(ndim):
+    if mode == 'quiver' or n_dim == 3:
+        for i in range(n_dim):
             h.append(ax.quiver(*x, *dcm[:, i], color=color[i], **kwargs))
 
     elif mode == 'fancy':
-        for i in range(ndim):
+        for i in range(n_dim):
             h.append(patches.FancyArrow(x[0], x[1], dcm[0, i], dcm[1, i], color=color[i], **kwargs))
             ax.add_patch(h[-1])
 
     elif mode == 'relative_fancy':
-        for i in range(ndim):
+        for i in range(n_dim):
             h.append(Patches2.RelativeFancyArrow(x[0], x[1], dcm[0, i], dcm[1, i], color=color[i],  **kwargs))
             ax.add_patch(h[-1])
 
-    # if marker is not None:
-    #     ax.plot(*x, marker=marker, color=color[-1],
-    #             markersize=size_units2points(size=2*kwargs['fig_width_inch']*np.linalg.norm(dcm, axis=0).mean(), ax=ax),
-    #             alpha=0.5)
-    # else:
-    #     raise ValueError
+    if marker is not None:
+        ax.plot(*x, marker=marker, color=color[-1],
+                markersize=size_units2points(size=2*kwargs['fig_width_inch']*np.linalg.norm(dcm, axis=0).mean(), ax=ax),
+                alpha=0.5)
+    else:
+        raise ValueError
     return h
 
 

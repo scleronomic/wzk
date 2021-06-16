@@ -16,7 +16,7 @@ class Test(TestCase):
         res = normalize_01(x)
         self.assertTrue(np.allclose(sol, res))
 
-        x = np.arange(30).reshape(2, 3, 5)
+        x = np.arange(30).reshape((2, 3, 5))
         res = normalize_01(x, axis=(-2, -1))
 
     def test_divisor(self):

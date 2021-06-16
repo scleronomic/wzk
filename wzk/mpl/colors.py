@@ -1,5 +1,6 @@
 import numpy as np
-import matplotlib as mpl
+from matplotlib import colors, cm
+
 
 # Use :
 # import cycler
@@ -28,7 +29,7 @@ divergent_br248842_13 = np.array(['#224488', '#4c5e99', '#6e79ab', '#8f95bc', '#
                                   '#e2d2cb', '#d3b4a7', '#c29783', '#b07b62', '#9d5f41', '#884422'])
 
 reds824_9 = np.array(['#882244',
-                       '#983b56', '#a75168', '#b6677b', '#c57c8e', '#d492a2', '#e2a8b6', '#f1beca', '#ffd5df'])
+                      '#983b56', '#a75168', '#b6677b', '#c57c8e', '#d492a2', '#e2a8b6', '#f1beca', '#ffd5df'])
 reds842_9 = np.array(['#884422',
                       '#975634', '#a76747', '#b67a5b', '#c58c6f', '#d39f84', '#e2b299', '#f1c5af', '#ffd9c5'])
 
@@ -47,7 +48,7 @@ rrggbb_248 = np.array(['#882244', '#884422', '#228844', '#448822', '#224488', '#
 
 # palette_blues = ['#4864b0', '#6e7cb8', '#8f96bf', '#aeb1c6', '#cccccc']
 mix6 = ['#b3c3e3', '#91a3c9', '#7084b0', '#506697', '#2f4a7e', '#002f66']
-mix5 = ['#0089b3', '#6f85d7', '#d66cc4', '#ff5d7a','#ff8800']
+mix5 = ['#0089b3', '#6f85d7', '#d66cc4', '#ff5d7a', '#ff8800']
 
 
 # TUM corporate design colors - http://portal.mytum.de/corporatedesign/index_print/vorlagen/index_farben
@@ -75,7 +76,6 @@ tum_mix5 = [pallet_tum['blue_3'],
             pallet_tum['green'],
             pallet_tum['grey_50']]
 
-# sashamaps
 # https://sashamaps.net/docs/resources/20-colors/
 _20 = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#42d4f4', '#f032e6', '#bfef45', '#fabed4',
        '#469990', '#dcbeff', '#9A6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#a9a9a9']
@@ -94,6 +94,5 @@ def arr2rgba(*, img, cmap, vmin=None, vmax=None, mask=None, axis_order=None):
 
 
 def __arr2rgba(arr, cmap, vmin=None, vmax=None):
-    norm = mpl.colors.Normalize(vmin=vmin, vmax=vmax)
-    return mpl.cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)
-
+    norm = colors.Normalize(vmin=vmin, vmax=vmax)
+    return cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)

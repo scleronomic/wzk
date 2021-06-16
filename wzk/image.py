@@ -8,6 +8,17 @@ from wzk.dicts_lists_tuples import tuple_extract
 from wzk.numpy2 import align_shapes, get_cropping_indices, flatten_without_last, initialize_array
 
 
+def imread_bw(file, threshold):
+
+    def rgb2gray(rgb):
+        return np.dot(rgb[..., :3], [0.2989, 0.5870, 0.1140])
+
+    img = imread(file)
+    img = rgb2gray(img)
+    obstacle_image = img < threshold  # 60
+    return obstacle_image
+
+
 def combine_n_voxels_n_dim(n_voxels, n_dim=None):
     if np.size(n_voxels) == 1:
         try:
@@ -416,7 +427,6 @@ def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=bool):
     else:
         return np.fromstring(zlib.decompress(img_cmp), dtype=dtype).reshape(
             image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_channels=n_channels))
-
 
 
 def bool_img2surf(img, voxel_size):

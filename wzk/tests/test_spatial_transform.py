@@ -1,11 +1,11 @@
-from wzk.spatial_transform import *
+from wzk.spatial.transform import *
 from unittest import TestCase
-from wzk.testing import compare_arrays
+# from wzk.testing import compare_arrays
 
 
 class Test(TestCase):
     def test_a(self):
-        from Kinematic.frames_diff import frame_difference
+        from wzk.spatial.difference import frame_difference
         a = sample_frames(x_low=np.zeros(3), x_high=np.ones(3))
         b = sample_frames(x_low=np.zeros(3), x_high=np.ones(3))
 

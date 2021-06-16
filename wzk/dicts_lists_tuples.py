@@ -224,7 +224,7 @@ def flatten(lst, max_depth=100):
     return list(flatten_gen(lst=lst, max_depth=max_depth))
 
 
-def element_at_depth_gen(lst, depth=0, with_index=False, __cur_depth=0):
+def element_at_depth_gen(lst, d=0, with_index=False, __cur_d=0):
 
     def __yield1(ii, ele):
         if with_index:
@@ -241,23 +241,23 @@ def element_at_depth_gen(lst, depth=0, with_index=False, __cur_depth=0):
     for i, el in enumerate(lst):
 
         if isinstance(el, Iterable) and not isinstance(el, (str, bytes)):
-            __cur_depth += 1
-            if __cur_depth < depth:
+            __cur_d += 1
+            if __cur_d < d:
                 # better yield from ...
-                for el2 in element_at_depth_gen(el, depth=depth, with_index=with_index, __cur_depth=__cur_depth):
+                for el2 in element_at_depth_gen(el, d=d, with_index=with_index, __cur_d=__cur_d):
                     yield __yield2(i, el2)
 
             else:  # __cur_depth == depth
                 yield __yield1(i, el)
-            __cur_depth -= 1
+            __cur_d -= 1
 
         else:
-            if __cur_depth == depth:
+            if __cur_d == depth:
                 yield __yield1(i, el)
 
 
-def element_at_depth(lst, depth=0, with_index=False):
-    return list(element_at_depth_gen(lst=lst, depth=depth, with_index=with_index))
+def element_at_depth(lst, d=0, with_index=False):
+    return list(element_at_depth_gen(lst=lst, d=d, with_index=with_index))
 
 
 def change_tuple_order(tpl):
@@ -316,6 +316,3 @@ def read_json2dict(file):
 def rename_dict_keys(d, new_keys_dict):
     for old_k in new_keys_dict:
         d[new_keys_dict[old_k]] = d.pop(old_k)
-
-
-

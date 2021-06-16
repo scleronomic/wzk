@@ -6,7 +6,6 @@ import platform
 import subprocess
 import numpy as np
 
-from wzk.numpy2 import object2numeric_array
 from wzk.printing import print_progress
 from wzk.time import get_timestamp
 
@@ -142,7 +141,7 @@ def combine_npz_files(*, directory,
 
     for i, file in enumerate(file_list):
         if verbose > 0:
-            print_progress(iteration=i, total=len(file_list))
+            print_progress(i=i, n=len(file_list))
 
         data = np.load(directory + file)
         if i == 0:
@@ -277,7 +276,6 @@ def test_split_files_into_dirs():
 
     split_files_into_dirs(file_list=file_list, dir_list=dirs, mode='dry',
                           bool_fun=lambda s, i: (s[:len(str(i))] == str(i)) and len(s) == 32 + len(str(i)))
-
 
 
 def dir_dir2file_array(directory=None, combine_str=True):

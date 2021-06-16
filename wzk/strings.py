@@ -28,7 +28,7 @@ brackets_rirrjr = '({i})({j})'
 
 
 def brackets_wrapper(bracket, idx, multi=True):
-    n = len(idx)
+    # n = len(idx)
     b = brackets_dict[bracket]
 
     if multi:
@@ -36,6 +36,8 @@ def brackets_wrapper(bracket, idx, multi=True):
         s = b[0] + ''.join(idx_i + c for idx_i in idx)[:-len(c)] + b[1]
     else:
         s = ''.join(b[0] + idx_i + b[1] for idx_i in idx)
+
+    return s
 
 
 def remove_non_numeric(*s, squeeze=True):
@@ -63,14 +65,9 @@ def split_insert_join(s, split, insert_pre='', insert_after=''):
     return split.join([insert_pre + ss + insert_after for ss in s.split(split)])
 
 
-def test_split_insert_joint():
-    s0 = 'abcdx1234xikjx789xxtest'
-    s1 ='YabcdxY1234xYikjxY789xYxYtest'
-    s1 = split_insert_join(s=s, split='x', insert_pre='Y')
-
 def tab_str(*args, tab=4, squeeze=True):
     res = tuple(split_insert_join(s=s, split='\n', insert_pre=' ' * tab) for s in args)
-    if len(res) == 1:
+    if len(res) == 1 and squeeze:
         return res[0]
     else:
         return res
@@ -102,4 +99,3 @@ def uuid4():
      -> len() = 32
      """
     return uuid.uuid4().hex
-

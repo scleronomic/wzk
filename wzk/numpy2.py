@@ -125,7 +125,7 @@ def safe_scalar2array(*val_or_arr, shape, squeeze=True):
     res = []
     for voa in val_or_arr:
         try:
-            voa = np.asscalar(np.array(voa))
+            voa = np.array(voa).item()
             res.append(np.full(shape=shape, fill_value=voa, dtype=type(voa)))
         except ValueError:
             assert np.shape(voa) == shape
@@ -160,7 +160,7 @@ def axis_wrapper(axis, n_dim, invert=False):
     np.sort(axis)
 
     if invert:
-       return tuple(np.setxor1d(np.arange(n_dim), axis).astype(int))
+        return tuple(np.setxor1d(np.arange(n_dim), axis).astype(int))
     else:
         return tuple(axis)
 
@@ -267,11 +267,11 @@ def argmin(a, axis=None):
 
 def allclose(a, b, rtol=1.e-5, atol=1.e-8, axis=None):
     assert a.shape == b.shape, f"{a.shape} != {b.shape}"
-
     axis = np.array(axis_wrapper(axis=axis, n_dim=a.ndim))
+    assert len(axis) <= len(a.shape)
+
     shape = np.array(a.shape)[axis]
     bool_arr = np.zeros(shape, dtype=bool)
-
     for i in product(*(range(s) for s in shape)):
         bool_arr[i] = np.allclose(extract(a, idx=i, axis=axis),
                                   extract(b, idx=i, axis=axis),
@@ -602,7 +602,7 @@ def get_sub_set_idx():
             x[x <= nn] -= 1
         return x
 
-    def remove_reduce(n):
+    def remove_reduce(x, n):
         for nn in n:
             x = x[x != nn]
             x[x <= nn] -= 1
@@ -623,6 +623,23 @@ def get_sub_set_idx():
 
         idx_delete = np.nonzero(keep == 0)
         return bool_keep, idx_keep, idx_delete
+
+
+def tile_offset(a, reps, offsets=None):
+    s = shape_wrapper(a.shape)
+    b = np.tile(a, reps)
+
+    if offsets is not None:
+        r = np.array(b.shape) // np.array(a.shape)
+        if np.size(offsets) == 1:
+            o = scalar2array(offsets, shape=len(s))
+        else:
+            o = offsets
+
+        assert len(o) == len(s)
+        offsets = [np.repeat(np.arange(rr), ss)*oo for ss, rr, oo in zip(s, r, o)]
+        b += sum(np.meshgrid(*offsets, indexing='ij') + [0])
+    return b
 
 
 # Block lists
@@ -646,7 +663,7 @@ def block_view(a, shape, aslist=False, require_aligned_blocks=True):
                                 If False, "leftover" items that cannot be made into complete blocks
                                 will be discarded from the output view.
     Here's a 2D example (this function also works for ND):
-    # >>> a = np.rarange(1,21).reshape(4,5)
+    # >>> a = np.arange(1,21).reshape(4,5)
     # >>> print(a)
     [[ 1  2  3  4  5]
      [ 6  7  8  9 10]
@@ -769,25 +786,25 @@ def block_shuffle(arr, block_size, inside=False):
         return arr[idx_ele]
 
 
-def replace_tail_roll(arr, arr_new):
+def replace_tail_roll(a, b):
     """
     Replace the last elements of the array with the new array and roll the new ones to the start
     So that a repeated call of this function cycles through the array
-    replace_tail_roll(arr=[ 1,  2,  3,  4,  5,  6, 7, 8], arr_new=[77, 88])   -->   [77, 88,  1,  2,  3,  4,  5,  6]
-    replace_tail_roll(arr=[77, 88,  1,  2,  3,  4, 5, 6], arr_new=[55, 66])   -->   [55, 66, 77, 88,  1,  2,  3,  4]
-    replace_tail_roll(arr=[55, 66, 77, 88,  1,  2, 3, 4], arr_new=[33, 44])   -->   [33, 44, 55, 66, 77, 88,  1,  2]
-    replace_tail_roll(arr=[33, 44, 55, 66, 77, 88, 1, 2], arr_new=[11, 22])   -->   [11, 22, 33, 44, 55, 66, 77, 88]
+    replace_tail_roll(a=[ 1,  2,  3,  4,  5,  6, 7, 8], b=[77, 88])   -->   [77, 88,  1,  2,  3,  4,  5,  6]
+    replace_tail_roll(a=[77, 88,  1,  2,  3,  4, 5, 6], b=[55, 66])   -->   [55, 66, 77, 88,  1,  2,  3,  4]
+    replace_tail_roll(a=[55, 66, 77, 88,  1,  2, 3, 4], b=[33, 44])   -->   [33, 44, 55, 66, 77, 88,  1,  2]
+    replace_tail_roll(a=[33, 44, 55, 66, 77, 88, 1, 2], b=[11, 22])   -->   [11, 22, 33, 44, 55, 66, 77, 88]
     """
-    n_sample_new = np.shape(arr_new)[0]
-    assert np.shape(arr)[0] > n_sample_new
+    n_a, n_b = np.shape(a)[0], np.shape(b)[0]
+    assert n_a > n_b
 
-    arr[-n_sample_new:] = arr_new
-    return np.roll(arr, n_sample_new, axis=0)
+    a[-n_b:] = b
+    return np.roll(a, n_b, axis=0)
 
 
 def replace_tail_roll_list(arr_list, arr_new_list):
     assert len(arr_list) == len(arr_new_list)
-    return (replace_tail_roll(arr=arr, arr_new=arr_new) for (arr, arr_new) in zip(arr_list, arr_new_list))
+    return (replace_tail_roll(a=arr, b=arr_new) for (arr, arr_new) in zip(arr_list, arr_new_list))
 
 
 def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
@@ -915,7 +932,7 @@ def grid_i2x(*, i, cell_size, lower_left, mode='c'):
 #             res[ii, :, :] = np.dot(A_ii , B_ii)
 #         return res
 #
-#     # At square matices above shape 20 calling BLAS is faster
+#     # At square matrices above shape 20 calling BLAS is faster
 #     if x >= 20 or y >= 20 or z >= 20:
 #         return dot_BLAS
 #     else:

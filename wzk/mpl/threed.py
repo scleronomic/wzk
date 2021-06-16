@@ -1,5 +1,6 @@
 import numpy as np
 import mpl_toolkits.mplot3d.art3d as art3d
+# noinspection PyUnresolvedReferences
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from itertools import combinations, product

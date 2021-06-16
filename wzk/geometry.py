@@ -1,10 +1,24 @@
 import numpy as np
-
-from itertools import combinations
 from scipy.spatial import ConvexHull
 
 from wzk.numpy2 import shape_wrapper
-from wzk.dicts_lists_tuples import change_tuple_order
+
+
+def get_orthonormal(v):
+    """
+    get a 3d vector which ist orthogonal to v.
+    Note that the solution is not unique.
+    """
+    idx_0 = v == 0
+    if np.any(idx_0):
+        v_o1 = np.array(idx_0, dtype=float)
+
+    else:
+        v_o1 = np.array([1.0, 1.0, 0.0])
+        v_o1[-1] = -np.sum(v * v_o1) / v[-1]
+
+    v_o1 /= np.linalg.norm(v_o1)
+    return v_o1
 
 
 def projection_point_line(p, x0, x1, clip=False):
@@ -77,7 +91,21 @@ def projection_point_plane(p, o, u, v, clip=False):
         return p0 + p
 
 
-def line_line(line_a, line_b, return_mu=False):
+def __line_line(x1, x3,
+                o, u, v, uu, vv,
+                __return_mu):
+
+    mua, mub = __clip_ppp(o=o, u=u, v=-v, uu=uu, vv=vv)  # attention sign change for v
+    xa = x1 + mua[..., np.newaxis] * u
+    xb = x3 + mub[..., np.newaxis] * v
+
+    if __return_mu:
+        return (xa, xb), (mua, mub)
+    else:
+        return xa, xb
+
+
+def line_line(line_a, line_b, __return_mu=False):
     """
     (x1-x3) --- (x1-x4)
        |           |
@@ -95,67 +123,27 @@ def line_line(line_a, line_b, return_mu=False):
 
     x1, x2 = line_a
     x3, x4 = line_b
-    o = x1 - x3
     u = x2 - x1
     v = x4 - x3
+    o = x1 - x3
 
-    mua, mub = __clip_ppp(o=o, u=u, v=-v, uu=(u*u).sum(axis=-1), vv=(v*v).sum(axis=-1))  # attention sign change for v
-    xa = x1 + mua * u
-    xb = x3 + mub * v
-
-    if return_mu:
-        return (xa, xb), (mua, mub)
-    else:
-        return xa, xb
+    return __line_line(x1=x1, x3=x3,
+                       o=o, u=u, v=v, uu=(u*u).sum(axis=-1), vv=(v*v).sum(axis=-1),
+                       __return_mu=__return_mu)
 
 
 def line_line_pairs(lines, pairs, __return_mu=False):
     a, b = pairs.T
     x1, x3 = lines[..., a, 0, :], lines[..., b, 0, :]
-    uv_temp = lines[..., :, 1, :] - lines[..., :, 0, :]
-    u = uv_temp[..., a, :]
-    v = uv_temp[..., b, :]
+    uv = lines[..., :, 1, :] - lines[..., :, 0, :]
+    u = uv[..., a, :]
+    v = uv[..., b, :]
     o = x1 - x3
 
-    uuvv_temp = (uv_temp * uv_temp).sum(axis=-1)
-    mua, mub = __clip_ppp(o=o, u=u, v=-v, uu=uuvv_temp[..., a], vv=uuvv_temp[..., b])  # attention sign change for v
-    xa = x1 + mua[..., np.newaxis] * u
-    xb = x3 + mub[..., np.newaxis] * v
-
-    if __return_mu:
-        return (xa, xb), (mua, mub)
-    else:
-        return xa, xb
-
-# x = T * y
-# ∂x/∂q = ∂T/∂q * y
-# d = b - a
-# d2 = (b - a)^2
-# a = a(a0, a1), a0 = Ta * â0, a1 = Ta * â1
-# b = b(b0, b1), b0 = Tb * b^0, b1 = Tb * b^1
-# ∂a/∂q = ∂a/∂a0 ∂a0/∂q + ∂a/∂a1 ∂a1/∂q
-# ∂a/∂q = (mua-1) ∂Ta/∂q * â0 + (-mua) ∂Ta/∂q * â1
-# ∂a/∂q =  ∂Ta/∂q * [(mua-1)*â0 - mua*â1]
-# ∂b/∂q =  ∂Tb/∂q * [(1-mub)*b^0 + mub*b^1]
-
-# ∂d2/∂q = ∂d2/∂a ∂a/dq + ∂d2/∂b ∂b/dq
-
-
-def test_jac_full():
-    from Kinematic.Robots import Justin19
-    robot = Justin19()
-
-    q = robot.sample_q(10)
-    f, j = robot.get_frames_jac(q)
-    pairs = np.array([[13, 22],
-                      [13, 4],
-                      [22, 4],
-                      [10, 20]])
-    capsule_pos = np.random.random((27, 2, 4))
-    capsule_pos[..., -1] = 1
-
-    x_capsules = (f[:, :, np.newaxis, :, :] @ capsule_pos[np.newaxis, :, :, :,  np.newaxis])[..., 0]
-    line_line_pairs_d2_jac(lines=x_capsules, pairs=pairs)
+    uuvv = (uv * uv).sum(axis=-1)
+    return __line_line(x1=x1, x3=x3,
+                       o=o, u=u, v=v, uu=uuvv[..., a], vv=uuvv[..., b],
+                       __return_mu=__return_mu)
 
 
 def line_line_pairs_d2_jac(lines, pairs):
@@ -172,58 +160,29 @@ def line_line_pairs_d2_jac(lines, pairs):
     dd2_dx = 2*d * dxaxb_dx
     return d2, dd2_dx
 
-def d2_mink(x):
-    x1, x2, x3, x4 = x
-    xa, xb = line_line(line_a=np.array((x1, x2)),
-                       line_b=np.array((x3, x4)))
+
+def __line2capsule(xa, xb, ra, rb):
+    ra, rb = np.atleast_1d(ra, rb)
     d = xb - xa
-    d2 = (d*d).sum(axis=-1)
-    return d2
+    n = np.linalg.norm(d, axis=-1)
+    d_n = d / n[..., np.newaxis]
+    xa = xa + d_n * ra[..., np.newaxis]
+    xb = xb - d_n * rb[..., np.newaxis]
 
-
-def aas():
-    pass
-
-
-def d2_mink_jac(x):
-    x1, x2, x3, x4 = x
-
-    u = x2 - x1
-    v = x4 - x3
-
-    (xa, xb), (mua,mub) = line_line(line_a=np.array((x1, x2)),
-                                    line_b=np.array((x3, x4)), return_mu=True)
-    d = xb - xa
-    d2 = (d*d).sum(axis=-1)
-
-    dxaxb_dx = np.zeros((4, 1))
-    dxaxb_dx[0] = +mua - 1
-    dxaxb_dx[1] = -mua
-    dxaxb_dx[2] = -mub + 1
-    dxaxb_dx[3] = +mub
-
-    _d = x3 - x1 + mub*v - mua*u
-    dd2_dx = 2 * _d * dxaxb_dx
-    return dd2_dx
-
+    dd = n - ra - rb
+    return xa, xb, dd
 
 
 def capsule_capsule(line_a, line_b, radius_a, radius_b):
     xa, xb = line_line(line_a, line_b)
-    d = xb - xa
-    d_n = d / np.linalg.norm(d)
-    xa = xa + d_n * radius_a
-    xb = xb - d_n * radius_b
-    return xa, xb
+    xa, xb, n = __line2capsule(xa=xa, xb=xb, ra=radius_a, rb=radius_b)
+    return xa, xb, n
 
 
 def capsule_capsule_pairs(lines, pairs, radii):
     xa, xb = line_line_pairs(lines=lines, pairs=pairs)
-    d = xb - xa
-    d_n = d / np.linalg.norm(d, axis=-1)
-    xa = xa + d_n * radii[pairs[:, 0]]
-    xb = xb - d_n * radii[pairs[:, 1]]
-    return xa, xb
+    xa, xb, n = __line2capsule(xa=xa, xb=xb, ra=radii[pairs[:, 0]], rb=radii[pairs[:, 1]])
+    return xa, xb, n
 
 
 def distance_point_plane(p, o, u, v, clip=False):
@@ -328,19 +287,6 @@ def rotation_between_vectors(a, b):
     return r
 
 
-def test_rotation_between_vectors():
-    a = np.array([1, 0, 0], dtype=np.float64)
-    b = np.array([0, 0, 1], dtype=np.float64)
-    v = np.cross(a, b)
-    s = np.linalg.norm(v)
-    c = np.dot(a, b)
-    vx = np.array([[0, -v[2], v[1]],
-                   [v[2], 0, -v[0]],
-                   [-v[1], v[0], 0]])
-    r = np.eye(3) + vx + np.dot(vx, vx)*(1-c)/(s**2)
-    print(r)
-
-
 def sample_points_on_disc(radius, size=None):
     rho = np.sqrt(np.random.uniform(low=0, high=radius**2, size=size))
     theta = np.random.uniform(low=0, high=2*np.pi, size=size)
@@ -377,8 +323,8 @@ def sample_points_on_sphere_nd(size, n_dim, ):
     volume_cube = 2**n_dim
     safety_factor = int(np.ceil(safety * volume_cube/volume_sphere))
 
-    size_w_ndim = size + (n_dim,)
-    size_sample = (safety_factor,) + size_w_ndim
+    size_w_n_dim = size + (n_dim,)
+    size_sample = (safety_factor,) + size_w_n_dim
 
     x = np.random.uniform(low=-1, high=1, size=size_sample)
     x_norm = np.linalg.norm(x, axis=-1)
@@ -391,7 +337,7 @@ def sample_points_on_sphere_nd(size, n_dim, ):
 
 def hyper_sphere_volume(n_dim, r=1.):
     """https: # en.wikipedia.org / wiki / Volume_of_an_n - ball"""
-    n2 = n_dim#2
+    n2 = n_dim  # 2
     if n_dim % 2 == 0:
         return (np.pi ** n2) / np.math.factorial(n2) * r**n_dim
     else:
@@ -449,97 +395,16 @@ def fibonacci_sphere(n=100):
     return np.array((x, y, z)).T
 
 
-def test_lines(n=2):
-    from Util.Visualization.pyvista2 import plot_connections
-    import pyvista as pv
-
-    lines = np.random.random((n, 2, 3))
-    pairs = np.array(list(combinations(np.arange(n), 2)))
-    pairs2 = np.arange(2*len(pairs)).reshape(len(pairs), 2)
-    lines2 = np.array(line_line_pairs(lines=lines, pairs=pairs)).swapaxes(0, -2)
-
-    p = pv.Plotter()
-    h_lines = plot_connections(x=lines, pairs=pairs, p=p, opacity=1, color='blue')
-    h_lines2 = plot_connections(x=lines2, pairs=pairs2, p=p, opacity=1, color='red')
-
-    def on_drag(point, i):
-        print(i)
-        lines.reshape(n * 2, 3)[i] = point
-        lines2[:] = np.array(line_line_pairs(lines=lines, pairs=pairs)).swapaxes(0, -2)
-
-        plot_connections(x=lines, pairs=pairs, p=p, opacity=1, color='blue', h=h_lines)
-        plot_connections(x=lines2, pairs=pairs2, p=p, opacity=1, color='red', h=h_lines2)
-
-
-    p.add_sphere_widget(on_drag, center=lines.reshape(n*2, 3), radius=0.01, color='yellow')
-    p.show()
-
-
-def test_capsules():
-    from Util.Visualization.pyvista2 import plot_connections, plot_convex_hull
-    from wzk import get_points_on_multisphere
-    import pyvista as pv
-
-    n = 2
-    lines = np.random.random((n, 2, 3))
-    radii = np.random.random(n)
-    pairs = np.array(list(combinations(np.arange(n), 2)))
-    pairs2 = np.arange(2*len(pairs)).reshape(len(pairs), 2)
-    lines2 = np.array(capsule_capsule_pairs(lines=lines, pairs=pairs, radii=radii)).swapaxes(0, -2)
-
-    hulls = [get_points_on_multisphere(x=xx, r=rr, n=100)[1] for xx, rr in zip(lines, radii)]
-
-    p = pv.Plotter()
-    h_lines = plot_connections(x=lines, pairs=pairs, p=p, opacity=1, color='blue')
-    h_lines2 = plot_connections(x=lines2, pairs=pairs2, p=p, opacity=1, color='red')
-    h_hulls = [plot_convex_hull(x=None, hull=h, p=p, opacity=0.5) for h in hulls]
-
-    def on_drag(point, i):
-        lines.reshape(n * 2, 3)[i] = point
-
-        hulls[:] = [get_points_on_multisphere(x=xx, r=rr, n=100)[1] for xx, rr in zip(lines, radii)]
-        lines2[:] = np.array(capsule_capsule_pairs(lines=lines, pairs=pairs, radii=radii)).swapaxes(0, -2)
-
-        plot_connections(x=lines, pairs=pairs, p=p, opacity=1, color='blue', h=h_lines)
-        plot_connections(x=lines2, pairs=pairs2, p=p, opacity=1, color='red', h=h_lines2)
-        [plot_convex_hull(x=None, hull=h, p=p, opacity=0.5, h=hh) for hh, h in zip(h_hulls, hulls)]
-
-    p.add_sphere_widget(on_drag, center=lines.reshape(n*2, 3), radius=0.1, color='yellow')
-    p.show()
-
-
-def test_speed():
-    from wzk import tic, toc
-    n = 12
-    m = 50
-    lines = np.random.random((m, n, 2, 3))
-    pairs = np.array(list(combinations(np.arange(n), 2)))
-
-    tic()
-    n = 40
-    spheres = np.random.random((m, n, 3))
-    pairs2 = np.array(list(combinations(np.arange(n), 2)))
-
-    tic()
-    for i in range(100):
-        res = line_line_pairs(lines=lines, pairs=pairs)
-    toc('mink')
-
-    tic()
-    for i in range(100):
-        res = line_line_pairs(lines=lines, pairs=pairs)
-    toc('d1234')
-
-
 def line_line33(u, v, w):
     # TODO, use in Cpp
     raise NotImplementedError("http://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment()")
-    # a = (u*u).sum(axis=-1)        # always >= 0
+    #
+    # a = (u*u).sum(axis=-1) # always >= 0
     # b = (u*v).sum(axis=-1)
-    # c = (v*v).sum(axis=-1)        # always >= 0
+    # c = (v*v).sum(axis=-1) # always >= 0
     # d = (u*w).sum(axis=-1)
     # e = (v*w).sum(axis=-1)
-    # D = a*c - b*b        # always >= 0
+    # D = a*c - b*b  # always >= 0
     # # sc, sN  # sc = sN / sD, default sD = D >= 0
     # # tc, tN  # tc = tN / tD, default tD = D >= 0
     # sD = D
@@ -550,6 +415,7 @@ def line_line33(u, v, w):
     # i = d > eps
     # sN = np.where(i, b*e - c*d, 0)
     # sD = np.where(i, a*e - b*d, 1)
+    # tN = np.where(i, )
     #
     # i = sN < 0
     # sN[i] = 0
@@ -606,40 +472,3 @@ def line_line33(u, v, w):
     # dP = w + (sc * u) - (tc * v)  # =  S1(sc) - S2(tc)
     #
     # return norm(dP);   # return the closest distance
-
-
-def test_jac_mink():
-    from wzk import numeric_derivative, print_progress, tic, toc
-
-    n = 1000
-    for i in range(n):
-        print_progress(i, n=n)
-        x = np.random.random((4, 3))
-        j = d2_mink_jac(x)
-        j_true = numeric_derivative(fun=d2_mink, x=x.copy(), axis=(0, 1))
-        if not np.allclose(j, j_true):
-            print(i)
-            raise ValueError('Wrong Derivative')
-
-    print(f'All {n} tests were equal to the numeric derivative')
-
-
-if __name__ == '__main__':
-    pass
-
-    test_jac_mink()
-    # test_speed()
-    # for i in range(1000):
-    #     la, lb = np.random.random((2, 2, 3))
-    #     res = line_line(la, lb)
-    #     d = np.linalg.norm(res[1] - res[0])
-    #     res_mink = line_line_mink(la, lb)
-    #     d_mink = np.linalg.norm(res_mink[1] - res_mink[0])
-    #     b = np.allclose(d, d_mink) or d > d_mink
-    #     if not b:
-    #         print(d, d_mink)
-
-
-    # test_capsules()
-    # test_lines(n=2)
-    # symbolic_jac()

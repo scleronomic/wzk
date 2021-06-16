@@ -1,6 +1,6 @@
 import numpy as np
 from matplotlib import transforms
-from matplotlib import ticker
+# from matplotlib import ticker
 
 from wzk.dicts_lists_tuples import atleast_list
 from wzk.numpy2 import np_isinstance
@@ -24,7 +24,7 @@ def turn_ticks_off(ax):
     set_ticks_position(ax=ax, position='none')
 
 
-def position2tlbr(position='default'):
+def __position2tlbr(position='default'):
     """map keywords to booleans indicating which axis are active"""
     bottom = top = left = right = False
     if position == 'all':
@@ -52,7 +52,7 @@ def position2tlbr(position='default'):
     return top, left, bottom, right
 
 
-def tlbr2positions(top, left, bottom, right):
+def __tlbr2positions(top, left, bottom, right):
 
     position_x = 'none'
     if bottom and top:
@@ -75,7 +75,7 @@ def tlbr2positions(top, left, bottom, right):
 
 def set_ticks_position(ax, position):
 
-    position_x, position_y = tlbr2positions(*position2tlbr(position=position))
+    position_x, position_y = __tlbr2positions(*__position2tlbr(position=position))
 
     ax.axes.xaxis.set_ticks_position(position=position_x)
     ax.axes.yaxis.set_ticks_position(position=position_y)
@@ -88,7 +88,7 @@ def set_ticks_position(ax, position):
 
 def set_labels_position(ax, position):
 
-    top, left, bottom, right = position2tlbr(position=position)
+    top, left, bottom, right = __position2tlbr(position=position)
     ax.tick_params(labeltop=top, labelleft=left, labelbottom=bottom, labelright=right)
 
 
@@ -188,7 +188,7 @@ def change_tick_appearance(ax, position, v, size=None, color=None):
         __apply(h_i=h[i], s=size, c=color)
 
 
-def add_ticks(*, ax, ticks, labels=None, axis='x'):
+def add_ticks(ax, ticks, labels=None, axis='x'):
 
     assert axis in ('x', 'y', 'xy', 'both')
     if ticks is None or np.size(ticks) == 0:
@@ -219,7 +219,7 @@ def add_ticks(*, ax, ticks, labels=None, axis='x'):
         __add_ticks(_axis='y')
 
 
-def set_ticks_and_labels(*, ax, ticks=None, labels=None, axis='x'):
+def set_ticks_and_labels(ax, ticks=None, labels=None, axis='x'):
 
     def __set_ticks(_set_ticks, _set_ticklabels, _ticks, _labels):
 
@@ -238,7 +238,7 @@ def set_ticks_and_labels(*, ax, ticks=None, labels=None, axis='x'):
         __set_ticks(_set_ticks=ax.set_yticks, _set_ticklabels=ax.set_yticklabels, _ticks=ticks, _labels=labels)
 
 
-def transform_tick_labels(*, ax, xt=0., yt=0., rotation=0., axis, ha=None, va=None):
+def transform_tick_labels(ax, xt=0., yt=0., rotation=0., axis='x', ha=None, va=None):
     offset = transforms.ScaledTranslation(xt=xt, yt=yt, scale_trans=ax.get_figure().dpi_scale_trans)
 
     if rotation != 0:
@@ -258,4 +258,3 @@ def transform_tick_labels(*, ax, xt=0., yt=0., rotation=0., axis, ha=None, va=No
         for label in ax.yaxis.get_majorticklabels():
             label.set_transform(label.get_transform() + offset)
             __set_alignment(lbl=label)
-

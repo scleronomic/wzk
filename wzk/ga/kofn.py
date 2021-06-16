@@ -1,6 +1,6 @@
 import numpy as np
 
-from wzk.mathematics import random_subset
+from wzk.math2 import random_subset
 
 
 def rank(x):
@@ -121,6 +121,7 @@ def mutate(pop, n, mut_prob):
     pop_size, k = pop.shape
 
     chosen = np.random.random(size=(pop_size, k)) < mut_prob
+    chosen = np.array(chosen)
 
     for i in range(pop_size):
         sum_chosen = np.sum(chosen[i])

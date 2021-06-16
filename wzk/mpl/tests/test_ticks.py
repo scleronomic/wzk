@@ -61,6 +61,16 @@ class Test(TestCase):
         ax.annotate('right', (1, 0.6), (0.6, 0.6), arrowprops=dict(arrowstyle='->'))
         self.assertTrue(True)
 
+    def test_transform_tick_labels(self):
+        fig, ax = new_fig()
+        transform_tick_labels(ax=ax, xt=0, yt=-0.1, axis='x')
+        transform_tick_labels(ax=ax, xt=0.4, yt=0, rotation=45, axis='y')
+
+        fig, ax = new_fig()
+        transform_tick_labels(ax=ax, xt=0, yt=0, rotation=90, axis='both', ha='center', va='center')
+
+        self.assertTrue(True)
+
 
 if __name__ == '__main__':
     test = Test()

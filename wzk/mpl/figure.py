@@ -12,17 +12,17 @@ from wzk.printing import print_progress
 from wzk.strings import uuid4
 
 
-ieee1c = [3+1/2, (3+1/2)/golden_ratio]
-ieee2c = [7+1/16, (7+1/12)/golden_ratio]
+_width_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / golden_ratio]
+_width_2c_ieee = [7 + 1 / 16, (7 + 1 / 12) / golden_ratio]
 
 
 def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
     # https://www.ieee.org/content/dam/ieee-org/ieee/web/org/pubs/eic-guide.pdf
     if isinstance(width, str):
         if width.lower() == 'ieee1c':
-            width = ieee1c[0]
+            width = _width_1c_ieee[0]
         elif width.lower() == 'ieee2c':
-            width = ieee2c[0]
+            width = _width_2c_ieee[0]
         else:
             raise ValueError
 
@@ -33,10 +33,10 @@ def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
 
     height = width * height_ratio if height is None else height
 
-    return (width, height)
+    return width, height
 
 
-def new_fig(*, width=ieee2c[0], height=None, h_ratio=1/golden_ratio,
+def new_fig(*, width=_width_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
             n_dim=2,
             n_rows=1, n_cols=1,
             share_x='none', share_y='none',  # : bool or {'none', 'all', 'row', 'col'},
@@ -51,14 +51,14 @@ def new_fig(*, width=ieee2c[0], height=None, h_ratio=1/golden_ratio,
         ax = fig.subplots(nrows=n_rows, ncols=n_cols, sharex=share_x, sharey=share_y)
 
         if isinstance(ax, np.ndarray):
-            for i in np.ndindex(np.shape(ax)):
+            for i in np.ndindex(*np.shape(ax)):
                 ax[i].set_aspect(aspect)  # Not implemented for 3D
         else:
             ax.set_aspect(aspect)
 
     else:
         import mpl_toolkits.mplot3d.art3d as art3d  # noqa: F401 unused import
-        ax = fig.gca(projection='3d')
+        ax = plt.axes(projection='3d')
 
     if title is not None:
         fig.suptitle(title)
@@ -119,12 +119,13 @@ def save_ani(filename, fig, ani, n, dpi=300, bbox=None, fps=30):
         n = np.arange(n)
 
     for nn in n:
-        print_progress(iteration=nn, total=n[-1]+1)
+        print_progress(i=nn, n=n[-1]+1)
         ani(nn)
         save_fig(filename="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats='png', dpi=dpi, bbox=bbox,
                  verbose=0)
 
-    os.system(f'ffmpeg -r {fps} -i {dir_temp}/frame%06d.png -pix_fmt yuv420p -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2:color=white" {filename}.mp4')
+    os.system(f'ffmpeg -r {fps} -i {dir_temp}/'
+              f'frame%06d.png -pix_fmt yuv420p -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2:color=white" {filename}.mp4')
     shutil.rmtree(dir_temp)
 
 
@@ -143,6 +144,7 @@ def save_all(directory=None, close=False, **kwargs):
         close_all()
 
 
+# noinspection PyProtectedMember
 def get_fig_suptitle(fig):
     try:
         return fig._suptitle._text
@@ -152,14 +154,6 @@ def get_fig_suptitle(fig):
 
 def close_all():
     plt.close('all')
-
-
-def test_pdf2latex():
-    fig, ax = new_fig(scale=0.5)
-    ax.plot(np.random.random(20))
-    ax.set_xlabel('Magnetization')
-    save_fig(filename='/Users/jote/Documents/Vorlagen/LaTeX Vorlagen/IEEE-open-journal-template/aaa', fig=fig,
-             formats='pdf')
 
 
 def subplot_grid(n, squeeze=False, **kwargs):
@@ -173,3 +167,11 @@ def subplot_grid(n, squeeze=False, **kwargs):
     if not squeeze:
         ax = np.atleast_2d(ax)
     return ax
+
+
+def test_pdf2latex():
+    fig, ax = new_fig(scale=0.5)
+    ax.plot(np.random.random(20))
+    ax.set_xlabel('Magnetization')
+    save_fig(filename='/Users/jote/Documents/Vorlagen/LaTeX Vorlagen/IEEE-open-journal-template/aaa', fig=fig,
+             formats='pdf')

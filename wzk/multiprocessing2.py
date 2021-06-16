@@ -1,23 +1,23 @@
 import numpy as np
-import multiprocessing as mp
-import os
-
+import multiprocessing
 
 from time import sleep
 from wzk import change_tuple_order
 
+# Error under Python3.8 /MacOs -> AttributeError: Can't pickle local object 'mp_wrapper.<locals>.__fun_wrapper'
+# https://stackoverflow.com/questions/60518386/error-with-module-multiprocessing-under-python3-8
+multiprocessing.set_start_method('fork', force=True)
 
 # FINDING h5py objects can not be pickled
 #   -> read the files inside the function instead / h5py objects are only references anyway
 #   Joblib: Threading backend allows shared memory
 
-# FINDING
 
 def n_processes_wrapper(n_processes, n_samples):
     return min(max(1, n_processes), n_samples)
 
 
-def get_n_samples_per_process(*, n_samples, n_processes):
+def get_n_samples_per_process(n_samples, n_processes):
     n_samples_per_core = n_samples // n_processes
     odd_idx = n_samples - (n_samples_per_core * n_processes)
     n_samples_per_core = np.repeat(n_samples_per_core, repeats=n_processes)
@@ -28,7 +28,8 @@ def get_n_samples_per_process(*, n_samples, n_processes):
     return n_samples_per_core, n_samples_per_core_cs
 
 
-def mp_wrapper(*args, fun, n_processes=1, max_chunk_size=None, __debug_loop=False):
+def mp_wrapper(*args, fun,
+               n_processes=1, max_chunk_size=None, __debug_loop=False):
     """
     Multiprocessing Wrapper for a function with a single argument.
     arg must be an iterative and will be split along its first dimension and fed to the different processes
@@ -36,7 +37,7 @@ def mp_wrapper(*args, fun, n_processes=1, max_chunk_size=None, __debug_loop=Fals
 
     Caveats:
     - The function breaks if the data passed through the pipe is to large
-      so make sure that the data shape does not exceed ~100Mb per process
+      so make sure that the data size does not exceed ~100Mb per process
       https://stackoverflow.com/questions/31552716/multiprocessing-queue-full
 
     - Numpy's random number generator starts with the same seed for each process, so if your calculations depend on
@@ -70,6 +71,7 @@ def mp_wrapper(*args, fun, n_processes=1, max_chunk_size=None, __debug_loop=Fals
     if len(args) == 0:
         def __fun_wrapper(i_process, queue):
             queue.put((i_process, fun()))
+
     else:
         n_samples_pp, n_samples_pp_cs = \
             get_n_samples_per_process(n_samples=n_samples, n_processes=n_processes)
@@ -77,25 +79,26 @@ def mp_wrapper(*args, fun, n_processes=1, max_chunk_size=None, __debug_loop=Fals
         if isinstance(args[0], int):
             if max_chunk_size is not None:
                 def fun_i(i_process):
-                    np.random.seed()
+                    np.random.seed(None)
                     n_s = n_samples_pp[i_process]
                     ns_pp, ns_pp_cs = get_n_samples_per_process(n_samples=n_s, n_processes=n_s // max_chunk_size)
                     return combine_results([fun(ns_pp_i) for ns_pp_i in ns_pp])
             else:
                 def fun_i(i_process):
-                    np.random.seed()
+                    np.random.seed(None)
                     return fun(n_samples_pp[i_process])
+
         else:
             if max_chunk_size is not None:
                 def fun_i(i_process):
-                    np.random.seed()
+                    np.random.seed(None)
                     n_s = n_samples_pp[i_process]
                     ns_pp, ns_pp_cs = get_n_samples_per_process(n_samples=n_s, n_processes=n_s // max_chunk_size)
                     return combine_results([fun(*map(lambda a: a[ns_pp_cs[j]:ns_pp_cs[j+1]], args))
                                             for j in range(len(ns_pp_cs)-1)])
             else:
                 def fun_i(i_process):
-                    np.random.seed()
+                    np.random.seed(None)
                     return fun(*map(lambda a: a[n_samples_pp_cs[i_process]:n_samples_pp_cs[i_process+1]],
                                     args))
 
@@ -106,10 +109,10 @@ def mp_wrapper(*args, fun, n_processes=1, max_chunk_size=None, __debug_loop=Fals
             queue.put((i_process, fun_i(i_process=i_process)))
 
     # Start the processes and save their results in a queue
-    result_queue = mp.Queue(n_processes)
+    result_queue = multiprocessing.Queue(n_processes)
     process_list = []
     for i in range(n_processes):
-        p = mp.Process(target=__fun_wrapper, args=(i, result_queue), name=str(i))
+        p = multiprocessing.Process(target=__fun_wrapper, args=(i, result_queue), name=str(i))
         p.start()
         process_list.append(p)
 
@@ -146,67 +149,3 @@ def combine_results(results):
             return None
         else:
             return np.concatenate(results, axis=0)
-
-
-def test_mp_wrapper():
-    from wzk.dicts_lists_tuples import list_allclose
-
-    def fun__int_in(n):
-        return np.zeros((n, 3))
-
-    def fun__arr_in(arr):
-        arr[:] = 0
-        return arr
-
-    def fun__multiple_arr_in(a1, a2, a3):
-        a4 = a1 + a2 + a3
-        return a4
-
-    def fun__multiple_arr_out(n):
-        return tuple(np.full((n, ii), ii) for ii in range(1, 5))
-
-    def fun__multiple_out(n):
-        return tuple(np.full((n, ii), ii) for ii in range(1, 3)) + (11, 12)
-
-    n_processes = 10
-    z = np.zeros((1000, 3))
-    a = np.ones((1000, 3))
-    b = np.ones((1000, 3)) * 2
-    c = np.ones((1000, 3)) * 3
-
-    res1 = mp_wrapper(999, fun=fun__int_in, n_processes=n_processes)
-    res1b = mp_wrapper(999, fun=fun__int_in, n_processes=n_processes, __debug_loop=True)
-    assert np.allclose(res1, np.zeros((999, 3)))
-    assert list_allclose(res1, res1b)
-
-    res2 = mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes)
-    res2b = mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes, __debug_loop=True)
-    assert np.allclose(res2, z)
-    assert list_allclose(res2, res2b)
-
-    res3 = mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes)
-    res3b = mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes, __debug_loop=True)
-    assert np.allclose(res3, a+b+c)
-    assert list_allclose(res3, res3b)
-
-    res4 = mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes)
-    res4b = mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes, __debug_loop=True)
-    for i in range(1, 5):
-        assert np.allclose(res4[i-1], np.full((989, i), i))
-    assert all(list_allclose(res4, res4b))
-
-    res5 = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes)
-    res5b = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, __debug_loop=True)
-    for i in range(1, 3):
-        assert np.allclose(res5[i-1], np.full((1007, i), i))
-    assert all(list_allclose(res5, res5b))
-
-    res6 = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, max_chunk_size=10)
-    res6b = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, __debug_loop=True)
-    for i in range(1, 3):
-        assert np.allclose(res6[i-1], np.full((1007, i), i))
-    assert all(list_allclose(res6[:2], res6b[:2]))
-
-
-if __name__ == '__main__':
-    test_mp_wrapper()

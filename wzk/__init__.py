@@ -13,12 +13,11 @@ from .perlin import *
 from .printing import *
 from .ssh import *
 from .strings import *
-from .spatial_transform import *
+from wzk.spatial.transform import *
 from .testing import *
 from .time import *
 from .training import *
 
-from .mpl.backend import plt
 from .mpl.figure import *
 from .mpl import plotting
 

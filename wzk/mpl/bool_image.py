@@ -2,7 +2,9 @@ import numpy as np
 from matplotlib.collections import LineCollection, PatchCollection
 from matplotlib.patches import Rectangle
 
+from wzk.mpl.backend import plt
 from wzk.mpl.bool_image_boundaries import get_combined_edges, get_combined_faces
+# noinspection PyUnresolvedReferences
 from wzk.numpy2 import limits2cell_size, grid_i2x, grid_x2i
 
 
@@ -96,5 +98,5 @@ def plot_img_patch_w_outlines(img, limits,
         ax.set_ylim(-0.1, 0.1)
         ax.set_zlim(-1, 1)
         ax.scatter(*face_vtx.reshape(-1, 3).T)
+
 # def plot_poly_collection_3d(face_vtx=face_vtx, ax=ax, facecolor=facecolor, edgecolor=edgecolor, alpha=0.4):
-    

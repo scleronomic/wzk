@@ -2,11 +2,12 @@ import os
 import re
 import socket
 
+# noinspection PyUnresolvedReferences
 import ray
 import fire
 import numpy as np
 
-from wzk.ssh import ssh_cmd, get_n_cpu
+from wzk.ssh import ssh_cmd, get_n_elu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 
 
@@ -29,14 +30,13 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
     if head is None:
         head = socket.gethostname()
 
-    n_cpu = int(get_n_cpu(head) * perc)
-    start_head_cmd = f'ray start --head --port=6379 --num-cpus={n_cpu}'
+    n_elu = int(get_n_elu(head) * perc)
+    start_head_cmd = f'ray start --head --port=6379 --num-cpus={n_elu}'
     stdout = ssh_cmd(host=head, cmd=start_head_cmd)
 
     log += head + ':\n' + stdout + '\n'
     if verbose > 1:
         print(head, ':', stdout)
-
 
     pattern_adr = r"--address='\S*'"
     pattern_pwd = r"--redis-password='\S*'"
@@ -47,8 +47,8 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
 
     nodes = np.setdiff1d(atleast_list(nodes), [head])
     for node in nodes:
-        n_cpu = int(get_n_cpu(node) * perc)
-        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu}"
+        n_elu = int(get_n_elu(node) * perc)
+        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_elu}"
         stdout = ssh_cmd(host=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
@@ -70,9 +70,10 @@ def stop_ray_cluster(nodes=None, verbose=1):
         if verbose > 1:
             print(node, ':', stdout)
 
-def ray_main(mode='start', nodes=None, head=None, verbose=2, perc=80):
+
+def ray_main(mode='start', nodes=None, head=None, perc=80, verbose=2):
     if mode == 'start':
-        start_ray_cluster(head=head, nodes=nodes, verbose=verbose)
+        start_ray_cluster(head=head, nodes=nodes, perc=perc, verbose=verbose,)
     elif mode == 'stop':
         stop_ray_cluster(nodes=nodes, verbose=verbose)
     else:
