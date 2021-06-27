@@ -37,39 +37,30 @@ def get_timestamp(year=True, month=True, day=True, hour=True, minute=True, secon
     return stamp_str
 
 
-# Tic - Toc (like in MATLAB)
-def tic_toc_generator():
-    """
-    Generator that returns time differences
-    https://stackoverflow.com/a/26695514/7570817
-    """
-    tf = time()
-    while True:
-        ti = tf
-        tf = time()
-        yield tf - ti
+__start_stack = []
+__start_named = {}
 
 
-TicToc = tic_toc_generator()
+def tic(name=None):
+    if name is None:
+        __start_stack.append(time())
+    else:
+        __start_named[name] = time()
 
 
-def toc(message=None, temp_bool=True, decimals=6):
+def toc(name=None, decimals=6):
+    if name is None:
+        start = __start_stack.pop()
+    else:
+        start = __start_named.pop(name)
+    elapsed = time() - start
 
-    # Prints the time difference yielded by generator instance TicToc
-    temp_time_interval = next(TicToc)
-    if temp_bool:
-        if message is None:
-            message = 'Elapsed time'
-        elif message == '':
-            return temp_time_interval
+    if name is None:
+        name = 'Elapsed time'
+    elif name == '':
+        return elapsed
 
-        message += ': '
-        print(message + f"{temp_time_interval:.{decimals+1}}")
-        return temp_time_interval
+    name += ': '
+    print(name + f"{elapsed:.{decimals+1}}")
 
-
-def tic():
-    # Records a time in TicToc, marks the beginning of a time interval
-    toc(temp_bool=False)
-
-
+    return elapsed

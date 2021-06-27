@@ -1,3 +1,5 @@
+from unittest import TestCase
+
 from wzk.mpl import new_fig
 from wzk.tsp import *
 
@@ -58,7 +60,6 @@ def test_solve_tsp(mode='random'):
         raise NotImplementedError
 
     route = solve_tsp(points=points, time_limit=1, verbose=1)
-    route = solve_tsp(points=points, time_limit=10, verbose=1)
     # plot_solution_2d(points=points, route=route)
 
 
@@ -71,5 +72,7 @@ def plot_solution_2d(points, route, title='Traveling Salesman Problem'):
     ax.plot(*points_ordered.T, ls='-', color='b', alpha=0.8)
 
 
-# if __name__ == '__main__':
-#     test_solve_tsp(mode='circuit')
+class Test(TestCase):
+    def test_solve_tsp(self):
+        route = test_solve_tsp(mode='random')
+        route = test_solve_tsp(mode='circuit')

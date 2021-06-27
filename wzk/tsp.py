@@ -63,7 +63,6 @@ def solve_tsp(points, dist_mat=None, time_limit=10,
 
     # Solve the problem.
     assignment = routing.SolveWithParameters(search_parameters)
-
     route = get_route(manager=manager, routing=routing, assignment=assignment)
 
     if verbose:

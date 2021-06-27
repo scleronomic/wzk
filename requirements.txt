@@ -3,3 +3,11 @@ pyvista
 ortools
 pip
 numpy
+scipy
+screeninfo
+ray
+fire
+zlib
+scikit-image
+msgpack
+setuptools

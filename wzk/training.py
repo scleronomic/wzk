@@ -6,9 +6,9 @@ from wzk.dicts_lists_tuples import change_tuple_order
 
 def n2train_test(n, split=0.2):
 
-    if isinstance(split, float) and 0 < split < 1:
+    if isinstance(split, float) and 0 <= split <= 1:
         n_test = int(np.round(n * split))
-    elif isinstance(split, int) and 0 < split < n:
+    elif isinstance(split, int) and 0 <= split <= n:
         n_test = split
     else:
         raise ValueError(f"Unknown value for 'split': {split} ; "

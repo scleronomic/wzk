@@ -1,7 +1,4 @@
 from unittest import TestCase
-
-import numpy as np
-
 from wzk.training import *
 
 
@@ -52,7 +49,7 @@ class Test(TestCase):
         split = 0.5
         a = np.arange(n)
         train_test_tuple = train_test_split(a, split=split, shuffle=True, seed=0)
-        self.__assert(train_test_tuple, s=n, n=n)
+        self.__assert(train_test_tuple, s=split*n, n=n)
 
         b = np.hstack((train_test_tuple[0], train_test_tuple[1]))
         self.assertTrue(~np.allclose(a, b))
