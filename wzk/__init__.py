@@ -1,5 +1,4 @@
 from .binary import *
-from .cpppy import *
 from .dicts_lists_tuples import *
 from .files import *
 from .functions import *
@@ -13,7 +12,7 @@ from .perlin import *
 from .printing import *
 from .ssh import *
 from .strings import *
-from wzk.spatial.transform import *
+from .spatial.transform import *
 from .testing import *
 from .time import *
 from .training import *
