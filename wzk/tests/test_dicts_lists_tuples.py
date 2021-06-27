@@ -1,9 +1,43 @@
 from unittest import TestCase
 from wzk.dicts_lists_tuples import *
-from wzk import safe_remove
+from wzk.files import safe_remove
 
 
 class Test(TestCase):
+
+    def test_totuple(self):
+        self.assertTrue(totuple('aaa') == ('a', 'a', 'a'))
+        self.assertTrue(totuple([1, 2, [3, 4]]) == (1, 2, (3, 4)))
+
+    def test_tolist(self):
+        self.assertTrue(tolist('aaa') == ['a', 'a', 'a'])
+        self.assertTrue(tolist((1, 2, (3, 4))) == [1, 2, [3, 4]])
+
+    def test_tuple_extract(self):
+        self.assertTrue(tuple_extract(t=(1,), default=(0, 0), mode='default') == (1, 0))
+        self.assertTrue(tuple_extract(t=(1,), default=(0, 0), mode='repeat') == (1, 1))
+        self.assertTrue(tuple_extract(t=(1, (3, 4)), default=(0, 0, (0, 0)), mode='default') == (1, (3, 4), (0, 0)))
+
+    def test_safe_squeeze(self):
+        self.assertTrue(safe_squeeze(s=(1.1,)) == 1.1)
+        self.assertRaises(AssertionError, safe_squeeze, (1, (3, 4)))
+
+    def remove_nones(self):
+        self.assertTrue(remove_nones([1, None, 2, None, None, 3, None, None]) == [1, 2, 3])
+        self.assertTrue(remove_nones([1, None, 2, None, None, 'a', None, [None]]) == [1, 2, 'a', [None]])
+
+    def test_atleast_list(self):
+        self.assertTrue(atleast_list((1, 2, 3), convert=True) == [1, 2, 3])
+        self.assertTrue(atleast_list((1, 2, 3), convert=False) == [(1, 2, 3)])
+        self.assertTrue(atleast_list((1, 2, (3, 4)), convert=True) == [1, 2, [3, 4]])
+        self.assertTrue(atleast_list(np.array((1, 2, 3)), convert=True) == [1, 2, 3])
+
+    def test_atleast_tuple(self):
+        self.assertTrue(atleast_tuple([1, 2, 3], convert=True) == (1, 2, 3))
+        self.assertTrue(atleast_tuple([1, 2, 3], convert=False) == ([1, 2, 3],))
+        self.assertTrue(atleast_tuple([1, 2, [3, 4]], convert=True) == (1, 2, (3, 4)))
+        self.assertTrue(atleast_tuple(np.array((1, 2, 3)), convert=True) == (1, 2, 3))
+
 
     def test_dict2json(self):
         dummy_file = 'dummy_dict.json'

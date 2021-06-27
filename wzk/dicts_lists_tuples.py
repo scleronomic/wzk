@@ -37,11 +37,11 @@ def tolist(a):
         return a
 
 
-def tuple_extract(t, default, mode='use_default'):
+def tuple_extract(t, default, mode='default'):
     """
     default: tuple
 
-    mode: 'use_default'
+    mode: 'default'
           'repeat'
     """
 
@@ -55,8 +55,9 @@ def tuple_extract(t, default, mode='use_default'):
     if length == length_default:
         return t
 
-    if mode == 'use_default':
+    if mode == 'default':
         return t + default[length:]
+
     elif mode == 'repeat':
         assert length == 1, "mode 'repeat' expects length(t) == 1"
         return t * length_default

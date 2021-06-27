@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
 
         self.assertTrue(compare_arrays(a, a1))
         self.assertTrue(compare_arrays(b, b1))
-        self.assertTrue(compare_arrays(r_ab, r_ba))
+        self.assertTrue(compare_arrays(r_ab, r_ba.T))
 
     def test_get_orthonormal(self):
         a = np.random.random(3)
