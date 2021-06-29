@@ -31,7 +31,7 @@ setup(
                       'scikit-image',
 
                       'matplotlib',
-                      'pyvista'
+                      'pyvista',
                       'setuptools',
                       'msgpack'],
     classifiers=[
