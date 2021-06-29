@@ -6,5 +6,4 @@ matplotlib
 fire
 ortools
 setuptools
-zlib
 msgpack

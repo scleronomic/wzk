@@ -33,7 +33,6 @@ setup(
                       'fire',
                       'ortools',
                       'setuptools',
-                      'zlib',
                       'msgpack'],
     classifiers=[
         "Programming Language :: Python :: 3",
