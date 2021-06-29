@@ -25,18 +25,17 @@ setup(
     description="WerkZeugKasten - collection of python convenience functions for common modules",
     long_description=long_description,
     url="https://github.com/scleronomic/WerkZeugKasten",
-    # packages=find_packages(),
+    packages=find_packages(),
     install_requires=['numpy',
                       'scipy',
                       'scikit-image',
+
                       'matplotlib',
-                      'fire',
-                      'ortools',
+                      'pyvista'
                       'setuptools',
                       'msgpack'],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     # cmdclass={'install': InstallLocalPackage}

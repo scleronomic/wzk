@@ -2,6 +2,7 @@ numpy
 scipy
 scikit-image
 matplotlib
+pyvista
 
 fire
 ortools
