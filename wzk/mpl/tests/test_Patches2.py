@@ -15,7 +15,6 @@ class Test(TestCase):
         ax.set_xlim([-width * 1.2, width * 1.2])
         ax.set_ylim([-width * 1.2, width * 1.2])
 
-        deg = 180
         rec = plt.Rectangle((0, 0), width=width, height=height, alpha=0.8,
                             transform=get_aff_trafo(xy1=(0.5, 0.5), theta=90, por=(0.5, 0.05), ax=None))
         ax.add_patch(rec)
@@ -42,7 +41,7 @@ class Test(TestCase):
 
     def test_AbsoluteFancyBboxPatch(self):
         fig, ax = new_fig(aspect=1)
-        ax.add_patch(FancyBbox(xy=(0.1, 0.1), boxstyle='Round4',
+        ax.add_patch(FancyBbox(xy=(0.1, 0.1), boxstyle='Round4',  # noqa
                                height=0.5, width=0.5, pad=0.1, corner_size=0))
 
     def test_RoundedPolygon(self):

@@ -67,6 +67,7 @@ def print_stats(*args, names=None, dec=4):
     assert len(names) == len(args)
 
     stats = []
+    s = None
     for a in args:
         s = get_stats(a)
         stats.append([s[key] for key in s])
@@ -77,7 +78,7 @@ def print_stats(*args, names=None, dec=4):
     return np.array(stats)
 
 
-def print_correlation(bool_lists, names, percentage=False, dec=4):
+def print_correlation(bool_lists, names, dec=4):
     arr = np.zeros((len(bool_lists), len(bool_lists)))
     total = np.ones_like(bool_lists[0], dtype=bool)
     for i, b1 in enumerate(bool_lists):
@@ -87,9 +88,6 @@ def print_correlation(bool_lists, names, percentage=False, dec=4):
 
     if dec:
         arr = np.round(arr, decimals=dec)
-
-    # if percentage:
-    #     arr = arr.astype(str) + '%'
 
     print_table(rows=names, columns=names, data=arr)
     print(f"Total: {total.sum()}/{len(total)} = {total.mean()}")

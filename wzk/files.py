@@ -156,7 +156,7 @@ def combine_npz_files(*, directory,
     return new_dict
 
 
-def combine_npy_files2(directory, new_name="combined_{new_len}", delete_singles=False, verbose=0):
+def combine_npy_files2(directory, new_name="combined_{new_len}", delete_singles=False):
     directory = os.path.normpath(path=directory)
     file_list = [file for file in os.listdir(directory) if '.npy' in file]
     arr = np.concatenate([np.load(f"{directory}/{file}", allow_pickle=False)
@@ -271,7 +271,7 @@ def test_split_files_into_dirs():
 
     n, m = 20, 3
     from wzk.strings import uuid4
-    file_list = [f"{i}{uuid4()}" for i in range(n) for j in range(m)]
+    file_list = [f"{i}{uuid4()}" for i in range(n) for _ in range(m)]
     dirs = [f"new_{i}" for i in range(n)]
 
     split_files_into_dirs(file_list=file_list, dir_list=dirs, mode='dry',

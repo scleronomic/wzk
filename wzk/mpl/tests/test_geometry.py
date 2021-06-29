@@ -54,11 +54,9 @@ class Test(unittest.TestCase):
         circle1 = DraggableCircle(ax=ax, xy=tuple(xy1), radius=r1, alpha=0.5,
                                   facecolor='red', edgecolor='k', zorder=30)
 
-        def update(*args):
-            xy0 = circle0.get_xy_drag()
-            xy1 = circle1.get_xy_drag()
-
-            fill_circle_intersection(xy0=xy0, r0=r0, xy1=xy1, r1=r1, color='y')
+        def update(*args):  # noqa
+            fill_circle_intersection(xy0=circle0.get_xy_drag(), r0=r0,
+                                     xy1=circle1.get_xy_drag(), r1=r1, color='y')
 
         circle0.add_callback(update)
         circle1.add_callback(update)
@@ -67,7 +65,7 @@ class Test(unittest.TestCase):
 
     def test_mpl_eye_pov(self):
 
-        fig, ax = new_fig(aspect=1)
+        new_fig(aspect=1)
         for x in np.arange(5):
             for y in np.arange(5):
                 eye_pov(xy=(x, y), angle=np.random.uniform(0, 2 * np.pi),
@@ -81,7 +79,7 @@ class Test(unittest.TestCase):
         fig, ax = new_fig(aspect=1, title='2D Coordinate Frames')
 
         h1 = plot_coordinate_frame(ax=ax, x=[1, 1], dcm=trans_theta2frame(theta=1)[:-1, :-1], color='bb')
-        h2 = plot_coordinate_frame(ax=ax, dcm=trans_theta2frame(theta=2)[:-1, :-1], color='ry')
+        h2 = plot_coordinate_frame(ax=ax, dcm=trans_theta2frame(theta=2)[:-1, :-1], color='ry')  # noqa
 
         update_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
@@ -94,7 +92,7 @@ class Test(unittest.TestCase):
 
         dcm = sample_matrix()
         h1 = plot_coordinate_frame(ax=ax, dcm=dcm)
-        h2 = plot_coordinate_frame(ax=ax, dcm=dcm)
+        h2 = plot_coordinate_frame(ax=ax, dcm=dcm)  # noqa
 
         update_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 

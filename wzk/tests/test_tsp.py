@@ -59,7 +59,7 @@ def test_solve_tsp(mode='random'):
     else:
         raise NotImplementedError
 
-    route = solve_tsp(points=points, time_limit=1, verbose=1)
+    _ = solve_tsp(points=points, time_limit=1, verbose=1)
     # plot_solution_2d(points=points, route=route)
 
 
@@ -74,5 +74,5 @@ def plot_solution_2d(points, route, title='Traveling Salesman Problem'):
 
 class Test(TestCase):
     def test_solve_tsp(self):
-        route = test_solve_tsp(mode='random')
-        route = test_solve_tsp(mode='circuit')
+        _ = test_solve_tsp(mode='random')
+        _ = test_solve_tsp(mode='circuit')

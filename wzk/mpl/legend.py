@@ -30,11 +30,11 @@ def annotate_arrow(ax, xy0, xy1, offset=0.,
 
 
 # Legends
-def make_legend_arrow_lr(legend, orig_handle, xdescent, ydescent, width, height, fontsize):
+def make_legend_arrow_lr(legend, orig_handle, xdescent, ydescent, width, height, fontsize):  # noqa
     return patches.FancyArrow(x=0, y=height/2, dx=width, dy=0, length_includes_head=True, head_width=0.75*height)
 
 
-def make_legend_arrow_rl(legend, orig_handle, xdescent, ydescent, width, height, fontsize):
+def make_legend_arrow_rl(legend, orig_handle, xdescent, ydescent, width, height, fontsize):  # noqa
     return patches.FancyArrow(x=width, y=height/2, dx=-width, dy=0, length_includes_head=True, head_width=0.75*height)
 
 
@@ -67,7 +67,7 @@ def align_legend(fig, l_str, w=80):
     for i, s in enumerate(l_str[0]):
         t = fig.text(0.1, 0.1, s, fontsize=8)
         bb = t.get_window_extent(renderer=r)
-        l_al.append(s + '\hspace{' + str(w - bb.fig_width_inch) + 'pt} | ' + l_str[1][i])
+        l_al.append(s + r'\hspace{' + str(w - bb.fig_width_inch) + 'pt} | ' + l_str[1][i])
         t.remove()
 
     fig.axes[0].legend(l_al)

@@ -18,5 +18,4 @@ if platform.system() == 'Linux':
 elif platform.system() == 'Darwin':
     mpl.use('TkAgg')  # Alternative for Mac: 'Qt5Agg'
 
-# noinspection PyUnresolvedReferences
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt  # noqa

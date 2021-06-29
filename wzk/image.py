@@ -51,7 +51,7 @@ def image_array_shape(*, n_voxels, n_samples=None, n_dim=None, n_channels=None):
 
 
 def initialize_image_array(*, n_voxels, n_dim=None, n_samples=None, n_channels=None,
-                           dtype=bool, initialization='zeros'):
+                           dtype=None, initialization='zeros'):
     shape = image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels)
     return initialize_array(shape=shape, mode=initialization, dtype=dtype)
 
@@ -378,15 +378,15 @@ def safe_add_small2big(idx, small_img, big_img, mode='center'):
             big_img[tuple(map(slice, ll_b, ur_b))] += small_img[tuple(map(slice, ll_s, ur_s))]
 
 
-def sample_from_img(img, range, n, replace=False):
-    bool = np.logical_and(range[0] < img, img < range[1])
-    idx = np.array(np.nonzero(bool)).T
+def sample_from_img(img, range_, n, replace=False):
+    b = np.logical_and(range_[0] < img, img < range_[1])
+    idx = np.array(np.nonzero(b)).T
     i = np.random.choice(a=np.arange(len(idx)), size=n, replace=replace)
     return idx[i]
 
 
 # Image Compression <-> Decompression
-def img2compressed(*, img, n_dim=-1, level=9):
+def img2compressed(img, n_dim=-1, level=9):
     """
     Compress the given image with the zlib routine to a binary string.
     Level of compression can be adjusted. A timing with respect to different compression levels for decompression showed
@@ -398,35 +398,34 @@ def img2compressed(*, img, n_dim=-1, level=9):
     <-> use numpy sparse for the world images, especially in 3d  -> zlib is more effective and more general
     """
 
-    if n_dim == -1:
+    shape = img.shape[:-n_dim]
+    if n_dim == -1 or shape == ():
         return zlib.compress(img.tobytes(), level=level)
+
     else:
-        shape = img.shape[:-n_dim]
         img_cmp = np.empty(shape, dtype=object)
         for idx in np.ndindex(*shape):
             img_cmp[idx] = zlib.compress(img[idx, ...].tobytes(), level=level)
         return img_cmp
 
 
-def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=bool):
+def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=None):
     """
     Decompress the binary string back to an image of given shape
     """
 
     shape = np.shape(img_cmp)
-
+    shape2 = image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_channels=n_channels)
     if shape:
         n_samples = np.size(img_cmp)
         img_arr = initialize_image_array(n_voxels=n_voxels, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels,
                                          dtype=dtype)
         for i in range(n_samples):
-            img_arr[i, ...] = np.fromstring(zlib.decompress(img_cmp[i]), dtype=dtype).reshape(
-                image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_channels=n_channels))
+            img_arr[i, ...] = np.frombuffer(zlib.decompress(img_cmp[i]), dtype=dtype).reshape(shape2)
         return img_arr
 
     else:
-        return np.fromstring(zlib.decompress(img_cmp), dtype=dtype).reshape(
-            image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_channels=n_channels))
+        return np.frombuffer(zlib.decompress(img_cmp), dtype=dtype).reshape(shape2)
 
 
 def bool_img2surf(img, voxel_size):

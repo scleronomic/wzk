@@ -327,12 +327,11 @@ def correlation_plot(a, b, name_a, name_b,
     limits = ((np.percentile(a_all, lower_perc), np.percentile(a_all, upper_perc)),
               (np.percentile(b_all, lower_perc), np.percentile(b_all, upper_perc)))
 
-    limits_1 = add_safety_limits(limits=limits, factor=0.01)
-    limits_2 = add_safety_limits(limits=limits, factor=0.02)
+    limits = add_safety_limits(limits=limits, factor=0.01)
 
     if regression_line:
         s, i, r, p, _ = linregress(a_all, b_all)
-        x_reg = np.linspace(limits_1[0, 0], limits_1[0, 1], 3)
+        x_reg = np.linspace(limits[0, 0], limits[0, 1], 3)
         y_reg = x_reg * s + i
         a += (x_reg,)
         b += (y_reg,)
@@ -344,15 +343,16 @@ def correlation_plot(a, b, name_a, name_b,
     labels, colors, markers, markersizes, alphas, zorders = \
         safe_scalar2array(labels, colors, markers, markersizes, alphas, zorders, shape=len(a))
 
-    for i, (aa, bb, l, c, m, ms, al, z) in enumerate(zip(a, b, labels, colors, markers, markersizes, alphas, zorders)):
+    for i, (aa, bb, la, co, ma, ms, al, zo) in enumerate(zip(a, b,
+                                                             labels, colors, markers, markersizes, alphas, zorders)):
 
         if regression_line and i+1 == len(a):
-            l = None if l is None else l.format(r)
-            ax.plot(aa, bb, color=c, label=l, ls=m, lw=ms, alpha=al, zorder=z)
+            la = None if la is None else la.format(r)
+            ax.plot(aa, bb, color=co, label=la, ls=ma, lw=ms, alpha=al, zorder=zo)
         else:
-            ax.plot(aa, bb, ls='', marker=m, color=c, label=l, markersize=ms, alpha=al, zorder=z, **kwargs)
+            ax.plot(aa, bb, ls='', marker=ma, color=co, label=la, markersize=ms, alpha=al, zorder=zo, **kwargs)
 
-    set_ax_limits(ax=ax, limits=limits_1)
+    set_ax_limits(ax=ax, limits=limits)
 
     if labels is not None:
         ax.legend()

@@ -21,6 +21,37 @@ def get_orthonormal(v):
     return v_o1
 
 
+
+
+
+def make_rhs(xyz, order=(0, 1)):
+    # rhs = rand-hand coordinate system
+    # xyz -> rhs
+    # 1. keep rhs[order[0]]
+    # 2. make rhs[order[1]] orthogonal to rhs[order[0]]
+    # 3. calculate the third vector as cross product of the first two
+
+    def __normalize(*x):
+        return [xx / np.linalg.norm(xx) for xx in x]
+
+    cross_correlation_rhs = np.array([[0, +3, -2],
+                                      [-3, 0, +1],
+                                      [+2, -1, 0]])
+    # rhs[cce[i,j]-1] = cross(rhs[i], rhs[j])
+    # ^ with sign
+
+    xyz = np.array(__normalize(*xyz))
+
+    i, j = order
+    k = cross_correlation_rhs[i, j]
+    k, k_sign = np.abs(k)-1, np.sign(k)
+
+    xyz[j] = __normalize(xyz[j] - xyz[j].dot(xyz[i]) * xyz[i])
+    xyz[k] = k_sign*np.cross(xyz[i], xyz[j])
+
+    return xyz
+
+
 def projection_point_line(p, x0, x1, clip=False):
     """
     http:#mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
@@ -395,9 +426,9 @@ def fibonacci_sphere(n=100):
     return np.array((x, y, z)).T
 
 
-def line_line33(u, v, w):
-    # TODO, use in Cpp
-    raise NotImplementedError("http://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment()")
+# def line_line33(u, v, w):
+#     TODO, use in Cpp
+    # raise NotImplementedError("https://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment()")
     #
     # a = (u*u).sum(axis=-1) # always >= 0
     # b = (u*v).sum(axis=-1)

@@ -12,6 +12,7 @@ def compare_arrays(a, b, axis=None, verbose=0,
     if not np.all(all_equal) or verbose > 0:
         print(title)
         print('shape: ', a.shape)
+        print(f"nan: a {int(np.isnan(a).any())} b {int(np.isnan(b).any())}")
         print('maximal difference:', np.abs(a - b).max())
         print('variance difference:', np.std(a-b))
         ratio = a[np.abs(b) > eps] / b[np.abs(b) > eps]

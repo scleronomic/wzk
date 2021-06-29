@@ -638,7 +638,7 @@ def tile_offset(a, reps, offsets=None):
 
         assert len(o) == len(s)
         offsets = [np.repeat(np.arange(rr), ss)*oo for ss, rr, oo in zip(s, r, o)]
-        b += sum(np.meshgrid(*offsets, indexing='ij') + [0])
+        b += sum(np.meshgrid(*offsets, indexing='ij') + [0])  # noqa
     return b
 
 
@@ -683,7 +683,7 @@ def block_view(a, shape, aslist=False, require_aligned_blocks=True):
     <BLANKLINE>
       [[13 14]
        [18 19]]]]
-    Inspired by the 2D example shown here: http://stackoverflow.com/a/8070716/162094
+    Inspired by the 2D example shown here: https://stackoverflow.com/a/8070716/162094
     """
     assert a.flags["C_CONTIGUOUS"], "This function relies on the memory layout of the array."
     shape = tuple(shape)

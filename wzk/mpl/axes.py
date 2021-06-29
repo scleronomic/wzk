@@ -168,7 +168,7 @@ def size_units2points_listener(ax, h, size, reference='y', mode='ms'):
 
     h, mode = atleast_list(h, mode)
 
-    def on_change(*args):
+    def on_change(*args):  # noqa
         size_new = size_units2points(ax=ax, size=size, reference=reference)
         for hh in h:
             if 'ms' in mode or 'markersize' in mode:

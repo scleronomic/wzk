@@ -21,7 +21,7 @@ if screeninfo is not None:
 def move_fig(fig, position=None, monitor=-1):
     """
     FROM
-    http://stackoverflow.com/questions/7449585/how-do-you-set-the-absolute-position-of-figure-windows-with-matplotlib#19943546
+    https://stackoverflow.com/questions/7449585/how-do-you-set-the-absolute-position-of-figure-windows-with-matplotlib#19943546
     With small change regarding the display resolution
     Move and resize a window to a set of standard positions on the screen.
     Possible positions are:

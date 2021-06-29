@@ -107,8 +107,8 @@ def get_ticks(ax, axis='x'):
 
 def get_ticklabels(ax, axis='x'):
 
-    def labels2arr(ll):
-        return np.array([l.get_text() for l in ll], dtype=object)
+    def labels2arr(labels):
+        return np.array([la.get_text() for la in labels], dtype=object)
 
     if axis == 'x':
         return labels2arr(ax.get_xticklabels())

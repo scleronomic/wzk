@@ -10,11 +10,11 @@ with open("docs/README.md", "r") as fh:
 directory = os.path.split(__file__)[0]
 
 
-class InstallLocalPackage(install):
-    def run(self):
+# class InstallLocalPackage(install):
+#     def run(self):
         # install.run(self)
         # print(directory)
-        subprocess.call(f"cd wzk/cpp/MinSphere; python setup.py develop", shell=True)
+        # subprocess.call(f"cd wzk/cpp/MinSphere; python setup.py develop", shell=True)
 
 
 setup(
@@ -25,12 +25,21 @@ setup(
     description="WerkZeugKasten - collection of python convenience functions for common modules",
     long_description=long_description,
     url="https://github.com/scleronomic/WerkZeugKasten",
-    packages=find_packages(),
+    # packages=find_packages(),
+    install_requires=['numpy',
+                      'scipy',
+                      'scikit-image',
+                      'matplotlib',
+                      'fire',
+                      'ortools',
+                      'setuptools',
+                      'zlib',
+                      'msgpack'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    cmdclass={'install': InstallLocalPackage}
+    # cmdclass={'install': InstallLocalPackage}
 
 )

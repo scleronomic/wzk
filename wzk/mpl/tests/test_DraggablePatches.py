@@ -16,8 +16,8 @@ class TestDraggableCircle(TestCase):
         c1.set_limits(limits=np.array(((0.1, 0.2),
                                        (0.1, 0.2))))
         c2.set_color('g')
-        c2.set_center(xy=(0.4, 0.4))
-        c2.set_radius(0.02)
+        c2.set_center(xy=(0.4, 0.4))  # noqa
+        c2.set_radius(radius=0.02)  # noqa
 
         if verbose == 0:
             close_all()
@@ -29,8 +29,8 @@ class TestDraggableEllipse(TestCase):
         fig, ax = new_fig(aspect=0.2, title='Ellipses -> Spheres')
         ax.set_xlim(0, 100)
         ax.set_ylim(0, 200)
-        DraggableEllipse(ax=ax, xy=(25, 25), width=10, height=None, color='b')
-        DraggableEllipse(ax=ax, xy=(50, 50), width=None, height=50, color='r')
+        DraggableEllipse(ax=ax, xy=(25, 25), width=10, height=-1, color='b')
+        DraggableEllipse(ax=ax, xy=(50, 50), width=-1, height=50, color='r')
 
         if verbose == 0:
             close_all()

@@ -52,7 +52,11 @@ def toc(name=None, decimals=6):
     if name is None:
         start = __start_stack.pop()
     else:
-        start = __start_named.pop(name)
+        try:
+            start = __start_named.pop(name)
+        except KeyError:
+            start = __start_stack.pop()
+
     elapsed = time() - start
 
     if name is None:

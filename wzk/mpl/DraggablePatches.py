@@ -137,7 +137,7 @@ class DraggablePatch(DummyPatch):
         # blit just the redrawn area
         canvas.blit(axes.bbox)
 
-    def on_release(self, event):
+    def on_release(self, event):  # noqa
         """on release we reset the press Measurements"""
         if DraggablePatch.lock is not self:
             return
@@ -209,9 +209,9 @@ class DraggableEllipse(patches.Ellipse, DraggablePatch):
         If fig_width_inch or height are None,
         they are computed to form an circle for the aspect and Measurements ratio of the axis.
         """
-        if width is None:
+        if width == -1:
             width = get_aspect_ratio(ax) / ax.get_data_ratio() * height
-        if height is None:
+        if height == -1:
             height = ax.get_data_ratio() / get_aspect_ratio(ax) * width
 
         patches.Ellipse.__init__(self, xy=xy, width=width, height=height, angle=angle, **kwargs)

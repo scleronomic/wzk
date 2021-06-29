@@ -4,7 +4,6 @@ from scipy.signal import savgol_filter
 from scipy.linalg import solve_banded
 from scipy.stats import norm
 
-from mopla.Optimizer import fill_linear_connection, get_substeps
 from wzk import new_fig
 
 
@@ -316,20 +315,20 @@ def dummy1():
 def dummy2():
     n_old = 20
     n_new = 1000
-    n_cmaction = 1
+    n_fraction = 1
     x = np.linspace(0, 10, n_old)
     y = np.random.random(n_old) * 2
     # y = np.sort(y)
     xy = np.vstack((x, y)).T
-    xy_fine = fill_linear_connection(q=xy[np.newaxis, :, :], n=n_new//n_cmaction, infinity_joints=None)[0]
+    xy_fine = fill_linear_connection(q=xy[np.newaxis, :, :], n=n_new//n_fraction, infinity_joints=None)[0]
 
     # fig, ax = new_fig()
     # ax.plot(*xy.T, alpha=0.5, marker='x')
     # ax.plot(*xy_fine.T, alpha=0.5, marker='o')
 
     y_fine_diff = np.diff(xy_fine[:, 1])
-    y_fine_diff_fine = get_substeps(q=y_fine_diff[np.newaxis, :, np.newaxis], n=n_cmaction)[0, :, 0]
-    x_fine_fine = get_substeps(q=xy_fine[np.newaxis, :, :], n=n_cmaction)[0, :, 0]
+    y_fine_diff_fine = get_substeps(q=y_fine_diff[np.newaxis, :, np.newaxis], n=n_fraction)[0, :, 0]
+    x_fine_fine = get_substeps(q=xy_fine[np.newaxis, :, :], n=n_fraction)[0, :, 0]
 
     idx = np.nonzero(np.abs(np.diff(y_fine_diff)) > 1e-5)[0]
     n = 5
@@ -357,7 +356,7 @@ def dummy2():
     # ax.plot(y_smooth_diff)
     # ax.plot(y_fine_diff)
     ax.plot(xy_fine[1:, 0], y_fine_diff, marker='o', c='r', alpha=0.5, markersize=5)
-    ax.plot(x_fine_fine[n_cmaction:], y_fine_diff_fine, marker='s', c='b', alpha=0.5, markersize=2)
+    ax.plot(x_fine_fine[n_fraction:], y_fine_diff_fine, marker='s', c='b', alpha=0.5, markersize=2)
 
     # ax.plot(y_fine_diff_fine_smooth)
 
@@ -365,8 +364,8 @@ def dummy2():
     #                                                        np.repeat(y_fine_diff_fine_smooth[0], 4),
     #                                                        y_fine_diff_fine_smooth / 5 )))
     # y_fine_diff_fine_cs = np.cumsum(np.concatenate((y[:1],
-    #                                                 np.repeat(y_fine_diff_fine[0], n_cmaction-1) / n_cmaction,
-    #                                                 y_fine_diff_fine / n_cmaction)))
+    #                                                 np.repeat(y_fine_diff_fine[0], n_fraction-1) / n_fraction,
+    #                                                 y_fine_diff_fine / n_fraction)))
     y_fine_diff_cs = np.cumsum(np.concatenate((y[:1], y_fine_diff)))
     y_fine_diff2_cs = np.cumsum(np.concatenate((y[:1], y_fine_diff2)))
     # y_fine_diff_fine_smooth_cs = np.cumsum(y_fine_diff_fine_smooth / 5) + y[0]

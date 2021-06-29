@@ -18,9 +18,9 @@ def leastsq(*, x, y,
     if p0 is None:
         p0 = [1.0, 1.0, 1.0, 1.0, 1.0]
 
-    p1, success = optimize.leastsq(err_fun, p0[:], args=(x, y))
+    p1, cov_p, infodict, mesg, flag = optimize.leastsq(err_fun, p0[:], args=(x, y))
 
     xx = np.linspace(start=x.min(), stop=x.max(), num=100)
     yy = fit_fun(p1, xx)
 
-    return (p1, success), (xx, yy)
+    return (p1, flag), (xx, yy)

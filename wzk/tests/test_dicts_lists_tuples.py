@@ -38,7 +38,6 @@ class Test(TestCase):
         self.assertTrue(atleast_tuple([1, 2, [3, 4]], convert=True) == (1, 2, (3, 4)))
         self.assertTrue(atleast_tuple(np.array((1, 2, 3)), convert=True) == (1, 2, 3))
 
-
     def test_dict2json(self):
         dummy_file = 'dummy_dict.json'
         dict_1 = {'a': 1,

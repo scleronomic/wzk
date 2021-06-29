@@ -8,7 +8,6 @@ class Test(TestCase):
     def test_normalize_01(self):
         x = np.arange(20).reshape(4, 5)
         x[-1, -1] = 20
-
         sol = np.array([[0., 0.05, 0.1, 0.15, 0.2],
                         [0.25, 0.3, 0.35, 0.4, 0.45],
                         [0.5, 0.55, 0.6, 0.65, 0.7],
@@ -16,8 +15,12 @@ class Test(TestCase):
         res = normalize_01(x)
         self.assertTrue(np.allclose(sol, res))
 
-        x = np.arange(30).reshape((2, 3, 5))
+        x = np.arange(40).reshape((2, 4, 5))
+        x[0, -1, -1] = 20
+        x[1, -1, -1] = 40
         res = normalize_01(x, axis=(-2, -1))
+        self.assertTrue(np.allclose(sol, res[0]))
+        self.assertTrue(np.allclose(sol, res[1]))
 
     def test_divisor(self):
         sol = [[], [], [], [], [2], [],
