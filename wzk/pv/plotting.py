@@ -97,7 +97,7 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
         if h is None:
             x, y, z = np.meshgrid(*(np.linspace(lower_left[i], upper_right[i], img.shape[i] + 1) for i in range(3)))
             h0 = pv.StructuredGrid(x, y, z)
-            h0.hide_cells(~img.ravel())
+            h0.hide_cells(~img.ravel().astype(bool))
             h1 = p.add_mesh(h0, show_scalar_bar=False, **kwargs)
             h = (h0, h1)
         else:
@@ -140,7 +140,6 @@ def plot_frames(f, scale=1.,
                 p=None, h=None,
                 color=None,
                 **kwargs):
-
     if np.ndim(f) == 3:
         h = scalar2array(h, len(f))
         color = scalar2array(color, len(f))
@@ -148,7 +147,7 @@ def plot_frames(f, scale=1.,
         return h
 
     else:
-        assert f.shape == (4, 4)
+        assert f.shape == (4, 4), f"{f.shape}"
         if color is None:
             color = np.eye(3)
 

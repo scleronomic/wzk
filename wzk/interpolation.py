@@ -1,9 +1,11 @@
 import numpy as np
+
 from scipy.interpolate import CubicSpline, PPoly, splev, splrep
 from scipy.signal import savgol_filter
 from scipy.linalg import solve_banded
 from scipy.stats import norm
 
+from wzk.trajectory import get_substeps_adjusted, get_substeps
 from wzk import new_fig
 
 
@@ -123,10 +125,10 @@ def scale_coefficients(c, x):
     return c
 
 
-def plot_tangents(ax, x, y, t, length=1, **kwargs):
-    l2 = length/2
-    for xx, tt in zip(x, t):
-        ax.plot([x-l2, x+l2], [y-l2*t, y+l2*t], **kwargs)
+# def plot_tangents(ax, x, y, t, length=1, **kwargs):
+#     l2 = length/2
+#     for xx, tt in zip(x, t):
+#         ax.plot([x-l2, x+l2], [y-l2*t, y+l2*t], **kwargs)
 
 
 def test_interpolation_paper():
@@ -166,7 +168,7 @@ def test_interpolation():
     n05 = 1000
     x = np.arange(n0)
     y = np.random.random(n0)
-    x, y = fill_linear_connection(q=np.vstack((x, y)).T[np.newaxis], n=n05, infinity_joints=None)[0].T
+    x, y = get_substeps_adjusted(x=np.vstack((x, y)).T[np.newaxis], n=n05)[0].T
     plot_3_splines(x=x, y=y, n=n, title='Random, Dense')
 
 
@@ -177,7 +179,7 @@ def test_interpolation2():
     y = np.array([2, 3., 4., 5., 2.])
     plot_3_splines(x=x, y=y, n=n, title='Kink')
 
-    x, y = fill_linear_connection(q=np.vstack((x, y)).T[np.newaxis], n=n05, infinity_joints=None)[0].T
+    x, y = get_substeps_adjusted(x=np.vstack((x, y)).T, n=n05).T
     plot_3_splines(x=x, y=y, n=n, title='Kink')
 
     x = np.linspace(-1, +1, 10001)
@@ -236,13 +238,13 @@ def cumsum_diff(x0, x_diff):
 
 
 def savgol_error():
-    window_length = 21
+    # window_length = 21
     n_old = 20
     n_new = 2000
     x = np.linspace(0, 10, n_old)
     y = np.random.random(n_old) * 2
     xy = np.vstack((x, y)).T
-    xy_fine = fill_linear_connection(q=xy[np.newaxis, :, :], n=n_new, infinity_joints=None)[0]
+    xy_fine = get_substeps_adjusted(x=xy, n=n_new)
     for window_length in [5, 7, 9, 11, 13, 15, 17, 21]:
         print(window_length)
         y_fine_savgol = savgol_filter(x=xy_fine[:, 1], window_length=window_length, polyorder=3, deriv=0)
@@ -256,8 +258,8 @@ def savgol_error():
         # ax.plot(y_fine_savgol, c='r', marker='o', markersize=5)
         # ax.plot(y_fine_savgol2, c='b', marker='o', markersize=5)
 
-        d1_savgol = np.diff(y_fine_savgol, 1)
-        d1_savgol2 = np.diff(y_fine_savgol2, 1)
+        # d1_savgol = np.diff(y_fine_savgol, 1)
+        # d1_savgol2 = np.diff(y_fine_savgol2, 1)
         d2_savgol = np.diff(y_fine_savgol, 2)
         d2_savgol2 = np.diff(y_fine_savgol2, 2)
         print(np.sum(np.abs(d2_savgol)), np.max(np.abs(d2_savgol)))
@@ -275,8 +277,8 @@ def dummy1():
     y = np.random.random(n_old) * 5
     # y = np.sort(y)
     xy = np.vstack((x, y)).T
-    xy_fine = fill_linear_connection(q=xy[np.newaxis, :, :], n=n_new, infinity_joints=None)[0]
-    xy_fine2 = fill_linear_connection(q=xy[np.newaxis, :, :], n=n_new*2, infinity_joints=None)[0]
+    xy_fine = get_substeps_adjusted(x=xy, n=n_new)
+    xy_fine2 = get_substeps_adjusted(x=xy, n=n_new*2)
 
     # fig, ax = new_fig()
     # ax.plot(*xy.T, alpha=0.5, marker='x')
@@ -284,7 +286,7 @@ def dummy1():
     y_fine_filter = savgol_filter(x=xy_fine2[:, 1], window_length=7, polyorder=3, deriv=0)
     y_fine_spline = splev(xy_fine2[:, 0], splrep(xy_fine[:, 0], y=xy_fine[:, 1], s=0.001, k=3), der=0)
     y_fine_spline_i0 = get_cubic_spline(x=xy_fine[:, 0], y=xy_fine[:, 1], mode='i0')(xy_fine2[:, 0])
-    y_fine_spline_i1 = get_cubic_spline(x=xy_fine[:, 0], y=xy_fine[:, 1], mode='i1')(xy_fine2[:, 0])
+    # y_fine_spline_i1 = get_cubic_spline(x=xy_fine[:, 0], y=xy_fine[:, 1], mode='i1')(xy_fine2[:, 0])
 
     fig, ax = new_fig()
     ax.plot(*xy_fine.T, c='k', marker='o', markersize=5)
@@ -301,7 +303,7 @@ def dummy1():
     d2_filter = np.diff(y_fine_filter, 2)
     d2_spline = np.diff(y_fine_spline, 2)
     d2_spline_i0 = np.diff(y_fine_spline_i0, 2)
-    d2_spline_i1 = np.diff(y_fine_spline_i1, 2)
+    # d2_spline_i1 = np.diff(y_fine_spline_i1, 2)
     print(np.sum(np.abs(d2_filter)), np.max(np.abs(d2_filter)))
     print(np.sum(np.abs(d2_spline)), np.max(np.abs(d2_spline)))
     print(np.sum(np.abs(d2_spline_i0)), np.max(np.abs(d2_spline_i0)))
@@ -320,15 +322,15 @@ def dummy2():
     y = np.random.random(n_old) * 2
     # y = np.sort(y)
     xy = np.vstack((x, y)).T
-    xy_fine = fill_linear_connection(q=xy[np.newaxis, :, :], n=n_new//n_fraction, infinity_joints=None)[0]
+    xy_fine = get_substeps_adjusted(x=xy, n=n_new//n_fraction)
 
     # fig, ax = new_fig()
     # ax.plot(*xy.T, alpha=0.5, marker='x')
     # ax.plot(*xy_fine.T, alpha=0.5, marker='o')
 
     y_fine_diff = np.diff(xy_fine[:, 1])
-    y_fine_diff_fine = get_substeps(q=y_fine_diff[np.newaxis, :, np.newaxis], n=n_fraction)[0, :, 0]
-    x_fine_fine = get_substeps(q=xy_fine[np.newaxis, :, :], n=n_fraction)[0, :, 0]
+    y_fine_diff_fine = get_substeps(y_fine_diff[:, np.newaxis], n=n_fraction)[:, 0]
+    x_fine_fine = get_substeps(xy_fine, n=n_fraction)[:, 0]
 
     idx = np.nonzero(np.abs(np.diff(y_fine_diff)) > 1e-5)[0]
     n = 5
@@ -384,9 +386,9 @@ def dummy2():
 def dummy3():
 
     n_old = 21
-    n_new = 101
+    # n_new = 101
     x_old = np.linspace(0, 1, num=n_old)
-    x_new = np.linspace(0, 1, num=n_new)
+    # x_new = np.linspace(0, 1, num=n_new)
     y_old = np.random.random(n_old)
 
     fig, ax = new_fig()
@@ -394,8 +396,8 @@ def dummy3():
 
     y_diff = np.diff(y_old)
     # xx = np.vstack((x_old, y_old)).T
-    y_diff_fine = get_substeps(q=y_diff[np.newaxis, :, np.newaxis], n=100)[0, :, 0]
-    x_fine = get_substeps(q=x_old[1:][np.newaxis, :, np.newaxis], n=100)[0, :, 0]
+    y_diff_fine = get_substeps(y_diff[:, np.newaxis], n=100)[:, 0]
+    # x_fine = get_substeps(x_old[1:][:, np.newaxis], n=100)[:, 0]
 
     y_diff_fine_smooth = smooth_vel(y_diff_fine.copy(), kernel_size=11, iterations=1, alpha=1.)
 
@@ -403,12 +405,12 @@ def dummy3():
     ax.plot(y_diff_fine, alpha=0.5, marker='x')
     ax.plot(y_diff_fine_smooth, alpha=0.3, marker='s', c='k')
 
-    yy_cs = cumsum_diff(x_old[0], y_diff)
+    # yy_cs = cumsum_diff(x_old[0], y_diff)
     yy_cs_fine = cumsum_diff(x_old[0], y_diff_fine)
     yy_cs_smooth = cumsum_diff(x_old[0], y_diff_fine_smooth)
     #
     fig, ax = new_fig()
-    yy_cs = get_substeps(q=y_old[np.newaxis, 1:, np.newaxis], n=100)[0, :, 0]
+    yy_cs = get_substeps(x=y_old[1:, np.newaxis], n=100)[:, 0]
 
     ax.plot(yy_cs * 80, alpha=0.5, marker='o')
     ax.plot(yy_cs_fine, alpha=0.3, marker='x')
@@ -467,4 +469,3 @@ def smooth_vel(v, kernel_size=9, iterations=1, alpha=1.):
             v_window += kernel * alpha * diff
 
     return v
-

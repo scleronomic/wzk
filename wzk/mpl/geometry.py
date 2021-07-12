@@ -126,13 +126,14 @@ def plot_coordinate_frame(ax, x=None, dcm=None, color='k', mode='quiver',
         for i in range(n_dim):
             h.append(Patches2.RelativeFancyArrow(x[0], x[1], dcm[0, i], dcm[1, i], color=color[i],  **kwargs))
             ax.add_patch(h[-1])
+    else:
+        raise ValueError
 
     if marker is not None:
         ax.plot(*x, marker=marker, color=color[-1],
                 markersize=size_units2points(size=2*kwargs['fig_width_inch']*np.linalg.norm(dcm, axis=0).mean(), ax=ax),
                 alpha=0.5)
-    else:
-        raise ValueError
+
     return h
 
 

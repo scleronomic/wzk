@@ -332,7 +332,6 @@ class DraggableCircleList(DraggablePatchList):
         self.append(ax=ax, xy=xy, radius=radius, **kwargs)
 
     def append(self, ax, xy, radius, **kwargs):
-
         radius = scalar2array(radius, xy.shape[0])
         for xy_i, radius_i in zip(xy, radius):
             self.dp_list.append(DraggableCircle(ax=ax, xy=xy_i, radius=radius_i, **kwargs))

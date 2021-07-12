@@ -47,7 +47,7 @@ def make_legend_arrow_wrapper(theta, label2theta_dict=None):
         else:
             raise ValueError
 
-    def make_legend_arrow(legend, orig_handle, xdescent, ydescent, width, height, fontsize):
+    def make_legend_arrow(legend, orig_handle, xdescent, ydescent, width, height, fontsize):  # noqa
         if label2theta_dict is not None and orig_handle.get_label() in label2theta_dict:
             theta2 = label2theta_dict[orig_handle.get_label()]
         else:

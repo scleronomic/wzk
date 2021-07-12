@@ -1,7 +1,20 @@
+import os
+import sys
 import numpy as np
-from sys import stdout
 
 from wzk.numpy2 import get_stats
+
+
+def quiet_mode_on():
+    sys.stdout = open(os.devnull, "w")
+
+
+# def quiet_mode_off():
+#     sys.stdout = stdout_copy
+
+
+# def toggle_quiet_mode():
+#     pass
 
 
 def print_progress(i, n, prefix='', suffix='', decimals=1, bar_length=50):

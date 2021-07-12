@@ -1,21 +1,19 @@
-import os
-import subprocess
 from setuptools import setup, find_packages
-from setuptools.command.install import install
 
 with open("docs/README.md", "r") as fh:
     long_description = fh.read()
 
 
-directory = os.path.split(__file__)[0]
-
-
+# import os
+# import subprocess
+# from setuptools.command.install import install
+# directory = os.path.split(__file__)[0]
 # class InstallLocalPackage(install):
 #     def run(self):
-        # install.run(self)
-        # print(directory)
-        # subprocess.call(f"cd wzk/cpp/MinSphere; python setup.py develop", shell=True)
-
+#         install.run(self)
+#         print(directory)
+#         subprocess.call(f"cd wzk/cpp/MinSphere; python setup.py develop", shell=True)
+# cmdclass={'install': InstallLocalPackage}
 
 setup(
     name="wzk",
@@ -31,13 +29,14 @@ setup(
                       'scikit-image',
 
                       'matplotlib',
+                      'PyQt5',
                       'pyvista',
                       'setuptools',
-                      'msgpack'],
+                      'msgpack',
+                      'pyOpt @ git+https://github.com/madebr/pyOpt@gfortran-11-fixes',  # TODO wait for merge of fix
+                      ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
     ],
-    # cmdclass={'install': InstallLocalPackage}
-
 )

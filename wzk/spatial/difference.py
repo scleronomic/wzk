@@ -46,33 +46,33 @@ def rotation_dist(rot):
 
 
 def rotation_difference(rot_a, rot_b):
-    rot_mat_diff = rot_a.swapaxes(-2, -1) @ rot_b
-    if rot_mat_diff.shape[-1] == 3:
-        return np.linalg.norm(matrix2rotvec(rot_mat_diff), axis=-1)  # This is numerically more stable
+    rot = rot_b @ rot_a.swapaxes(-2, -1)
+    if rot.shape[-1] == 3:
+        return np.linalg.norm(matrix2rotvec(rot), axis=-1)  # This is numerically more stable
     else:
-        return np.arccos(rot_mat_diff[..., 0, 0])
+        return np.arccos(rot[..., 0, 0])
 
 
 def rotation_difference_cost(rot_a, rot_b):
-    rot_diff = rot_b @ rot_a.swapaxes(-2, -1)
-    return rotation_cost(rot=rot_diff)
+    rot = rot_b @ rot_a.swapaxes(-2, -1)
+    return rotation_cost(rot=rot)
 
 
 # Combined
 def frame_difference(f_a, f_b):
-    dist_loc = location_difference(loc_a=f_a[..., :-1, -1],
-                                   loc_b=f_b[..., :-1, -1])
+    loc = location_difference(loc_a=f_a[..., :-1, -1],
+                              loc_b=f_b[..., :-1, -1])
 
-    dist_rot = rotation_difference(rot_a=f_a[..., :-1, :-1],
-                                   rot_b=f_b[..., :-1, :-1])
+    rot = rotation_difference(rot_a=f_a[..., :-1, :-1],
+                              rot_b=f_b[..., :-1, :-1])
 
-    return dist_loc, dist_rot
+    return loc, rot
 
 
 def frame_difference_cost(f_a, f_b):
-    loc_cost = location_difference_cost(loc_a=f_a[..., :-1, -1],
-                                        loc_b=f_b[..., :-1, -1])[1]
+    loc = location_difference_cost(loc_a=f_a[..., :-1, -1],
+                                   loc_b=f_b[..., :-1, -1])[1]
 
-    rot_cost = rotation_difference_cost(rot_a=f_a[..., :-1, :-1],
-                                        rot_b=f_b[..., :-1, :-1])
-    return loc_cost, rot_cost
+    rot = rotation_difference_cost(rot_a=f_a[..., :-1, :-1],
+                                   rot_b=f_b[..., :-1, :-1])
+    return loc, rot

@@ -156,7 +156,7 @@ def combine_npz_files(*, directory,
     return new_dict
 
 
-def combine_npy_files2(directory, new_name="combined_{new_len}", delete_singles=False):
+def combine_npy_files2(directory, new_name="combined_{new_len}"):
     directory = os.path.normpath(path=directory)
     file_list = [file for file in os.listdir(directory) if '.npy' in file]
     arr = np.concatenate([np.load(f"{directory}/{file}", allow_pickle=False)

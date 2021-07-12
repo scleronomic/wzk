@@ -36,17 +36,17 @@ class Test(unittest.TestCase):
 
         tic()
         n = 40
-        spheres = np.random.random((m, n, 3))
-        pairs2 = np.array(list(combinations(np.arange(n), 2)))
+        _ = np.random.random((m, n, 3))
+        _ = np.array(list(combinations(np.arange(n), 2)))
 
         tic()
         for i in range(100):
-            res = line_line_pairs(lines=lines, pairs=pairs)
+            _ = line_line_pairs(lines=lines, pairs=pairs)
         toc('mink')
 
         tic()
         for i in range(100):
-            res = line_line_pairs(lines=lines, pairs=pairs)
+            _ = line_line_pairs(lines=lines, pairs=pairs)
         toc('d1234')
 
         self.assertTrue(True)
