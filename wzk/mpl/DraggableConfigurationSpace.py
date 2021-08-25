@@ -1,6 +1,8 @@
 import numpy as np
-from wzk.mpl import DraggableEllipseList, new_fig, add_safety_limits
-from wzk import get_mean_divisor_pair
+
+from wzk.math2 import get_mean_divisor_pair
+from wzk.numpy2 import add_safety_limits
+from wzk.mpl import DraggableEllipseList, new_fig
 
 
 def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):

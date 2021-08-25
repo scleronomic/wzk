@@ -6,9 +6,9 @@ from matplotlib import collections, patches
 
 from wzk.mpl.figure import plt, new_fig, subplot_grid
 from wzk.mpl.colors import arr2rgba
-from wzk.mpl.axes import limits4axes, limits2extent, set_ax_limits, add_safety_limits
+from wzk.mpl.axes import limits4axes, limits2extent, set_ax_limits
 from wzk.math2 import binomial
-from wzk.numpy2 import safe_scalar2array
+from wzk.numpy2 import safe_scalar2array, add_safety_limits
 from wzk.dicts_lists_tuples import tuple_extract, atleast_tuple
 
 

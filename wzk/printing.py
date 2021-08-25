@@ -4,15 +4,17 @@ import numpy as np
 
 from wzk.numpy2 import get_stats
 
-
 def quiet_mode_on():
+    # can not be changed back
+    # copy.copy does not work
+    stdout_copy = sys.stdout
     sys.stdout = open(os.devnull, "w")
-
+    #
 
 # def quiet_mode_off():
 #     sys.stdout = stdout_copy
-
-
+#
+#
 # def toggle_quiet_mode():
 #     pass
 
@@ -39,11 +41,11 @@ def print_progress(i, n, prefix='', suffix='', decimals=1, bar_length=50):
     filled_length = int(round(bar_length * i / float(n)))
     bar = '█' * filled_length + '-' * (bar_length - filled_length)
 
-    stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
+    sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
 
     if i == n:
-        stdout.write('\n')
-    stdout.flush()
+        sys.stdout.write('\n')
+    sys.stdout.flush()
 
 
 def print_table(rows, columns, data, min_cell_size=10, cell_format='.5f'):
@@ -106,3 +108,5 @@ def print_correlation(bool_lists, names, dec=4):
     print(f"Total: {total.sum()}/{len(total)} = {total.mean()}")
 
     return total
+
+

@@ -2,7 +2,6 @@ import numpy as np
 from matplotlib.collections import LineCollection, PatchCollection
 from matplotlib.patches import Rectangle
 
-from wzk.mpl.backend import plt
 from wzk.mpl.bool_image_boundaries import get_combined_edges, get_combined_faces
 # noinspection PyUnresolvedReferences
 from wzk.numpy2 import limits2cell_size, grid_i2x, grid_x2i
@@ -14,9 +13,6 @@ def plot_img_patch(img, limits,
     Plot an image as a Collection of square Rectangle Patches.
     Draw all True / nonzero pixels.
     """
-
-    if ax is None:
-        ax = plt.gca()
 
     cell_size = limits2cell_size(shape=img.shape, limits=limits)
 
@@ -30,13 +26,10 @@ def plot_img_patch(img, limits,
 
 
 def plot_img_outlines(img, limits,
-                      ax=None, **kwargs):
+                      ax, **kwargs):
     """
     Plot the image by drawing the outlines of the areas where the values are True.
     """
-
-    if ax is None:
-        ax = plt.gca()
 
     combined_edges = get_combined_edges(img)
 
@@ -58,7 +51,7 @@ def __img_none_limits(limits=None, img=None):
 
 
 def plot_img_patch_w_outlines(img, limits,
-                              ax=None,
+                              ax,
                               color=None, edgecolor='k', hatchcolor='k', facecolor='None',
                               hatch='xx',
                               lw=2, alpha_outline=1, alpha_patch=1):
@@ -72,6 +65,9 @@ def plot_img_patch_w_outlines(img, limits,
     limits = __img_none_limits(limits=limits, img=img)
 
     if img.ndim == 2:
+        ax.set_xlim(limits[0])
+        ax.set_ylim(limits[1])
+
         plot_img_outlines(img=img, limits=limits, ax=ax, color=edgecolor, ls='-', lw=lw, alpha=alpha_outline)
         plot_img_patch(img=img, limits=limits, ax=ax, lw=0, hatch=hatch, facecolor=facecolor, edgecolor=hatchcolor,
                        alpha=alpha_patch)

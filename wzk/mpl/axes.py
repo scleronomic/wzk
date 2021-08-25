@@ -20,7 +20,7 @@ def get_pip(ax, x, y, width, height, **kwargs):
 
 
 # Axes
-def get_xaligned_axes(ax, y_distance, height, factor=1., **kwargs):
+def get_xaligned_axes(ax, y_distance=0.05, height=0.03, factor=1., **kwargs):
     """
 
     :param ax:
@@ -100,14 +100,6 @@ def set_ax_limits(ax, limits, n_dim=2):
         ax.set_zlim3d(mins[2], maxs[2])
     else:
         raise ValueError(f"Unknown number of dimensions: {n_dim}")
-
-
-def add_safety_limits(limits, factor):
-    # TODO might be better of in arrays?
-    limits = np.atleast_1d(limits)
-    diff = np.diff(limits, axis=-1)[..., 0]
-    return np.array([limits[..., 0] - factor * diff,
-                     limits[..., 1] + factor * diff]).T
 
 
 # Label

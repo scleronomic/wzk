@@ -14,10 +14,21 @@ __brackets_round = '(', ')'
 __brackets_square = '[', ']'
 __brackets_curly = '{', '}'
 __brackets_angle = '<', '>'
-brackets_dict = dict(round=__brackets_round, r=__brackets_round,
-                     square=__brackets_square, s=__brackets_square,
-                     curly=__brackets_curly, c=__brackets_curly,
-                     angles=__brackets_angle, a=__brackets_angle)
+brackets_dict = {'()':  __brackets_round,
+                 'round': __brackets_round,
+                 'r': __brackets_round,
+
+                 '[]': __brackets_square,
+                 'square': __brackets_square,
+                 's': __brackets_square,
+
+                 '{}': __brackets_curly,
+                 'curly': __brackets_curly,
+                 'c': __brackets_curly,
+
+                 '<>': __brackets_angle,
+                 'angles': __brackets_angle,
+                 'a': __brackets_angle}
 
 brackets_rir = '({i})'
 brackets_sis = '[{i}]'
@@ -33,9 +44,9 @@ def brackets_wrapper(bracket, idx, multi=True):
 
     if multi:
         c = ', '
-        s = b[0] + ''.join(idx_i + c for idx_i in idx)[:-len(c)] + b[1]
+        s = b[0] + ''.join(str(idx_i) + c for idx_i in idx)[:-len(c)] + b[1]
     else:
-        s = ''.join(b[0] + idx_i + b[1] for idx_i in idx)
+        s = ''.join(b[0] + str(idx_i) + b[1] for idx_i in idx)
 
     return s
 

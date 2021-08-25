@@ -341,11 +341,7 @@ def sample_points_on_sphere_3d(size):
     return x
 
 
-def sample_points_on_sphere_nd(size, n_dim, ):
-
-    # if np.shape(shape) < 2:
-    #     safety = 100
-    # else:
+def sample_points_on_sphere_nd(size, n_dim):
 
     safety = 1.2
 
@@ -361,7 +357,6 @@ def sample_points_on_sphere_nd(size, n_dim, ):
     x_norm = np.linalg.norm(x, axis=-1)
     bool_keep = x_norm < 1
     n_keep = bool_keep.sum()
-    # print(n_keep / np.shape(shape))
     assert n_keep > np.size(size)
     raise NotImplementedError
 
@@ -416,7 +411,7 @@ def get_points_on_multisphere(x, r, n):
     return points, hull
 
 
-def fibonacci_sphere(n=100):
+def fibonacci_sphere(n=100):  # 3d
     phi = np.pi * (3. - np.sqrt(5.))  # golden angle in radians
     y = np.linspace(1, -1, n)
     r = np.sqrt(1 - y*y)              # radius at y
@@ -426,8 +421,13 @@ def fibonacci_sphere(n=100):
     return np.array((x, y, z)).T
 
 
+def get_points_on_sphere_nd(n=100, d=3):
+    raise NotImplementedError
+    # https://stackoverflow.com/questions/9046106/algorithm-to-rasterize-and-fill-a-hypersphere/21575035#21575035
+    # https://math.stackexchange.com/questions/3291489/can-the-fibonacci-lattice-be-extended-to-dimensions-higher-than-3/3297830#3297830
+    # https://stackoverflow.com/questions/57123194/how-to-distribute-points-evenly-on-the-surface-of-hyperspheres-in-higher-dimensi
+
 # def line_line33(u, v, w):
-#     TODO, use in Cpp
     # raise NotImplementedError("https://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment()")
     #
     # a = (u*u).sum(axis=-1) # always >= 0

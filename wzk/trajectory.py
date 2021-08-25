@@ -235,14 +235,18 @@ def d_substeps__dx(n, order=0):
     return jac
 
 
-def combine_d_substeps__dx(d_dxs, n,
-                           n_samples, n_dof):
+def combine_d_substeps__dx(d_dxs, n):
     # Combine the jacobians of the sub-way-points (joints) to the jacobian for the optimization variables
-    if n > 1:
-        d_dxs = d_dxs.reshape(n_samples, -1, n, n_dof)
+    if n <= 1:
+        return d_dxs
+
+    if d_dxs.ndim == 3:
+        n_samples, n_wp_ss, n_dof = d_dxs.shape
+        d_dxs = d_dxs.reshape(n_samples, n_wp_ss//n, n, n_dof)
         ss_jac = d_substeps__dx(n=n, order=1)[np.newaxis, np.newaxis, ..., np.newaxis]
         d_dx = np.einsum('ijkl, ijkl -> ijl', d_dxs, ss_jac[:, :, 0, :, :])
         d_dx[:, :-1, :] += np.einsum('ijkl, ijkl -> ijl', d_dxs[:, 1:, :, :], ss_jac[:, :, 1, :, :])
         return d_dx
     else:
-        return d_dxs
+        raise ValueError
+

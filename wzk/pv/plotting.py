@@ -8,6 +8,11 @@ from wzk import scalar2array, bool_img2surf
 from wzk.spatial import invert
 
 
+class Dummy_Plotter:
+    def add_mesh(self, *args):
+        pass
+
+
 def faces2pyvista(x):
     n, d = x.shape
     x2 = np.empty((n, d+1), dtype=int)
@@ -81,7 +86,7 @@ def set_color(h, color):
 
 
 def plot_bool_vol(img, voxel_size, lower_left=None,
-                  mode='voxels',
+                  mode='voxel',
                   p=None, h=None,
                   **kwargs):
 
@@ -93,11 +98,13 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
     lower_left = scalar2array(lower_left, 3)
     upper_right = lower_left + voxel_size * np.array(img.shape)
 
-    if mode == 'voxels':
+    if mode == 'voxel':
         if h is None:
-            x, y, z = np.meshgrid(*(np.linspace(lower_left[i], upper_right[i], img.shape[i] + 1) for i in range(3)))
+            x, y, z = np.meshgrid(*(np.linspace(lower_left[i], upper_right[i], img.shape[i] + 1) for i in range(3)),
+                                  indexing='xy')
             h0 = pv.StructuredGrid(x, y, z)
-            h0.hide_cells(~img.ravel().astype(bool))
+            h0.hide_cells(~img.transpose(2, 0, 1).ravel().astype(bool))
+            # h0.hide_cells(~img.ravel().astype(bool))
             h1 = p.add_mesh(h0, show_scalar_bar=False, **kwargs)
             h = (h0, h1)
         else:
@@ -116,7 +123,7 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
             h[0].faces = faces
 
     else:
-        raise ValueError(f"Unknown mode {mode}; either 'mesh' or 'voxels'")
+        raise ValueError(f"Unknown mode {mode}; either 'mesh' or 'voxel'")
 
     return h
 

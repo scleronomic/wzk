@@ -10,9 +10,10 @@ def create_button(fig, axes, listener_fun, name='button'):
     return b
 
 
-def create_key_slider(ax, callback,
-                      label, valfmt, valmin, valmax, valinit, valstep,
+def create_key_slider(*, ax, callback,
+                      label='', valfmt=None, valmin=0, valmax=10, valinit=0, valstep=1,
                       fast_step=10):
+
     slider = widgets.Slider(ax=ax,
                             label=label, valfmt=valfmt,
                             valmin=valmin, valmax=valmax, valinit=valinit, valstep=valstep)

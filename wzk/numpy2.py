@@ -269,7 +269,8 @@ def allclose(a, b, rtol=1.e-5, atol=1.e-8, axis=None):
     assert a.shape == b.shape, f"{a.shape} != {b.shape}"
     axis = np.array(axis_wrapper(axis=axis, n_dim=a.ndim))
     assert len(axis) <= len(a.shape)
-
+    if np.isscalar(a) and np.isscalar(b):
+        return np.allclose(a, b)
     shape = np.array(a.shape)[axis]
     bool_arr = np.zeros(shape, dtype=bool)
     for i in product(*(range(s) for s in shape)):
@@ -314,6 +315,13 @@ def insert(a, val, idx, axis, mode='slice'):
 def extract(a, idx, axis, mode='slice'):
     idx = __fill_index_with(idx=idx, axis=axis, shape=a.shape, mode=mode)
     return a[idx]
+
+
+def add_safety_limits(limits, factor):
+    limits = np.atleast_1d(limits)
+    diff = np.diff(limits, axis=-1)[..., 0]
+    return np.array([limits[..., 0] - factor * diff,
+                     limits[..., 1] + factor * diff]).T
 
 
 # Combine

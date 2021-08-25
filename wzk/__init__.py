@@ -8,6 +8,7 @@ from .image import *
 from .math2 import *
 from .multiprocessing2 import *
 from .numpy2 import *
+from .object2 import *
 from .perlin import *
 from .printing import *
 from .ssh import *

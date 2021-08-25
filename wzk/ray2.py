@@ -2,8 +2,7 @@ import os
 import re
 import socket
 
-# noinspection PyUnresolvedReferences
-# import ray
+import ray  # noqa
 import fire
 import numpy as np
 
@@ -30,8 +29,8 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
     if head is None:
         head = socket.gethostname()
 
-    n_elu = int(get_n_elu(head) * perc)
-    start_head_cmd = f'ray start --head --port=6379 --num-cpus={n_elu}'
+    n_cpu = int(get_n_elu(head) * perc)
+    start_head_cmd = f'ray start --head --port=6379 --num-cpus={n_cpu}'
     stdout = ssh_cmd(host=head, cmd=start_head_cmd)
 
     log += head + ':\n' + stdout + '\n'
@@ -47,8 +46,8 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
 
     nodes = np.setdiff1d(atleast_list(nodes), [head])
     for node in nodes:
-        n_elu = int(get_n_elu(node) * perc)
-        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_elu}"
+        n_cpu = int(get_n_elu(node) * perc)
+        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu}"
         stdout = ssh_cmd(host=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)

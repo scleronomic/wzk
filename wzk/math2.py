@@ -266,6 +266,23 @@ def assimilate_orders_of_magnitude(a, b, base=10):
     return aa, bb, c
 
 
+# Functions
+def rosenbrock2d(xy, a=1, b=100):
+    # https://en.wikipedia.org/wiki/Rosenbrock_function
+    # Minimum f(a, a**2) = 0
+    xy = np.array(xy)
+    x, y = xy[..., 0], xy[..., 1]
+    return (a - x)**2 + b*(y - x**2)**2
+
+
+def d_rosenbrock2d(xy, a=1, b=100):
+    xy = np.array(xy)
+    x, y = xy.T
+    dx = -2*(a-x) - 4*b*(y-x**2)*x
+    dy =          + 2*b*(y-x**2)
+    return np.concatenate((dx[..., np.newaxis], dy[..., np.newaxis]), axis=-1)
+
+
 # Derivative
 def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode='central',
                        diff=None,
