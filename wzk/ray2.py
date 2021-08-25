@@ -10,7 +10,8 @@ from wzk.ssh import ssh_cmd, get_n_cpu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 
 
-__default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0140', 'rmc-lx0271',
+# rmc-lx0140 no longer available
+__default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0271',
                    'philotes', 'polyxo', 'poros']
 
 
