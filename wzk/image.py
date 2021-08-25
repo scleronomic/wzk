@@ -26,13 +26,14 @@ def combine_n_voxels_n_dim(n_voxels, n_dim=None):
         except TypeError:
             n_voxels = (n_voxels,)
         n_voxels *= n_dim
+
     else:
         n_voxels = tuple(n_voxels)
 
     return n_voxels
 
 
-def image_array_shape(*, n_voxels, n_samples=None, n_dim=None, n_channels=None):
+def image_array_shape(n_voxels, n_samples=None, n_dim=None, n_channels=None):
     """
     Helper to set the shape for an image array.
     n_samples=100,  n_voxels=64,          n_dim=2,    n_channels=None  ->  (100, 64, 64)

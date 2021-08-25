@@ -48,7 +48,7 @@ def tic(name=None):
         __start_named[name] = time()
 
 
-def toc(name=None, decimals=6):
+def toc(name: object = None, decimals: object = 6) -> object:
     if name is None:
         start = __start_stack.pop()
     else:
