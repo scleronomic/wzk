@@ -17,5 +17,12 @@ def ssh_cmd(host, cmd, check=False):
     return stdout
 
 
-def get_n_elu(host):
-    return int(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
+def get_n_cpu(host):
+    try:
+        n_cpu = int(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
+        return n_cpu
+
+    except ValueError:
+        print(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
+
+        raise ValueError
