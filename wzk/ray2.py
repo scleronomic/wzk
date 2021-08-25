@@ -24,7 +24,7 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
         nodes = __default_nodes
 
     if verbose > 0:
-        print('Start Ray-Cluster')
+        print('Starting Ray-Cluster...')
         print('Nodes: ', *nodes)
 
     if head is None:
@@ -46,6 +46,7 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
     password = password[password.find('=')+1:]
 
     nodes = np.setdiff1d(atleast_list(nodes), [head])
+    n_cpu_total = 0
     for node in nodes:
         n_cpu = int(get_n_cpu(node) * perc)
         start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu}"
@@ -53,6 +54,15 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
         if verbose > 1:
             print(node, ':', stdout)
             log += node + ':\n' + stdout + '\n'
+
+        n_cpu_total += n_cpu
+
+    if verbose > 0:
+        print('Started Ray-Cluster')
+        print('Nodes: ', *nodes)
+        print('Total Number of CPUs: ', n_cpu_total)
+
+
 
     np.save(os.path.abspath(os.path.dirname(__file__)) + '/' + 'ray_start.text', log)
 
