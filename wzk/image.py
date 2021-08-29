@@ -429,6 +429,7 @@ def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=None):
         return np.frombuffer(zlib.decompress(img_cmp), dtype=dtype).reshape(shape2)
 
 
-def bool_img2surf(img, voxel_size):
+def bool_img2surf(img, voxel_size, lower_left=0):
     verts, faces, _, _ = measure.marching_cubes_lewiner(img, level=0, spacing=(voxel_size,) * img.ndim)
+    verts = verts + lower_left
     return verts, faces

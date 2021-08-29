@@ -104,20 +104,20 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
                                   indexing='xy')
             h0 = pv.StructuredGrid(x, y, z)
             h0.hide_cells(~img.transpose(2, 0, 1).ravel().astype(bool))
-            # h0.hide_cells(~img.ravel().astype(bool))
             h1 = p.add_mesh(h0, show_scalar_bar=False, **kwargs)
             h = (h0, h1)
         else:
             h[0].hide_cells(~img.ravel())
 
     elif mode == 'mesh':
-        verts, faces = bool_img2surf(img=img, voxel_size=voxel_size)
+        verts, faces = bool_img2surf(img=img, voxel_size=voxel_size, lower_left=lower_left)
         faces = faces2pyvista(faces)
 
         if h is None:
             h0 = pv.PolyData(verts, faces=faces)
             h1 = p.add_mesh(h0, **kwargs)
             h = (h0, h1)
+
         else:
             h[0].points = verts
             h[0].faces = faces
