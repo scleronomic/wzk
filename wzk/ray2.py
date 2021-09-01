@@ -10,8 +10,8 @@ from wzk.ssh import ssh_cmd, get_n_cpu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 
 
-# rmc-lx0140 no longer available
-__default_nodes = ['rmc-lx0062', 'rmc-lx0144', 'rmc-lx0271',
+# ['rmc-lx0140', 'rmc-lx0144', 'rmc-lx0271'] no longer available
+__default_nodes = ['rmc-lx0062',
                    'philotes', 'polyxo', 'poros']
 
 
@@ -61,8 +61,6 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
         print('Started Ray-Cluster')
         print('Nodes: ', *nodes)
         print('Total Number of CPUs: ', n_cpu_total)
-
-
 
     np.save(os.path.abspath(os.path.dirname(__file__)) + '/' + 'ray_start.text', log)
 
