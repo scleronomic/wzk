@@ -116,7 +116,7 @@ def safe_unify(x):
 
     x_mean = np.mean(x)
     assert np.all(x == x_mean)
-    return x_mean
+    return x_mean.astype(x.dtype)
 
 
 def safe_scalar2array(*val_or_arr, shape, squeeze=True):

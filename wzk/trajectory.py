@@ -31,6 +31,13 @@ def inner2full(inner, start=None, end=None):
     return inner
 
 
+def full2start_end(x, squeeze=True):
+    if squeeze:
+        return x[..., 0, :], x[..., -1, :]
+    else:
+        return x[..., :1, :], x[..., -1:, :]
+
+
 def x_mode(x, mode=None):  # TODO better name
     if mode is None or mode == 'full':
         return x
@@ -44,11 +51,20 @@ def x_mode(x, mode=None):  # TODO better name
         raise ValueError
 
 
-def full2start_end(x, squeeze=True):
-    if squeeze:
-        return x[..., 0, :], x[..., -1, :]
-    else:
-        return x[..., :1, :], x[..., -1:, :]
+def flat2full(flat, n_dof):
+    if flat.ndim == 1:
+        flat = flat.reshape(-1, n_dof)
+    elif flat.ndim == 2:
+        flat = flat.reshape(len(flat), -1, n_dof)
+    return flat
+
+
+def full2flat(x):
+    if x.ndim == 2:
+        x = x.reshape(-1)
+    elif x.ndim == 3:
+        x = x.reshape(len(x), -1)
+    return x
 
 
 def periodic_dof_wrapper(x,
@@ -87,7 +103,7 @@ def get_substeps(x, n,
     x_ss = x_ss.reshape(shape + [(m-1) * n, d])
 
     if include_start:
-        x_ss = np.concatenate((x_ss, x[..., :1, :]), axis=-2)
+        x_ss = np.concatenate((x[..., :1, :], x_ss), axis=-2)
 
     x_ss = periodic_dof_wrapper(x_ss, is_periodic=is_periodic)
     return x_ss
@@ -249,4 +265,3 @@ def combine_d_substeps__dx(d_dxs, n):
         return d_dx
     else:
         raise ValueError
-
