@@ -9,9 +9,10 @@ import numpy as np
 from wzk.ssh import ssh_cmd, get_n_cpu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 
-
+# Johannes Pitz: 0392, 0179, 0145, 0115
 # ['rmc-lx0140', 'rmc-lx0144', 'rmc-lx0271'] no longer available
 __default_nodes = ['rmc-lx0062',
+                   'rmc-lx0115',
                    'philotes', 'polyxo', 'poros']
 
 

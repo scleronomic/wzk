@@ -4,7 +4,7 @@ from wzk.mpl.DraggableConfigurationSpace import *
 verbose = 1
 
 
-class TestDraggableCircle(TestCase):
+class Test(TestCase):
 
     def test_DraggableConfigSpace(self):
         x = np.random.random((20, 3))
@@ -16,3 +16,8 @@ class TestDraggableCircle(TestCase):
 
         dcs.set_x(x=np.zeros((20, 3)))
         dcs.set_x(x=np.ones((20, 3)))
+
+
+if __name__ == '__main__':
+    test = Test()
+    test.test_DraggableConfigSpace()
