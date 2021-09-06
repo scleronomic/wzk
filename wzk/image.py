@@ -5,7 +5,8 @@ from skimage.io import imread, imsave  # noqa: F401 unused import
 from skimage import measure
 
 from wzk.dicts_lists_tuples import tuple_extract
-from wzk.numpy2 import align_shapes, get_cropping_indices, flatten_without_last, initialize_array
+from wzk.numpy2 import align_shapes, get_cropping_indices, flatten_without_last, initialize_array, limits2cell_size
+
 
 
 def imread_bw(file, threshold):
@@ -429,7 +430,9 @@ def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=None):
         return np.frombuffer(zlib.decompress(img_cmp), dtype=dtype).reshape(shape2)
 
 
-def bool_img2surf(img, voxel_size, lower_left=0):
+def bool_img2surf(img, limits):
+    lower_left = limits[:, 0]
+    voxel_size = limits2cell_size(shape=img.shape, limits=limits)
     verts, faces, _, _ = measure.marching_cubes_lewiner(img, level=0, spacing=(voxel_size,) * img.ndim)
     verts = verts + lower_left
     return verts, faces

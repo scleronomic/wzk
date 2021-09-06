@@ -65,6 +65,14 @@ def imshow_update(h, img, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, 
     h.set_data(img)
 
 
+def draw_circles(ax, x, y, r, **kwargs):
+    # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
+    r = safe_scalar2array(r, shape=np.size(x))
+    circles = [plt.Circle((xi, yi), radius=ri, linewidth=0) for xi, yi, ri in zip(x, y, r)]
+    c = collections.PatchCollection(circles, **kwargs)
+    ax.add_collection(c)
+
+
 def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto', **kwargs):
     n = x.shape[-1]
 

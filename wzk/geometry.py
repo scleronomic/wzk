@@ -21,9 +21,6 @@ def get_orthonormal(v):
     return v_o1
 
 
-
-
-
 def make_rhs(xyz, order=(0, 1)):
     # rhs = rand-hand coordinate system
     # xyz -> rhs
@@ -318,9 +315,9 @@ def rotation_between_vectors(a, b):
     return r
 
 
-def sample_points_on_disc(radius, size=None):
-    rho = np.sqrt(np.random.uniform(low=0, high=radius**2, size=size))
-    theta = np.random.uniform(low=0, high=2*np.pi, size=size)
+def sample_points_on_disc(radius, shape=None):
+    rho = np.sqrt(np.random.uniform(low=0, high=radius**2, size=shape))
+    theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
     xy = np.empty(np.shape(theta)+(2,))
     xy[..., 0] = rho * np.cos(theta)
     xy[..., 1] = rho * np.sin(theta)
@@ -328,8 +325,8 @@ def sample_points_on_disc(radius, size=None):
     return xy
 
 
-def sample_points_on_sphere_3d(size):
-    size = shape_wrapper(shape=size)
+def sample_points_on_sphere_3d(shape):
+    size = shape_wrapper(shape=shape)
     x = np.empty(tuple(size) + (3,))
     theta = np.random.uniform(low=0, high=2*np.pi, size=size)
     phi = np.arccos(1-2*np.random.uniform(low=0, high=1, size=size))
@@ -341,23 +338,39 @@ def sample_points_on_sphere_3d(size):
     return x
 
 
-def sample_points_on_sphere_nd(size, n_dim):
+def sample_points_in_sphere_nd(shape, n_dim):
+    shape = shape_wrapper(shape=shape)
+    r = np.random.uniform(low=0, high=1, size=shape) ** (1/n_dim)
+    x = np.random.normal(loc=0, scale=1, size=tuple(shape) + (n_dim,))
+    x = x / np.linalg.norm(x, axis=-1, keepdims=True)
+    x = x * r[..., np.newaxis]
+    return x
+
+
+def sample_points_in_ellipse_nd(shape, size):
+    n_dim = len(size)
+    x = sample_points_in_sphere_nd(shape=shape, n_dim=n_dim)
+    x = x * size
+    return x
+
+
+def sample_points_on_sphere_nd(shape, n_dim):
 
     safety = 1.2
 
-    size = shape_wrapper(shape=size)
+    shape = shape_wrapper(shape=shape)
     volume_sphere = hyper_sphere_volume(n_dim)
     volume_cube = 2**n_dim
     safety_factor = int(np.ceil(safety * volume_cube/volume_sphere))
 
-    size_w_n_dim = size + (n_dim,)
+    size_w_n_dim = shape + (n_dim,)
     size_sample = (safety_factor,) + size_w_n_dim
 
     x = np.random.uniform(low=-1, high=1, size=size_sample)
     x_norm = np.linalg.norm(x, axis=-1)
     bool_keep = x_norm < 1
     n_keep = bool_keep.sum()
-    assert n_keep > np.size(size)
+    assert n_keep > np.size(shape)
     raise NotImplementedError
 
 
@@ -426,6 +439,54 @@ def get_points_on_sphere_nd(n=100, d=3):
     # https://stackoverflow.com/questions/9046106/algorithm-to-rasterize-and-fill-a-hypersphere/21575035#21575035
     # https://math.stackexchange.com/questions/3291489/can-the-fibonacci-lattice-be-extended-to-dimensions-higher-than-3/3297830#3297830
     # https://stackoverflow.com/questions/57123194/how-to-distribute-points-evenly-on-the-surface-of-hyperspheres-in-higher-dimensi
+
+
+def hcp_grid(limits, radius):
+    """
+    hexagonal closed packing
+    https://en.wikipedia.org/wiki/Close-packing_of_equal_spheres
+    """
+
+    n_dim = len(limits)
+    assert n_dim in (2, 3)
+    size = limits[:, 1] - limits[:, 0]
+
+    nx = size[0] // (2 * radius)
+    ny = size[1] // (np.sqrt(3) * radius)
+
+    if n_dim == 2:
+        i, j = np.ogrid[0:nx, 0:ny]
+        x = 2*i + (j % 2)
+        y = np.sqrt(3)*j + (0*i)
+        hcp = np.concatenate([x[:, :, np.newaxis],
+                              y[:, :, np.newaxis]],
+                             axis=-1)
+
+    elif n_dim == 3:
+        nz = size[2] // (2/3*np.sqrt(6) * radius)
+
+        i, j, k = np.ogrid[0:nx, 0:ny, 0:nz]
+        x = 2*i + ((j+k) % 2)
+        y = np.sqrt(3)*(j+1/3*(k % 2)) + (0*i)
+        z = 2*np.sqrt(6)/3 * k + (0*i*j)
+        hcp = np.concatenate([x[:, :, :, np.newaxis],
+                              y[:, :, :, np.newaxis],
+                              z[:, :, :, np.newaxis]],
+                             axis=-1)
+
+    else:
+        raise ValueError
+
+    hcp = limits[:, 0] + radius + hcp * radius
+
+    return hcp
+
+
+def get_distance_to_ellipsoid(x, shape):
+    assert x.shape[-1] == len(shape)
+    d = ((x / shape)**2).sum(axis=-1) - 1
+    return d
+
 
 # def line_line33(u, v, w):
     # raise NotImplementedError("https://geomalgorithms.com/a07-_distance.html#dist3D_Segment_to_Segment()")

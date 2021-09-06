@@ -85,7 +85,24 @@ def set_color(h, color):
     p.SetColor(colors.to_rgb(color))
 
 
-def plot_bool_vol(img, voxel_size, lower_left=None,
+def plot_points(x,
+                p, h,
+                **kwargs):
+    pass
+
+
+def test_plot_points():
+    import numpy as np
+    import pyvista
+    # grid = pyvista.PolyData()
+    # grid.points = np.random.random((100, 3))
+    plotter = pyvista.Plotter()
+    # plotter.add_mesh(grid, 'r')
+    plotter.add_points(np.random.random((100, 3)), color='black')
+    plotter.show()
+
+
+def plot_bool_vol(img, limits,
                   mode='voxel',
                   p=None, h=None,
                   **kwargs):
@@ -93,10 +110,8 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
     if img is None:
         return
 
-    if lower_left is None:
-        lower_left = np.zeros(3)
-    lower_left = scalar2array(lower_left, 3)
-    upper_right = lower_left + voxel_size * np.array(img.shape)
+    lower_left = limits[:, 0]
+    upper_right = limits[:, 1]
 
     if mode == 'voxel':
         if h is None:
@@ -110,7 +125,7 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
             h[0].hide_cells(~img.ravel())
 
     elif mode == 'mesh':
-        verts, faces = bool_img2surf(img=img, voxel_size=voxel_size, lower_left=lower_left)
+        verts, faces = bool_img2surf(img=img, limits=limits)
         faces = faces2pyvista(faces)
 
         if h is None:
@@ -131,7 +146,7 @@ def plot_bool_vol(img, voxel_size, lower_left=None,
 def plot_spheres(x, r,
                  p=None, h=None,
                  **kwargs):
-
+    r = scalar2array(v=r, shape=len(x), safe=True)
     h0 = [pv.Sphere(center=xi, radius=ri) for xi, ri in zip(x, r)]
     if h is None:
         h1 = [p.add_mesh(h0i, **kwargs) for h0i in h0]
