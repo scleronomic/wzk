@@ -332,7 +332,7 @@ class DraggableCircleList(DraggablePatchList):
         self.append(ax=ax, xy=xy, radius=radius, **kwargs)
 
     def append(self, ax, xy, radius, **kwargs):
-        radius = scalar2array(radius, xy.shape[0])
+        radius = scalar2array(radius, shape=xy.shape[0])
         for xy_i, radius_i in zip(xy, radius):
             self.dp_list.append(DraggableCircle(ax=ax, xy=xy_i, radius=radius_i, **kwargs))
 
@@ -346,9 +346,7 @@ class DraggableEllipseList(DraggablePatchList):
 
     def append(self, ax,
                xy, width, height, angle, **kwargs):
-        width = scalar2array(width, xy.shape[0])
-        height = scalar2array(height, xy.shape[0])
-        angle = scalar2array(angle, xy.shape[0])
+        width, height, angle = scalar2array(width, height, angle, shape=xy.shape[0])
 
         for xy_i, width_i, height_i, angle_i in zip(xy, width, height, angle):
             self.dp_list.append(DraggableEllipse(ax=ax,
@@ -364,9 +362,7 @@ class DraggableRectangleList(DraggablePatchList):
 
     def append(self, ax,
                xy, width, height, angle, **kwargs):
-        width = scalar2array(width, xy.shape[0])
-        height = scalar2array(height, xy.shape[0])
-        angle = scalar2array(angle, xy.shape[0])
+        width, height, angle = scalar2array(width, height, angle, shape=xy.shape[0])
 
         for xy_i, width_i, height_i, angle_i in zip(xy, width, height, angle):
             self.dp_list.append(DraggableRectangle(ax=ax,

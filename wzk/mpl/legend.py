@@ -82,3 +82,14 @@ def remove_duplicate_labels(ax):
             new_labels.append(label)
             new_handles.append(handle)
     ax.legend(new_handles, new_labels)
+
+
+def rectangle_legend(*, ax, xy=(-100, -100), **kwargs):
+    p = patches.Rectangle(xy=xy, width=0.1, height=0.1, **kwargs)
+    ax.add_patch(p)
+
+
+def circle_legend(*, ax, xy=(-100, -100), **kwargs):
+    p = patches.Circle(xy=xy, radius=0.1, **kwargs)
+    ax.add_patch(p)
+

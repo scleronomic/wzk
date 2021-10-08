@@ -7,8 +7,10 @@ from matplotlib import collections, patches
 from wzk.mpl.figure import plt, new_fig, subplot_grid
 from wzk.mpl.colors import arr2rgba
 from wzk.mpl.axes import limits4axes, limits2extent, set_ax_limits
+from wzk.mpl.legend import rectangle_legend
+
 from wzk.math2 import binomial
-from wzk.numpy2 import safe_scalar2array, add_safety_limits
+from wzk.numpy2 import scalar2array, add_safety_limits
 from wzk.dicts_lists_tuples import tuple_extract, atleast_tuple
 
 
@@ -53,6 +55,10 @@ def imshow(*, ax, img, limits=None, cmap=None,
     extent = limits2extent(limits=limits, origin=origin, axis_order=axis_order)
 
     img = arr2rgba(img=img, cmap=cmap, vmin=vmin, vmax=vmax, mask=mask, axis_order=axis_order)
+    if 'label' in kwargs:
+        kwargs2 = kwargs.copy()
+        kwargs2['color'] = cmap
+        rectangle_legend(ax=ax, xy=limits[:, 0]-1, **kwargs2)
 
     return ax.imshow(img, extent=extent, origin=origin, **kwargs)
 
@@ -67,8 +73,8 @@ def imshow_update(h, img, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, 
 
 def draw_circles(ax, x, y, r, **kwargs):
     # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
-    r = safe_scalar2array(r, shape=np.size(x))
-    circles = [plt.Circle((xi, yi), radius=ri, linewidth=0) for xi, yi, ri in zip(x, y, r)]
+    r = scalar2array(r, shape=np.size(x))
+    circles = [plt.Circle((xi, yi), radius=ri, linewidth=0, **kwargs) for xi, yi, ri in zip(x, y, r)]
     c = collections.PatchCollection(circles, **kwargs)
     ax.add_collection(c)
 
@@ -301,7 +307,7 @@ def hist_vlines(x, name, bins=100,
 
     perc_i = []
     if hl_idx is not None:
-        hl_idx, hl_color, hl_name = safe_scalar2array(hl_idx, hl_color, hl_name, shape=np.size(hl_idx))
+        hl_idx, hl_color, hl_name = scalar2array(hl_idx, hl_color, hl_name, shape=np.size(hl_idx))
         for i, c, n in zip(hl_idx, hl_color, hl_name):
             perc_i.append(np.sum(x[i] > x))
             label = None if n is None else f"{n} | {perc_i[-1]} / {len(x)}"
@@ -349,7 +355,7 @@ def correlation_plot(a, b, name_a, name_b,
         r = None
 
     labels, colors, markers, markersizes, alphas, zorders = \
-        safe_scalar2array(labels, colors, markers, markersizes, alphas, zorders, shape=len(a))
+        scalar2array(labels, colors, markers, markersizes, alphas, zorders, shape=len(a))
 
     for i, (aa, bb, la, co, ma, ms, al, zo) in enumerate(zip(a, b,
                                                              labels, colors, markers, markersizes, alphas, zorders)):
@@ -375,7 +381,7 @@ def plot_circles(x, r,
                  ax=None, h=None,
                  color=None, alpha=None,
                  **kwargs):
-    r = safe_scalar2array(r, shape=len(x))
+    r = scalar2array(r, shape=len(x))
 
     if h is None:
         h = []

@@ -41,14 +41,14 @@ __start_stack = []
 __start_named = {}
 
 
-def tic(name=None):
+def tic(name: str = None):
     if name is None:
         __start_stack.append(time())
     else:
         __start_named[name] = time()
 
 
-def toc(name: object = None, decimals: object = 6) -> object:
+def toc(name: str = None, decimals: int = 6) -> float:
     if name is None:
         start = __start_stack.pop()
     else:

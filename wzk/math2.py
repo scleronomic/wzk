@@ -279,7 +279,7 @@ def d_rosenbrock2d(xy, a=1, b=100):
     xy = np.array(xy)
     x, y = xy.T
     dx = -2*(a-x) - 4*b*(y-x**2)*x
-    dy =          + 2*b*(y-x**2)
+    dy =          + 2*b*(y-x**2)  # noqa
     return np.concatenate((dx[..., np.newaxis], dy[..., np.newaxis]), axis=-1)
 
 

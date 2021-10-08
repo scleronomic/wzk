@@ -95,4 +95,8 @@ def arr2rgba(*, img, cmap, vmin=None, vmax=None, mask=None, axis_order=None):
 
 def __arr2rgba(arr, cmap, vmin=None, vmax=None):
     norm = colors.Normalize(vmin=vmin, vmax=vmax)
-    return cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)
+    try:
+        return cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)
+    except ValueError:
+        cmap = colors.ListedColormap([cmap])
+        return cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)

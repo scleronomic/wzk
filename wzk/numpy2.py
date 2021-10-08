@@ -97,29 +97,26 @@ def numeric2object_array(arr):
 
     return arr_obj
 
+# (7, 3)
+# (7) ->
+# (3) ->
+# (1) ->
+
+
+def array2array(a, shape):
+    a = np.atleast_1d(a)
+    if np.size(a) == 1:
+        return scalar2array(a.item(), shape=shape)
+
+    b = np.empty(shape, dtype=a.dtype)
+    s = align_shapes(shape, a.shape)
+    s = tuple([slice(None) if ss == 1 else np.newaxis for ss in s])
+    b[:] = a[s]
+    return b
+
 
 # scalar <-> matrix
-def scalar2array(v, shape, safe=False):
-    if isinstance(shape, int):
-        shape = (shape,)
-
-    if np.size(v) == 1:
-        return np.full(shape, v)
-    else:
-        if safe:
-            assert all(np.shape(v) == shape)
-        return v
-
-
-def safe_unify(x):
-    x = np.atleast_1d(x)
-
-    x_mean = np.mean(x)
-    assert np.all(x == x_mean)
-    return x_mean.astype(x.dtype)
-
-
-def safe_scalar2array(*val_or_arr, shape, squeeze=True):
+def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
     shape = shape_wrapper(shape)
 
     res = []
@@ -128,13 +125,22 @@ def safe_scalar2array(*val_or_arr, shape, squeeze=True):
             voa = np.array(voa).item()
             res.append(np.full(shape=shape, fill_value=voa, dtype=type(voa)))
         except ValueError:
-            assert np.shape(voa) == shape
+            if safe:
+                assert np.all(np.shape(voa) == shape)
             res.append(voa)
 
     if len(res) == 1 and squeeze:
         return res[0]
     else:
         return res
+
+
+def safe_unify(x):
+    x = np.atleast_1d(x)
+
+    x_mean = np.mean(x)
+    assert np.all(x == x_mean)
+    return x_mean.astype(x.dtype)
 
 
 def flatten_without_last(x):
@@ -189,9 +195,7 @@ def align_shapes(a, b):
     # a = np.array((2, 3, 4, 3, 5, 1))
     # b = np.array((3, 4, 3))
     # -> array([-1, 1, 1, 1, -1, -1])
-
-    idx = find_subarray(a=a, b=b)
-    idx = np.asscalar(idx)
+    idx = find_subarray(a=a, b=b).item()
 
     aligned_shape = np.ones(len(a), dtype=int)
     aligned_shape[:idx] = -1
@@ -371,6 +375,9 @@ def find_subarray(a, b):
 
     # a = np.array((2, 3, 4, 3, 5, 1))
     # b = np.array((3, 4, 3))
+
+    # a = np.array((27, 3))
+    # b = np.array((3,))
     # -> array([1])
     """
     a, b = np.atleast_1d(a, b)
@@ -596,41 +603,6 @@ def idx2boolmat(idx, n=100):
         print(i, (np.unravel_index(i, shape=s)))
         mat[np.unravel_index(i, shape=s)][idx_i] = True
     return mat
-
-
-def get_sub_set_idx():
-
-    def remove(x, n):
-        for nn in n:
-            x = x[x != nn]
-        return x
-
-    def reduce(x, n):
-        for nn in n:
-            x[x <= nn] -= 1
-        return x
-
-    def remove_reduce(x, n):
-        for nn in n:
-            x = x[x != nn]
-            x[x <= nn] -= 1
-
-    def keep_delete_wrapper(keep, x):
-        if isinstance(x, int):
-            x = np.arange(x)
-
-        if np_isinstance(keep, bool):
-            bool_keep = keep
-            idx_keep = np.nonzero(keep == 1)
-        elif np_isinstance(keep, int):
-            idx_keep = keep
-            bool_keep = np.zeros(x, dtype=bool)
-            bool_keep[idx_keep] = True
-        else:
-            raise ValueError
-
-        idx_delete = np.nonzero(keep == 0)
-        return bool_keep, idx_keep, idx_delete
 
 
 def tile_offset(a, reps, offsets=None):
@@ -956,3 +928,9 @@ def get_stats(x, axis=None, return_array=False):
         return np.array([stats['mean'], stats['std'], stats['median'], stats['min'], stats['max']])
 
     return stats
+
+
+def aranges(stops=None, starts=None, steps=None):
+    n = max_size(stops, starts, steps)
+    stops, starts, steps = scalar2array(stops, starts, steps, shape=n)
+    return [np.arange(stops[i], starts[i], steps[i]) for i in range(n)]

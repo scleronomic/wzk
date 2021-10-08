@@ -12,17 +12,17 @@ from wzk.printing import print_progress
 from wzk.strings import uuid4
 
 
-_width_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / golden_ratio]
-_width_2c_ieee = [7 + 1 / 16, (7 + 1 / 12) / golden_ratio]
+shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / golden_ratio]
+shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 12) / golden_ratio]
 
 
 def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
     # https://www.ieee.org/content/dam/ieee-org/ieee/web/org/pubs/eic-guide.pdf
     if isinstance(width, str):
         if width.lower() == 'ieee1c':
-            width = _width_1c_ieee[0]
+            width = shape_1c_ieee[0]
         elif width.lower() == 'ieee2c':
-            width = _width_2c_ieee[0]
+            width = shape_2c_ieee[0]
         else:
             raise ValueError
 
@@ -36,7 +36,7 @@ def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
     return width, height
 
 
-def new_fig(*, width=_width_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
+def new_fig(*, width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
             n_dim=2,
             n_rows=1, n_cols=1,
             share_x='none', share_y='none',  # : bool or {'none', 'all', 'row', 'col'},
@@ -67,7 +67,7 @@ def new_fig(*, width=_width_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
     return fig, ax
 
 
-def save_fig(filename=None, fig=None, formats=('png',),
+def save_fig(file=None, fig=None, formats=('png',),
              dpi=300, bbox='tight', pad=0.1,
              save=True, replace=True, view=False, copy2cb=False,
              verbose=1, **kwargs):
@@ -83,29 +83,29 @@ def save_fig(filename=None, fig=None, formats=('png',),
     if fig is None:
         fig = plt.gcf()
 
-    if filename is None:
-        filename = get_fig_suptitle(fig=fig)
+    if file is None:
+        file = get_fig_suptitle(fig=fig)
 
-    dir_name = os.path.dirname(filename)
+    dir_name = os.path.dirname(file)
     if dir_name != '':
         safe_create_dir(directory=dir_name)
 
     formats = atleast_tuple(formats, convert=False)
     for f in formats:
-        file = f'{filename}.{f}'
+        file_f = f'{file}.{f}'
 
-        if replace or not os.path.isfile(path=file):
-            fig.savefig(file, format=f, bbox_inches=bbox, pad_inches=pad,  dpi=dpi, **kwargs)
+        if replace or not os.path.isfile(path=file_f):
+            fig.savefig(file_f, format=f, bbox_inches=bbox, pad_inches=pad,  dpi=dpi, **kwargs)
             if verbose >= 1:
-                print(f'{file} saved')
+                print(f'{file_f} saved')
         else:
-            print(f'{file} already exists')
+            print(f'{file_f} already exists')
 
     if view:
-        start_open(file=f"{filename}.{formats[0]}")
+        start_open(file=f"{file}.{formats[0]}")
 
     if copy2cb:
-        copy2clipboard(file=f"{filename}.{formats[0]}")
+        copy2clipboard(file=f"{file}.{formats[0]}")
 
 
 def save_ani(filename, fig, ani, n, dpi=300, bbox=None, fps=30):

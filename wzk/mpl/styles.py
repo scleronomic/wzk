@@ -1,6 +1,6 @@
 import matplotlib as mpl
 # noinspection PyUnresolvedReferences
-from wzk.mpl.figure import _width_1c_ieee, _width_2c_ieee
+from wzk.mpl.figure import shape_1c_ieee, shape_2c_ieee
 
 # fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)[source]
 
@@ -12,7 +12,13 @@ def __no_borders(pad=0.0):
             'figure.subplot.top': 1.0 - pad}
 
 
-def set_borders(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.2):
+def set_borders(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0.2,
+                no_borders=False, no_whitespace=False):
+    if no_whitespace:
+        wspace, hspace = 0, 0
+    if no_borders:
+        left, right, bottom, top = 0, 1, 0, 1
+
     mpl.rcParams.update({'figure.subplot.left': left,
                          'figure.subplot.right': right,
                          'figure.subplot.bottom': bottom,
@@ -21,7 +27,7 @@ def set_borders(left=0.125, right=0.9, bottom=0.1, top=0.9, wspace=0.2, hspace=0
                          'figure.subplot.hspace': hspace})
 
 
-def set_style(s=('ieee', )):
+def set_style(s=('ieee',)):
     params = {}
     if 'ieee' in s:
         params.update({

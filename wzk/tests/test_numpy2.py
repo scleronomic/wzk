@@ -67,6 +67,7 @@ class Test(TestCase):
         i = argmax(a, axis=axis)
 
         e = extract(a=a, axis=axis, idx=i, mode='orange')
+        # e = extract(a=a, axis=axis, idx=i, mode='slice')
         amax = np.max(a, axis=axis)
         self.assertTrue(np.allclose(amax, e))
 
@@ -83,18 +84,18 @@ class Test(TestCase):
         self.assertTrue(np.allclose(amin, e))
 
     def test_safe2vectors(self):
-        self.assertTrue(np.array_equal([np.array([1])], safe_scalar2array(1, shape=1, squeeze=False)))
-        self.assertTrue(np.array_equal(np.array([1]), safe_scalar2array(1, shape=1, squeeze=True)))
+        self.assertTrue(np.array_equal([np.array([1])], scalar2array(1, shape=1, squeeze=False)))
+        self.assertTrue(np.array_equal(np.array([1]), scalar2array(1, shape=1, squeeze=True)))
 
         self.assertTrue(np.array_equal([np.array(['a', 'a', 'a'], dtype='<U1'),
                                         np.array(['b', 'b', 'b'], dtype='<U1'),
                                         np.array(['c', 'c', 'c'], dtype='<U1')],
-                                       safe_scalar2array('a', 'b', 'c', shape=3)))
+                                       scalar2array('a', 'b', 'c', shape=3)))
 
         self.assertTrue(np.array_equal([np.array([1, 1, 1]),
                                         np.array([None, None, None], dtype=object),
                                         np.array(['a', 'a', 'a'], dtype='<U1')],
-                                       safe_scalar2array(1, None, 'a', shape=3)))
+                                       scalar2array(1, None, 'a', shape=3)))
 
     def test_find_values(self):
         arr = np.array([3, 5, 5, 6, 7, 8, 8, 8, 10, 11, 1])

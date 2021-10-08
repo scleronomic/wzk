@@ -4,6 +4,45 @@ from scipy.spatial import ConvexHull
 from wzk.numpy2 import shape_wrapper
 
 
+def cube(limits=None):
+    v = np.array([[0, 0, 0],
+                  [0, 0, 1],
+                  [0, 1, 0],
+                  [0, 1, 1],
+                  [1, 0, 0],
+                  [1, 0, 1],
+                  [1, 1, 0],
+                  [1, 1, 1]], dtype=int)
+
+    if limits is not None:
+        v = limits[np.arange(3)[np.newaxis, :].repeat(8, axis=0), v]
+
+    # via
+    # def get_vi(x):
+    #     return np.nonzero((v == x).sum(axis=-1) == 3)[0][0]
+    # for s, e in combinations(v, 2):
+    #     if np.any(np.sum(np.abs(s - e)) == d):
+    #         print(get_vi(s), get_vi(e))
+    # for a, b, c, d in combinations(v, 4):
+    #     print(a, b, c, d)
+    e = np.array([[0, 1], [0, 2], [0, 4],
+                  [1, 3], [1, 5],
+                  [2, 3], [2, 6],
+                  [3, 7],
+                  [4, 5], [4, 6],
+                  [5, 7],
+                  [6, 7]], dtype=int)
+
+    f = np.array([[0, 2, 3, 1],
+                  [0, 4, 5, 1],
+                  [0, 4, 6, 2],
+                  [1, 5, 7, 3],
+                  [2, 6, 7, 3],
+                  [4, 6, 7, 5]], dtype=int)
+
+    return v, e, f
+
+
 def get_orthonormal(v):
     """
     get a 3d vector which ist orthogonal to v.
@@ -434,7 +473,8 @@ def fibonacci_sphere(n=100):  # 3d
     return np.array((x, y, z)).T
 
 
-def get_points_on_sphere_nd(n=100, d=3):
+def get_points_on_sphere_nd():
+    # n=100, d=3
     raise NotImplementedError
     # https://stackoverflow.com/questions/9046106/algorithm-to-rasterize-and-fill-a-hypersphere/21575035#21575035
     # https://math.stackexchange.com/questions/3291489/can-the-fibonacci-lattice-be-extended-to-dimensions-higher-than-3/3297830#3297830

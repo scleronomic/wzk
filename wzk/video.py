@@ -13,24 +13,29 @@ def stack_videos(videos=None, filename=None):
     if isinstance(videos, str):
         videos = dir_dir2file_array(videos)
 
+    _format = 'mp4'
+    kwargs = ''
+
     s = np.shape(videos)
 
     if filename is None:
-        filename = f"stacked_video__{s[0]}x{s[1]}__{uuid4()}.mp4"
+        filename = f"stacked_video__{s[0]}x{s[1]}__{uuid4()}.{_format}"
 
-    uuid_list = [f'{uuid4()}.mp4' for _ in range(s[0])]
+    uuid_list = [f'{uuid4()}.{_format}' for _ in range(s[0])]
 
     for i, in_i in enumerate(videos):
         in_i_str = ' -i '.join(in_i)
         stack_str = ''.join([f'[{j}:v]' for j in range(s[1])])
 
         os.system(f'ffmpeg -i {in_i_str} '
+                  f'{kwargs} '
                   f'-filter_complex "{stack_str}"hstack=inputs={s[1]}[v] -map "[v]" '
                   f'{uuid_list[i]}')
 
     in_i_str = ' -i '.join(uuid_list)
     stack_str = ''.join([f'[{j}:v]' for j in range(s[0])])
     os.system(f'ffmpeg -i {in_i_str} '
+              f'{kwargs} '
               f'-filter_complex "{stack_str}"vstack=inputs={s[0]}[v] -map "[v]" '
               f'{filename}')
 

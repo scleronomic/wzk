@@ -4,10 +4,11 @@ import numpy as np
 
 from wzk.numpy2 import get_stats
 
+
 def quiet_mode_on():
     # can not be changed back
     # copy.copy does not work
-    stdout_copy = sys.stdout
+    # stdout_copy = sys.stdout
     sys.stdout = open(os.devnull, "w")
     #
 

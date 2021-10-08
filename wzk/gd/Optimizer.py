@@ -70,7 +70,7 @@ class Adagrad(Optimizer):
 class Adadelta(Optimizer):
     name = 'Adadelta'
 
-    def __init__(self,  lmbda=0.9, eps=1e-8, ss=None):
+    def __init__(self,  lmbda=0.9, eps=1e-8):
         self.lmbda = lmbda
         self.eps = eps
         self.e_g = 0
@@ -196,33 +196,12 @@ class AdaptiveStep(Optimizer):
         return - ss * v
 
 
-def test_line_search_backtracking():
-    import numpy as np
-    from wzk import numeric_derivative, new_fig
-
-    def fun(_x):
-        return np.sin((_x**2).sum(axis=-1)) + np.cos(np.linalg.norm(_x, axis=-1))
-        # return (_x**2).sum(axis=-1)
-
-    xtol = 1e-6
-    x = np.random.random((10, 2))
-    x2 = x.copy()
-    f_list = [fun(x)]
-    for i in range(100):
-        x2, f2, a = line_search_backtracking(fun=fun, x=x2, j=numeric_derivative(fun=fun, x=x2), xtol=xtol,)
-        print(a)
-        f_list.append(f2)
-
-    fig, ax = new_fig()
-    ax.plot(np.array(f_list))
-
-
 def update_x(x, p, a,
              x2, xtol, b):
 
     dx = a[b, np.newaxis, np.newaxis] * p[b]  # axis only one newaxis
     x2[b] = x[b] + dx
-    b[b] = np.linalg.norm(dx, axis=(-2, -1)) > xtol   # axis -1
+    b[b] = np.linalg.norm(dx, axis=(-2, -1)) > xtol   # noqa || axis -1
     return x2, b
 
 

@@ -2,10 +2,26 @@
 
 import numpy as np
 from wzk.numpy2 import scalar2array
+from scipy.signal import savgol_filter as savgol
+from scipy.interpolate import interp1d
 
 
 def __interpolant(t):
     return t*t*t*(t*(t*6 - 15) + 10)
+
+
+def perlin_noise_1d(n, m, scale):
+    # https://stackoverflow.com/questions/8798771/perlin-noise-for-1d
+    # TODO not really perlin
+    x = np.linspace(0, 1, m)
+    y = np.random.normal(scale=scale, size=m)
+    x2 = np.linspace(0, 1, n)
+    y2 = interp1d(x=x, y=y, kind=2)(x2)
+
+    w = n // m
+    w -= (w % 2) + 1
+    y2 = savgol(x=y2, window_length=w, polyorder=min(w-1, 3))
+    return y2
 
 
 def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpolant):
@@ -14,8 +30,8 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
         shape: The shape of the generated array (tuple of two ints).
             This must be a multiple of res.
         res: The number of periods of noise to generate along each
-            axis (tuple of two ints). Note shape must be a multiple of
-            res.
+            axis (tuple of two ints).
+            Note shape must be a multiple of res.
         tileable: If the noise should be tileable along each axis
             (tuple of two bools). Defaults to (False, False).
         interpolant: The interpolation function, defaults to
@@ -30,12 +46,11 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
         tileable = (False, False)
 
     shape, res = np.atleast_1d(shape, res)
-    res = scalar2array(v=res, shape=2)
+    res = scalar2array(res, shape=2)
     delta = res / shape
     d = shape // res
 
-    grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]]\
-             .transpose(1, 2, 0) % 1
+    grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1, 2, 0) % 1
 
     # Gradients
     angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
@@ -87,7 +102,7 @@ def perlin_noise_3d(shape, res=1, tileable=None,
         tileable = (False, False, False)
 
     shape, res = np.atleast_1d(shape, res)
-    res = scalar2array(v=res, shape=3)
+    res = scalar2array(res, shape=3)
     delta = res / shape
     d = shape // res
 
