@@ -17,7 +17,7 @@ __default_nodes = ['rmc-lx0062',
 
 
 def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
-
+    assert 0.0 < perc < 100.1
     perc = perc / 100
 
     log = ''

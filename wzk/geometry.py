@@ -4,7 +4,7 @@ from scipy.spatial import ConvexHull
 from wzk.numpy2 import shape_wrapper
 
 
-def cube(limits=None):
+def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
     v = np.array([[0, 0, 0],
                   [0, 0, 1],
                   [0, 1, 0],
@@ -43,7 +43,7 @@ def cube(limits=None):
     return v, e, f
 
 
-def get_orthonormal(v):
+def get_orthonormal(v: np.ndarray) -> np.ndarray:
     """
     get a 3d vector which ist orthogonal to v.
     Note that the solution is not unique.
@@ -60,7 +60,7 @@ def get_orthonormal(v):
     return v_o1
 
 
-def make_rhs(xyz, order=(0, 1)):
+def make_rhs(xyz: np.ndarray, order: tuple = (0, 1)) -> np.ndarray:
     # rhs = rand-hand coordinate system
     # xyz -> rhs
     # 1. keep rhs[order[0]]
@@ -88,7 +88,7 @@ def make_rhs(xyz, order=(0, 1)):
     return xyz
 
 
-def projection_point_line(p, x0, x1, clip=False):
+def projection_point_line(p: np.ndarray, x0: np.ndarray, x1: np.ndarray, clip: bool = False) -> np.ndarray:
     """
     http:#mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
     Projection from point p to the line defined by {x0 + mu*x1}
@@ -101,12 +101,12 @@ def projection_point_line(p, x0, x1, clip=False):
     return x0_p
 
 
-def distance_point_line(p, x0, x1, clip=False):
+def distance_point_line(p: np.ndarray, x0: np.ndarray, x1: np.ndarray, clip: bool = False) -> np.ndarray:
     pp = projection_point_line(p=p, x0=x0, x1=x1, clip=clip)
     return np.linalg.norm(pp - p, axis=-1)
 
 
-def __flip_and_clip_mu(mu):
+def __flip_and_clip_mu(mu: np.ndarray):
     #  x | x | x
     #    0   1
     #  x | 0 | x - 1
@@ -119,7 +119,11 @@ def __flip_and_clip_mu(mu):
     return diff_mu
 
 
-def __clip_ppp(o, u, v, uu, vv):
+def __clip_ppp(o: np.ndarray,
+               u: np.ndarray,
+               v: np.ndarray,
+               uu: np.ndarray,
+               vv: np.ndarray) -> (np.ndarray, np.ndarray):
 
     n = np.cross(u, v)
     nn = (n*n).sum(axis=-1)
@@ -132,7 +136,11 @@ def __clip_ppp(o, u, v, uu, vv):
     return np.clip(mua2, 0, 1), np.clip(mub2, 0, 1)
 
 
-def projection_point_plane(p, o, u, v, clip=False):
+def projection_point_plane(p: np.ndarray,
+                           o: np.ndarray,
+                           u: np.ndarray,
+                           v: np.ndarray,
+                           clip: bool = False) -> np.ndarray:
     """
     Projection of point p on the plane ouv.
     Defined by its origin o and two vectors spanning the plane u and v.
@@ -158,9 +166,9 @@ def projection_point_plane(p, o, u, v, clip=False):
         return p0 + p
 
 
-def __line_line(x1, x3,
-                o, u, v, uu, vv,
-                __return_mu):
+def __line_line(x1: np.ndarray, x3: np.ndarray,
+                o: np.ndarray, u: np.ndarray, v: np.ndarray, uu: np.ndarray, vv: np.ndarray,
+                __return_mu: bool) -> (np.ndarray, np.ndarray):
 
     mua, mub = __clip_ppp(o=o, u=u, v=-v, uu=uu, vv=vv)  # attention sign change for v
     xa = x1 + mua[..., np.newaxis] * u
@@ -172,7 +180,7 @@ def __line_line(x1, x3,
         return xa, xb
 
 
-def line_line(line_a, line_b, __return_mu=False):
+def line_line(line_a: np.ndarray, line_b: np.ndarray, __return_mu: bool = False) -> (np.ndarray, np.ndarray):
     """
     (x1-x3) --- (x1-x4)
        |           |
@@ -199,7 +207,7 @@ def line_line(line_a, line_b, __return_mu=False):
                        __return_mu=__return_mu)
 
 
-def line_line_pairs(lines, pairs, __return_mu=False):
+def line_line_pairs(lines: np.ndarray, pairs: np.ndarray, __return_mu: bool = False) -> (np.ndarray, np.ndarray):
     a, b = pairs.T
     x1, x3 = lines[..., a, 0, :], lines[..., b, 0, :]
     uv = lines[..., :, 1, :] - lines[..., :, 0, :]
@@ -213,7 +221,7 @@ def line_line_pairs(lines, pairs, __return_mu=False):
                        __return_mu=__return_mu)
 
 
-def line_line_pairs_d2_jac(lines, pairs):
+def line_line_pairs_d2_jac(lines: np.ndarray, pairs: np.ndarray) -> (np.ndarray, np.ndarray):
     (xa, xb), (mua, mub) = line_line_pairs(lines, pairs, __return_mu=False)
 
     dxaxb_dx = np.zeros(mua.shape + (2, 2))
@@ -228,7 +236,10 @@ def line_line_pairs_d2_jac(lines, pairs):
     return d2, dd2_dx
 
 
-def __line2capsule(xa, xb, ra, rb):
+def __line2capsule(xa: np.ndarray,
+                   xb: np.ndarray,
+                   ra: np.ndarray,
+                   rb: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
     ra, rb = np.atleast_1d(ra, rb)
     d = xb - xa
     n = np.linalg.norm(d, axis=-1)
@@ -240,19 +251,25 @@ def __line2capsule(xa, xb, ra, rb):
     return xa, xb, dd
 
 
-def capsule_capsule(line_a, line_b, radius_a, radius_b):
-    xa, xb = line_line(line_a, line_b)
+def capsule_capsule(line_a: np.ndarray,
+                    line_b: np.ndarray,
+                    radius_a: np.ndarray,
+                    radius_b: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
+    xa, xb = line_line(line_a=line_a, line_b=line_b)
     xa, xb, n = __line2capsule(xa=xa, xb=xb, ra=radius_a, rb=radius_b)
     return xa, xb, n
 
 
-def capsule_capsule_pairs(lines, pairs, radii):
+def capsule_capsule_pairs(lines: np.ndarray,
+                          pairs: np.ndarray,
+                          radii: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
     xa, xb = line_line_pairs(lines=lines, pairs=pairs)
     xa, xb, n = __line2capsule(xa=xa, xb=xb, ra=radii[pairs[:, 0]], rb=radii[pairs[:, 1]])
     return xa, xb, n
 
 
-def distance_point_plane(p, o, u, v, clip=False):
+def distance_point_plane(p, o, u, v,
+                         clip: bool = False) -> np.ndarray:
     pp = projection_point_plane(p=p, o=o, u=u, v=v, clip=clip)
     return np.linalg.norm(pp - p, axis=-1)
 
@@ -377,7 +394,7 @@ def sample_points_on_sphere_3d(shape):
     return x
 
 
-def sample_points_in_sphere_nd(shape, n_dim):
+def sample_points_in_sphere_nd(shape, n_dim: int):
     shape = shape_wrapper(shape=shape)
     r = np.random.uniform(low=0, high=1, size=shape) ** (1/n_dim)
     x = np.random.normal(loc=0, scale=1, size=tuple(shape) + (n_dim,))
@@ -393,7 +410,7 @@ def sample_points_in_ellipse_nd(shape, size):
     return x
 
 
-def sample_points_on_sphere_nd(shape, n_dim):
+def sample_points_on_sphere_nd(shape, n_dim: int):
 
     safety = 1.2
 
@@ -413,7 +430,7 @@ def sample_points_on_sphere_nd(shape, n_dim):
     raise NotImplementedError
 
 
-def hyper_sphere_volume(n_dim, r=1.):
+def hyper_sphere_volume(n_dim: int, r: float = 1.):
     """https: # en.wikipedia.org / wiki / Volume_of_an_n - ball"""
     n2 = n_dim  # 2
     if n_dim % 2 == 0:
@@ -463,7 +480,7 @@ def get_points_on_multisphere(x, r, n):
     return points, hull
 
 
-def fibonacci_sphere(n=100):  # 3d
+def fibonacci_sphere(n: int = 100) -> np.ndarray:  # 3d
     phi = np.pi * (3. - np.sqrt(5.))  # golden angle in radians
     y = np.linspace(1, -1, n)
     r = np.sqrt(1 - y*y)              # radius at y
@@ -481,7 +498,7 @@ def get_points_on_sphere_nd():
     # https://stackoverflow.com/questions/57123194/how-to-distribute-points-evenly-on-the-surface-of-hyperspheres-in-higher-dimensi
 
 
-def hcp_grid(limits, radius):
+def hcp_grid(limits: np.ndarray, radius: np.ndarray) -> np.ndarray:
     """
     hexagonal closed packing
     https://en.wikipedia.org/wiki/Close-packing_of_equal_spheres
@@ -522,7 +539,7 @@ def hcp_grid(limits, radius):
     return hcp
 
 
-def get_distance_to_ellipsoid(x, shape):
+def get_distance_to_ellipsoid(x: np.ndarray, shape: np.ndarray) -> np.ndarray:
     assert x.shape[-1] == len(shape)
     d = ((x / shape)**2).sum(axis=-1) - 1
     return d

@@ -2,6 +2,8 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from itertools import product
 
+from wzk.dtypes import c2np
+
 
 class DummyArray:
     """Allows indexing but always returns the same 'dummy' value"""
@@ -68,10 +70,6 @@ def np_isinstance(o, c):
     np_isinstance(np.ones(4, dtype=int), float)  # False
     np_isinstance(np.full((4, 4), 'bert'), str)  # True
     """
-    c2np = {bool: np.bool_,
-            str: np.str_,
-            int: np.integer,
-            float: np.floating}
 
     if isinstance(o, np.ndarray):
         c = (c2np[cc] for cc in c) if isinstance(c, tuple) else c2np[c]
@@ -96,11 +94,6 @@ def numeric2object_array(arr):
         arr_obj[i] = arr[i]
 
     return arr_obj
-
-# (7, 3)
-# (7) ->
-# (3) ->
-# (1) ->
 
 
 def array2array(a, shape):

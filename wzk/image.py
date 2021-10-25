@@ -1,7 +1,7 @@
-import zlib  # Image compression
+import zlib
 import numpy as np
 from scipy.signal import convolve2d
-from skimage.io import imread, imsave  # noqa: F401 unused import
+from skimage.io import imread, imsave  # noqa
 from skimage import measure
 
 from wzk.dicts_lists_tuples import tuple_extract

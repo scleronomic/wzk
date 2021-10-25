@@ -12,7 +12,7 @@ def __interpolant(t):
 
 def perlin_noise_1d(n, m, scale):
     # https://stackoverflow.com/questions/8798771/perlin-noise-for-1d
-    # TODO not really perlin
+    # this is not really perlin
     x = np.linspace(0, 1, m)
     y = np.random.normal(scale=scale, size=m)
     x2 = np.linspace(0, 1, n)

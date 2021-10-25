@@ -22,27 +22,27 @@ def get_pythonpath():
         return []
 
 
-def safe_remove(file):
+def safe_remove(file: str):
     if os.path.exists(file):
         os.remove(file)
     else:
         pass
 
 
-def start_open(file):
+def start_open(file: str):
     open_cmd = __open_cmd_dict[platform.system()]
     subprocess.Popen([f'{open_cmd} {file}'], shell=True)
 
 
-def save_object2txt(obj, file_name):
-    if file_name[-4:] != '.txt' and '.' not in file_name:
-        file_name += '.txt'
+def save_object2txt(obj, file: str):
+    if file[-4:] != '.txt' and '.' not in file:
+        file += '.txt'
 
-    with open(file_name, 'w') as f:
+    with open(file, 'w') as f:
         f.write(''.join(["%s: %s\n" % (k, v) for k, v in obj.__dict__.items()]))
 
 
-def save_pickle(obj, file):
+def save_pickle(obj, file: str):
     if file[-4:] != __pickle_extension:
         file += __pickle_extension
 
@@ -50,7 +50,7 @@ def save_pickle(obj, file):
         pickle.dump(obj, f)
 
 
-def load_pickle(file):
+def load_pickle(file: str):
     if file[-4:] != __pickle_extension:
         file += __pickle_extension
 
@@ -63,27 +63,9 @@ def list_files(directory):
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
 
-def safe_create_dir(directory):
+def safe_create_dir(directory: str):
     if not os.path.exists(directory):
         os.makedirs(directory)
-
-
-def ensure_final_slash(path):
-    if path[-1] != '/':
-        path += '/'
-    return path
-
-
-def ensure_initial_slash(path):
-    if path[0] != '/':
-        path = '/' + path
-    return path
-
-
-def ensure_initial_and_final_slash(path):
-    path = ensure_initial_slash(path=path)
-    path = ensure_final_slash(path=path)
-    return path
 
 
 def ensure_extension_point(ext):
@@ -104,20 +86,18 @@ def ensure_file_extension(*, file, ext):
     return file
 
 
-def rel2abs_path(path, abs_dir):
+def rel2abs_path(path: str, path_abs: str):
     # abs_dir = '/Hello/HowAre/You/'
     # path = 'Hello/HowAre/You/good.txt'
     # path = 'good.txt'
 
-    abs_dir = ensure_initial_slash(path=abs_dir)
-    abs_dir = os.path.normpath(path=abs_dir)
-    path = ensure_initial_slash(path=path)
+    path_abs = os.path.normpath(path=path_abs)
     path = os.path.normpath(path=path)
 
-    if abs_dir in path:
+    if path_abs in path:
         return path
     else:
-        return os.path.normpath(abs_dir + path)
+        return os.path.normpath(path_abs + '/' + path)
 
 
 # .npz files, maybe own module
@@ -156,7 +136,8 @@ def combine_npz_files(*, directory,
     return new_dict
 
 
-def combine_npy_files2(directory, new_name="combined_{new_len}"):
+def combine_npy_files2(directory: str,
+                       new_name: str = "combined_{new_len}") -> None:
     directory = os.path.normpath(path=directory)
     file_list = [file for file in os.listdir(directory) if '.npy' in file]
     arr = np.concatenate([np.load(f"{directory}/{file}", allow_pickle=False)
@@ -164,7 +145,10 @@ def combine_npy_files2(directory, new_name="combined_{new_len}"):
     np.save(file=f"{directory}/{new_name.format(new_len=len(arr))}.npy", arr=arr)
 
 
-def combine_npy_files(directory, new_name="combined_{new_len}", delete_singles=False, verbose=0):
+def combine_npy_files(directory: str,
+                      new_name: str = "combined_{new_len}",
+                      delete_singles: bool = False,
+                      verbose: int = 0) -> np.ndarray:
 
     directory = os.path.normpath(path=directory)
     file_list = [file for file in os.listdir(directory) if '.npy' in file]
@@ -187,7 +171,9 @@ def combine_npy_files(directory, new_name="combined_{new_len}", delete_singles=F
     return arr
 
 
-def clip_npz_file(n_samples, file, save=True):
+def clip_npz_file(n_samples: int,
+                  file: str,
+                  save: bool = True) -> dict:
     directory, file = os.path.split(file)
     file_name, file_extension = os.path.splitext(file)
     assert file_extension == '.npz'
@@ -201,7 +187,11 @@ def clip_npz_file(n_samples, file, save=True):
     return new_dict
 
 
-def __read_head_tail(*, file, n=1, squeeze=True, head_or_tail):
+def __read_head_tail(file: str,
+                     n: int = 1,
+                     squeeze: bool = True,
+                     head_or_tail: str = 'head'):
+    assert head_or_tail == 'head' or head_or_tail == 'tail'
     s = os.popen(f"{head_or_tail} -n {n} {file}").read()
     s = s.split('\n')[:-1]
 
@@ -211,15 +201,15 @@ def __read_head_tail(*, file, n=1, squeeze=True, head_or_tail):
     return s
 
 
-def read_head(file, n=1, squeeze=True):
+def read_head(file: str, n: int = 1, squeeze: bool = True):
     return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail='head')
 
 
-def read_tail(file, n=1, squeeze=True):
+def read_tail(file: str, n: int = 1, squeeze: bool = True):
     return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail='tail')
 
 
-def copy2clipboard(file):
+def copy2clipboard(file: str):
     """
     https://apple.stackexchange.com/questions/15318/using-terminal-to-copy-a-file-to-clipboard
     -> works only for mac!
@@ -230,7 +220,11 @@ def copy2clipboard(file):
 
 
 # shutil.move("path/to/current/file.foo", "path/to/new/destination/for/file.foo")
-def split_files_into_dirs(file_list, bool_fun, dir_list, base_dir=None, mode='dry'):
+def split_files_into_dirs(file_list: list,
+                          bool_fun,
+                          dir_list: list,
+                          base_dir: str = None,
+                          mode: str = 'dry'):
 
     if base_dir is not None:
         base_dir = os.path.normpath(base_dir)
@@ -278,7 +272,8 @@ def test_split_files_into_dirs():
                           bool_fun=lambda s, i: (s[:len(str(i))] == str(i)) and len(s) == 32 + len(str(i)))
 
 
-def dir_dir2file_array(directory=None, combine_str=True):
+def dir_dir2file_array(directory: str = None,
+                       combine_str: bool = True) -> list:
     """
     -directory/
     ----subA/
@@ -311,5 +306,3 @@ def dir_dir2file_array(directory=None, combine_str=True):
         file_arr.append(f_list)
 
     return file_arr
-
-

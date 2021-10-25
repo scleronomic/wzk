@@ -1,4 +1,4 @@
-from time import time, sleep  # noqa: F401 unused import
+from time import time, sleep  # noqa
 from datetime import datetime
 
 
