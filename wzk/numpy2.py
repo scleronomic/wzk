@@ -927,3 +927,8 @@ def aranges(stops=None, starts=None, steps=None):
     n = max_size(stops, starts, steps)
     stops, starts, steps = scalar2array(stops, starts, steps, shape=n)
     return [np.arange(stops[i], starts[i], steps[i]) for i in range(n)]
+
+
+def find_consecutives(x, n):
+    # my stackoverflow
+    return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n-1), mode='valid') == 0)[0]

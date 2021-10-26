@@ -42,22 +42,29 @@ def vacuum(file):
     execute(file=file, command='VACUUM')
 
 
-def get_table_name(file):
+def get_table_name(file: str) -> list:
     with open_db_connection(file=file, close=True) as con:
         res = pd.read_sql_query(sql="SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%'",
                                 con=con)
         return res['name'].values
 
 
-def rename_table(file, tables):
+def rename_tables(file: str, tables: dict) -> None:
     old_names = get_table_name(file=file)
 
     with open_db_connection(file=file, close=True) as con:
         cur = con.cursor()
         for old in old_names:
             if old in tables:
-                new = tables['old']
+                new = tables[old]
                 cur.execute(f"ALTER TABLE `{old}` RENAME TO `{new}`")
+
+
+def rename_columns(file: str, table: str, columns: dict) -> None:
+    with open_db_connection(file=file, close=True) as con:
+        cur = con.cursor()
+        for old in columns:
+            cur.execute(f"ALTER TABLE `{table}` RENAME COLUMN `{old}` TO `{columns[old]}`")
 
 
 def get_n_rows(file, table):

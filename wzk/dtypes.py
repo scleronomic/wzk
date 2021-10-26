@@ -18,11 +18,13 @@ __str2np = {'f128': np.float64,
             'i32': np.int32,
             'i16': np.int16,
             'i8': np.int8,
-            'b': np.bool}
+            'b': np.bool,
+            'cmp': None}
 
 
-def str2np(s):
-    s = s.split('_')[-1]
+def str2np(s: str, strip: bool = True):
+    if strip:
+        s = s.split('_')[-1]
     return __str2np[s]
 
 
