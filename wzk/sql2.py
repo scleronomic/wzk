@@ -187,6 +187,10 @@ def df2sql(df, file, table, if_exists='fail', lock=None):
                    - replace: If table exists, drop it, recreate it, and insert Measurements.
                    - append: If table exists, insert Measurements. Create if does not exist.
     """
+    if df is None:
+        print('No DataFrame was provided...')
+        return
+
     with open_db_connection(file=file, close=True, lock=lock) as con:
         df.to_sql(name=table, con=con, if_exists=if_exists, index=False)
 
