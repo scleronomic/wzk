@@ -84,16 +84,16 @@ def get_n_samples(file, i_worlds=-1):
         return counts[i_worlds]
 
 
-def __decompress_values(value, col):
+def __decompress_values(value, column: str):
     # SQL saves everything in binary form -> convert back to numeric, expect the columns which are marked as cmp
-    if isinstance(value[0], bytes) and col[-4:] != _CMP:
-        value = np.array([np.frombuffer(v, dtype=str2np(s=col)) for v in value])
+    if isinstance(value[0], bytes) and column[-4:] != _CMP:
+        value = np.array([np.frombuffer(v, dtype=str2np(s=column)) for v in value])
     return value
 
 
 # Get and Set SQL values
-def get_values_sql(file, table, columns=None, rows=-1,
-                   values_only=False, squeeze_col=True, squeeze_row=True):
+def get_values_sql(file: str, table: str, columns=None, rows=-1,
+                   values_only: bool = False, squeeze_col: bool = True, squeeze_row: bool = True):
     """
     'i_samples' == i_samples_global
     """
@@ -126,7 +126,7 @@ def get_values_sql(file, table, columns=None, rows=-1,
 
     if values_only:
         for col in columns:
-            value = __decompress_values(value=df.loc[:, col].values, col=col)
+            value = __decompress_values(value=df.loc[:, col].values, column=col)
             value_list.append(value)
 
         if len(df) == 1 and squeeze_row:
@@ -141,7 +141,7 @@ def get_values_sql(file, table, columns=None, rows=-1,
     # Return pandas.DataFrame
     else:
         for col in columns:
-            value = __decompress_values(value=df.loc[:, col].values, col=col)
+            value = __decompress_values(value=df.loc[:, col].values, column=col)
             df.loc[:, col] = numeric2object_array(value)
 
         return df

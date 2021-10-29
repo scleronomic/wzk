@@ -1,13 +1,4 @@
 import numpy as np
-import zlib
-
-
-r = np.random.random(10000).astype(np.float32)
-r1 = r.tobytes()
-r2 = zlib.compress(r, level=9)
-
-print(len(r1))
-print(len(r2))
 
 
 __str2np = {'f128': np.float64,

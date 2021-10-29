@@ -11,6 +11,6 @@ class Test(TestCase):
     def test_save_fig(self):
         file = f"{_dir}{_file}"
         fig, ax = new_fig()
-        save_fig(filename=file, fig=fig, formats=('png',), view=False)
+        save_fig(file=file, fig=fig, formats=('png',), view=False)
         safe_remove(file)
         self.assertTrue(True)

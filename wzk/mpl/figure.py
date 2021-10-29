@@ -2,6 +2,7 @@ import os
 import shutil
 import numpy as np
 
+from typing import Union, Optional
 from wzk.mpl.backend import plt
 from wzk.mpl.move_figure import move_fig
 
@@ -11,6 +12,8 @@ from wzk.math2 import get_mean_divisor_pair, golden_ratio
 from wzk.printing import print_progress
 from wzk.strings import uuid4
 
+import matplotlib as mpl
+from matplotlib import figure
 
 shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / golden_ratio]
 shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 12) / golden_ratio]
@@ -67,10 +70,10 @@ def new_fig(*, width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
     return fig, ax
 
 
-def save_fig(file=None, fig=None, formats=('png',),
-             dpi=300, bbox='tight', pad=0.1,
-             save=True, replace=True, view=False, copy2cb=False,
-             verbose=1, **kwargs):
+def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str, tuple] = ('png',),
+             dpi: int = 300, bbox: Optional[str] = 'tight', pad: float = 0.1,
+             save: bool = True, replace: bool = True, view: bool = False, copy2cb: bool = False,
+             verbose: int = 1, **kwargs):
     """
     Adaption of the matplotlib 'savefig' function with some added convenience.
     bbox = tight / standard (standard does not crop but saves the whole figure)
@@ -108,11 +111,12 @@ def save_fig(file=None, fig=None, formats=('png',),
         copy2clipboard(file=f"{file}.{formats[0]}")
 
 
-def save_ani(filename, fig, ani, n, dpi=300, bbox=None, fps=30):
-    dir_temp = os.path.split(filename)[0]
+def save_ani(file: str, fig: mpl.figure.Figure, ani,
+             n: int, fps: int = 30, dpi: int = 300, bbox: str = None,):
+    dir_temp = os.path.split(file)[0]
     if dir_temp == '':
         dir_temp = os.getcwd()
-        filename = dir_temp + '/' + filename
+        file = dir_temp + '/' + file
     dir_temp += '/' + uuid4()
 
     if isinstance(n, int):
@@ -121,15 +125,15 @@ def save_ani(filename, fig, ani, n, dpi=300, bbox=None, fps=30):
     for nn in n:
         print_progress(i=nn, n=n[-1]+1)
         ani(nn)
-        save_fig(filename="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats='png', dpi=dpi, bbox=bbox,
+        save_fig(file="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats=('png', ), dpi=dpi, bbox=bbox,
                  verbose=0)
 
     os.system(f'ffmpeg -r {fps} -i {dir_temp}/'
-              f'frame%06d.png -pix_fmt yuv420p -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2:color=white" {filename}.mp4')
+              f'frame%06d.png -pix_fmt yuv420p -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2:color=white" {file}.mp4')
     shutil.rmtree(dir_temp)
 
 
-def save_all(directory=None, close=False, **kwargs):
+def save_all(directory: str = None, close: bool = False, **kwargs):
     if directory is None:
         directory = input('Directory to which the figures should be saved:')
 
@@ -138,14 +142,14 @@ def save_all(directory=None, close=False, **kwargs):
         fig = plt.figure(num=n)
         title = get_fig_suptitle(fig=fig)
         title = "" if title is None else title
-        save_fig(filename=f"{directory}N{n}_{title}", fig=fig, **kwargs)
+        save_fig(file=f"{directory}N{n}_{title}", fig=fig, **kwargs)
 
     if close:
         close_all()
 
 
 # noinspection PyProtectedMember
-def get_fig_suptitle(fig):
+def get_fig_suptitle(fig: mpl.figure.Figure):
     try:
         return fig._suptitle._text
     except AttributeError:
@@ -156,7 +160,7 @@ def close_all():
     plt.close('all')
 
 
-def subplot_grid(n, squeeze=False, **kwargs):
+def subplot_grid(n: int, squeeze: bool = False, **kwargs):
     n_rows, n_cols = get_mean_divisor_pair(n)
 
     if n >= 7 and n_rows == 1:
@@ -173,5 +177,5 @@ def test_pdf2latex():
     fig, ax = new_fig(scale=0.5)
     ax.plot(np.random.random(20))
     ax.set_xlabel('Magnetization')
-    save_fig(filename='/Users/jote/Documents/Vorlagen/LaTeX Vorlagen/IEEE-open-journal-template/aaa', fig=fig,
-             formats='pdf')
+    save_fig(file='/Users/jote/Documents/Vorlagen/LaTeX Vorlagen/IEEE-open-journal-template/aaa', fig=fig,
+             formats=('pdf',))

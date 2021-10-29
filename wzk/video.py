@@ -6,7 +6,7 @@ from wzk.strings import uuid4
 import fire
 
 
-def stack_videos(videos=None, filename=None):
+def stack_videos(videos=None, file=None):
     """
     https://stackoverflow.com/questions/11552565/vertically-or-horizontally-stack-mosaic-several-videos-using-ffmpeg/33764934#33764934
     """
@@ -18,8 +18,8 @@ def stack_videos(videos=None, filename=None):
 
     s = np.shape(videos)
 
-    if filename is None:
-        filename = f"stacked_video__{s[0]}x{s[1]}__{uuid4()}.{_format}"
+    if file is None:
+        file = f"stacked_video__{s[0]}x{s[1]}__{uuid4()}.{_format}"
 
     uuid_list = [f'{uuid4()}.{_format}' for _ in range(s[0])]
 
@@ -37,7 +37,7 @@ def stack_videos(videos=None, filename=None):
     os.system(f'ffmpeg -i {in_i_str} '
               f'{kwargs} '
               f'-filter_complex "{stack_str}"vstack=inputs={s[0]}[v] -map "[v]" '
-              f'{filename}')
+              f'{file}')
 
     for u in uuid_list:
         os.remove(u)

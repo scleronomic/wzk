@@ -19,29 +19,29 @@ def imread_bw(file, threshold):
     return obstacle_image
 
 
-def combine_n_voxels_n_dim(n_voxels, n_dim=None):
-    if np.size(n_voxels) == 1:
+def combine_shape_n_dim(shape, n_dim=None):
+    if np.size(shape) == 1:
         try:
-            n_voxels = tuple(n_voxels)
+            shape = tuple(shape)
         except TypeError:
-            n_voxels = (n_voxels,)
-        n_voxels *= n_dim
+            shape = (shape,)
+        shape *= n_dim
 
     else:
-        n_voxels = tuple(n_voxels)
+        shape = tuple(shape)
 
-    return n_voxels
+    return shape
 
 
-def image_array_shape(n_voxels, n_samples=None, n_dim=None, n_channels=None):
+def image_array_shape(shape, n_samples=None, n_dim=None, n_channels=None):
     """
     Helper to set the shape for an image array.
-    n_samples=100,  n_voxels=64,          n_dim=2,    n_channels=None  ->  (100, 64, 64)
-    n_samples=100,  n_voxels=64,          n_dim=3,    n_channels=2     ->  (100, 64, 64, 64, 2)
+    n_samples=100,  shape=64,          n_dim=2,    n_channels=None  ->  (100, 64, 64)
+    n_samples=100,  shape=64,          n_dim=3,    n_channels=2     ->  (100, 64, 64, 64, 2)
     n_samples=None, n_voxel=(10, 11, 12), n_dim=None, n_channels=None  ->  (10, 11, 12)
     """
 
-    shape = combine_n_voxels_n_dim(n_voxels=n_voxels, n_dim=n_dim)
+    shape = combine_shape_n_dim(shape=shape, n_dim=n_dim)
 
     if n_samples is not None:
         shape = (n_samples,) + shape
@@ -51,9 +51,9 @@ def image_array_shape(n_voxels, n_samples=None, n_dim=None, n_channels=None):
     return shape
 
 
-def initialize_image_array(*, n_voxels, n_dim=None, n_samples=None, n_channels=None,
-                           dtype=None, initialization='zeros'):
-    shape = image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels)
+def initialize_image_array(shape: tuple, n_dim: int = None, n_samples: int = None, n_channels: int = None,
+                           dtype=None, initialization: str = 'zeros') -> np.ndarray:
+    shape = image_array_shape(shape=shape, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels)
     return initialize_array(shape=shape, mode=initialization, dtype=dtype)
 
 
@@ -61,16 +61,16 @@ def reshape_img(img, n_dim=2, sample_dim=True, channel_dim=True,
                 n_samples=None,  # either
                 n_channels=None):  # or. infer the other
 
-    n_voxels = img.shape[1]  # Can go wrong for 1D
+    shape = img.shape[1]  # Can go wrong for 1D
 
     if n_samples is None and n_channels is None:
         n_channels = 1
         n_samples = 1
 
     elif n_samples is None:
-        n_samples = img.size // (n_voxels ** n_dim) // n_channels
+        n_samples = img.size // (shape ** n_dim) // n_channels
     elif n_channels is None:
-        n_channels = img.size // (n_voxels ** n_dim) // n_samples
+        n_channels = img.size // (shape ** n_dim) // n_samples
 
     if n_samples == 1 and not sample_dim:
         n_samples = None
@@ -78,7 +78,7 @@ def reshape_img(img, n_dim=2, sample_dim=True, channel_dim=True,
     if n_channels == 1 and not channel_dim:
         n_channels = None
 
-    return img.reshape(image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels))
+    return img.reshape(image_array_shape(shape=shape, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels))
 
 
 def concatenate_images(*imgs, axis=-1):
@@ -115,22 +115,22 @@ def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder
     return img
 
 
-def reduce_n_voxels(img, n_voxels, n_dim, n_channels, kernel, pooling_type='average', n_samples=None,
-                    sample_dim=False, channel_dim=False):
+def reduce_shape(img, shape, n_dim, n_channels, kernel, pooling_type='average', n_samples=None,
+                 sample_dim=False, channel_dim=False):
     # TODO use scipy method, + clean up
     # https://stackoverflow.com/questions/59988649/indexing-numpy-array-with-list-of-slices
-    # n_voxels_new = 3
-    # for o in range(n_voxels_new):
-    #     for j in range(n_voxels_new):
-    #         for k in range(n_voxels_new):
+    # shape_new = 3
+    # for o in range(shape_new):
+    #     for j in range(shape_new):
+    #         for k in range(shape_new):
     #             print(o,j,k)
     #
     # import itertools
 
-    # for ijk in itertools.product(range(n_voxels_new), repeat=n_dim):
+    # for ijk in itertools.product(range(shape_new), repeat=n_dim):
 
     # if you keep using this method rewrite the difference between 2D and 3d cleaner with map
-    # assert n_voxels % kernel == 0
+    # assert shape % kernel == 0
     if pooling_type == 'average':
         pool = np.mean
         dtype = float
@@ -138,8 +138,8 @@ def reduce_n_voxels(img, n_voxels, n_dim, n_channels, kernel, pooling_type='aver
         pool = np.max
         dtype = bool
 
-    n_voxels_new = n_voxels // kernel
-    img_new = initialize_image_array(n_voxels=n_voxels_new, n_dim=n_dim, n_channels=n_channels, n_samples=n_samples,
+    shape_new = shape // kernel
+    img_new = initialize_image_array(shape=shape_new, n_dim=n_dim, n_channels=n_channels, n_samples=n_samples,
                                      dtype=dtype)
     img = reshape_img(img=img, n_dim=n_dim, n_channels=n_channels, channel_dim=True, n_samples=n_samples,
                       sample_dim=True)
@@ -147,15 +147,15 @@ def reduce_n_voxels(img, n_voxels, n_dim, n_channels, kernel, pooling_type='aver
                           sample_dim=True)
 
     if n_dim == 2:
-        for i in range(n_voxels_new):
-            for j in range(n_voxels_new):
+        for i in range(shape_new):
+            for j in range(shape_new):
                 img_new[:, i, j, :] = pool(img[:,
                                            kernel * i: kernel * (i + 1),
                                            kernel * j: kernel * (j + 1), :], axis=(1, 2))
     else:  # n_dim == 3
-        for i in range(n_voxels_new):
-            for j in range(n_voxels_new):
-                for k in range(n_voxels_new):
+        for i in range(shape_new):
+            for j in range(shape_new):
+                for k in range(shape_new):
                     img_new[:, i, j, k, :] = pool(img[:,
                                                   kernel * i: kernel * (i + 1),
                                                   kernel * j: kernel * (j + 1),
@@ -361,7 +361,7 @@ def safe_add_small2big(idx, small_img, big_img, mode='center'):
     Insert a small picture into the complete picture at the position 'idx'
     Assumption: all dimension of the small_img are odd, and idx indicates the center of the image,
     if this is not the case, there are zeros added at the end of each dimension to make the image shape odd
-    Not both 'big_img' and 'n_voxels' can be None. One is needed to calculate the other.
+    Not both 'big_img' and 'shape' can be None. One is needed to calculate the other.
     """
 
     idx = flatten_without_last(idx)
@@ -410,16 +410,15 @@ def img2compressed(img, n_dim=-1, level=9):
         return img_cmp
 
 
-def compressed2img(img_cmp, n_voxels, n_dim=None, n_channels=None, dtype=None):
+def compressed2img(img_cmp, shape, n_dim=None, n_channels=None, dtype=None):
     """
     Decompress the binary string back to an image of given shape
     """
 
-    shape = np.shape(img_cmp)
-    shape2 = image_array_shape(n_voxels=n_voxels, n_dim=n_dim, n_channels=n_channels)
-    if shape:
+    shape2 = image_array_shape(shape=shape, n_dim=n_dim, n_channels=n_channels)
+    if np.shape(img_cmp):
         n_samples = np.size(img_cmp)
-        img_arr = initialize_image_array(n_voxels=n_voxels, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels,
+        img_arr = initialize_image_array(shape=shape, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels,
                                          dtype=dtype)
         for i in range(n_samples):
             img_arr[i, ...] = np.frombuffer(zlib.decompress(img_cmp[i]), dtype=dtype).reshape(shape2)
