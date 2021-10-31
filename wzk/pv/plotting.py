@@ -9,13 +9,14 @@ from wzk.image import bool_img2surf
 from wzk.spatial import invert
 from wzk.geometry import cube
 
+from typing import Union
 
 pv.set_plot_theme('document')
 
 
-def plotter_wrapper(p,
-                    window_size=(2048, 1536), camera_position=None,
-                    lighting='three lights', off_screen=False,
+def plotter_wrapper(p: Union[pv.Plotter, dict],
+                    window_size: tuple =(2048, 1536), camera_position=None,
+                    lighting: str = 'three lights', off_screen: bool = False,
                     gif=False):
 
     if isinstance(p, pv.Plotter):
@@ -30,12 +31,6 @@ def plotter_wrapper(p,
         lighting = p.pop('window_size', lighting)
         off_screen = p.pop('off_screen', off_screen)
         gif = p.pop('gif', gif)
-
-    elif np.array(p).shape == (2,):
-        window_size = p
-
-    elif np.array(p).shape == (3, 3):
-        camera_position = p
 
     p = pv.Plotter(window_size=window_size, off_screen=off_screen and gif, lighting=lighting)
 
