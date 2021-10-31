@@ -30,6 +30,8 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         gif = p.pop('gif', gif)
 
         print(off_screen)
+        p = pv.Plotter(off_screen=off_screen)
+        print('AA')
         p = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
 
     print('B')
