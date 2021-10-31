@@ -18,7 +18,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
                     window_size: tuple =(2048, 1536), camera_position=None,
                     lighting: str = 'three lights', off_screen: bool = False,
                     gif=False):
-
+    print('A')
     if isinstance(p, pv.Plotter):
         return p
 
@@ -32,6 +32,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         off_screen = p.pop('off_screen', off_screen)
         gif = p.pop('gif', gif)
 
+    print(off_screen)
     p = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
 
     if camera_position is not None:
