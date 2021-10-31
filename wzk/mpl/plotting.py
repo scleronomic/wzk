@@ -14,9 +14,9 @@ from wzk.numpy2 import scalar2array, add_safety_limits
 from wzk.dicts_lists_tuples import tuple_extract, atleast_tuple
 
 
-def imshow(*, ax, img, limits=None, cmap=None,
-           origin='lower', axis_order='ij->yx',
-           mask=None, vmin=None, vmax=None, **kwargs):
+def imshow(ax: plt.Axes, img: np.ndarray, limits: np.ndarray = None, cmap=None,
+           origin: str = 'lower', axis_order: str = 'ij->yx',
+           mask: np.ndarray = None, vmin: float = None, vmax: float = None, **kwargs):
     """
 
     ## origin: upper
@@ -63,7 +63,7 @@ def imshow(*, ax, img, limits=None, cmap=None,
     return ax.imshow(img, extent=extent, origin=origin, **kwargs)
 
 
-def imshow_update(h, img, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, mask=None):
+def imshow_update(h, img: np.ndarray, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, mask=None):
     if cmap is None:
         cmap = h.cmap
 
@@ -71,7 +71,7 @@ def imshow_update(h, img, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, 
     h.set_data(img)
 
 
-def draw_circles(ax, x, y, r, **kwargs):
+def draw_circles(ax: plt.Axes, x, y, r, **kwargs):
     # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
     r = scalar2array(r, shape=np.size(x))
     circles = [plt.Circle((xi, yi), radius=ri, linewidth=0, **kwargs) for xi, yi, ri in zip(x, y, r)]
@@ -229,7 +229,7 @@ def error_area(x, y, y_std,
 
 
 def quiver(xy, uv,
-           ax=None, h=None,
+           ax, h=None,
            **kwargs):
 
     if h is None:
@@ -244,6 +244,17 @@ def quiver(xy, uv,
 
 
 # Grid
+def create_grid(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
+    ll, ur, n, pad = np.atleast_1d(ll, ur, n, pad)
+
+    w = ur - ll
+    s = (w - pad*(n-1))/n
+
+    x = ll[0] + np.arange(n[0])*(s[0]+pad[0])
+    y = ll[1] + np.arange(n[1])*(s[1]+pad[1])
+    return (x, y), s
+
+
 def grid_lines(ax, start, step, limits, **kwargs):
     mins, maxs = limits4axes(limits=limits, n_dim=2)
     start = tuple_extract(t=start, default=(0, 0), mode='repeat')
@@ -253,7 +264,7 @@ def grid_lines(ax, start, step, limits, **kwargs):
     ax.vlines(x=np.arange(start=start[1], stop=maxs[0], step=step[1]), ymin=mins[1], ymax=maxs[1], **kwargs)
 
 
-def hvlines_grid(ax, x, limits='ax', **kwargs):
+def grid_lines_data(ax, x, limits: str = 'ax', **kwargs):
     if limits == 'ax':
         limits = np.array([ax.get_xlim(), ax.get_ylim()])
         ax.set_xlim(ax.get_xlim())
@@ -268,7 +279,7 @@ def hvlines_grid(ax, x, limits='ax', **kwargs):
     ax.hlines(x[..., 1].ravel(), xmin=limits[0, 0], xmax=limits[0, 1], **kwargs)
 
 
-def update_vlines(*, h, x, ymin=None, ymax=None):
+def update_vlines(h, x, ymin: float = None, ymax: float = None):
     seg_old = h.get_segments()
     if ymin is None:
         ymin = seg_old[0][0, 1]
@@ -281,7 +292,7 @@ def update_vlines(*, h, x, ymin=None, ymax=None):
     h.set_segments(seg_new)
 
 
-def update_hlines(*, h, y, xmin=None, xmax=None):
+def update_hlines(h, y, xmin: float = None, xmax: float = None):
     seg_old = h.get_segments()
     if xmin is None:
         xmin = seg_old[0][0, 0]

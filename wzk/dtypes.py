@@ -10,7 +10,9 @@ __str2np = {'f128': np.float64,
             'i16': np.int16,
             'i8': np.int8,
             'b': np.bool,
-            'cmp': None}
+            'cmp': bytes,
+            'zlib': bytes,  # TODO does this make sense to add?
+            }
 
 
 def str2np(s: str, strip: bool = True):
