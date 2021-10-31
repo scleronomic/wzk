@@ -20,7 +20,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
                     gif=False):
 
     if isinstance(p, pv.Plotter):
-        pass
+        return p
 
     if p is None:
         pass
@@ -32,7 +32,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         off_screen = p.pop('off_screen', off_screen)
         gif = p.pop('gif', gif)
 
-    p = pv.Plotter(window_size=window_size, off_screen=off_screen and gif, lighting=lighting)
+    p = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
 
     if camera_position is not None:
         p.camera_position = camera_position
