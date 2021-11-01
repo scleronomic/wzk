@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+import numpy as np
+
 from wzk.strings import uuid4
 
 
@@ -17,6 +19,21 @@ def ssh_cmd(host, cmd, check=False):
     return stdout
 
 
+def get_load(host):
+    # https://stackoverflow.com/a/24841357/7570817
+    load = ssh_cmd(host=host, cmd="uptime | sed 's/.*: //'")
+    load = load.split(',')
+    return np.array([float(l) for l in load]).sum() / 3
+
+
+def get_cpu_usage(host):
+    # https://stackoverflow.com/a/9229580/7570817
+    return float(ssh_cmd(host=host,
+                         cmd="grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'"))
+
+
 def get_n_cpu(host):
+
     return int(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
+
 

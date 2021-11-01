@@ -18,24 +18,6 @@ __default_nodes = ['rmc-lx0062',
                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
 
 
-def get_load(host):
-    load_cmd = "uptime | sed 's/.*: //'"
-    load = ssh_cmd(host=host, cmd=load_cmd)
-    load = load.split(',')
-    load = np.array([float(l) for l in load]).sum() / 3
-    return load
-
-
-def get_cpu_usage(host):
-    cpu_cmd = "grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'"
-    cpu = float(ssh_cmd(host=host, cmd=cpu_cmd))
-    return cpu
-
-
-for node in __default_nodes:
-    print(node)
-    print(get_load(node))
-    print(get_cpu_usage(node))
 
 
 def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
