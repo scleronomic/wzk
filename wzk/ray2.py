@@ -1,6 +1,7 @@
 import os
 import re
 import socket
+import psutil
 
 import ray  # noqa
 import fire
@@ -10,14 +11,35 @@ from wzk.ssh import ssh_cmd, get_n_cpu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 
 # Johannes Pitz: 0392, 0179, 0145, 0115
-# ['rmc-lx0140', 'rmc-lx0144', 'rmc-lx0271'] no longer available
+# Leon: 0144
+# ['rmc-lx0140',  'rmc-lx0271'] no longer available
 # 'rmc-galene'
 __default_nodes = ['rmc-lx0062',
-                   'philotes', 'polyxo', 'poros']
+                   'philotes', 'polyxo', 'poros',
+                   'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
+
+
+def get_load(host):
+    load_cmd = "uptime | sed 's/.*: //'"
+    load = ssh_cmd(host=host, cmd=load_cmd)
+    load = load.split(',')
+    load = np.array([float(l) for l in load]).sum() / 3
+    return load
+
+
+def get_cpu_usage(host):
+    cpu_cmd = "grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage}'"
+    cpu = float(ssh_cmd(host=host, cmd=cpu_cmd))
+    return cpu
+
+
+for node in __default_nodes:
+    print(get_load(node))
+    print(get_cpu_usage(node))
 
 
 def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
-    assert 0.0 < perc < 100.1
+    assert 1.0 <= perc <= 100.0
     perc = perc / 100
 
     log = ''

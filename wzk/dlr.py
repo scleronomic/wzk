@@ -10,7 +10,7 @@ USERNAME = 'tenh_jo'
 # Alternative storage places for the samples
 DLR_USERSTORE = f"/volume/USERSTORE/{USERNAME}"  # Daily Back-up, relies on connection -> not for large Measurements
 DLR_HOMELOCAL = f"/home_local/{USERNAME}"        # No Back-up, but fastest drive -> use for calculation
-
+DLR_USB = f"/var/run/media/{USERNAME}/DLR-MA"
 
 #
 # def get_sample_dir(directory, full_path=True):
