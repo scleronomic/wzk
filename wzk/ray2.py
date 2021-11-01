@@ -33,6 +33,7 @@ def get_cpu_usage(host):
 
 
 for node in __default_nodes:
+    print(node)
     print(get_load(node))
     print(get_cpu_usage(node))
 
