@@ -10,8 +10,8 @@ __str2np = {'f128': np.float64,
             'i16': np.int16,
             'i8': np.int8,
             'b': np.bool,
-            'cmp': bytes,
-            'zlib': bytes,  # TODO does this make sense to add?
+            'cmp': object,  # byte strings can have varying length and otherwise there is a fuck up
+            'zlib': object,  # TODO does this make sense to add?
             }
 
 
