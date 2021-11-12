@@ -119,7 +119,7 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
             res.append(np.full(shape=shape, fill_value=voa, dtype=type(voa)))
         except ValueError:
             if safe:
-                assert np.all(np.shape(voa) == shape)
+                assert np.all(np.shape(voa) == shape), f"{np.shape(voa)} != {shape}"
             res.append(voa)
 
     if len(res) == 1 and squeeze:
@@ -137,11 +137,11 @@ def safe_unify(x):
 
 
 def flatten_without_last(x):
-    return np.reshape(x, newshape=(-1, np.shape(x)[-1]))
+    return np.reshape(x, (-1, np.shape(x)[-1]))
 
 
 def flatten_without_first(x):
-    return np.reshape(x, newshape=(np.shape(x)[0], -1))
+    return np.reshape(x, (np.shape(x)[0], -1))
 
 
 def args2arrays(*args):
@@ -823,21 +823,21 @@ def limits2cell_size(shape, limits):
     return safe_unify(x=voxel_size)
 
 
-def __mode2offset(cell_size, mode='c'):
+def __mode2offset(voxel_size, mode='c'):
     """Modes
         'c': center
         'b': boundary
 
     """
     if mode == 'c':
-        return cell_size / 2
+        return voxel_size / 2
     elif mode == 'b':
         return 0
     else:
         raise NotImplementedError(f"Unknown offset mode{mode}")
 
 
-def grid_x2i(*, x, cell_size, lower_left):
+def grid_x2i(x, limits, shape):
     """
     Get the indices of the grid cell at the coordinates 'x' in a grid with symmetric cells.
     Always use mode='boundary'
@@ -845,11 +845,13 @@ def grid_x2i(*, x, cell_size, lower_left):
 
     if x is None:
         return None
+    voxel_size = limits2cell_size(shape=shape, limits=limits)
+    lower_left = limits[:, 0]
+    
+    return np.asarray((x - lower_left) / voxel_size, dtype=int)
 
-    return np.asarray((x - lower_left) / cell_size, dtype=int)
 
-
-def grid_i2x(*, i, cell_size, lower_left, mode='c'):
+def grid_i2x(i, limits, shape, mode='c'):
     """
     Get the coordinates of the grid at the index 'o' in a grid with symmetric cells.
     borders: 0 | 2 | 4 | 6 | 8 | 10
@@ -858,9 +860,11 @@ def grid_i2x(*, i, cell_size, lower_left, mode='c'):
 
     if i is None:
         return None
-
-    offset = __mode2offset(cell_size=cell_size, mode=mode)
-    return np.asarray(lower_left + offset + i * cell_size, dtype=float)
+    voxel_size = limits2cell_size(shape=shape, limits=limits)
+    lower_left = limits[:, 0]
+    
+    offset = __mode2offset(voxel_size=voxel_size, mode=mode)
+    return np.asarray(lower_left + offset + i * voxel_size, dtype=float)
 
 
 # def gen_dot_nm(x, y, z):

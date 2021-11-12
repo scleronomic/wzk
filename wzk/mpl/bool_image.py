@@ -14,12 +14,12 @@ def plot_img_patch(img, limits,
     Draw all True / nonzero pixels.
     """
 
-    cell_size = limits2cell_size(shape=img.shape, limits=limits)
+    voxel_size = limits2cell_size(shape=img.shape, limits=limits)
 
     ij = np.array(np.nonzero(img)).T
-    xy = grid_i2x(i=ij, cell_size=cell_size, lower_left=limits[:, 0], mode='b')
+    xy = grid_i2x(i=ij, voxel_size=voxel_size, lower_left=limits[:, 0], mode='b')
 
-    pc = PatchCollection([Rectangle((x, y), width=cell_size, height=cell_size,
+    pc = PatchCollection([Rectangle((x, y), width=voxel_size, height=voxel_size,
                                     fill=False, snap=True) for (x, y) in xy], **kwargs)
     ax.add_collection(pc)
     return pc
@@ -33,8 +33,8 @@ def plot_img_outlines(img, limits,
 
     combined_edges = get_combined_edges(img)
 
-    cell_size = limits2cell_size(shape=img.shape, limits=limits)
-    combined_edges = [grid_i2x(i=ce, cell_size=cell_size, lower_left=limits[:, 0], mode='b')
+    voxel_size = limits2cell_size(shape=img.shape, limits=limits)
+    combined_edges = [grid_i2x(i=ce, voxel_size=voxel_size, lower_left=limits[:, 0], mode='b')
                       for ce in combined_edges]
 
     lc = LineCollection(combined_edges, **kwargs)

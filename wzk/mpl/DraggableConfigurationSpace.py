@@ -61,11 +61,11 @@ class DraggableConfigSpace:
 
     def set_callback(self, callback):
         for dgel in self.dgel_list:
-            dgel.set_callback(callback=callback)
+            dgel.set_callback_drag(callback=callback)
 
     def add_callback(self, callback):
         for dgel in self.dgel_list:
-            dgel.add_callback(callback=callback)
+            dgel.add_callback_drag(callback=callback)
 
     def get_x(self):
         return np.array([dgel.get_xy()[:, 1] for dgel in self.dgel_list]).T

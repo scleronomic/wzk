@@ -1,30 +1,17 @@
 import numpy as np
+from matplotlib import pyplot as plt, patches, collections
 
-from wzk.mpl import Patches2, size_units2points
-from matplotlib import pyplot as plt, patches
-from wzk.geometry import circle_circle_intersection
-
-
-def angle_resolution_wrapper(n, angle):
-
-    if isinstance(n, float):
-        resolution = n
-        n = int(min(abs(angle), np.pi*2) / resolution + 1)
-    else:
-        assert isinstance(n, int)
-    return n
+from wzk.numpy2 import scalar2array
+from wzk.geometry import circle_circle_intersection, theta_wrapper, angle_resolution_wrapper
+from wzk.mpl import Patches2, size_units2points, plotting
 
 
-def theta_wrapper(theta0, theta1):
-    if theta1 is None:
-        theta1 = theta0
-
-    if theta1 < theta0:
-        theta1 += 2*np.pi
-
-    theta0 += np.pi * 2
-    theta1 += np.pi * 2
-    return theta0, theta1
+def draw_circles(ax: plt.Axes, x, y, r, **kwargs):
+    # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
+    r = scalar2array(r, shape=np.size(x))
+    circles = [plt.Circle((xi, yi), radius=ri, linewidth=0, **kwargs) for xi, yi, ri in zip(x, y, r)]
+    c = collections.PatchCollection(circles, **kwargs)
+    ax.add_collection(c)
 
 
 def draw_arc(xy, radius, theta0=0., theta1=2 * np.pi, n=0.01, ax=None, **kwargs):
@@ -89,8 +76,9 @@ def draw_rays(xy, radius0, radius1, theta0=0., theta1=None, n=1, ax=None, **kwar
     return h
 
 
-def plot_coordinate_frame(ax, x=None, dcm=None, color='k', mode='quiver',
-                          marker=None, **kwargs):
+def plot_coordinate_frame(ax=None, x=None, dcm=None,
+                          color='k', mode='quiver', marker=None,
+                          h=None, **kwargs):
     """
     Assume matrix is a homogeneous matrix
 
@@ -112,10 +100,18 @@ def plot_coordinate_frame(ax, x=None, dcm=None, color='k', mode='quiver',
     if len(color) < n_dim:
         color *= n_dim
 
+    if h is not None:
+        for i, hh in enumerate(h):
+            plotting.quiver(ax=ax, xy=x, uv=dcm[:, i], color=color[i], h=hh)
+            # h[i].set_segments([np.array([x,
+            #                              x + dcm[:, i]])])
+        return h
+
     h = []
     if mode == 'quiver' or n_dim == 3:
         for i in range(n_dim):
-            h.append(ax.quiver(*x, *dcm[:, i], color=color[i], **kwargs))
+            # h.append(ax.quiver(*x, *dcm[:, i], color=color[i], **kwargs))
+            h.append(plotting.quiver(ax=ax,  xy=x, uv=dcm[:, i], color=color[i], **kwargs))
 
     elif mode == 'fancy':
         for i in range(n_dim):
@@ -135,12 +131,6 @@ def plot_coordinate_frame(ax, x=None, dcm=None, color='k', mode='quiver',
                 alpha=0.5)
 
     return h
-
-
-def update_coordinate_frame(h, x, dcm):
-    for i, hh in enumerate(h):
-        h[i].set_segments([np.array([x,
-                                     x + dcm[:, i]])])
 
 
 # Combination of the building blocks

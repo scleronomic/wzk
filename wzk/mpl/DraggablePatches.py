@@ -1,9 +1,13 @@
 import numpy as np
 import matplotlib.patches as patches
+from typing import Callable
 
-from wzk.mpl.axes import get_aspect_ratio
 from wzk.numpy2 import scalar2array, max_size
+from wzk.mpl.axes import get_aspect_ratio
+from wzk.mpl.geometry import plot_coordinate_frame
 from wzk.mpl.figure import plt
+
+from wzk.spatial.transform_2d import v2dcm
 
 
 class DummyPatch:
@@ -40,17 +44,17 @@ class DraggablePatch(DummyPatch):
         self.connect()
 
     def set_callback_drag(self, callback):
-        self.callback_drag = callback
+        if isinstance(callback, Callable):
+            self.callback_drag = [callback]
+        elif isinstance(callback, list):
+            self.callback_drag = callback
 
     def add_callback_drag(self, callback):
         if self.callback_drag is None:
             self.set_callback_drag(callback=callback)
-        else:
-            def cb2():
-                self.callback_drag()
-                callback()
 
-            self.callback_drag = cb2
+        else:
+            self.callback_drag.append(callback)
 
     def get_callback_drag(self):
         return self.callback_drag
@@ -139,6 +143,7 @@ class DraggablePatch(DummyPatch):
 
     def on_release(self, event):  # noqa
         """on release we reset the press Measurements"""
+
         if DraggablePatch.lock is not self:
             return
 
@@ -150,7 +155,8 @@ class DraggablePatch(DummyPatch):
         self.background = None
 
         if self.callback_drag is not None:
-            self.callback_drag()
+            for cb_i in self.callback_drag:
+                cb_i(self)
 
     def on_key(self, event):
         xy = self.get_xy_drag()
@@ -195,8 +201,7 @@ class DraggableCircle(patches.Circle, DraggablePatch):
         return np.array(self.get_center()).flatten()
 
     def set_xy_drag(self, xy):
-        # noinspection PyArgumentList
-        self.set_center(xy=np.array(xy).flatten())
+        self.set_center(xy=np.array(xy).flatten())  # noqa
 
 
 class DraggableEllipse(patches.Ellipse, DraggablePatch):
@@ -244,7 +249,7 @@ class DraggableRectangle(patches.Rectangle, DraggablePatch):
 
 class DraggablePatchList:
     def __init__(self):
-        self.dp_list = []
+        self.dp_list: [DraggablePatch] = []
 
     def append(self, **kwargs):
         raise NotImplementedError
@@ -252,14 +257,16 @@ class DraggablePatchList:
     def __getitem__(self, item):
         return self.dp_list[item]
 
-    def __n_index_wrapper(self, index, n):
-        if index is None:
-            index = np.arange(n)
-        elif index == -1:
-            index = np.arange(len(self.dp_list))
-        n = int(np.max([n, np.size(index)]))
+    def __n_index_wrapper(self, i, n):
+        if i is None:
+            i = np.arange(n)
+        elif i == -1:
+            i = np.arange(len(self.dp_list))
+        elif isinstance(i, int):
+            i = [i]
+        n = int(np.max([n, np.size(i)]))
 
-        return n, index
+        return n, i
 
     @staticmethod
     def __value_wrapper(v, v_cur, n):
@@ -273,53 +280,51 @@ class DraggablePatchList:
 
         return v
 
-    def get_xy(self, index=-1):
-        if index is None or (isinstance(index, int) and index == -1):
-            return np.vstack([dp.get_xy_drag() for dp in self.dp_list])
-        else:
-            return np.vstack([dp.get_xy_drag() for i, dp in enumerate(self.dp_list) if i in index])
+    def get_xy(self, idx=-1):
+        n, idx = self.__n_index_wrapper(idx, len(self.dp_list))
+        return np.vstack([dp.get_xy_drag() for i, dp in enumerate(self.dp_list) if i in idx])
 
-    def get_callback(self, index=-1):
-        if index is None or (isinstance(index, int) and index == -1):
+    def get_callback(self, idx=-1):
+        if idx is None or (isinstance(idx, int) and idx == -1):
             return np.vstack([dp.get_callback_drag for dp in self.dp_list])
         else:
-            return np.vstack([dp.get_callback_drag for i, dp in enumerate(self.dp_list) if i in index])
+            return np.vstack([dp.get_callback_drag for i, dp in enumerate(self.dp_list) if i in idx])
 
-    def set_xy(self, x=None, y=None, xy=None, index=None):
+    def set_xy(self, xy=None, x=None, y=None, idx=None):
 
         if xy is not None:
             x, y = xy.T
 
         n = max_size(x, y)
-        n, index = self.__n_index_wrapper(index=index, n=n)
+        n, idx = self.__n_index_wrapper(i=idx, n=n)
 
-        xy_cur = self.get_xy(index=index)
+        xy_cur = self.get_xy(idx=idx)
         x = self.__value_wrapper(v=x, v_cur=xy_cur[:, 0], n=n)
         y = self.__value_wrapper(v=y, v_cur=xy_cur[:, 1], n=n)
 
-        for ii, xx, yy in zip(index, x, y):
+        for ii, xx, yy in zip(idx, x, y):
             self.dp_list[ii].set_xy_drag(xy=(xx, yy))
 
-    def __set_or_add_callback(self, callback, index, mode):
+    def __set_or_add_callback_drag(self, callback, idx, mode):
         n = np.size(callback)
-        n, index = self.__n_index_wrapper(index=index, n=n)
-        callback_cur = self.get_callback(index=index)
+        n, idx = self.__n_index_wrapper(i=idx, n=n)
+        callback_cur = self.get_callback(idx=idx)
         callback = self.__value_wrapper(v=callback, v_cur=callback_cur, n=n)
 
         if mode == 'set':
-            for ii, cc in zip(index, callback):
+            for ii, cc in zip(idx, callback):
                 self.dp_list[ii].set_callback_drag(callback=cc)
         elif mode == 'add':
-            for ii, cc in zip(index, callback):
-                self.dp_list[ii].add_callback(cc)
+            for ii, cc in zip(idx, callback):
+                self.dp_list[ii].add_callback_drag(cc)
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
-    def set_callback(self, callback, index=-1):
-        self.__set_or_add_callback(callback=callback, index=index, mode='set')
+    def set_callback_drag(self, callback, idx=-1):
+        self.__set_or_add_callback_drag(callback=callback, idx=idx, mode='set')
 
-    def add_callback(self, callback, index=-1):
-        self.__set_or_add_callback(callback=callback, index=index, mode='add')
+    def add_callback_drag(self, callback, idx=-1):
+        self.__set_or_add_callback_drag(callback=callback, idx=idx, mode='add')
 
     def toggle_visibility(self, value=None):
         for dp in self.dp_list:
@@ -347,7 +352,6 @@ class DraggableEllipseList(DraggablePatchList):
     def append(self, ax,
                xy, width, height, angle, **kwargs):
         width, height, angle = scalar2array(width, height, angle, shape=xy.shape[0])
-
         for xy_i, width_i, height_i, angle_i in zip(xy, width, height, angle):
             self.dp_list.append(DraggableEllipse(ax=ax,
                                                  xy=xy_i, width=width_i, height=height_i, angle=angle_i, **kwargs))
@@ -367,3 +371,82 @@ class DraggableRectangleList(DraggablePatchList):
         for xy_i, width_i, height_i, angle_i in zip(xy, width, height, angle):
             self.dp_list.append(DraggableRectangle(ax=ax,
                                                    xy=xy_i, width=width_i, height=height_i, angle=angle_i, **kwargs))
+
+
+class DraggableFrame(DraggableCircleList):
+    def __init__(self, ax, xy, scale, **kwargs):
+
+        self.scale = scale
+        self.scale_radius_center = 0.1
+        self.scale_radius_handle = 0.075
+        self.scale_position_handle = 0.8
+
+        self.v = np.array([1, 0])
+        xv = self.__x_v2xv(x=xy, v=self.v)
+
+        super().__init__(ax, xy=np.vstack([xy, xv]), radius=np.array([self.scale_radius_center * self.scale,
+                                                                      self.scale_radius_handle * self.scale]),
+                         **kwargs)
+
+        self.h = plot_coordinate_frame(ax=ax, x=xy, dcm=self.__v2dcm(self.v),
+                                       mode='quiver', zorder=10, **kwargs)
+        super().add_callback_drag(self.update_x, idx=0)
+        super().add_callback_drag(self.update_v, idx=1)
+
+    def update_x(self, *args):  # noqa
+        xc, xv = self.get_xy()
+        self.__update(xc=xc, v=self.v)
+
+    def update_v(self, *args):  # noqa
+        xc, xv = self.get_xy()
+        self.v = xv - xc
+        self.v = self.v / np.linalg.norm(self.v)
+        self.__update(xc=xc, v=self.v)
+
+    def __x_v2xv(self, x, v):
+        return x + v * self.scale * self.scale_position_handle
+
+    def __v2dcm(self, v):
+        return v2dcm(v) * self.scale
+
+    def __update(self, xc, v):
+        xv = self.__x_v2xv(x=xc, v=v)
+        self.set_xy(xy=xv, idx=1)
+        self.h = plot_coordinate_frame(x=xc, dcm=self.__v2dcm(v), h=self.h)
+
+    def get_dcm(self):
+        return v2dcm(self.v)
+
+    def get_frame(self):
+        f = np.eye(3)
+        x = self.get_xy(idx=0)
+        dcm = self.get_dcm()
+        f[:2, :2] = dcm
+        f[:2, -1] = x
+        return f
+
+    def add_callback_drag(self, callback, idx=-1):
+        super().add_callback_drag(callback=lambda circle: callback(self), idx=idx)
+
+    def set_callback_drag(self, callback, idx=-1):
+        super().set_callback_drag(callback=lambda circle: callback(self), idx=idx)
+
+
+def test_DraggableFrame():
+    from wzk.mpl import new_fig
+    fig, ax = new_fig(aspect=1)
+    df = DraggableFrame(ax=ax, xy=np.zeros(2), scale=0.4, color='red')
+    df.update_x(None)
+    ax.set_xlim(-1, 1)
+    ax.set_ylim(-1, 1)
+
+    def callback33(dgr):
+        f = dgr.get_frame()
+
+    df.add_callback_drag(callback33)
+    df.update_x(None)
+    df.dp_list[0].on_release(1)
+
+
+if __name__ == '__main__':
+    test_DraggableFrame()

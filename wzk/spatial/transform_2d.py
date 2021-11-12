@@ -3,6 +3,16 @@ import numpy as np
 from wzk.spatial.transform import initialize_frames, fill_frames_trans
 
 
+def v2dcm(v):
+    v = v / np.linalg.norm(v, axis=-1, keepdims=True)  # v /= does not allow int /= float
+    dcm = np.zeros(v.shape[:-1] + (2, 2))
+    dcm[..., 0, 0] = +v[..., 0]
+    dcm[..., 0, 1] = -v[..., 1]
+    dcm[..., 1, 0] = +v[..., 1]
+    dcm[..., 1, 1] = +v[..., 0]
+    return dcm
+
+
 def fill_frames_2d_sc(f, sin, cos):
     f[..., 0, 0] = cos
     f[..., 0, 1] = -sin

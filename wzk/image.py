@@ -1,6 +1,6 @@
 import zlib
 import numpy as np
-from scipy.signal import convolve2d
+from scipy.signal import convolve2d, convolve
 from skimage.io import imread, imsave  # noqa
 from skimage import measure
 
@@ -207,8 +207,10 @@ def pooling(mat, kernel, method='max', pad=False):
     return result
 
 
-def get_outer_edge_2d(img):
-    edge_img = convolve2d(img, np.ones((3, 3)), mode='same')
+def get_outer_edge(img):
+    n_dim = np.ndim(img)
+    kernel = np.ones((3,)*n_dim)
+    edge_img = convolve(img, kernel, mode='same')
     return np.logical_xor(edge_img, img)
 
 
@@ -366,7 +368,6 @@ def safe_add_small2big(idx, small_img, big_img, mode='center'):
 
     idx = flatten_without_last(idx)
     n_samples, n_dim = idx.shape
-
     ll_big, ur_big, ll_small, ur_small = get_cropping_indices(pos=idx, mode=mode,
                                                               shape_small=small_img.shape[-n_dim:],
                                                               shape_big=big_img.shape)

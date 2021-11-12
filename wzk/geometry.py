@@ -4,6 +4,41 @@ from scipy.spatial import ConvexHull
 from wzk.numpy2 import shape_wrapper
 
 
+def angle_resolution_wrapper(n, angle):
+
+    if isinstance(n, float):
+        resolution = n
+        n = int(min(abs(angle), np.pi*2) / resolution + 1)
+    else:
+        assert isinstance(n, int)
+    return n
+
+
+def theta_wrapper(theta0, theta1):
+    if theta1 is None:
+        theta1 = theta0
+
+    if theta1 < theta0:
+        theta1 += 2*np.pi
+
+    theta0 += np.pi * 2
+    theta1 += np.pi * 2
+    return theta0, theta1
+
+
+def rectangle(limits: np.ndarray):
+    v = np.array([[0, 0],
+                  [0, 1],
+                  [1, 0],
+                  [1, 1]], dtype=int)
+
+    if limits is not None:
+        v = limits[np.arange(2)[np.newaxis, :].repeat(4, axis=0), v]
+
+    e = np.array([[0, 1], [1, 2], [2, 3], [3, 0]], dtype=int)
+    return v, e
+
+
 def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
     v = np.array([[0, 0, 0],
                   [0, 0, 1],
@@ -41,6 +76,12 @@ def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
                   [4, 6, 7, 5]], dtype=int)
 
     return v, e, f
+
+
+def get_parallel_orthogonal(p: np.ndarray, v: np.ndarray) -> (np.ndarray, np.ndarray):
+    parallel = p * (p * v).sum(axis=-1, keepdims=True) / (p * p).sum(axis=-1, keepdims=True)
+    orthogonal = v - parallel
+    return parallel, orthogonal
 
 
 def get_orthonormal(v: np.ndarray) -> np.ndarray:
@@ -81,8 +122,7 @@ def make_rhs(xyz: np.ndarray, order: tuple = (0, 1)) -> np.ndarray:
     i, j = order
     k = cross_correlation_rhs[i, j]
     k, k_sign = np.abs(k)-1, np.sign(k)
-
-    xyz[j] = __normalize(xyz[j] - xyz[j].dot(xyz[i]) * xyz[i])
+    xyz[j] = __normalize(xyz[j] - xyz[j].dot(xyz[i]) * xyz[i])[0]
     xyz[k] = k_sign*np.cross(xyz[i], xyz[j])
 
     return xyz

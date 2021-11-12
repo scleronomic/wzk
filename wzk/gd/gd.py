@@ -90,7 +90,6 @@ def gradient_descent(x, fun, grad, gd):
 
         v = gd.opt.update(x=x, v=j)
         v = __clipping(v=v, c=gd.clipping[i])
-
         x[..., active_dims] += v[..., active_dims]
 
         x = gd.limits(x)
@@ -110,7 +109,7 @@ def gradient_descent(x, fun, grad, gd):
 def __x_wrapper(x):
     x = x.copy()
     if x.ndim == 1:
-        x = x[np.newaxis, x]
+        x = x[np.newaxis, :]
 
     return x
 

@@ -15,14 +15,11 @@ pv.set_plot_theme('document')
 
 
 def plotter_wrapper(p: Union[pv.Plotter, dict],
-                    window_size: tuple =(2048, 1536), camera_position=None,
+                    window_size: tuple = (2048, 1536), camera_position=None,
                     lighting: str = 'three lights', off_screen: bool = False,
                     gif=False):
-    print('A')
-    if isinstance(p, pv.Plotter):
-        pass
 
-    elif isinstance(p, dict):
+    if isinstance(p, dict):
         camera_position = p.pop('camera_position', None)
         window_size = p.pop('window_size', window_size)
         lighting = p.pop('window_size', lighting)
@@ -32,17 +29,14 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         if off_screen:
             pv.start_xvfb()  #
 
+    if not isinstance(p, pv.Plotter):
         p = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
-
-    print('B')
 
     if camera_position is not None:
         p.camera_position = camera_position
 
     if gif:
         p.open_gif(gif)  # noqa
-
-    print('C')
 
     return p
 
@@ -198,9 +192,10 @@ def plot_frames(f,
                 scale=1., shift=np.zeros(3),
                 p=None, h=None,
                 color=None, opacity=None, **kwargs):
+
     if np.ndim(f) == 3:
         n = len(f)
-        h = scalar2array(h, shape=n)
+        h = scalar2array(h, shape=n, safe=False)
         color = array2array(color, shape=(n, 3))
         opacity = array2array(opacity, shape=(n, 3))
         h = [plot_frames(f=fi, p=p, h=hi, color=ci,  opacity=oi, scale=scale, shift=shift,
@@ -211,11 +206,12 @@ def plot_frames(f,
         assert f.shape == (4, 4), f"{f.shape}"
         if color is None or np.all(color == np.array([None, None, None])):
             color = np.eye(3)
+            color = tuple(color[i] for i in range(3))
 
         if opacity is None:
             opacity = np.ones(3)
 
-        color, opacity = scalar2array(color, opacity, shape=3)
+        color, opacity = scalar2array(color, opacity, shape=3, safe=False)
         h0 = [pv.Arrow(start=f[:3, -1]+shift[i]*f[:3, i], direction=f[:3, i], scale=scale) for i in range(3)]
         if h is None:
             h1 = [p.add_mesh(h0i, color=color[i], opacity=opacity[i], **kwargs) for i, h0i in enumerate(h0)]

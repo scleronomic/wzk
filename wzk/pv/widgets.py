@@ -21,7 +21,7 @@ class RHSWidget:
         self.wo = p.add_sphere_widget(self.update_o, center=origin, radius=size * 0.1, color=color,
                                       test_callback=False)
 
-    def get_xyz(self):
+    def get_xyz(self) -> (np.ndarray, np.ndarray, np.ndarray):
         return self.wx.GetNormal(), self.wy.GetNormal(), self.wz.GetNormal()
 
     def set_xyz(self, xyz):
@@ -48,16 +48,13 @@ class RHSWidget:
         b[1] += self.size
         return b
 
-    # noinspection PyUnusedLocal
-    def update_x(self, normal, origin):
+    def update_x(self, normal, origin):  # noqa
         self.update_xyz(i=0)
 
-    # noinspection PyUnusedLocal
-    def update_y(self, normal, origin):
+    def update_y(self, normal, origin):  # noqa
         self.update_xyz(i=1)
 
-    # noinspection PyUnusedLocal
-    def update_z(self, normal, origin):
+    def update_z(self, normal, origin):  # noqa
         self.update_xyz(i=2)
 
     def update_order(self, i):
@@ -67,7 +64,7 @@ class RHSWidget:
         return self.order
 
     def update_xyz(self, i):
-        xyz = make_rhs(self.get_xyz(), order=self.update_order(i=i))
+        xyz = make_rhs(np.array(self.get_xyz()), order=tuple(self.update_order(i=i)))
         self.set_xyz(xyz)
         o = self.get_origin()
 
@@ -76,7 +73,7 @@ class RHSWidget:
 
     def update_o(self, o):
         o = np.array(o)
-        xyz = self.get_xyz()
+        xyz = np.array(self.get_xyz())
         self.set_bounds(self.o2b(o))
         self.set_origin(o)
         self.set_xyz(xyz)
