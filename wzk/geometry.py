@@ -116,6 +116,7 @@ def make_rhs(xyz: np.ndarray, order: tuple = (0, 1)) -> np.ndarray:
                                       [+2, -1, 0]])
     # rhs[cce[i,j]-1] = cross(rhs[i], rhs[j])
     # ^ with sign
+    # xyz = xyz.T
 
     xyz = np.array(__normalize(*xyz))
 
@@ -124,7 +125,6 @@ def make_rhs(xyz: np.ndarray, order: tuple = (0, 1)) -> np.ndarray:
     k, k_sign = np.abs(k)-1, np.sign(k)
     xyz[j] = __normalize(xyz[j] - xyz[j].dot(xyz[i]) * xyz[i])[0]
     xyz[k] = k_sign*np.cross(xyz[i], xyz[j])
-
     return xyz
 
 

@@ -376,16 +376,16 @@ class DraggableRectangleList(DraggablePatchList):
 class DraggableFrame(DraggableCircleList):
     def __init__(self, ax, xy, scale, **kwargs):
 
-        self.scale = scale
-        self.scale_radius_center = 0.1
-        self.scale_radius_handle = 0.075
-        self.scale_position_handle = 0.8
+        self.size = scale
+        self.size_radius_center = 0.1
+        self.size_radius_handle = 0.075
+        self.size_position_handle = 0.8
 
         self.v = np.array([1, 0])
         xv = self.__x_v2xv(x=xy, v=self.v)
 
-        super().__init__(ax, xy=np.vstack([xy, xv]), radius=np.array([self.scale_radius_center * self.scale,
-                                                                      self.scale_radius_handle * self.scale]),
+        super().__init__(ax, xy=np.vstack([xy, xv]), radius=np.array([self.size_radius_center * self.size,
+                                                                      self.size_radius_handle * self.size]),
                          **kwargs)
 
         self.h = plot_coordinate_frame(ax=ax, x=xy, dcm=self.__v2dcm(self.v),
@@ -404,10 +404,10 @@ class DraggableFrame(DraggableCircleList):
         self.__update(xc=xc, v=self.v)
 
     def __x_v2xv(self, x, v):
-        return x + v * self.scale * self.scale_position_handle
+        return x + v * self.size * self.size_position_handle
 
     def __v2dcm(self, v):
-        return v2dcm(v) * self.scale
+        return v2dcm(v) * self.size
 
     def __update(self, xc, v):
         xv = self.__x_v2xv(x=xc, v=v)

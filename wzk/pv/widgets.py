@@ -3,12 +3,12 @@ from wzk.geometry import make_rhs
 
 
 class RHSWidget:
-    def __init__(self, p, origin, size=1.0, color='k',
+    def __init__(self, p, origin, scale=1.0, color='k',
                  callback=None):
 
         self.p = p
         self.custom_callback = callback
-        self.size = size
+        self.scale = scale
         self.order = [0, 1]
         plane_widget_options = dict(origin=origin, bounds=self.o2b(origin),
                                     normal_rotation=True,
@@ -17,17 +17,16 @@ class RHSWidget:
         self.wx = p.add_plane_widget(self.update_x, normal='x', color='r', **plane_widget_options)
         self.wy = p.add_plane_widget(self.update_y, normal='y', color='g', **plane_widget_options)
         self.wz = p.add_plane_widget(self.update_z, normal='z', color='b', **plane_widget_options)
-
-        self.wo = p.add_sphere_widget(self.update_o, center=origin, radius=size * 0.1, color=color,
+        self.wo = p.add_sphere_widget(self.update_o, center=origin, radius=scale * 0.1, color=color,
                                       test_callback=False)
 
-    def get_xyz(self) -> (np.ndarray, np.ndarray, np.ndarray):
-        return self.wx.GetNormal(), self.wy.GetNormal(), self.wz.GetNormal()
+    def get_xyz(self) -> np.ndarray:
+        return np.array((self.wx.GetNormal(), self.wy.GetNormal(), self.wz.GetNormal()))
 
     def set_xyz(self, xyz):
-        self.wx.SetNormal(xyz[0])
-        self.wy.SetNormal(xyz[1])
-        self.wz.SetNormal(xyz[2])
+        self.wx.SetNormal(xyz[:, 0])
+        self.wy.SetNormal(xyz[:, 1])
+        self.wz.SetNormal(xyz[:, 2])
 
     def set_origin(self, o):
         self.wx.SetOrigin(o)
@@ -44,8 +43,8 @@ class RHSWidget:
 
     def o2b(self, o):
         b = np.repeat(o, 2)
-        b[0] -= self.size
-        b[1] += self.size
+        b[0] -= self.scale
+        b[1] += self.scale
         return b
 
     def update_x(self, normal, origin):  # noqa
@@ -64,7 +63,7 @@ class RHSWidget:
         return self.order
 
     def update_xyz(self, i):
-        xyz = make_rhs(np.array(self.get_xyz()), order=tuple(self.update_order(i=i)))
+        xyz = make_rhs(self.get_xyz(), order=tuple(self.update_order(i=i))).T  # not sure if this is the best way
         self.set_xyz(xyz)
         o = self.get_origin()
 
@@ -87,7 +86,7 @@ class RHSWidget:
 
 
 def add_rhs_widget(p, origin, size=1.0, color='k', callback=None):
-    return RHSWidget(p=p, origin=origin, size=size, color=color, callback=callback)
+    return RHSWidget(p=p, origin=origin, scale=size, color=color, callback=callback)
 
 
 def add_multiple_slider_widgets(p, ranges=None, names=None, grid=None, idx=None,
