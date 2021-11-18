@@ -14,7 +14,7 @@ from wzk.geometry import sample_points_on_sphere_3d
 
 
 # vectorized versions of scipy's Rotation.from_x().to_y()
-def euler2matrix(euler, seq='XYZ'):
+def euler2matrix(euler, seq='ZXZ'):
     return Rotation.from_euler(seq, angles=euler.reshape((-1, 3)),
                                ).as_matrix().reshape(euler.shape[:-1] + (3, 3))
 

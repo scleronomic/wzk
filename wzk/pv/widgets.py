@@ -3,8 +3,13 @@ from wzk.geometry import make_rhs
 
 
 class RHSWidget:
-    def __init__(self, p, origin, scale=1.0, color='k',
+    def __init__(self, p, origin=None, xyz=None, scale=1.0, color='k',
                  callback=None):
+
+        if origin is None:
+            origin = np.zeros(3)
+        if xyz is None:
+            xyz = np.eye(3)
 
         self.p = p
         self.custom_callback = callback
@@ -19,6 +24,7 @@ class RHSWidget:
         self.wz = p.add_plane_widget(self.update_z, normal='z', color='b', **plane_widget_options)
         self.wo = p.add_sphere_widget(self.update_o, center=origin, radius=scale * 0.1, color=color,
                                       test_callback=False)
+        self.set_xyz(xyz=xyz)
 
     def get_xyz(self) -> np.ndarray:
         return np.array((self.wx.GetNormal(), self.wy.GetNormal(), self.wz.GetNormal()))
@@ -85,8 +91,9 @@ class RHSWidget:
             self.custom_callback((o, xyz))
 
 
-def add_rhs_widget(p, origin, size=1.0, color='k', callback=None):
-    return RHSWidget(p=p, origin=origin, scale=size, color=color, callback=callback)
+def add_rhs_widget(p, origin, xyz=None,
+                   scale=1.0, color='k', callback=None):
+    return RHSWidget(p=p, origin=origin, xyz=xyz, scale=scale, color=color, callback=callback)
 
 
 def add_multiple_slider_widgets(p, ranges=None, names=None, grid=None, idx=None,
