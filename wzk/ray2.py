@@ -18,6 +18,7 @@ __default_nodes = ['rmc-lx0062',
                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
 
 
+
 def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
     assert 1.0 <= perc <= 100.0
     perc = perc / 100

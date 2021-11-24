@@ -115,7 +115,11 @@ def get_substeps_adjusted(x, n,
     *shape, m, d = x.shape
 
     if shape:
-        raise NotImplementedError
+        shape = tuple(shape)
+        x_n = np.zeros(shape+(n, d))
+        for i in np.ndindex(shape):
+            x_n[i] = get_substeps_adjusted(x=x[i], n=n, is_periodic=is_periodic, weighting=weighting)
+        return x_n
 
     m1 = m - 1
     steps = get_steps(q=x, is_periodic=is_periodic)

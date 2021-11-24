@@ -78,47 +78,59 @@ def fill_frames_trans(f, trans=None):
 def trans_quat2frame(trans=None, quat=None):
     s = __shape_wrapper(trans, quat)
 
-    frames = initialize_frames(shape=s[:-1], n_dim=3)
-    fill_frames_trans(f=frames, trans=trans)
-    frames[..., :-1, :-1] = quaternions2matrix(quat=quat)
-    return frames
+    f = initialize_frames(shape=s[:-1], n_dim=3)
+    fill_frames_trans(f=f, trans=trans)
+    f[..., :-1, :-1] = quaternions2matrix(quat=quat)
+    return f
 
 
 def trans_rotvec2frame(trans=None, rotvec=None):
     s = __shape_wrapper(trans, rotvec)
 
-    frames = initialize_frames(shape=s[:-1], n_dim=3)
-    fill_frames_trans(f=frames, trans=trans)
-    frames[..., :-1, :-1] = rotvec2matrix(rotvec=rotvec)
-    return frames
+    f = initialize_frames(shape=s[:-1], n_dim=3)
+    fill_frames_trans(f=f, trans=trans)
+    f[..., :-1, :-1] = rotvec2matrix(rotvec=rotvec)
+    return f
 
 
 def trans_euler2frame(trans=None, euler=None):
     s = __shape_wrapper(trans, euler)
 
-    frames = initialize_frames(shape=s[:-1], n_dim=3)
-    fill_frames_trans(f=frames, trans=trans)
-    frames[..., :-1, :-1] = euler2matrix(euler=euler)
-    return frames
+    f = initialize_frames(shape=s[:-1], n_dim=3)
+    fill_frames_trans(f=f, trans=trans)
+    f[..., :-1, :-1] = euler2matrix(euler=euler)
+    return f
+
+
+def trans_matrix2frame(trans=None, matrix=None):
+    s = __shape_wrapper(trans, matrix)
+    if trans is None:
+        s = s[:-1]
+
+    f = initialize_frames(shape=s[:-1], n_dim=3)
+    fill_frames_trans(f=f, trans=trans)
+    if matrix is not None:
+        f[..., :-1, :-1] = matrix
+    return f
 
 
 def initialize_frames(shape, n_dim, mode='hm', dtype=None, order=None):
-    frames = np.zeros((shape_wrapper(shape) + (n_dim+1, n_dim+1)), dtype=dtype, order=order)
+    f = np.zeros((shape_wrapper(shape) + (n_dim+1, n_dim+1)), dtype=dtype, order=order)
     if mode == 'zero':
         pass
     elif mode == 'eye':
-        for i in range(frames.shape[-1]):
-            frames[..., i, i] = 1
+        for i in range(f.shape[-1]):
+            f[..., i, i] = 1
     elif mode == 'hm':
-        frames[..., -1, -1] = 1
+        f[..., -1, -1] = 1
     else:
         raise ValueError(f"Unknown mode '{mode}'")
-    return frames
+    return f
 
 
 def invert(f):
     """
-    Create the inverse of an array of hm frames
+    Create the inverse of an array of hm f
     Assume n x n are the last two dimensions of the array
     """
 

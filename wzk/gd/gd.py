@@ -80,7 +80,7 @@ def gradient_descent(x, fun, grad, gd):
         if gd.hesse_inv is not None and gd.hesse_weighting[i] > 0:
             # FIXME for infinity_joints the formulation of the hesse matrix is not correct, but it works nevertheless
             #   one possibility is to use relative motions, or to unravel the interval [0,360]
-            #   does it work nevertheless ???
+            #   does it really work nevertheless -> check please???
             h = (gd.hesse_inv[np.newaxis, ...] @ j.reshape(-1, gd.hesse_inv.shape[-1], 1)).reshape(j.shape)
             j = j * (1 - gd.hesse_weighting[i]) + h * gd.hesse_weighting[i]
             pass

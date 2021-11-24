@@ -33,7 +33,4 @@ def get_cpu_usage(host):
 
 
 def get_n_cpu(host):
-
     return int(ssh_cmd(host, 'grep -c ^processor /proc/cpuinfo'))
-
-

@@ -1,9 +1,12 @@
 import numpy as np
-import pyOpt
+# from pyOpt import pyOpt
+
+from pyOpt.pySLSQP.pySLSQP import SLSQP
+from pyOpt import Optimization
 
 
 def minimize_slsqp(fun, x0, options, verbose=0):
-    slsqp = pyOpt.SLSQP()
+    slsqp = SLSQP()
     slsqp.setOption('IPRINT', -1)
     slsqp.setOption('MAXIT', options['maxiter'])
     try:
@@ -17,7 +20,7 @@ def minimize_slsqp(fun, x0, options, verbose=0):
         fail = 0
         return f, g, fail
 
-    opt_prob = pyOpt.Optimization('', fun2)
+    opt_prob = Optimization('', fun2)
     for i, x0_i in enumerate(x0):
         opt_prob.addVar(f"x{i+1}", 'c', lower=-10, upper=10, value=x0_i)
     opt_prob.addObj('f')
