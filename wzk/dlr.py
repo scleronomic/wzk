@@ -18,7 +18,9 @@ path = "/home/tenh_jo/src"
 
 
 def git_pull_all():
+    print('git pull...')
     for rep in repository_list:
+        print(rep)
         call(f"cd {path}/{rep}; git pull", shell=True)
 
 if __name__ == '__main__':
