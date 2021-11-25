@@ -1,9 +1,9 @@
 # TODO remove form wzk into separate repo
 # import shutil
-
 # from wzk.files import safe_create_dir, rel2abs_path
+from subprocess import call
 
-#
+
 # USERNAME = os.path.expanduser("~").split(sep='/')[-1]
 USERNAME = 'tenh_jo'
 
@@ -11,6 +11,19 @@ USERNAME = 'tenh_jo'
 DLR_USERSTORE = f"/volume/USERSTORE/{USERNAME}"  # Daily Back-up, relies on connection -> not for large Measurements
 DLR_HOMELOCAL = f"/home_local/{USERNAME}"        # No Back-up, but fastest drive -> use for calculation
 DLR_USB = f"/var/run/media/{USERNAME}/DLR-MA"
+
+git_user = "scleronomic"
+repository_list = ["wzk", "rokin", "rocal", "mopla", "mogen", "molea"]
+path = "/home/tenh_jo/src"
+
+
+def git_pull_all():
+    for rep in repository_list:
+        call(f"cd {path}/{rep}; git pull", shell=True)
+
+if __name__ == '__main__':
+    git_pull_all()
+
 
 #
 # def get_sample_dir(directory, full_path=True):
