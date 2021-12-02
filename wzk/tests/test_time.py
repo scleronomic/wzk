@@ -27,3 +27,11 @@ class Test(TestCase):
         s = get_timestamp(year=True, month=False, day=False, hour=False, minute=False, second=False, millisecond=False,
                           date_separator='.', time_separator=':', date_time_separator=' ')
         print(s)
+
+    def test_tictoc2(self):
+        with tictoc(text='Sample Text A', verbose=1) as _:
+            sleep(0.1)
+            with tictoc(text='Sample Text B1', verbose=1) as _:
+                sleep(0.2)
+            with tictoc(text='Sample Text B2', verbose=1) as _:
+                sleep(0.2)

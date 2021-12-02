@@ -11,7 +11,6 @@ from .numpy2 import *
 from .object2 import *
 from .perlin import *
 from .printing import *
-from .ssh import *
 from .strings import *
 from .spatial.transform import *
 from .testing import *

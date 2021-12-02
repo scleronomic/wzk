@@ -1,4 +1,3 @@
-import os
 import re
 import socket
 
@@ -6,67 +5,75 @@ import ray  # noqa
 import fire
 import numpy as np
 
-from wzk.ssh import ssh_cmd, get_n_cpu
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
+from wzk.cpu import ssh_call, get_n_cpu
 
 # Johannes Pitz: 0392, 0179, 0145, 0115
 # Leon: 0144
 # ['rmc-lx0140',  'rmc-lx0271'] no longer available
 # 'rmc-galene'
-__default_nodes = ['rmc-lx0062',
-                   'philotes', 'polyxo', 'poros',
-                   'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
+# __default_nodes = ['rmc-lx0062',
+#                    'philotes', 'polyxo', 'poros',
+#                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
+# __default_nodes = []
+__default_nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
+# nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
+#
 
+
+def __start_head(head, perc, verbose=0):
+    start_head_cmd = f'ray start --head --port=6379 --num-cpus='
+    n_cpu = int(get_n_cpu(head) * perc)
+    stdout = ssh_call(host=head, cmd=start_head_cmd+str(n_cpu))
+    head = socket.gethostname() if head is None else head
+    if verbose > 0:
+        print(head, ':', stdout)
+
+    return head, stdout, n_cpu
+
+
+def __get_address_password(stdout):
+    pattern_adr = r"--address='\S*'"
+    pattern_pwd = r"--redis-password='\S*'"
+    address = safe_squeeze(re.compile(pattern_adr).findall(stdout))
+    address = address[address.find('=')+1:]
+    password = safe_squeeze(re.compile(pattern_pwd).findall(stdout))
+    password = password[password.find('=')+1:]
+    return address, password
+
+
+def __start_nodes(nodes, address, password, perc, verbose=0):
+    n_cpu = 0
+    for node in nodes:
+        n_cpu_i = int(get_n_cpu(node) * perc)
+        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu_i}"
+        stdout = ssh_call(host=node, cmd=start_node_cmd)
+        if verbose > 1:
+            print(node, ':', stdout)
+
+        n_cpu += n_cpu_i
+
+    return n_cpu
 
 
 def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
     assert 1.0 <= perc <= 100.0
     perc = perc / 100
 
-    log = ''
     if nodes is None:
         nodes = __default_nodes
 
-    if verbose > 0:
-        print('Starting Ray-Cluster...')
-        print('Nodes: ', *nodes)
-
-    if head is None:
-        head = socket.gethostname()
-
-    n_cpu = int(get_n_cpu(head) * perc)
-    start_head_cmd = f'ray start --head --port=6379 --num-cpus={n_cpu}'
-    stdout = ssh_cmd(host=head, cmd=start_head_cmd)
-
-    log += head + ':\n' + stdout + '\n'
-    if verbose > 1:
-        print(head, ':', stdout)
-
-    pattern_adr = r"--address='\S*'"
-    pattern_pwd = r"--redis-password='\S*'"
-    address = safe_squeeze(re.compile(pattern_adr).findall(stdout))
-    password = safe_squeeze(re.compile(pattern_pwd).findall(stdout))
-    address = address[address.find('=')+1:]
-    password = password[password.find('=')+1:]
-
-    nodes = np.setdiff1d(atleast_list(nodes), [head])
-    n_cpu_total = 0
-    for node in nodes:
-        n_cpu = int(get_n_cpu(node) * perc)
-        start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu}"
-        stdout = ssh_cmd(host=node, cmd=start_node_cmd)
-        if verbose > 1:
-            print(node, ':', stdout)
-            log += node + ':\n' + stdout + '\n'
-
-        n_cpu_total += n_cpu
+    head, stdout, n_cpu = __start_head(head=head, perc=perc, verbose=verbose-1)
+    address, password = __get_address_password(stdout=stdout)
+    nodes = [] if (nodes is None or nodes == []) else np.setdiff1d(atleast_list(nodes), [head])
+    n_cpu += __start_nodes(nodes=nodes, address=address, password=password, perc=perc, verbose=verbose-2)
 
     if verbose > 0:
         print('Started Ray-Cluster')
         print('Nodes: ', *nodes)
-        print('Total Number of CPUs: ', n_cpu_total)
+        print('Total Number of CPUs: ', n_cpu)
 
-    np.save(os.path.abspath(os.path.dirname(__file__)) + '/' + 'ray_start.text', log)
+    return n_cpu
 
 
 def stop_ray_cluster(nodes=None, verbose=1):
@@ -78,7 +85,7 @@ def stop_ray_cluster(nodes=None, verbose=1):
         print('Nodes: ', *nodes)
 
     for node in atleast_list(nodes):
-        stdout = ssh_cmd(host=node, cmd='ray stop --force')
+        stdout = ssh_call(host=node, cmd='ray stop --force')
         if verbose > 1:
             print(node, ':', stdout)
 
@@ -92,5 +99,25 @@ def ray_main(mode='start', nodes=None, head=None, perc=80, verbose=2):
         raise ValueError
 
 
+def ray_init():
+    try:
+        ray.init(address='auto', log_to_driver=False, ignore_reinit_error=True)
+    except ConnectionError:
+        start_ray_cluster(perc=50, verbose=1)
+        ray_init()
+
+
+def ray_wrapper(fun, n, **kwargs):
+    futures = []
+    for i in range(n):
+        futures.append(fun.remote(**kwargs))
+    return ray.get(futures)
+
+
 if __name__ == '__main__':
     fire.Fire(ray_main)
+
+
+# Finding delay over DLR network is acceptable, roughly 0.1 - 0.2 seconds
+# the advantage is that you can do x 10 the multistarts: use it
+# its more impressive

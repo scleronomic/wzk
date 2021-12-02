@@ -23,6 +23,7 @@ def git_pull_all():
         print(rep)
         call(f"cd {path}/{rep}; git pull", shell=True)
 
+
 if __name__ == '__main__':
     git_pull_all()
 

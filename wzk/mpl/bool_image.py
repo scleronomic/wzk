@@ -17,7 +17,7 @@ def plot_img_patch(img, limits,
     voxel_size = limits2cell_size(shape=img.shape, limits=limits)
 
     ij = np.array(np.nonzero(img)).T
-    xy = grid_i2x(i=ij, voxel_size=voxel_size, lower_left=limits[:, 0], mode='b')
+    xy = grid_i2x(i=ij, limits=limits, shape=img.shape, mode='b')
 
     pc = PatchCollection([Rectangle((x, y), width=voxel_size, height=voxel_size,
                                     fill=False, snap=True) for (x, y) in xy], **kwargs)
@@ -32,9 +32,7 @@ def plot_img_outlines(img, limits,
     """
 
     combined_edges = get_combined_edges(img)
-
-    voxel_size = limits2cell_size(shape=img.shape, limits=limits)
-    combined_edges = [grid_i2x(i=ce, voxel_size=voxel_size, lower_left=limits[:, 0], mode='b')
+    combined_edges = [grid_i2x(i=ce, shape=img.shape, limits=limits, mode='b')
                       for ce in combined_edges]
 
     lc = LineCollection(combined_edges, **kwargs)

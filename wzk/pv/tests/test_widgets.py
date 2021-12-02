@@ -24,7 +24,7 @@ def test_add_rhs_widget():
         f[:3, -1] = o
         plot_frames(f=f, h=h, scale=scale)
 
-    rhs = RHSWidget(p=p, origin=origin0, scale=scale, callback=update)
+    RHSWidget(p=p, origin=origin0, scale=scale, callback=update)
     RHSWidget(p=p, origin=origin1, scale=.3)
 
     p.show()

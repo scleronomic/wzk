@@ -441,7 +441,7 @@ def test_DraggableFrame():
     ax.set_ylim(-1, 1)
 
     def callback33(dgr):
-        f = dgr.get_frame()
+        f = dgr.get_frame()  # noqa
 
     df.add_callback_drag(callback33)
     df.update_x(None)

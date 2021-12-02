@@ -78,7 +78,7 @@ class RHSWidget:
 
     def update_o(self, o):
         o = np.array(o)
-        xyz = np.array(self.get_xyz())
+        xyz = np.array(self.get_xyz()).T
         self.set_bounds(self.o2b(o))
         self.set_origin(o)
         self.set_xyz(xyz)

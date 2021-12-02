@@ -12,7 +12,7 @@ _CMP = '_cmp'
 
 
 @contextmanager
-def open_db_connection(*, file, close=True,
+def open_db_connection(file, close=True,
                        lock=None, check_same_thread=False, isolation_level=None):
     """
     Safety wrapper for the database call.

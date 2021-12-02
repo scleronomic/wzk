@@ -92,4 +92,3 @@ def rectangle_legend(*, ax, xy=(-100, -100), **kwargs):
 def circle_legend(*, ax, xy=(-100, -100), **kwargs):
     p = patches.Circle(xy=xy, radius=0.1, **kwargs)
     ax.add_patch(p)
-

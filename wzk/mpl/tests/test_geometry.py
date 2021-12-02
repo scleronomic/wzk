@@ -81,7 +81,7 @@ class Test(unittest.TestCase):
         h1 = plot_coordinate_frame(ax=ax, x=[1, 1], dcm=trans_theta2frame(theta=1)[:-1, :-1], color='bb')
         h2 = plot_coordinate_frame(ax=ax, dcm=trans_theta2frame(theta=2)[:-1, :-1], color='ry')  # noqa
 
-        update_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
+        plot_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
         # 3D
         fig, ax = new_fig(aspect=1, title='3D Coordinate Frames')
@@ -94,7 +94,7 @@ class Test(unittest.TestCase):
         h1 = plot_coordinate_frame(ax=ax, dcm=dcm)
         h2 = plot_coordinate_frame(ax=ax, dcm=dcm)  # noqa
 
-        update_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
+        plot_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
         self.assertTrue(True)
 

@@ -4,17 +4,6 @@ with open("docs/README.md", "r") as fh:
     long_description = fh.read()
 
 
-# import os
-# import subprocess
-# from setuptools.command.install import install
-# directory = os.path.split(__file__)[0]
-# class InstallLocalPackage(install):
-#     def run(self):
-#         install.run(self)
-#         print(directory)
-#         subprocess.call(f"cd wzk/cpp/MinSphere; python setup.py develop", shell=True)
-# cmdclass={'install': InstallLocalPackage}
-
 setup(
     name="wzk",
     version="0.0.1",

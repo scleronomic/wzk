@@ -48,23 +48,38 @@ def tic(name: str = None):
         __start_named[name] = time()
 
 
-def toc(name: str = None, decimals: int = 6) -> float:
-    if name is None:
+def toc(text: str = None, decimals: int = 6) -> float:
+    if text is None:
         start = __start_stack.pop()
     else:
         try:
-            start = __start_named.pop(name)
+            start = __start_named.pop(text)
         except KeyError:
             start = __start_stack.pop()
 
     elapsed = time() - start
 
-    if name is None:
-        name = 'Elapsed time'
-    elif name == '':
+    if text is None:
+        text = 'Elapsed time'
+    elif text == '':
         return elapsed
 
-    name += ': '
-    print(name + f"{elapsed:.{decimals+1}}")
+    text += ': '
+    print(text + f"{elapsed:.{decimals + 1}}")
 
     return elapsed
+
+
+class tictoc:
+    def __init__(self, text: str = None, decimals: int = 6, verbose: int = 1):
+        self.verbose = verbose
+        self.text = text
+        self.decimals = decimals
+
+    def __enter__(self,):
+        if self.verbose > 0:
+            tic()
+
+    def __exit__(self, *args):
+        if self.verbose > 0:
+            toc(text=self.text, decimals=self.decimals)

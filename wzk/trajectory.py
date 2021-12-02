@@ -117,7 +117,7 @@ def get_substeps_adjusted(x, n,
     if shape:
         shape = tuple(shape)
         x_n = np.zeros(shape+(n, d))
-        for i in np.ndindex(shape):
+        for i in np.ndindex(*shape):
             x_n[i] = get_substeps_adjusted(x=x[i], n=n, is_periodic=is_periodic, weighting=weighting)
         return x_n
 
@@ -157,6 +157,11 @@ def get_substeps_adjusted(x, n,
 
     x_n = periodic_dof_wrapper(x=x_n, is_periodic=is_periodic)
     return x_n
+
+
+def get_path_adjusted(x, m=50, is_periodic=None, weighting=None):
+    n = x.shape[-2]
+    return get_substeps_adjusted(x=x, n=(n - 1) * m + 1, is_periodic=is_periodic, weighting=weighting)[..., ::m, :]
 
 
 def order_path(x, start=None, end=None, infinity_joints=None, weights=1.):
