@@ -16,13 +16,17 @@ from wzk.cpu import ssh_call, get_n_cpu
 #                    'philotes', 'polyxo', 'poros',
 #                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
 # __default_nodes = []
-__default_nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
+__default_nodes = ['rmc-lx0144', 'rmc-lx0062']
 # nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
 #
 
+_address = ['auto']
+_password = ['']
+
 
 def __start_head(head, perc, verbose=0):
-    start_head_cmd = f'ray start --head --port=6379 --num-cpus='
+    # start_head_cmd = f'ray start --head --port=6379 --num-cpus='
+    start_head_cmd = f'ray start --head --port=6378 --num-cpus='
     n_cpu = int(get_n_cpu(head) * perc)
     stdout = ssh_call(host=head, cmd=start_head_cmd+str(n_cpu))
     head = socket.gethostname() if head is None else head
@@ -39,6 +43,9 @@ def __get_address_password(stdout):
     address = address[address.find('=')+1:]
     password = safe_squeeze(re.compile(pattern_pwd).findall(stdout))
     password = password[password.find('=')+1:]
+
+    _address[0] = address
+    _password[0] = password
     return address, password
 
 
@@ -101,9 +108,9 @@ def ray_main(mode='start', nodes=None, head=None, perc=80, verbose=2):
 
 def ray_init():
     try:
-        ray.init(address='auto', log_to_driver=False, ignore_reinit_error=True)
+        ray.init(address=_address[0], log_to_driver=False, ignore_reinit_error=True)
     except ConnectionError:
-        start_ray_cluster(perc=50, verbose=1)
+        start_ray_cluster(perc=70, verbose=1)
         ray_init()
 
 

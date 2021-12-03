@@ -7,7 +7,7 @@ headless = False
 if platform.system() == 'Linux':
     try:
         display = os.environ['DISPLAY']
-        mpl.use('TkAgg')
+        mpl.use('Agg')
 
     except KeyError:
         print("Matplotlib - Backend: 'headless' mode detected -> use 'Agg'")
