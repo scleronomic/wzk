@@ -4,6 +4,7 @@ from wzk.ray2 import ray, ray_init, start_ray_cluster
 from wzk import tic, toc
 from wzk.multiprocessing2 import mp_wrapper
 
+
 nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
 #                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
 # n_cpu = start_ray_cluster(head=None, nodes=nodes, perc=50)
