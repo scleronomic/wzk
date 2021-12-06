@@ -384,6 +384,8 @@ def plot_circles(x, r,
                  ax=None, h=None,
                  color=None, alpha=None,
                  **kwargs):
+    # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
+    x = np.reshape(x, (-1, 2))
     r = scalar2array(r, shape=len(x))
 
     if h is None:
