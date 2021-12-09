@@ -130,17 +130,26 @@ def add_key_slider_widget(p, slider, callback, step=1.):
     mi = r.GetMinimumValue()
     ma = r.GetMaximumValue()
 
-    def on_left():
-        v2 = max(mi, r.GetValue() - step)
+    def __on_key(s):
+        v2 = r.GetValue() + s
+        v2 = np.clip(v2, a_min=mi, a_max=ma)
         r.SetValue(v2)
         callback(v2)
         p.render()
 
+    def on_left():
+        __on_key(s=-step)
+
     def on_right():
-        v2 = min(ma, r.GetValue() + step)
-        r.SetValue(v2)
-        callback(v2)
-        p.render()
+        __on_key(s=+step)
+
+    def on_down():
+        __on_key(s=-step*100)
+
+    def on_up():
+        __on_key(s=+step*100)
 
     p.add_key_event(key='Left', callback=on_left)
     p.add_key_event(key='Right', callback=on_right)
+    p.add_key_event(key='Down', callback=on_down)
+    p.add_key_event(key='Up', callback=on_up)

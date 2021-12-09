@@ -2,9 +2,13 @@ import numpy as np
 import wzk.cpppy.MinSphere.MinSphere as MinSphere
 
 
-def min_sphere(x, r):
+def min_sphere(x, r) -> (np.ndarray, float):
     n, d = np.shape(x)
     res = np.zeros(d + 1, dtype='f4', order='c')
+
+    if n == 0:
+        return np.zeros(2), 0.0
+
     if d < 2 or 4 < d:
         raise ValueError
     if d == 2:

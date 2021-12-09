@@ -314,13 +314,6 @@ def extract(a, idx, axis, mode='slice'):
     return a[idx]
 
 
-def add_safety_limits(limits, factor):
-    limits = np.atleast_1d(limits)
-    diff = np.diff(limits, axis=-1)[..., 0]
-    return np.array([limits[..., 0] - factor * diff,
-                     limits[..., 1] + factor * diff]).T
-
-
 # Combine
 def interleave(arrays, axis=0, out=None):
     """
@@ -865,6 +858,13 @@ def grid_i2x(i, limits, shape, mode='c'):
     
     offset = __mode2offset(voxel_size=voxel_size, mode=mode)
     return np.asarray(lower_left + offset + i * voxel_size, dtype=float)
+
+
+def add_safety_limits(limits, factor):
+    limits = np.atleast_1d(limits)
+    diff = np.diff(limits, axis=-1)[..., 0]
+    return np.array([limits[..., 0] - factor * diff,
+                     limits[..., 1] + factor * diff]).T
 
 
 # def gen_dot_nm(x, y, z):

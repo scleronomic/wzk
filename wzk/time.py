@@ -1,5 +1,6 @@
 from time import time, sleep  # noqa
 from datetime import datetime
+from wzk.printing import print2, verbose_level_wrapper
 
 
 def get_timestamp(year=True, month=True, day=True, hour=True, minute=True, second=True, millisecond=False,
@@ -48,7 +49,7 @@ def tic(name: str = None):
         __start_named[name] = time()
 
 
-def toc(text: str = None, decimals: int = 6) -> float:
+def toc(text: str = None, decimals: int = 6, verbose=None) -> float:
     if text is None:
         start = __start_stack.pop()
     else:
@@ -64,22 +65,22 @@ def toc(text: str = None, decimals: int = 6) -> float:
     elif text == '':
         return elapsed
 
-    text += ': '
-    print(text + f"{elapsed:.{decimals + 1}}")
-
+    print2(f"{text}: {elapsed:.{decimals + 1}}s", verbose=verbose)
     return elapsed
 
 
 class tictoc:
-    def __init__(self, text: str = None, decimals: int = 6, verbose: int = 1):
-        self.verbose = verbose
+    def __init__(self, text: str = None, decimals: int = 6, verbose=None):
+        self.verbose = verbose_level_wrapper(verbose)
         self.text = text
         self.decimals = decimals
 
-    def __enter__(self,):
-        if self.verbose > 0:
+    def __enter__(self):
+        if self.verbose[0] > 0:
             tic()
+            print2(self.text+'...', verbose=self.verbose)
 
     def __exit__(self, *args):
-        if self.verbose > 0:
-            toc(text=self.text, decimals=self.decimals)
+        if self.verbose[0] > 0:
+            toc(text=None, decimals=self.decimals, verbose=(self.verbose[0], self.verbose[1]+1))
+

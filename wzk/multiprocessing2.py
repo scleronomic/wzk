@@ -35,6 +35,8 @@ def mp_wrapper(*args, fun,
     arg must be an iterative and will be split along its first dimension and fed to the different processes
     The objects returned from fun must be numpy arrays and also be splittable / combinable along the first dimension
 
+    if this is not the case, write a wrapper function so that fun expects no arguments
+
     Caveats:
     - The function breaks if the data passed through the pipe is to large
       so make sure that the data size does not exceed ~100Mb per process
