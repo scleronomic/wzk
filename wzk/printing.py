@@ -127,14 +127,14 @@ def check_verbosity(verbose, threshold=0):
 
 
 def print2(*args, verbose=None, level=0,
-           sep=' ', end='\n', file=None):
+           sep=' ', end='\n', file=None, flush=False):
     verbose, level = verbose_level_wrapper(verbose=verbose, level=level)
     level = max(0, level)
 
     if verbose > 0:
         args = [str(a) for a in args]
         t = '\t'*level
-        print(f"{t}{sep.join(args)}", sep=sep, end=end, file=file)
+        print(f"{t}{sep.join(args)}", sep=sep, end=end, file=file, flush=flush)
 
 
 def test_print2():
