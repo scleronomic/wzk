@@ -111,3 +111,56 @@ def print_correlation(bool_lists, names, dec=4):
     return total
 
 
+def verbose_level_wrapper(verbose=None, level=0):
+    if isinstance(verbose, tuple):
+        verbose, level = verbose
+    elif verbose is None:
+        verbose = 1
+    return verbose, level
+
+
+def check_verbosity(verbose, threshold=0):
+    if isinstance(verbose, int):
+        return verbose > threshold
+    elif isinstance(verbose, tuple):
+        return verbose[0] > threshold
+
+
+def print2(*args, verbose=None, level=0,
+           sep=' ', end='\n', file=None):
+    verbose, level = verbose_level_wrapper(verbose=verbose, level=level)
+    level = max(0, level)
+
+    if verbose > 0:
+        args = [str(a) for a in args]
+        t = '\t'*level
+        print(f"{t}{sep.join(args)}", sep=sep, end=end, file=file)
+
+
+def test_print2():
+    print2("aaa", 1, 2, verbose=(1, 0))
+    print2(dict(b=1, bb=2), 11, 22, verbose=(1, 1))
+    print2("ccc", [3, "cc", 333], 33, verbose=(1, 2), sep='---')
+    print2("nice", "a", "staircase", verbose=(1, 1), sep='    ')
+    print2("back", "to", "level", "zero", verbose=(1, 0), sep='::')
+
+
+def print_array_3d(array_3d,
+                   verbose=None, level=0):
+    l, k, n = array_3d.shape
+    s = [''] * k
+    for ll in range(l):
+        ss = repr(array_3d[ll])
+        ss = ss.replace('array', f'   {ll}:')
+        ss = ss.replace('(', ' ')
+        ss = ss.replace(')', '')
+        ss = ss.split('\n')
+        for kk in range(k):
+            s[kk] += ss[kk]
+
+    print2('\n'.join(s), verbose=verbose, level=level)
+
+
+def test_print_array_3d():
+    array_3d = np.arange(4*5*6).reshape((4, 5, 6))
+    print_array_3d(array_3d)

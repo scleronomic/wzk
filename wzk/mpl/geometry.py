@@ -1,17 +1,8 @@
 import numpy as np
-from matplotlib import pyplot as plt, patches, collections
+from matplotlib import pyplot as plt, patches
 
-from wzk.numpy2 import scalar2array
 from wzk.geometry import circle_circle_intersection, theta_wrapper, angle_resolution_wrapper
 from wzk.mpl import Patches2, size_units2points, plotting
-
-
-def draw_circles(ax: plt.Axes, x, y, r, **kwargs):
-    # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
-    r = scalar2array(r, shape=np.size(x))
-    circles = [plt.Circle((xi, yi), radius=ri, linewidth=0, **kwargs) for xi, yi, ri in zip(x, y, r)]
-    c = collections.PatchCollection(circles, **kwargs)
-    ax.add_collection(c)
 
 
 def draw_arc(xy, radius, theta0=0., theta1=2 * np.pi, n=0.01, ax=None, **kwargs):

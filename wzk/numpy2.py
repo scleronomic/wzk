@@ -130,9 +130,8 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
 
 def safe_unify(x):
     x = np.atleast_1d(x)
-
+    assert np.allclose(*x)
     x_mean = np.mean(x)
-    assert np.all(x == x_mean)
     return x_mean.astype(x.dtype)
 
 
@@ -312,13 +311,6 @@ def insert(a, val, idx, axis, mode='slice'):
 def extract(a, idx, axis, mode='slice'):
     idx = __fill_index_with(idx=idx, axis=axis, shape=a.shape, mode=mode)
     return a[idx]
-
-
-def add_safety_limits(limits, factor):
-    limits = np.atleast_1d(limits)
-    diff = np.diff(limits, axis=-1)[..., 0]
-    return np.array([limits[..., 0] - factor * diff,
-                     limits[..., 1] + factor * diff]).T
 
 
 # Combine
@@ -865,6 +857,13 @@ def grid_i2x(i, limits, shape, mode='c'):
     
     offset = __mode2offset(voxel_size=voxel_size, mode=mode)
     return np.asarray(lower_left + offset + i * voxel_size, dtype=float)
+
+
+def add_safety_limits(limits, factor):
+    limits = np.atleast_1d(limits)
+    diff = np.diff(limits, axis=-1)[..., 0]
+    return np.array([limits[..., 0] - factor * diff,
+                     limits[..., 1] + factor * diff]).T
 
 
 # def gen_dot_nm(x, y, z):

@@ -14,6 +14,11 @@ def number2digits(num):
 
 # Normalize
 def normalize_01(x, low=None, high=None, axis=None):
+    """
+    Normalize [low, high] to [0, 1]
+    low and high should either be scalars or have the same dimension as the last dimension of x
+    """
+
     if low is None:
         low = np.min(x, axis=axis, keepdims=True)
 
@@ -27,11 +32,17 @@ def denormalize_01(x, low, high):
     return x * (high - low) + low
 
 
-def normalize_11(x, low, high):
+def normalize_11(x, low=None, high=None, axis=None):
     """
     Normalize [low, high] to [-1, 1]
     low and high should either be scalars or have the same dimension as the last dimension of x
     """
+    if low is None:
+        low = np.min(x, axis=axis, keepdims=True)
+
+    if high is None:
+        high = np.max(x, axis=axis, keepdims=True)
+
     return 2 * (x - low) / (high - low) - 1
 
 
