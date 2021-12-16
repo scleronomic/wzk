@@ -1,3 +1,5 @@
+// https://doc.cgal.org/latest/Bounding_volumes/classCGAL_1_1Min__sphere__of__spheres__d.html
+
 #include <CGAL/Cartesian_d.h>
 #include <CGAL/Min_sphere_of_spheres_d.h>
 #include <vector>
