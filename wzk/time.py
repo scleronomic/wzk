@@ -83,4 +83,3 @@ class tictoc:
     def __exit__(self, *args):
         if self.verbose[0] > 0:
             toc(text=None, decimals=self.decimals, verbose=(self.verbose[0], self.verbose[1]+1))
-

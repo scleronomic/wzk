@@ -130,9 +130,8 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
 
 def safe_unify(x):
     x = np.atleast_1d(x)
-
+    assert np.allclose(*x)
     x_mean = np.mean(x)
-    assert np.allclose(x, x_mean)
     return x_mean.astype(x.dtype)
 
 
