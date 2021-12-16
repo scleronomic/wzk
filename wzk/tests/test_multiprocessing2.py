@@ -78,5 +78,6 @@ class Test(TestCase):
 
 
 if __name__ == '__main__':
+    pass
     test = Test()
     test.test_time()

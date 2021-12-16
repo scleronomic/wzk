@@ -28,6 +28,16 @@ Some examples are:
 * timing
 
 
+# Attention
+This module has some wrapper for multiprocessing and matplotlib
+and sets some backend flags, this should not interfere with anything else but be aware of it
+
+* matplotlib
+  * set backend
+* multiprocessing
+  * limit the threads used by numpy / scipy to 1
+
+make sure wzk is the first thing you import especially before matplotlib / numpy
 
 ---
 This repo has nothing to do with [Werkzeug](https://pypi.org/project/Werkzeug/). 

@@ -1,5 +1,4 @@
-from time import time, sleep
-
+from time import sleep
 import numpy as np
 import multiprocessing
 
@@ -69,11 +68,7 @@ def mp_wrapper(*args, fun,
 
     if len(args) == 0:
         def __fun_wrapper(i_process, queue):
-            # print(i_process)
-            # start = time()
             queue.put((i_process, fun()))
-            # delta = time() - start
-            # print(i_process, delta)
 
     else:
         n_samples_pp, n_samples_pp_cs = \
@@ -102,6 +97,7 @@ def mp_wrapper(*args, fun,
             else:
                 def fun_i(i_process):
                     np.random.seed(None)
+
                     return fun(*map(lambda a: a[n_samples_pp_cs[i_process]:n_samples_pp_cs[i_process+1]],
                                     args))
 
@@ -123,7 +119,6 @@ def mp_wrapper(*args, fun,
     # errors, because a process filled the queue but was still alive
     while True:
         sleep(time_sleep)
-        # print(result_queue.qsize())
         if result_queue.full():
             break
 

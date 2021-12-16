@@ -1,3 +1,8 @@
+from .__multiprocessing2 import *  # must be imported before multiprocessing / numpy
+
+from .mpl.figure import *  # must be imported before matplotlib
+from .mpl import plotting
+
 from .binary import *
 from .dicts_lists_tuples import *
 from .files import *
@@ -16,8 +21,4 @@ from .spatial.transform import *
 from .testing import *
 from .time import *
 from .training import *
-
-from .mpl.figure import *
-from .mpl import plotting
-
 
