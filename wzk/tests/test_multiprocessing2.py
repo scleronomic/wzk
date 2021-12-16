@@ -1,5 +1,7 @@
+import time
 from unittest import TestCase
 
+from wzk.time import tic, toc
 from wzk.multiprocessing2 import *
 from wzk.dicts_lists_tuples import list_allclose
 
@@ -62,3 +64,19 @@ class Test(TestCase):
         for i in range(1, 3):
             self.assertTrue(np.allclose(res6[i-1], np.full((1007, i), i)))
         self.assertTrue(all(list_allclose(res6[:2], res6b[:2])))
+
+    def test_time(self):
+
+        def fun_time():
+            time.sleep(1)
+            return np.ones(1)
+
+        n_processes = 100
+        tic()
+        _ = mp_wrapper(fun=fun_time, n_processes=n_processes)
+        toc()
+
+
+if __name__ == '__main__':
+    test = Test()
+    test.test_time()

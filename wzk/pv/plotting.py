@@ -5,6 +5,7 @@ from scipy.spatial import ConvexHull
 from matplotlib import colors
 
 from wzk.numpy2 import scalar2array, array2array
+from wzk.dicts_lists_tuples import atleast_list
 from wzk.image import bool_img2surf
 from wzk.spatial import invert
 from wzk.geometry import cube
@@ -52,6 +53,13 @@ def faces2pyvista(x):
     x2[:, 0] = d
     x2[:, 1:] = x
     return x2.ravel()
+
+
+def pyvista2faces(f: np.ndarray):
+    d = int(f[0])
+    f = np.reshape(f, (-1, d+1)).copy()
+    assert np.all(f[:, 0] == d)
+    return f[:, 1:]
 
 
 def plot_convex_hull(x=None, hull=None,
@@ -124,12 +132,6 @@ def plot_collision(p, xa, xb, ab, **kwargs):
 def set_color(h, color):
     p = h[1].GetProperty()
     p.SetColor(colors.to_rgb(color))
-
-
-def test_plot_points():
-    plotter = pv.Plotter()
-    plotter.add_points(np.random.random((100, 3)), color='black')
-    plotter.show()
 
 
 def plot_bool_vol(img, limits,
@@ -256,3 +258,12 @@ def plot_mesh(m, f,
         h0.transform(f)
 
     return h
+
+
+def load_meshes2numpy(files):
+    meshes = [pv.PolyData(f) for f in files]
+    n = [0] + [len(m.points) for m in meshes]
+    n_cs = np.cumsum(n)
+    faces = [pyvista2faces(f=m.faces)+n_cs[i] for i, m in enumerate(meshes)]
+    points = np.concatenate([m.points for m in meshes])
+    return points, faces

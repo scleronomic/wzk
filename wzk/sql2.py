@@ -200,27 +200,3 @@ def df2sql(df, file, table, if_exists='fail', lock=None):
 
     with open_db_connection(file=file, close=True, lock=lock) as con:
         df.to_sql(name=table, con=con, if_exists=if_exists, index=False)
-
-
-# def __test_speed_get_values():
-#     from wzk import tic, toc
-#     from definitions import START_IMG_CMP, END_IMG_CMP, PATH_IMG_CMP, PATH_Q
-#     sib = np.random.choice(np.arange(5000 * 1000), 256, replace=False)
-#     file = 'abc/path.db'
-#
-#     tic()
-#     _ = get_values_sql(rows=sib, values_only=True, file=file,
-#                        columns=[START_IMG_CMP, END_IMG_CMP, PATH_IMG_CMP, PATH_Q])
-#     toc()
-#
-#     tic()
-#     _ = get_values_sql(rows=sib, values_only=True, file=file,
-#                        columns=[START_IMG_CMP, END_IMG_CMP, PATH_IMG_CMP])
-#     _ = get_values_sql(rows=sib, values_only=True, file=file,
-#                        columns=[PATH_Q])
-#     toc()
-#     # FINDING it is faster to load all wanted columns at once from the sql file and not one after the other
-#
-#
-# if __name__ == '__main__':
-#     __test_speed_get_values()

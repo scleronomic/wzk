@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 
-from wzk.numpy2 import get_stats
+from wzk.numpy2 import get_stats  # TODO get rid of circular environments
 
 
 def quiet_mode_on():
@@ -164,3 +164,37 @@ def print_array_3d(array_3d,
 def test_print_array_3d():
     array_3d = np.arange(4*5*6).reshape((4, 5, 6))
     print_array_3d(array_3d)
+
+
+def color_text(s, color, background='w', weight=0):
+    """you have to print normally (black / white) once to don't have any sight effects """
+    color_dict = dict(black=0, k=0,
+                      red=1, r=1,
+                      green=2, g=2,
+                      yellow=3, y=3,
+                      blue=4, b=4,
+                      magenta=5, m=5,
+                      cyan=6, c=6,
+                      gray=7, l=7,
+                      white=8, w=8)
+    tc = color_dict[color.lower()]
+    bc = color_dict[background.lower()]
+    return f"\033[{weight};3{tc};4{bc}m{s}\033"
+
+
+def test_color():
+    print("normal")
+    print(color_text(s="normal2", color='k', background='w'))
+    print(color_text(s="red", color='red', background='w'))
+    print(color_text(s="red", color='red', background='k'))
+    print(color_text(s="normal2", color='k', background='w'))
+    print("normal")
+
+    for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
+        print(color_text(s=c, color=c, background='w'))
+
+    for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
+        print(color_text(s=c, color=c, background=c))
+
+    for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
+        print(color_text(s=c, color=c, background='k'))

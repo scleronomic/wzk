@@ -39,6 +39,10 @@ def rectangle(limits: np.ndarray):
     return v, e
 
 
+def get_triangle_center(x):
+    return x.mean(axis=-2)
+
+
 def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
     v = np.array([[0, 0, 0],
                   [0, 0, 1],
@@ -583,6 +587,90 @@ def get_distance_to_ellipsoid(x: np.ndarray, shape: np.ndarray) -> np.ndarray:
     assert x.shape[-1] == len(shape)
     d = ((x / shape)**2).sum(axis=-1) - 1
     return d
+
+
+# mesh
+def refine_triangle_mesh(p, f):
+    """
+    divide each triangle into 3 new triangles
+    works for meshes in 2d and 3d
+    """
+    n_points, d = p.shape
+    n_faces, d2 = f.shape
+    assert d == d2
+
+    c = get_triangle_center(x=p[f])
+
+    p2 = np.zeros((n_points + n_faces, d))
+    p2[:len(p), :] = p
+    p2[len(p):, :] = c
+
+    f2 = np.zeros((n_faces*3, d), dtype=int)
+    f2[:, 0] = f.ravel()
+    f2[:, 1] = np.roll(f, shift=-1, axis=1).ravel()
+    f2[:, 2] = np.repeat(np.arange(n_points, n_points+n_faces), 3)
+
+    return p2, f2
+
+
+def discretize_triangle_mesh(p, f, voxel_size):
+    pf = p[f]
+    d_max = np.vstack((np.linalg.norm(pf[..., 0, :] - pf[..., 1, :], axis=-1),
+                       np.linalg.norm(pf[..., 0, :] - pf[..., 2, :], axis=-1),
+                       np.linalg.norm(pf[..., 1, :] - pf[..., 2, :], axis=-1))).max(axis=0, initial=0)
+    n = (3*(d_max // voxel_size)).astype(int)
+    n, i, c = np.unique(n, return_inverse=True, return_counts=True)
+
+    x2 = []
+    for j, nn in enumerate(n):
+        x = pf[i == j, :]
+        x = discretize_triangle(x=x, n=nn)
+        x2.append(x.reshape((-1, 3)))
+
+    x2 = np.concatenate(x2, axis=0)
+    return x2
+
+
+def discretize_triangle(x=None,
+                        a=None, b=None, c=None,
+                        n=2, verbose=0):
+    """there is no ordering in the output"""
+    if a is None:
+        if n <= 2:
+            return x
+
+        a = x[..., 0, :]
+        b = x[..., 1, :]
+        c = x[..., 2, :]
+
+    else:
+        if n <= 2:
+            return np.concatenate([a[..., np.newaxis, :], b[..., np.newaxis, :], c[..., np.newaxis, :]], axis=-2)
+
+    *shape, n_dim = a.shape
+
+    u, v = np.meshgrid(np.linspace(0, 1, n), np.linspace(0, 1, n))
+    u, v = u[:, :, np.newaxis], v[:, :, np.newaxis]
+    a, b, c = a[..., np.newaxis, np.newaxis, :], b[..., np.newaxis, np.newaxis, :], c[..., np.newaxis, np.newaxis, :]
+
+    x2 = u*a + v*b + (1 - u - v)*c
+    i = v <= 1 - u
+    x2 = x2[..., i[:, :, 0], :]
+    return x2.reshape(shape + [i.sum(), n_dim])
+
+
+def test_discretize_triangle():
+    a = np.array([0, 0])
+    b = np.array([1, 0])
+    c = np.array([0, 1])
+    x2 = discretize_triangle(a=a, b=b, c=c, n=10, verbose=10)
+
+    from wzk.mpl import new_fig
+    fig, ax = new_fig(aspect=1)
+    ax.plot(*a, color='blue', ls='', marker='o')
+    ax.plot(*b, color='blue', ls='', marker='o')
+    ax.plot(*c, color='blue', ls='', marker='o')
+    ax.plot(*x2.T, color='red', marker='x')
 
 
 # def line_line33(u, v, w):

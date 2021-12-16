@@ -72,7 +72,7 @@ def toc(text: str = None, decimals: int = 6, verbose=None) -> float:
 class tictoc:
     def __init__(self, text: str = None, decimals: int = 6, verbose=None):
         self.verbose = verbose_level_wrapper(verbose)
-        self.text = text
+        self.text = '' if text is None else text
         self.decimals = decimals
 
     def __enter__(self):

@@ -132,7 +132,7 @@ def safe_unify(x):
     x = np.atleast_1d(x)
 
     x_mean = np.mean(x)
-    assert np.all(x == x_mean)
+    assert np.allclose(x, x_mean)
     return x_mean.astype(x.dtype)
 
 

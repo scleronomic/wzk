@@ -1,16 +1,13 @@
+from time import time, sleep
+
 import numpy as np
 import multiprocessing
 
-from time import sleep
 from wzk import change_tuple_order
 
 # Error under Python3.8 /MacOs -> AttributeError: Can't pickle local object 'mp_wrapper.<locals>.__fun_wrapper'
 # https://stackoverflow.com/questions/60518386/error-with-module-multiprocessing-under-python3-8
 multiprocessing.set_start_method('fork', force=True)
-
-# FINDING h5py objects can not be pickled
-#   -> read the files inside the function instead / h5py objects are only references anyway
-#   Joblib: Threading backend allows shared memory
 
 
 def n_processes_wrapper(n_processes, n_samples):
@@ -55,8 +52,8 @@ def mp_wrapper(*args, fun,
     - max_chunk_size is intended for cases where both a loop + parallelization is needed because of memory limitations
     """
 
-    time_sleep = 0.01  # s # TODO smaller time ?
-    time_sleep2 = 0.01  # s # TODO smaller time ?
+    time_sleep = 0.01  # s
+    time_sleep2 = 0.01  # s
 
     if len(args) == 0:
         n_samples = n_processes
@@ -72,7 +69,11 @@ def mp_wrapper(*args, fun,
 
     if len(args) == 0:
         def __fun_wrapper(i_process, queue):
+            # print(i_process)
+            # start = time()
             queue.put((i_process, fun()))
+            # delta = time() - start
+            # print(i_process, delta)
 
     else:
         n_samples_pp, n_samples_pp_cs = \

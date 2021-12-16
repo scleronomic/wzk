@@ -22,7 +22,7 @@ setup(
                       'pyvista',
                       'setuptools',
                       'msgpack',
-                      'pyOpt @ git+https://github.com/madebr/pyOpt@master',  # TODO wait for merge of fix
+                      'pyOpt @ git+https://github.com/madebr/pyOpt@master',
                       ],
     classifiers=[
         "Programming Language :: Python :: 3",

@@ -210,7 +210,7 @@ def pooling(mat, kernel, method='max', pad=False):
 def get_outer_edge(img):
     n_dim = np.ndim(img)
     kernel = np.ones((3,)*n_dim)
-    edge_img = convolve(img, kernel, mode='same')
+    edge_img = convolve(img, kernel, mode='same', method='direct')
     return np.logical_xor(edge_img, img)
 
 

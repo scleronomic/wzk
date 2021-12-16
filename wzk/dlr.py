@@ -1,8 +1,4 @@
-# TODO remove form wzk into separate repo
-# import shutil
-# from wzk.files import safe_create_dir, rel2abs_path
 from subprocess import call
-
 
 # USERNAME = os.path.expanduser("~").split(sep='/')[-1]
 USERNAME = 'tenh_jo'

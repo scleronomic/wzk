@@ -123,8 +123,3 @@ def ray_wrapper(fun, n, **kwargs):
 
 if __name__ == '__main__':
     fire.Fire(ray_main)
-
-
-# Finding delay over DLR network is acceptable, roughly 0.1 - 0.2 seconds
-# the advantage is that you can do x 10 the multistarts: use it
-# its more impressive
