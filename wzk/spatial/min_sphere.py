@@ -7,7 +7,7 @@ def min_sphere(x, r) -> (np.ndarray, float):
     res = np.zeros(d + 1, dtype='f4', order='c')
 
     if n == 0:
-        return np.zeros(2), 0.0
+        return np.zeros(d), 0.0
 
     if d < 2 or 4 < d:
         raise ValueError
@@ -16,7 +16,7 @@ def min_sphere(x, r) -> (np.ndarray, float):
     elif d == 3:
         MinSphere.min_sphere3(x=x.astype(dtype='f4', order='c'), r=r.astype(dtype='f4', order='c'), n=n, res=res)
     elif d == 4:
-        MinSphere.min_sphere3(x=x.astype(dtype='f4', order='c'), r=r.astype(dtype='f4', order='c'), n=n, res=res)
+        MinSphere.min_sphere4(x=x.astype(dtype='f4', order='c'), r=r.astype(dtype='f4', order='c'), n=n, res=res)
     else:
         raise ValueError
 

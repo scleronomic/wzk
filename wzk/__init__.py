@@ -18,7 +18,11 @@ from .perlin import *
 from .printing import *
 from .strings import *
 from .spatial.transform import *
+from splines import *
 from .testing import *
 from .time import *
 from .training import *
 
+# modules which require additional repositories
+# from .pyOpt2 import *
+# from .ray2 import *
