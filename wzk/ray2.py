@@ -27,7 +27,7 @@ _password = ['']
 def __start_head(head, perc, verbose=0):
     # start_head_cmd = f'ray start --head --port=6379 --num-cpus='
     start_head_cmd = f'ray start --head --port=6378 --num-cpus='
-    n_cpu = int(get_n_cpu(head) * perc)
+    n_cpu = int(max(1, get_n_cpu(head) * perc))
     stdout = ssh_call(host=head, cmd=start_head_cmd+str(n_cpu))
     head = socket.gethostname() if head is None else head
     if verbose > 0:
@@ -52,7 +52,7 @@ def __get_address_password(stdout):
 def __start_nodes(nodes, address, password, perc, verbose=0):
     n_cpu = 0
     for node in nodes:
-        n_cpu_i = int(get_n_cpu(node) * perc)
+        n_cpu_i = int(max(1, get_n_cpu(node) * perc))
         start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu_i}"
         stdout = ssh_call(host=node, cmd=start_node_cmd)
         if verbose > 1:
