@@ -1,7 +1,19 @@
+import os
 from subprocess import call
 
-# USERNAME = os.path.expanduser("~").split(sep='/')[-1]
-USERNAME = 'tenh_jo'
+USERNAME = os.path.expanduser("~").split(sep='/')[-1]
+
+
+def where_am_i():
+    location_dict = dict(jote='mac',
+                         tenh_jo='dlr',
+                         johannes_tenhumberg='gc')
+
+    location = location_dict[USERNAME]
+    return location
+
+
+LOCATION = where_am_i()
 
 # Alternative storage places for the samples
 DLR_USERSTORE = f"/volume/USERSTORE/{USERNAME}"  # Daily Back-up, relies on connection -> not for large Measurements
@@ -10,10 +22,11 @@ DLR_USB = f"/var/run/media/{USERNAME}/DLR-MA"
 
 git_user = "scleronomic"
 repository_list = ["wzk", "rokin", "rocal", "mopla", "mogen", "molea"]
-path = "/home/tenh_jo/src"
 
 
+# gsutil cp JustinArm07.db gs://tenh_jo/
 def git_pull_all():
+    path = os.path.normpath(f"{__file__}/../../..")
     print('git pull...')
     for rep in repository_list:
         print(rep)

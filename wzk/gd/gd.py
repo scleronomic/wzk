@@ -6,17 +6,18 @@ from wzk.gd.Optimizer import *
 
 
 class GradientDescent(CopyableObject):
-    __slots__ = ('n_steps',              # int                 | Number of iterations
-                 'stepsize',             # float               |
-                 'opt',                  # Optimizer           | Adam, RMSProp, ...
-                 'clipping',             # float[n_steps]      |
-                 'callback',             # fun()               |
-                 'limits',               # fun()               |
-                 'n_processes',          # int                 |
-                 'hesse_inv',            # float[n_var][n_var] |
-                 'hesse_weighting',      # float[n_steps]      |
-                 'return_x_list',        # bool                |  is this a suitable parameter? not really
-                 'active_dims'           # bool[n_var]         |
+    __slots__ = ('n_steps',                        # int                 | Number of iterations
+                 'stepsize',                       # float               |
+                 'opt',                            # Optimizer           | Adam, RMSProp, ...
+                 'clipping',                       # float[n_steps]      |
+                 'callback',                       # fun()               |
+                 'limits',                         # fun()               |
+                 'n_processes',                    # int                 |
+                 'use_loop_instead_of_processes',  # bool                |
+                 'hesse_inv',                      # float[n_var][n_var] |
+                 'hesse_weighting',                # float[n_steps]      |
+                 'return_x_list',                  # bool                |  is this a suitable parameter? not really
+                 'active_dims'                     # bool[n_var]         |
                  )
 
     def __init__(self, n_steps=100, stepsize=0.001, opt=Naive(), clipping=0.1, n_processes=1):
@@ -27,6 +28,8 @@ class GradientDescent(CopyableObject):
         self.active_dims = None
 
         self.n_processes = n_processes
+        self.use_loop_instead_of_processes = False
+
         self.callback = None
 
         self.hesse_inv = None

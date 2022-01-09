@@ -14,8 +14,9 @@ from wzk.numpy2 import scalar2array, add_safety_limits
 from wzk.dicts_lists_tuples import tuple_extract, atleast_tuple
 
 
-def imshow(ax: plt.Axes, img: np.ndarray, limits: np.ndarray = None, cmap=None,
-           origin: str = 'lower', axis_order: str = 'ij->yx',
+def imshow(ax: plt.Axes, img: np.ndarray, h=None,
+           cmap=None,
+           limits: np.ndarray = None, origin: str = 'lower', axis_order: str = 'ij->yx',
            mask: np.ndarray = None, vmin: float = None, vmax: float = None, **kwargs):
     """
 
@@ -52,6 +53,13 @@ def imshow(ax: plt.Axes, img: np.ndarray, limits: np.ndarray = None, cmap=None,
     if limits is None:
         limits = img.shape
 
+    if h is not None:
+        if cmap is None:
+            cmap = h.cmap
+        img = arr2rgba(img=img, cmap=cmap, vmin=vmin, vmax=vmax, mask=mask, axis_order=axis_order)
+        h.set_data(img)
+        return h
+
     extent = limits2extent(limits=limits, origin=origin, axis_order=axis_order)
 
     img = arr2rgba(img=img, cmap=cmap, vmin=vmin, vmax=vmax, mask=mask, axis_order=axis_order)
@@ -61,14 +69,6 @@ def imshow(ax: plt.Axes, img: np.ndarray, limits: np.ndarray = None, cmap=None,
         rectangle_legend(ax=ax, xy=limits[:, 0]-1, **kwargs2)
 
     return ax.imshow(img, extent=extent, origin=origin, **kwargs)
-
-
-def imshow_update(h, img: np.ndarray, cmap=None, axis_order='ij->yx', vmin=None, vmax=None, mask=None):
-    if cmap is None:
-        cmap = h.cmap
-
-    img = arr2rgba(img=img, cmap=cmap, vmin=vmin, vmax=vmax, mask=mask, axis_order=axis_order)
-    h.set_data(img)
 
 
 def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto', **kwargs):

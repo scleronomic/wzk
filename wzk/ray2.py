@@ -15,8 +15,8 @@ from wzk.cpu import ssh_call, get_n_cpu
 # __default_nodes = ['rmc-lx0062',
 #                    'philotes', 'polyxo', 'poros',
 #                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
-# __default_nodes = []
-__default_nodes = ['rmc-lx0144', 'rmc-lx0062']
+__default_nodes = []
+# __default_nodes = ['rmc-lx0144', 'rmc-lx0062']
 # nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
 #
 
@@ -106,12 +106,13 @@ def ray_main(mode='start', nodes=None, head=None, perc=80, verbose=2):
         raise ValueError
 
 
-def ray_init():
+def ray_init(perc=100):
     try:
         ray.init(address=_address[0], log_to_driver=False, ignore_reinit_error=True)
     except ConnectionError:
-        start_ray_cluster(perc=70, verbose=1)
-        ray_init()
+        start_ray_cluster(perc=perc, verbose=1)
+        ray.init(address='auto', log_to_driver=False, ignore_reinit_error=True)
+        # ray.init(address=f"ray://{_address[0]}", log_to_driver=False, ignore_reinit_error=True)
 
 
 def ray_wrapper(fun, n, **kwargs):
@@ -123,3 +124,5 @@ def ray_wrapper(fun, n, **kwargs):
 
 if __name__ == '__main__':
     fire.Fire(ray_main)
+
+
