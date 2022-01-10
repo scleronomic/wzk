@@ -866,53 +866,6 @@ def add_safety_limits(limits, factor):
                      limits[..., 1] + factor * diff]).T
 
 
-# def gen_dot_nm(x, y, z):
-#     """
-#     https://stackoverflow.com/questions/59347796/minimizing-overhead-due-to-the-large-number-of-numpy-dot-calls/59356461#59356461
-#     """
-#
-#     # small kernels
-#     @nb.njit(fastmath=True, parallel=True)
-#     def dot_numba(A, B):
-#         """
-#         calculate dot product for (x,y)x(y,z)
-#         """
-#         assert A.shape[0] == B.shape[0]
-#         assert A.shape[2] == B.shape[1]
-#
-#         assert A.shape[1] == x
-#         assert B.shape[1] == y
-#         assert B.shape[2] == z
-#
-#         res = np.empty((A.shape[0],A.shape[1],B.shape[2]),dtype=A.dtype)
-#         for ii in nb.prange(A.shape[0]):
-#             for o in range(x):
-#                 for j in range(z):
-#                     acc = 0.
-#                     for k in range(y):
-#                         acc += A[ii, o, k]*B[ii, k, j]
-#                     res[ii, o, j] = acc
-#         return res
-#
-#
-#     #large kernels
-#     @nb.njit(fastmath=True, parallel=True)
-#     def dot_BLAS(A, B):
-#         assert A.shape[0] == B.shape[0]
-#         assert A.shape[2] == B.shape[1]
-#
-#         res = np.empty((A.shape[0], A.shape[1], B.shape[2]), dtype=A.dtype)
-#         for ii in nb.prange(A.shape[0]):
-#             A_ii = np.ascontiguousarray(A[ii, :, :])
-#             B_ii = np.ascontiguousarray(A[ii, :, :])
-#             res[ii, :, :] = np.dot(A_ii , B_ii)
-#         return res
-#
-#     # At square matrices above shape 20 calling BLAS is faster
-#     if x >= 20 or y >= 20 or z >= 20:
-#         return dot_BLAS
-#     else:
-#         return dot_numba
 def get_stats(x, axis=None, return_array=False):
     stats = {'mean': np.mean(x, axis=axis),
              'std':  np.std(x, axis=axis),
@@ -933,5 +886,16 @@ def aranges(stops=None, starts=None, steps=None):
 
 
 def find_consecutives(x, n):
-    # my stackoverflow
     return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n-1), mode='valid') == 0)[0]
+
+
+def find_larges_consecutives(x):
+    i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2-1), mode='valid') == 0)[0]
+    i2 -= np.arange(len(i2))
+    _, c2 = np.unique(i2, return_counts=True)
+    n = c2.max() + 1
+    return n, find_consecutives(x, n=n)
+
+
+def squeeze(*args):
+    return [np.squeeze(a) for a in args]
