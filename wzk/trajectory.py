@@ -31,11 +31,15 @@ def inner2full(inner, start=None, end=None):
     return inner
 
 
-def full2start_end(x, squeeze=True):
-    if squeeze:
+def full2start_end(x, mode=''):
+    if mode == '1':
+        return x[..., [0, -1], :]
+    if mode == '20':
         return x[..., 0, :], x[..., -1, :]
-    else:
+    elif mode == '21':
         return x[..., :1, :], x[..., -1:, :]
+    else:
+        raise NotImplementedError
 
 
 def path_mode(x, mode=None):

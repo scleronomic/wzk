@@ -105,8 +105,8 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
         columns = [columns]
     columns_str = ', '.join(map(str, columns))
 
-    if isinstance(rows, int):
-        rows = [rows]
+    if isinstance(rows, (int, np.int16, np.int32, np.int64)):
+        rows = [int(rows)]
     rows = np.array(rows)
 
     if rows[0] == -1:  # All samples

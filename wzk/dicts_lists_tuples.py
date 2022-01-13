@@ -119,6 +119,11 @@ def atleast_tuple(*tuples, convert=True):
         return res
 
 
+def weave_lists(*args):
+    # https://stackoverflow.com/a/27166171/7570817
+    return [a for b in zip(*args) for a in b]
+
+
 # Slice and range
 def range2slice(r):
     return slice(r.start, r.stop, r.step)

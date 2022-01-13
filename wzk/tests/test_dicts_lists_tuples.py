@@ -82,3 +82,10 @@ class Test(TestCase):
                2: {'a': 'red', 'b': 3, 'c': True}}
         dr = repeat_dict(d=d, n=3)
         self.assertTrue(res == dr)
+
+    def test_weave_lists(self):
+        x = [[1, 2, 3], ['a', 'b', 'c'], [11, 12, 13, 14]]
+        res = [1, 'a', 11, 2, 'b', 12, 3, 'c', 13]
+
+        a = weave_lists(*x)
+        self.assertTrue(a == res)
