@@ -78,4 +78,5 @@ venv.bak/
 
 ####
 *.so
+*.db
 /.idea/
