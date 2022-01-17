@@ -886,14 +886,21 @@ def aranges(stops=None, starts=None, steps=None):
 
 
 def find_consecutives(x, n):
+    if n == 1:
+        return np.arange(len(x))
+    assert n > 1
     return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n-1), mode='valid') == 0)[0]
 
 
-def find_larges_consecutives(x):
+def find_largest_consecutives(x):
     i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2-1), mode='valid') == 0)[0]
     i2 -= np.arange(len(i2))
     _, c2 = np.unique(i2, return_counts=True)
-    n = c2.max() + 1
+    if c2.size == 0:
+        n = 1
+    else:
+        n = c2.max() + 1
+
     return n, find_consecutives(x, n=n)
 
 

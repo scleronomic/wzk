@@ -1,14 +1,38 @@
+from contextlib import contextmanager
+# from threading import Lock  # lock = Lock()
 import numpy as np
 import pandas as pd
-
 import sqlite3 as sql
-from contextlib import contextmanager
 
 from wzk.numpy2 import numeric2object_array
 from wzk.dicts_lists_tuples import change_tuple_order
 from wzk.dtypes import str2np
 
 _CMP = '_cmp'
+
+
+def idx2sql(rows: object, dtype: object = str, values=None) -> object:
+    if isinstance(rows, (int, np.int16, np.int32, np.int64)):
+        if rows == -1:
+            if values is None:
+                return -1
+            else:
+                rows = np.arange(len(values))
+        else:
+            rows = [int(rows)]
+    elif isinstance(rows, np.ndarray) and rows.dtype == bool:
+        rows = np.nonzero(rows)[0]
+
+    rows = np.array(rows) + 1  # Attention! Unlike in Python, SQL indices start at 1
+
+    if dtype == str:
+        return ', '.join(map(str, rows))
+
+    elif dtype == list:
+        return rows.tolist()
+
+    else:
+        raise ValueError
 
 
 @contextmanager
@@ -33,13 +57,23 @@ def open_db_connection(file, close=True,
             lock.release()
 
 
-def execute(file, command):
-    with open_db_connection(file=file, close=True) as con:
-        con.execute(command)
+def execute(file, query, lock=None):
+    with open_db_connection(file=file, close=True, lock=lock) as con:
+        con.execute(query)
+
+
+def executemany(file, query, args, lock=None):
+    with open_db_connection(file=file, close=True, lock=lock) as con:
+        con.executemany(query, args)
+
+
+def executescript(file, query, lock=None):
+    with open_db_connection(file=file, close=True, lock=lock) as con:
+        con.executescript(query)
 
 
 def vacuum(file):
-    execute(file=file, command='VACUUM')
+    execute(file=file, query='VACUUM')
 
 
 def get_table_name(file: str) -> list:
@@ -84,11 +118,35 @@ def get_n_samples(file, i_worlds=-1):
         return counts[i_worlds]
 
 
+def get_columns(file, table):
+    with open_db_connection(file=file, close=True, lock=None) as con:
+        c = pd.read_sql_query(con=con, sql=f"pragma table_info({table})")
+    c = [cc[1] for cc in c.values]
+    return c
+
+
+def concatenate_tables(file, table, table2, file2=None, lock=None):
+    if file2 is None:
+        execute(file=file, query=f"INSERT INTO {table} SELECT * FROM {table2}", lock=lock)
+    else:
+
+        query = f"ATTACH DATABASE '{file2}' AS filetwo; INSERT INTO {table} SELECT * FROM filetwo.{table2}"
+        executescript(file=file, query=query, lock=None)
+
+
 def __decompress_values(value, column: str):
     # SQL saves everything in binary form -> convert back to numeric, expect the columns which are marked as cmp
+
     if isinstance(value[0], bytes) and column[-4:] != _CMP:
         value = np.array([np.frombuffer(v, dtype=str2np(s=column)) for v in value])
+
     return value
+
+
+def delete_rows(file: str, table: str, rows, lock=None):
+    rows = idx2sql(rows, dtype=str)
+    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})")
+    vacuum(file)
 
 
 # Get and Set SQL values
@@ -105,20 +163,16 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
         columns = [columns]
     columns_str = ', '.join(map(str, columns))
 
-    if isinstance(rows, (int, np.int16, np.int32, np.int64)):
-        rows = [int(rows)]
-    rows = np.array(rows)
+    rows = idx2sql(rows, dtype=str)
 
-    if rows[0] == -1:  # All samples
+    if rows == -1:  # All samples
         with open_db_connection(file=file, close=True, lock=lock) as con:
             df = pd.read_sql_query(con=con, sql=f"SELECT {columns_str} FROM {table}")  # path_db
 
     else:
-        rows_str = rows + 1  # Attention! Unlike in Python, SQL indices start at 1
-        rows_str = ', '.join(map(str, rows_str))
         with open_db_connection(file=file, close=True, lock=lock) as con:
-            df = pd.read_sql_query(sql=f"SELECT {columns_str} FROM {table} WHERE ROWID in ({rows_str})",
-                                   index_col=rows, con=con)
+            df = pd.read_sql_query(con=con, sql=f"SELECT {columns_str} FROM {table} WHERE ROWID in ({rows})",
+                                   index_col=None)
 
     value_list = []
     if np.any(columns == ['*']):
@@ -150,20 +204,13 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 def set_values_sql(file, table,
                    values, columns, rows=-1, lock=None):
     """
-    Important multidimensional numpy arrays have to be saved as flat to SQL otherwise the order is messed up
+    Attention! multidimensional numpy arrays have to be saved as flat byte string
 
-    'i_samples' == i_samples_global
     values = ([...], [...], [...], ...)
     """
 
-    # Handle rows argument
-    if isinstance(rows, int):
-        if rows == -1:
-            rows = np.arange(len(values[0])).tolist()
-        else:
-            rows = [rows]
-
-    rows_sql = (np.array(rows) + 1).tolist()  # Attention! Unlike in Python, SQL indices start at 1
+    # TODO handle arry inputs, automatically convert to correct datatype
+    rows = idx2sql(rows, values=values[0], dtype=list)
 
     # Handle columns argument
     if isinstance(columns, str):
@@ -172,18 +219,18 @@ def set_values_sql(file, table,
     columns_str = '=?, '.join(map(str, columns))
     columns_str += '=?'
 
-    values_rows_sql = change_tuple_order(values + (rows_sql,))
+    values_rows_sql = change_tuple_order(values + (rows,))
     values_rows_sql = list(values_rows_sql)
     query = f"UPDATE {table} SET {columns_str} WHERE ROWID=?"
 
-    with open_db_connection(file=file, close=True, lock=lock) as con:
-        cur = con.cursor()
-        if len(values_rows_sql) == 1:
-            cur.execute(query, values_rows_sql[0])
-        else:
-            cur.executemany(query, values_rows_sql)
+    executemany(file=file, query=query, args=values_rows_sql, lock=lock)
 
-        con.commit()
+
+# TODO
+def dict2cv(d):
+    pass
+    # c = d.keys()
+    raise NotImplementedError
 
 
 def df2sql(df, file, table, if_exists='fail', lock=None):
