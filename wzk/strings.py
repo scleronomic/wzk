@@ -84,14 +84,17 @@ def tab_str(*args, tab=4, squeeze=True):
         return res
 
 
-def str2number(s):
+def str2number(s, safe=False):
     try:
         return int(s)
     except ValueError:
         try:
             return float(s)
-        except ValueError:
-            return s
+        except ValueError as e:
+            if safe:
+                raise ValueError(e)
+            else:
+                return s
 
 
 def str2file(directory, **kwargs):
@@ -110,3 +113,56 @@ def uuid4():
      -> len() = 32
      """
     return uuid.uuid4().hex
+
+
+def str2list(s):
+    return eval(s, {'__builtins__': None}, {})
+
+
+#
+# "[[38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [190, 380, 760, 380, 190], [190, 380, 760, 380, 190], [190, 380, 760, 380, 190]]"
+#
+# s = '[a, b, c, [dd, ee, [fff, ggg, hhh], ii]]]'
+#
+# s.split(',')
+# s.split('[')
+# compile()
+# def str2list(s):
+#     l_list = s.split('[')
+#     print(l_list)
+#     depth = 0
+#     big_l = []
+#     for l in l_list[1:]:
+#         if l == '':
+#             depth += 1
+#             new_list = []
+#
+#         else:
+#             print('l', l)
+#
+#             if ']' in l:
+#                 k = l.split(']')
+#
+#             else:
+#                 big_l.append(l.split(','))
+#
+#             k = l.split(']')
+#             print('k', k)
+#             big_l.append(k[0].split(','))
+#
+#             if len(k) == 2:
+#                 pass
+#
+#             else:
+#                 depth -= len(k)-1
+#
+#     return big_l
+# print(str2list(s))
+
+
+#       # k2 = [k2]
+#                 # for kk in k:
+#                 #     try:
+#                 #         k2.append(int(kk))
+#                 #     except ValueError:
+#                 #         k2.append(float(kk))

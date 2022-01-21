@@ -17,7 +17,7 @@ from wzk.cpu import ssh_call, get_n_cpu
 #                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
 __default_nodes = []
 # __default_nodes = ['rmc-lx0144', 'rmc-lx0062']
-# nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
+# __default_nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
 #
 
 _address = ['auto']
@@ -126,3 +126,12 @@ if __name__ == '__main__':
     fire.Fire(ray_main)
 
 
+def calculate_time(n_worlds, n_samples_per_world, time_per_sample, n_cores=1):
+    s = n_worlds * n_samples_per_world * time_per_sample
+    h = s / 3600
+    d = h / 24
+
+    return d
+
+
+(10000 * 1000 * 0.3) / 3600 / 24 * 1

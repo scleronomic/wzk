@@ -29,6 +29,12 @@ def safe_remove(file: str):
         pass
 
 
+def delete_dir(directory):
+    file_list = os.listdir(directory)
+    for file in file_list:
+        os.remove(os.path.join(directory, file))
+
+
 def start_open(file: str):
     open_cmd = __open_cmd_dict[platform.system()]
     subprocess.Popen([f'{open_cmd} {file}'], shell=True)

@@ -5,58 +5,59 @@ from wzk import tic, toc
 from wzk.multiprocessing2 import mp_wrapper
 
 
-nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
-#                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
-# n_cpu = start_ray_cluster(head=None, nodes=nodes, perc=50)
-n_cpu = 30
-ray_init()
+def speed():
+    nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
+    #                    'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
+    # n_cpu = start_ray_cluster(head=None, nodes=nodes, perc=50)
+    n_cpu = 30
+    ray_init()
 
-# ray.init(address='auto', log_to_driver=False)
+    # ray.init(address='auto', log_to_driver=False)
 
-n = n_cpu
-t = 1
-
-
-def test0(*args):   # noqa
-    print("a")
-    time.sleep(t)
-    return np.ones((2, 1))
+    n = n_cpu
+    t = 1
 
 
-@ray.remote
-def test():
-    time.sleep(t)
-    return 1
+    def test0(*args):   # noqa
+        print("a")
+        time.sleep(t)
+        return np.ones((2, 1))
 
 
-def test_ray():
+    @ray.remote
+    def test():
+        time.sleep(t)
+        return 1
+
+
+    def test_ray():
+        tic()
+        futures = []
+        for i in range(n):
+            futures.append(test.remote())
+        df_list = ray.get(futures)
+        tt = toc('ray')
+        return tt
+
+
+    def compare_times(tt):
+        t0 = (t*n/n_cpu)
+        print(t0)
+        print((tt - t0)/n)
+
+
+    test_ray()
+    test_ray()
+    test_ray()
+    # 0.0008937692642211914
+    # 0.001179349422454834
+    #
     tic()
-    futures = []
-    for i in range(n):
-        futures.append(test.remote())
-    df_list = ray.get(futures)
-    tt = toc('ray')
-    return tt
+    for i in range(n//n_cpu):
+        test0()
+    toc()
 
 
-def compare_times(tt):
-    t0 = (t*n/n_cpu)
-    print(t0)
-    print((tt - t0)/n)
-
-
-test_ray()
-test_ray()
-test_ray()
-# 0.0008937692642211914
-# 0.001179349422454834
-#
-tic()
-for i in range(n//n_cpu):
-    test0()
-toc()
-
-
-tic()
-mp_wrapper(n, fun=test0, n_processes=n_cpu)
-toc('mp')
+    tic()
+    mp_wrapper(n, fun=test0, n_processes=n_cpu)
+    toc('mp')

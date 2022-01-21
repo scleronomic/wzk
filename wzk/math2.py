@@ -418,3 +418,17 @@ def binomial(n, k):
 def random_subset(n, k, m, dtype=np.uint16):
     assert n == np.array(n, dtype=dtype)
     return np.array([np.random.choice(n, k, replace=False) for _ in range(m)]).astype(np.uint16)
+
+
+def irwin_hall_distribution(x, n=2):
+    """
+    https://en.wikipedia.org/wiki/Irwin-Hall_distribution
+    """
+
+    pre_factor = 1 / 2 / np.math.factorial(n - 1)
+
+    f_xn = 0
+    for k in range(n + 1):
+        f_xn += (-1) ** k * binomial(n, k) * (x - k) ** (n - 1) * np.sign(x - k)
+
+    return pre_factor * f_xn

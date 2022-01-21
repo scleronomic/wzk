@@ -105,7 +105,7 @@ def get_ticks(ax, axis='x'):
         return ticks2arr(ax.get_xticks()), ticks2arr(ax.get_yticks())
 
 
-def get_ticklabels(ax, axis='x'):
+def get_labels(ax, axis='x'):
 
     def labels2arr(labels):
         return np.array([la.get_text() for la in labels], dtype=object)
@@ -196,7 +196,7 @@ def add_ticks(ax, ticks, labels=None, axis='x'):
 
     def __add_ticks(_axis):
         ticks_old = get_ticks(ax=ax, axis=_axis)
-        labels_old = get_ticklabels(ax=ax, axis=_axis)
+        labels_old = get_labels(ax=ax, axis=_axis)
 
         _ticks = np.hstack((ticks_old, atleast_list(ticks)))
         sort_idx = np.argsort(_ticks)
@@ -258,3 +258,61 @@ def transform_tick_labels(ax, xt=0., yt=0., rotation=0., axis='x', ha=None, va=N
         for label in ax.yaxis.get_majorticklabels():
             label.set_transform(label.get_transform() + offset)
             __set_alignment(lbl=label)
+
+
+def handle_newline(newline, n):
+    newline2 = [False] * n
+
+    if newline is None:
+        pass
+
+    elif isinstance(newline, int):
+        newline2[newline] = True
+
+    elif isinstance(newline, (list, tuple, np.ndarray)):
+        if len(newline) == n:
+            return newline
+
+        assert isinstance(newline[0], int)
+        for i in newline:
+            newline2[i] = True
+        return newline2
+
+    else:
+        raise ValueError
+
+
+def elongate_ticks_and_labels(ax, newline, labels=None, axis='x', position=None):
+    newline_size, newline = newline
+    assert axis == 'x' or axis == 'y'
+    if position is None:
+        if axis == 'x':
+            position = 'bottom'
+
+        else:  # == 'y':
+            position = 'left'
+
+    if labels is None:
+        labels = get_labels(ax=ax, axis=axis)
+
+    newline = handle_newline(newline=newline, n=len(labels))
+    for i, l in enumerate(labels):
+        if newline[i]:
+            nl = "\n" * newline[i]
+            labels[i] = f"{nl}{l}"
+            change_tick_appearance(ax=ax, position=position, v=i, size=newline_size * newline[i])
+
+    print(labels)
+
+    if axis == 'x':
+        ax.set_xticklabels(labels)
+    else:  # == 'y':
+        ax.set_yticklabels(labels, rotation=-90, ha='right', va='center')
+
+
+def test_elongate_ticks_and_labels():
+    from wzk import new_fig
+    fig, ax = new_fig()
+
+    elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='x', position=None)
+    elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='y', position=None)

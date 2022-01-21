@@ -147,3 +147,8 @@ def combine_results(results):
             return None
         else:
             return np.concatenate(results, axis=0)
+
+
+def fork2():
+
+    multiprocessing.Queue

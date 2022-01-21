@@ -893,6 +893,8 @@ def find_consecutives(x, n):
 
 
 def find_largest_consecutives(x):
+    print(x)
+    print(x.shape)
     i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2-1), mode='valid') == 0)[0]
     i2 -= np.arange(len(i2))
     _, c2 = np.unique(i2, return_counts=True)

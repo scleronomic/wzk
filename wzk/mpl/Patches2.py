@@ -150,3 +150,29 @@ def get_aff_trafo(xy0=None, xy1=None, theta=0, por=(0, 0), ax=None, patch=None):
     return (transforms.Affine2D().translate(-xy0[0]-por[0], -xy0[1]-por[1])
                                  .rotate_deg_around(0, 0, theta)
                                  .translate(xy1[0], xy1[1]) + ax.transData)
+
+
+def make_every_box_fancy(ax,
+                         shrink_x=0.0, shrink_y=0.0, pad=0.1):
+    # Rounded bar plots (https://stackoverflow.com/questions/58425392/bar-chart-with-rounded-corners-in-matplotlib)
+    new_patches = []
+    for patch in reversed(ax.patches):
+        try:
+            bb = patch.get_bbox()
+        except AttributeError:
+            continue
+
+        if abs(bb.height) > 0.5:
+            p_bbox = FancyBbox(xy=(bb.xmin+shrink_x/2, bb.ymin+shrink_y/2),
+                               width=abs(bb.width)-shrink_x,
+                               height=abs(bb.height)-shrink_y,
+                               pad=pad,
+                               corner_size=None, color=patch.get_facecolor(),
+                               alpha=patch.get_alpha())
+            new_patches.append(p_bbox)
+
+        patch.remove()
+
+    for patch in new_patches:
+        ax.add_patch(patch)
+
