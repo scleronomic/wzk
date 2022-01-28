@@ -135,8 +135,7 @@ def connect_cmd(instance):
 
 
 def copy(src, dst):
-    cmd = f"gsutil cp gs://{src} {dst}"
-    subprocess.call(cmd)
+    subprocess.call(f"gsutil cp {src} {dst}", shell=True)
 
 # def mount_disk_cmd():
 #     return [f"sudo mkfs.ext4 /dev/sdb"
