@@ -99,8 +99,9 @@ def attach_disk_cmd(instance, disk):
 def create_instances_and_disks_ompgen(name='ompgen', n=10):
     machine = 'c2-standard-60'
     startup_script = f"#!/bin/bash\n" \
-                     f"sudo chmod 755 -R /home/{GCP_USER}/src/*\n" \
-                     f"touch whywhywhy.txt\n" \
+                     f"source ~/.bashrc\n" \
+                     f"sudo chmod 777 -R /home/{GCP_USER}/src/*\n" \
+                     f"python /home/{GCP_USER}/src/wzk/wzk/git2.py\n" \
                      f"tmux new-session -d -s main 'source /home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh'"
     # startup_script = f"#! /bin/bash\n touch /home/{GCP_USER}/testtest.txt"
     snapshot = 'tenh-setup'
