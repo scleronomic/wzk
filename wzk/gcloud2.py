@@ -52,9 +52,9 @@ def get_disks():
     return disks
 
 
-def add_startup_script_flag(startup_file):
-    if startup_file is not None and startup_file != '':
-        return f"--metadata-from-file=startup-script={startup_file}"
+def add_startup_script_flag(startup_script):
+    if startup_script is not None and startup_script != '':
+        return f'--metadata=startup-script="{startup_script}"'
     else:
         return ''
 
@@ -64,7 +64,7 @@ def create_instance_cmd(config):
           f"--machine-type={config['machine']} " \
           f"{add_new_disks_flag(config['disks_new'])} " \
           f"{add_old_disks_flag(config['disks_old'])} " \
-          f"{add_startup_script_flag(config['startup_file'])} " \
+          f"{add_startup_script_flag(config['startup_script'])} " \
           f"--zone={GCP_ZONE} " \
           f"--project={GCP_PROJECT} " \
           f"--scopes={__GCP_SCOPES} " \
@@ -98,8 +98,8 @@ def attach_disk_cmd(instance, disk):
 
 def create_instances_and_disks_ompgen(name='ompgen', n=10):
     machine = 'c2-standard-60'
-    startup_file = '/Users/jote/Documents/Code/Python/DLR/mogen/mogen/cloud/startup/ompgen.sh'
-    snapshot = 'tenh-default-setup'
+    startup_script = f"#! /bin/bash $'\n'tmux new -s main /home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh"
+    snapshot = 'tenh-setup'
 
     instance_list = [f"{GCP_USER_SHORT}-{name}-{i}" for i in range(n)]
     disk_list = [f"{GCP_USER_SHORT}-{name}-disk-{i}" for i in range(n)]
@@ -112,7 +112,7 @@ def create_instances_and_disks_ompgen(name='ompgen', n=10):
         disk_boot = dict(name=instance_list[i], snapshot=snapshot, size=30, autodelete='yes', boot='yes')
         instance = dict(name=instance_list[i],
                         machine=machine, disks_new=disk_boot, disks_old=[],
-                        startup_file=startup_file, labels=GCP_USER_LABEL)
+                        startup_script=startup_script, labels=GCP_USER_LABEL)
 
         cmd_disks.append(create_disk_cmd(disk))
         cmd_instances.append(create_instance_cmd(instance))
@@ -129,6 +129,10 @@ def create_instances_and_disks_ompgen(name='ompgen', n=10):
 def connect_cmd(instance):
     return f'gcloud beta compute ssh --project "{GCP_PROJECT}" --zone "{GCP_ZONE}" {GCP_USER}@"{instance}"'
 
+
+def copy(src, dst):
+    cmd = f"gsutil cp gs://{src} {dst}"
+    subprocess.call(cmd)
 
 # def mount_disk_cmd():
 #     return [f"sudo mkfs.ext4 /dev/sdb"
