@@ -6,7 +6,7 @@ import fire
 import numpy as np
 
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
-from wzk.cpu import ssh_call, get_n_cpu
+from wzk.cpu import ssh_call2, get_n_cpu
 
 # Johannes Pitz: 0392, 0179, 0145, 0115
 # Leon: 0144
@@ -28,7 +28,7 @@ def __start_head(head, perc, verbose=0):
     # start_head_cmd = f'ray start --head --port=6379 --num-cpus='
     start_head_cmd = f'ray start --head --port=6378 --num-cpus='
     n_cpu = int(max(1, get_n_cpu(head) * perc))
-    stdout = ssh_call(host=head, cmd=start_head_cmd+str(n_cpu))
+    stdout = ssh_call2(host=head, cmd=start_head_cmd+str(n_cpu))
     head = socket.gethostname() if head is None else head
     if verbose > 0:
         print(head, ':', stdout)
@@ -54,7 +54,7 @@ def __start_nodes(nodes, address, password, perc, verbose=0):
     for node in nodes:
         n_cpu_i = int(max(1, get_n_cpu(node) * perc))
         start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu_i}"
-        stdout = ssh_call(host=node, cmd=start_node_cmd)
+        stdout = ssh_call2(host=node, cmd=start_node_cmd)
         if verbose > 1:
             print(node, ':', stdout)
 
@@ -92,7 +92,7 @@ def stop_ray_cluster(nodes=None, verbose=1):
         print('Nodes: ', *nodes)
 
     for node in atleast_list(nodes):
-        stdout = ssh_call(host=node, cmd='ray stop --force')
+        stdout = ssh_call2(host=node, cmd='ray stop --force')
         if verbose > 1:
             print(node, ':', stdout)
 
@@ -124,14 +124,3 @@ def ray_wrapper(fun, n, **kwargs):
 
 if __name__ == '__main__':
     fire.Fire(ray_main)
-
-
-def calculate_time(n_worlds, n_samples_per_world, time_per_sample, n_cores=1):
-    s = n_worlds * n_samples_per_world * time_per_sample
-    h = s / 3600
-    d = h / 24
-
-    return d
-
-
-(10000 * 1000 * 0.3) / 3600 / 24 * 1
