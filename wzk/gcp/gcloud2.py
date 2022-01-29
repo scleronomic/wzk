@@ -5,9 +5,8 @@ from io import StringIO
 
 from wzk.subprocess2 import call2, popen_list
 from wzk.time import tictoc
-from wzk.strings import uuid4
 from wzk.dicts_lists_tuples import atleast_list, flatten
-
+from wzk.gcp import startup
 
 GCP_PROJECT = os.environ['GCP_PROJECT']
 GCP_ACCOUNT_NR = os.environ['GCP_ACCOUNT_NR']
@@ -98,18 +97,9 @@ def attach_disk_cmd(instance, disk):
 
 def create_instances_and_disks_ompgen(name='ompgen', n=10):
     machine = 'c2-standard-60'
-    startup_script = f"#!/bin/bash\n" \
-                     f"sudo -H -u {GCP_USER} tmux new-session -d -s main\n" \
-                     f"source ~/.bashrc\n" \
-                     f"sudo chmod 777 -R /home/{GCP_USER}/src/*\n" \
-                     f"python /home/{GCP_USER}/src/wzk/wzk/git2.py\n" \
-                     f"sudo -H -u {GCP_USER} tmux send 'source /home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh' C-m\n" \
-                     f"sudo -H -u {GCP_USER} tmux -2  attach-session -t main\n"
+    startup_script = startup.make_startup_file(user=GCP_USER,
+                                               bash_file=f"/home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh")
 
-
-                     # f"tmux new-session -d -s main 'source /home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh'" \
-
-    # startup_script = f"#! /bin/bash\n touch /home/{GCP_USER}/testtest.txt"
     snapshot = 'tenh-setup'
 
     instance_list = [f"{GCP_USER_SHORT}-{name}-{i}" for i in range(n)]
