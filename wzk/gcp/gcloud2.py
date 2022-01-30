@@ -214,7 +214,7 @@ def delete_snapshots(snapshots):
 
 
 def main_upload2bucket():
-    disks = ['tenh-ompgen-disk-{i}' for i in range(20)]
+    disks = [f"tenh-ompgen-disk-{i}" for i in range(20)]
     file = '/home/johannes_tenhumberg/sdb/StaticArm04.db'
     upload2bucket(disks, file=file)
 
