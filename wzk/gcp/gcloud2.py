@@ -117,7 +117,7 @@ def umount_disk_cmd(disk):
     return f"sudo umount {disk}"
 
 
-def upload2bucket(disks, file):
+def upload2bucket(disks, file, bucket):
 
     instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
@@ -126,7 +126,7 @@ def upload2bucket(disks, file):
     for i, d in enumerate(disks):
         subprocess.call(attach_disk_cmd(instance=instance, disk=d), shell=True)
         subprocess.call(mount_disk_cmd(disk='/dev/sdb', directory=directory), shell=True)
-        copy(src=file, dst=f"{file_name}_{i}.{file_ext}")
+        copy(src=file, dst=f"{bucket}/{file_name}_{i}.{file_ext}")
         subprocess.call(umount_disk_cmd(disk='/dev/sdb'), shell=True)
         subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
 
@@ -216,7 +216,8 @@ def delete_snapshots(snapshots):
 def main_upload2bucket():
     disks = [f"tenh-ompgen-disk-{i}" for i in range(20)]
     file = '/home/johannes_tenhumberg/sdb/StaticArm04.db'
-    upload2bucket(disks, file=file)
+    bucket = 'gs://tenh_jo/'
+    upload2bucket(disks, file=file, bucket=bucket)
 
 
 if __name__ == '__main__':
