@@ -123,11 +123,11 @@ def upload2bucket(disks, file):
 
     directory = f'/home/{GCP_USER}/sdb'
     for i, d in enumerate(disks):
-        subprocess.call(attach_disk_cmd(instance=instance, disk=d))
-        mount_disk_cmd(disk='/dev/sdb', directory=directory)
+        subprocess.call(attach_disk_cmd(instance=instance, disk=d), shell=True)
+        subprocess.call(mount_disk_cmd(disk='/dev/sdb', directory=directory), shell=True)
         copy(src=file, dst=f"{file_name}_{i}.{file_ext}")
-        umount_disk_cmd(disk='/dev/sdb')
-        subprocess.call(detach_disk_cmd(instance=instance, disk=d))
+        subprocess.call(umount_disk_cmd(disk='/dev/sdb'), shell=True)
+        subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
 
 
 def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0):
