@@ -41,8 +41,12 @@ def ssh_call2(host, cmd, check=False):
     return __read_and_delete(temp=temp)
 
 
-def popen_list(cmd_list):
-    p_list = [subprocess.Popen(cmd, shell=True) for cmd in cmd_list]
+def popen_list(cmd_list, _sleep=None):
+    p_list = []
+    for cmd in cmd_list:
+        p_list.append(subprocess.Popen(cmd, shell=True))
+        if _sleep:
+            sleep(_sleep)
 
     while True:
         finished = [p.poll() == 0 for p in p_list]

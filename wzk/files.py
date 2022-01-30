@@ -69,7 +69,7 @@ def list_files(directory):
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
 
-def safe_create_dir(directory: str):
+def safe_makedir(directory: str):
     if not os.path.exists(directory):
         os.makedirs(directory)
 

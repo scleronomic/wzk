@@ -1,10 +1,12 @@
 import os
 import subprocess
+import time
+
 import pandas as pd
 from io import StringIO
 
 from wzk.subprocess2 import call2, popen_list
-from wzk.time import tictoc
+from wzk.files import safe_makedir
 from wzk.dicts_lists_tuples import atleast_list, flatten
 from wzk.gcp import startup
 
@@ -86,24 +88,57 @@ def create_disk_cmd(disk):
     return cmd
 
 
+def __resource2name(resource):
+    if isinstance(resource, dict):
+        resource = resource['name']
+    return resource
+
+
 def attach_disk_cmd(instance, disk):
-    if isinstance(instance, dict):
-        instance = instance['name']
-    if isinstance(disk, dict):
-        disk = disk['name']
+    instance = __resource2name(instance)
+    disk = __resource2name(disk)
     cmd = f"gcloud compute instances attach-disk {instance} --disk {disk}"
     return cmd
 
 
-def create_instances_and_disks_ompgen(name='ompgen', n=10):
+def detach_disk_cmd(instance, disk):
+    instance = __resource2name(instance)
+    disk = __resource2name(disk)
+    cmd = f"gcloud compute instances detach-disk {instance} --disk {disk}"
+    return cmd
+
+
+def mount_disk_cmd(disk, directory):
+    return f"sudo mount -t ext4 {disk} {directory}"
+
+
+def umount_disk_cmd(disk):
+    return f"sudo umount {disk}"
+
+
+def upload2bucket(disks, file):
+
+    instance = 'hostname'
+    file_name, file_ext = os.path.splitext(os.path.split(file)[1])
+
+    directory = f'/home/{GCP_USER}/sdb'
+    for i, d in enumerate(disks):
+        subprocess.call(attach_disk_cmd(instance=instance, disk=d))
+        mount_disk_cmd(disk='/dev/sdb', directory=directory)
+        copy(src=file, dst=f"{file_name}_{i}.{file_ext}")
+        umount_disk_cmd(disk='/dev/sdb')
+        subprocess.call(detach_disk_cmd(instance=instance, disk=d))
+
+
+def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0):
     machine = 'c2-standard-60'
     startup_script = startup.make_startup_file(user=GCP_USER,
                                                bash_file=f"/home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh")
 
     snapshot = 'tenh-setup'
 
-    instance_list = [f"{GCP_USER_SHORT}-{name}-{i}" for i in range(n)]
-    disk_list = [f"{GCP_USER_SHORT}-{name}-disk-{i}" for i in range(n)]
+    instance_list = [f"{GCP_USER_SHORT}-{name}-{n0+i}" for i in range(n)]
+    disk_list = [f"{GCP_USER_SHORT}-{name}-disk-{n0+i}" for i in range(n)]
 
     cmd_disks = []
     cmd_instances = []
@@ -119,12 +154,12 @@ def create_instances_and_disks_ompgen(name='ompgen', n=10):
         cmd_instances.append(create_instance_cmd(instance))
         cmd_attach_disks.append(attach_disk_cmd(instance=instance, disk=disk))
 
-    with tictoc('Create Disks') as _:
-        popen_list(cmd_list=cmd_disks)
-    with tictoc('Create Instances') as _:
-        popen_list(cmd_list=cmd_instances)
-    with tictoc('Attach Disks') as _:
-        popen_list(cmd_list=cmd_attach_disks)
+    popen_list(cmd_list=cmd_disks)
+
+    for a, b in zip(cmd_instances, cmd_attach_disks):
+        subprocess.call(a, shell=True)
+        subprocess.call(b, shell=True)
+        time.sleep(60*10+10)
 
 
 def connect_cmd(instance):
@@ -177,8 +212,16 @@ def delete_snapshots(snapshots):
     __delete_xyz(_type='snapshots', names=snapshots)
 
 
+def main_upload2bucket():
+    disks = ['tenh-ompgen-disk-{i}' for i in range(20)]
+    file = '/home/johannes_tenhumberg/sdb/StaticArm04.db'
+    upload2bucket(disks, file=file)
+
+
 if __name__ == '__main__':
-    create_instances_and_disks_ompgen(n=1)
+    main_upload2bucket()
+
+    # create_instances_and_disks_ompgen(n=10, n0=10)
     # connect_pull_mount_call(instance='ompgen-0', cmd=['ls', 'whoami'])
 
 
