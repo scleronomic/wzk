@@ -1,4 +1,5 @@
 import os
+import socket
 import subprocess
 import time
 
@@ -118,7 +119,7 @@ def umount_disk_cmd(disk):
 
 def upload2bucket(disks, file):
 
-    instance = 'hostname'
+    instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
 
     directory = f'/home/{GCP_USER}/sdb'
