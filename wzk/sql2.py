@@ -318,8 +318,6 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
     if np.any(columns == '*'):
         columns = df.columns.values
 
-    # print('rows', rows)
-    # print(df)
     if values_only:
         for col in columns:
             value = __decompress_values(value=df.loc[:, col].values, column=col)
