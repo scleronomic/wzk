@@ -66,7 +66,7 @@ def columns2sql(columns: object, dtype: object):
 
 @contextmanager
 def open_db_connection(file, close=True,
-                       lock=None, check_same_thread=False, isolation_level=None):
+                       lock=None, check_same_thread=False, isolation_level="DEFERRED"):
     """
     Safety wrapper for the database call.
     """
@@ -101,6 +101,10 @@ def set_journal_mode_wal(file, lock=None):
     # https://www.sqlite.org/pragma.html#pragma_journal_mode
     # speed up through smarter journal mode https://sqlite.org/wal.html
     execute(file=file, query='PRAGMA journal_mode=WAL', lock=lock)
+
+
+def set_journal_mode_memory(file, lock=None):
+    execute(file=file, query='PRAGMA journal_mode=MEMORY', lock=lock)
 
 
 def executescript(file, query, lock=None):
@@ -202,9 +206,6 @@ def concatenate_tables(file, table, table2, file2=None, lock=None):
 
 def __decompress_values(value, column: str):
     # SQL saves everything in binary form -> convert back to numeric, expect the columns which are marked as cmp
-    # value = atleast_list(value, convert=False)
-    # print(value)
-    # print(column)
     if isinstance(value[0], bytes) and column[-4:] != _CMP:
         dtype = str2np(s=column)
         value = np.array([np.frombuffer(v, dtype=dtype) for v in value])
@@ -388,3 +389,22 @@ def df2sql(df, file, table, if_exists='fail'):
         df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None)
 
     set_journal_mode_wal(file=file)
+
+
+def test_set_sql_speed():
+    from wzk import tictoc
+    import pandas as pd
+    n = 1000000
+    data = np.random.random((n, 3))
+
+    file = '/Users/jote/Documents/Code/Python/DLR/test.db'
+    table = 'paths'
+    df = pd.DataFrame(data=data.tolist(), columns=['a', 'b', 'c'])
+
+    with tictoc('Build Database'):
+        df2sql(df=df, file=file, table=table, if_exists='replace')
+
+    with tictoc('isolation = DEFERRED'):
+        set_values_sql(file=file, table=table, columns='a', values=(np.ones(n).tolist(), ))
+
+
