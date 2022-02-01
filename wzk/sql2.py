@@ -96,8 +96,8 @@ def __safe_commit(con):
 
 def execute(file, query, isolation_level='DEFERRED', lock=None):
     with open_db_connection(file=file, close=True, isolation_level=isolation_level, lock=lock) as con:
-        con.execute("PRAGMA max_page_count = 200000")
-        con.execute("PRAGMA page_size = 65536")
+        # con.execute("PRAGMA max_page_count = 200000")
+        # con.execute("PRAGMA page_size = 65536")
         con.execute(query)
         __safe_commit(con=con)
 
@@ -238,9 +238,8 @@ def delete_tables(file, tables):
 
 def delete_rows(file: str, table: str, rows, lock=None):
     rows = rows2sql(rows, dtype=str)
-    set_page_size(file=file, page_size=65536)
-    vacuum(file)
     execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})")
+    vacuum(file)
 
 
 def delete_columns(file: str, table: str, columns, lock=None):
