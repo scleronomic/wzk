@@ -112,14 +112,18 @@ def executescript(file, query, lock=None):
         __safe_commit(con=con)
 
 
-def set_journal_mode_wal(file, lock=None):
+def set_journal_mode_wal(file):
     # https://www.sqlite.org/pragma.html#pragma_journal_mode
     # speed up through smarter journal mode https://sqlite.org/wal.html
-    execute(file=file, query='PRAGMA journal_mode=WAL', lock=lock)
+    execute(file=file, query='PRAGMA journal_mode=WAL')
 
 
-def set_journal_mode_memory(file, lock=None):
-    execute(file=file, query='PRAGMA journal_mode=MEMORY', lock=lock)
+def set_journal_mode_memory(file):
+    execute(file=file, query='PRAGMA journal_mode=MEMORY')
+
+
+def set_page_size(file, page_size=4096):
+    execute(file=file, query=f'PRAGMA page_size={page_size}')
 
 
 def vacuum(file):
@@ -232,7 +236,8 @@ def delete_tables(file, tables):
 
 def delete_rows(file: str, table: str, rows, lock=None):
     rows = rows2sql(rows, dtype=str)
-    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
+    set_page_size(file=file, page_size=65536)
+    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level="DEFERRED")
     vacuum(file)
 
 
