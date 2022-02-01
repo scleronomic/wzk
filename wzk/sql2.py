@@ -237,7 +237,7 @@ def delete_tables(file, tables):
 def delete_rows(file: str, table: str, rows, lock=None):
     rows = rows2sql(rows, dtype=str)
     set_page_size(file=file, page_size=65536)
-    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level="DEFERRED")
+    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
     vacuum(file)
 
 
