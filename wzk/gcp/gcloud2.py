@@ -131,7 +131,7 @@ def upload2bucket(disks, file, bucket):
         subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
 
 
-def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0):
+def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0, sleep=100):
     machine = 'c2-standard-60'
     startup_script = startup.make_startup_file(user=GCP_USER,
                                                bash_file=f"/home/{GCP_USER}/src/mogen/mogen/cloud/startup/ompgen.sh")
@@ -160,7 +160,7 @@ def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0):
     for a, b in zip(cmd_instances, cmd_attach_disks):
         subprocess.call(a, shell=True)
         subprocess.call(b, shell=True)
-        time.sleep(60*10+10)
+        time.sleep(sleep)
 
 
 def connect_cmd(instance):
@@ -221,9 +221,8 @@ def main_upload2bucket():
 
 
 if __name__ == '__main__':
-    main_upload2bucket()
-
-    # create_instances_and_disks_ompgen(n=10, n0=10)
+    create_instances_and_disks_ompgen(n=20, n0=0, sleep=600)
+    # main_upload2bucket()
     # connect_pull_mount_call(instance='ompgen-0', cmd=['ls', 'whoami'])
 
 

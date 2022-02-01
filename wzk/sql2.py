@@ -307,7 +307,8 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 
     if rows == -1:  # All samples
         with open_db_connection(file=file, close=True, lock=lock) as con:
-            df = pd.read_sql_query(con=con, sql=f"SELECT {columns_str} FROM {table}")
+            df = pd.read_sql_query(con=con, sql=f"SELECT {columns_str} FROM {table}",
+                                   index_col=None, )
 
     else:
         with open_db_connection(file=file, close=True, lock=lock) as con:
