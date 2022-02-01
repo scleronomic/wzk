@@ -94,8 +94,8 @@ def __safe_commit(con):
         pass
 
 
-def execute(file, query, lock=None):
-    with open_db_connection(file=file, close=True, lock=lock) as con:
+def execute(file, query, isolation_level='DEFERRED', lock=None):
+    with open_db_connection(file=file, close=True, isolation_level=isolation_level, lock=lock) as con:
         con.execute(query)
         __safe_commit(con=con)
 
@@ -232,7 +232,7 @@ def delete_tables(file, tables):
 
 def delete_rows(file: str, table: str, rows, lock=None):
     rows = rows2sql(rows, dtype=str)
-    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})")
+    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
     vacuum(file)
 
 
