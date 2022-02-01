@@ -3,7 +3,7 @@ from contextlib import contextmanager
 import os
 import numpy as np
 import pandas as pd
-import sqlite3 as sql
+import sqlite3
 
 from wzk.numpy2 import numeric2object_array
 from wzk.dicts_lists_tuples import change_tuple_order, atleast_list
@@ -75,7 +75,7 @@ def open_db_connection(file, close=True,
         lock.acquire()
 
     file = __handle_file_extension(file)
-    con = sql.connect(database=file, check_same_thread=check_same_thread, isolation_level=isolation_level)
+    con = sqlite3.connect(database=file, check_same_thread=check_same_thread, isolation_level=isolation_level)
 
     try:
         yield con
@@ -87,14 +87,29 @@ def open_db_connection(file, close=True,
             lock.release()
 
 
+def __safe_commit(con):
+    try:
+        con.execute("COMMIT")
+    except sqlite3.OperationalError:
+        pass
+
+
 def execute(file, query, lock=None):
     with open_db_connection(file=file, close=True, lock=lock) as con:
         con.execute(query)
+        __safe_commit(con=con)
 
 
 def executemany(file, query, args, lock=None):
     with open_db_connection(file=file, close=True, lock=lock) as con:
         con.executemany(query, args)
+        __safe_commit(con=con)
+
+
+def executescript(file, query, lock=None):
+    with open_db_connection(file=file, close=True, lock=lock) as con:
+        con.executescript(query)
+        __safe_commit(con=con)
 
 
 def set_journal_mode_wal(file, lock=None):
@@ -105,11 +120,6 @@ def set_journal_mode_wal(file, lock=None):
 
 def set_journal_mode_memory(file, lock=None):
     execute(file=file, query='PRAGMA journal_mode=MEMORY', lock=lock)
-
-
-def executescript(file, query, lock=None):
-    with open_db_connection(file=file, close=True, lock=lock) as con:
-        con.executescript(query)
 
 
 def vacuum(file):
@@ -214,7 +224,7 @@ def __decompress_values(value, column: str):
 
 
 def delete_tables(file, tables):
-    tables = atleast_list(tables)
+    tables = atleast_list(tables, convert=False)
     for t in tables:
         execute(file=file, query=f"DROP TABLE {t}")
     vacuum(file=file)
@@ -393,7 +403,7 @@ def df2sql(df, file, table, if_exists='fail'):
 def test_set_sql_speed():
     from wzk import tictoc
     import pandas as pd
-    n = 1000000
+    n = 10000
     data = np.random.random((n, 3))
 
     file = '/Users/jote/Documents/Code/Python/DLR/test.db'
@@ -406,4 +416,5 @@ def test_set_sql_speed():
     with tictoc('isolation = DEFERRED'):
         set_values_sql(file=file, table=table, columns='a', values=(np.ones(n).tolist(), ))
 
-
+    a1 = get_values_sql(file=file, table=table, columns='a', values_only=True)
+    print(a1)
