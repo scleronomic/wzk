@@ -366,7 +366,7 @@ def set_values_sql(file, table,
     values = ([...], [...], [...], ...)
     """
 
-    set_journal_mode_wal(file=file, lock=lock)
+    set_journal_mode_wal(file=file)
 
     # TODO handle array inputs, automatically convert to correct datatype
     rows = rows2sql(rows, values=values[0], dtype=list)

@@ -25,13 +25,13 @@ def __run_ssh(temp, cmd, check, host):
 
 def call2(cmd, check=False):
     """Not the most elegant way, but was not able to get the stdout without error / messed up shells otherwise"""
-    temp = f"{os.path.split(__file__)[0]}{uuid4()}"
+    temp = f"{os.path.dirname(__file__)}/{uuid4()}.txt"
     __run(temp=temp, cmd=cmd, check=check)
     return __read_and_delete(temp=temp)
 
 
 def ssh_call2(host, cmd, check=False):
-    temp = f"{os.path.split(__file__)[0]}{uuid4()}"
+    temp = f"{os.path.dirname(__file__)}/{uuid4()}.txt"
 
     if host is None or host == '':
         __run(temp=temp, cmd=cmd, check=check)
