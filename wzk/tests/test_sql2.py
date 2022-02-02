@@ -22,6 +22,19 @@ class Test(TestCase):
             df = pd.DataFrame(columns=columns, data=data, index=None)
             return df
 
+        elif mode == 'C':
+            columns = ['A', 'B', 'C']
+            data = [[1, 1, 33.3],
+                    [1, 2, 33.3],
+                    [3, 3, 33.3],
+                    [1, 4, 33.3],
+                    [2, 5, 33.3],
+                    [1, 6, 33.3],
+                    [1, 7, 33.3],
+                    [4, 8, 33.3]]
+            df = pd.DataFrame(columns=columns, data=data, index=None)
+            return df
+
         else:
             raise ValueError
 
@@ -136,3 +149,19 @@ class Test(TestCase):
         self.assertTrue(isinstance(bb[0], str))
         self.assertTrue(isinstance(aa[0], np.int64))
         self.assertTrue(isinstance(cc[0], float))
+
+    def test_sort_table(self):
+        file = f"{self.get_path()}/dummy2.db"
+        df = self.__create_dummy_db('C')
+        table = 'dummytable'
+        df2sql(df=df, file=file, table=table, if_exists='replace')
+
+        sort_table(file=file, table=table, order_by=['A', 'ROWID'])
+
+        data2 = get_values_sql(file=file, table=table)
+        print(data2)
+
+        a2 = get_values_sql(file=file, table=table, columns='A', values_only=True)
+
+        self.assertTrue(np.all(np.argsort(a2) == np.arange(len(a2))))
+

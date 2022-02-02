@@ -64,6 +64,35 @@ def columns2sql(columns: object, dtype: object):
         raise ValueError
 
 
+def order2sql(order_by, dtype=str):
+    if order_by is None:
+        order_by_str = ''
+
+    else:
+        if isinstance(order_by, (str, list)):
+            columns = atleast_list(order_by, convert=False)
+            asc_desc = ['ASC'] * len(columns)
+
+        elif isinstance(order_by, dict):
+            columns = order_by.keys
+            asc_desc = [order_by[k] for k in order_by]
+
+        else:
+            raise ValueError
+
+        assert len(asc_desc) == len(columns)
+        for ad in asc_desc:
+            assert ad == 'ASC' or ad == 'DESC'
+            
+        order_by_str = ', '.join([f"{c} {ad}" for c, ad in zip(columns, asc_desc)])
+        order_by_str = f" ORDER BY {order_by_str}"
+
+    if dtype == str:
+        return order_by_str
+    else:
+        raise ValueError
+    
+    
 @contextmanager
 def open_db_connection(file, close=True,
                        lock=None, check_same_thread=False, isolation_level="DEFERRED"):
@@ -235,7 +264,11 @@ def delete_tables(file, tables):
 
 
 def delete_rows(file: str, table: str, rows, batch_size=None, lock=None):
-    if batch_size is not None:  # experienced some memory errors
+    if batch_size is None:
+        rows = rows2sql(rows, dtype=str)
+        execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
+    else:  # experienced some memory errors
+        assert isinstance(batch_size, int)
         rows = rows2sql(rows, dtype=list)
         rows = np.array(rows)
         rows.sort()
@@ -244,10 +277,6 @@ def delete_rows(file: str, table: str, rows, batch_size=None, lock=None):
         for r in rows:
             r = ', '.join(map(str, r.tolist()))
             execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})", isolation_level=None)
-
-    else:
-        rows = rows2sql(rows, dtype=list)
-        execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
 
     vacuum(file)
 
@@ -271,7 +300,7 @@ def copy_column(file, table, column_src, column_dst, dtype, lock=None):
     execute(file=file, query=f"UPDATE {table} SET {column_dst} = CAST({column_src} as {dtype})", lock=lock)
 
 
-def copy_table(file, table_src, table_dst, columns=None, dtypes=None):
+def copy_table(file, table_src, table_dst, columns=None, dtypes=None, order_by=None):
     columns_old = get_columns(file=file, table=table_src, mode=None)
     if columns is None:
         columns = columns_old.name.values
@@ -284,14 +313,19 @@ def copy_table(file, table_src, table_dst, columns=None, dtypes=None):
 
     columns_dtype_str = ', '.join([f"{c} {d}" for c, d in zip(columns, dtypes)])
     columns_cast_dtype_str = ', '.join([f"CAST({c} AS {d})" for c, d in zip(columns, dtypes)])
-
+    order_by_str = order2sql(order_by=order_by, dtype=str)
+    
     execute(file=file, query=f"CREATE TABLE {table_dst}({columns_dtype_str})")
-    execute(file=file, query=f"INSERT INTO {table_dst} SELECT {columns_cast_dtype_str} FROM {table_src}")
+    execute(file=file, query=f"INSERT INTO {table_dst} SELECT {columns_cast_dtype_str} FROM {table_src} {order_by_str}")
 
 
-def alter_table(file, table, columns, dtypes):
+def sort_table(file, table, order_by):
+    alter_table(file=file, table=table, columns=None, dtypes=None, order_by=order_by)
+
+
+def alter_table(file, table, columns, dtypes, order_by=None):
     table_tmp = table + uuid4()
-    copy_table(file=file, table_src=table, table_dst=table_tmp, columns=columns, dtypes=dtypes)
+    copy_table(file=file, table_src=table, table_dst=table_tmp, columns=columns, dtypes=dtypes, order_by=order_by)
     delete_tables(file, tables=table)
     rename_tables(file, tables={table_tmp: table})
 

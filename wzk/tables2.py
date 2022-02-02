@@ -54,7 +54,7 @@ particle = table.row
 
 # Fill the table with 10 particles
 for i in range(10):
-    particle['name'] = 'Particle: %6d' % (i)
+    particle['name'] = 'Particle: %6d' % i
     particle['TDCcount'] = i % 256
     particle['ADCcount'] = (i * 256) % (1 << 16)
     particle['grid_i'] = i
@@ -109,3 +109,5 @@ print(h5file)
 # Close the file
 h5file.close()
 print("File '" + filename + "' created")
+
+
