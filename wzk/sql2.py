@@ -234,9 +234,21 @@ def delete_tables(file, tables):
     vacuum(file=file)
 
 
-def delete_rows(file: str, table: str, rows, lock=None):
-    rows = rows2sql(rows, dtype=str)
-    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
+def delete_rows(file: str, table: str, rows, batch_size=None, lock=None):
+    if batch_size is not None:  # experienced some memory errors
+        rows = rows2sql(rows, dtype=list)
+        rows = np.array(rows)
+        rows.sort()
+        rows = rows[::-1]
+        rows = np.array_split(rows, len(rows)//batch_size)
+        for r in rows:
+            r = ', '.join(map(str, r.tolist()))
+            execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})", isolation_level=None)
+
+    else:
+        rows = rows2sql(rows, dtype=list)
+        execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
+
     vacuum(file)
 
 
