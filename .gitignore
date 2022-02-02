@@ -76,9 +76,10 @@ venv.bak/
 *.DS_Store
 
 
-####
+# Custom Additions
 
 *.so
 *.db
 /.idea/
 *.pt
+*.h5
