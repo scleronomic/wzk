@@ -238,7 +238,7 @@ def delete_tables(file, tables):
 
 def delete_rows(file: str, table: str, rows, lock=None):
     rows = rows2sql(rows, dtype=str)
-    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})")
+    execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
     vacuum(file)
 
 
