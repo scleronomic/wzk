@@ -133,6 +133,7 @@ def vacuum(file):
     # To allow the VACUUM command to run, change the directory for temporary files to one that has enough free space.
     # assumption, that this is the case for the directory where the file itself leads
     # temp_store_directory is deprecated, but hte alternatives did not work
+    print(f"vacuum {file}")
     execute(file=file, query=f"PRAGMA temp_store_directory = '{os.path.dirname(file)}'")
     execute(file=file, query='VACUUM')
 
