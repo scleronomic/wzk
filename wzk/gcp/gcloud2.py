@@ -133,7 +133,7 @@ def upload2bucket(disks, file, bucket):
 
 def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0, sleep=100):
     machine = 'c2-standard-60'
-    snapshot = 'tenh-setup-default'
+    snapshot = 'tenh-setup-clean'
     startup_script = startup.make_startup_file(user=GCP_USER,
                                                bash_file=f"/home/{GCP_USER}/src/mogen/mogen/Cloud/Startup/ompgen.sh")
 
@@ -220,7 +220,7 @@ def main_upload2bucket():
 
 
 if __name__ == '__main__':
-    create_instances_and_disks_ompgen(n=1, n0=13, sleep=600)
+    create_instances_and_disks_ompgen(n=1, n0=14, sleep=600)
     # main_upload2bucket()
     # connect_pull_mount_call(instance='ompgen-0', cmd=['ls', 'whoami'])
 

@@ -129,14 +129,11 @@ def set_page_size(file, page_size=4096):
 
 
 def vacuum(file):
-
     # https://stackoverflow.com/a/23251896/7570817
     # To allow the VACUUM command to run, change the directory for temporary files to one that has enough free space.
     # assumption, that this is the case for the directory where the file itself leads
     # temp_store_directory is deprecated, but hte alternatives did not work
-    directory = os.path.split(file)[0]
-    execute(file=file, query=f"PRAGMA temp_store_directory = '{directory}'")
-
+    execute(file=file, query=f"PRAGMA temp_store_directory = '{os.path.dirname(file)}'")
     execute(file=file, query='VACUUM')
 
 
