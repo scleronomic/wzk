@@ -263,17 +263,20 @@ def delete_tables(file, tables):
     vacuum(file=file)
 
 
-def delete_rows(file: str, table: str, rows, batch_size=None, lock=None):
-    if batch_size is None:
+def delete_rows(file: str, table: str, rows, lock=None):
+    batch_size = int(1e5)
+
+    if batch_size is None or batch_size > len(rows):
         rows = rows2sql(rows, dtype=str)
         execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
+
     else:  # experienced some memory errors
         assert isinstance(batch_size, int)
         rows = rows2sql(rows, dtype=list)
         rows = np.array(rows)
         rows.sort()
         rows = rows[::-1]
-        rows = np.array_split(rows, len(rows)//batch_size)
+        rows = np.array_split(rows, int(np.ceil(len(rows)//batch_size)))
         for r in rows:
             r = ', '.join(map(str, r.tolist()))
             execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})", isolation_level=None)
