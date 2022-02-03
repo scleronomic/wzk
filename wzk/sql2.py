@@ -9,21 +9,14 @@ from wzk.numpy2 import numeric2object_array
 from wzk.dicts_lists_tuples import change_tuple_order, atleast_list
 from wzk.dtypes import str2np
 from wzk.strings import uuid4
-_CMP = '_cmp'
 
+_CMP = '_cmp'
 
 TYPE_TEXT = 'TEXT'
 TYPE_NUMERIC = 'NUMERIC'
 TYPE_INTEGER = 'INTEGER'
 TYPE_REAL = 'REAL'
 TYPE_BLOB = 'BLOB'
-
-
-def __handle_file_extension(file):
-    file, ext = os.path.splitext(file)
-    ext = ext or '.db'
-    file = f"{file}{ext}"
-    return file
 
 
 def rows2sql(rows: object, dtype: object = str, values=None) -> object:
@@ -103,7 +96,8 @@ def open_db_connection(file, close=True,
     if lock is not None:
         lock.acquire()
 
-    file = __handle_file_extension(file)
+    file, ext = os.path.splitext(file)
+    file = f"{file}{ext or '.db'}"
     con = sqlite3.connect(database=file, check_same_thread=check_same_thread, isolation_level=isolation_level)
 
     try:
@@ -247,9 +241,23 @@ def concatenate_tables(file, table, table2, file2=None, lock=None):
         executescript(file=file, query=query, lock=None)
 
 
-def __decompress_values(value, column: str):
+def values2bytes(value, column):
+    if np.size(value[0]) > 1 and not isinstance(value[0], bytes):
+        value = np.array(value, dtype=str2np(column))
+        value = [xx.tobytes() for xx in value]
+    return value
+
+
+def values2bytes_dict(data: dict) -> dict:
+    for key in data:
+        data[key] = values2bytes(value=data[key], column=key)
+
+    return data
+
+
+def bytes2values(value, column: str):
     # SQL saves everything in binary form -> convert back to numeric, expect the columns which are marked as cmp
-    if isinstance(value[0], bytes) and column[-4:] != _CMP:
+    if isinstance(value[0], bytes) and not column.endswith(_CMP):
         dtype = str2np(s=column)
         value = np.array([np.frombuffer(v, dtype=dtype) for v in value])
 
@@ -272,10 +280,13 @@ def delete_rows(file: str, table: str, rows, lock=None):
 
     else:  # experienced some memory errors
         assert isinstance(batch_size, int)
+
         rows = rows2sql(rows, dtype=list)
+        assert isinstance(rows, list)
         rows = np.array(rows)
         rows.sort()
         rows = rows[::-1]
+
         rows = np.array_split(rows, int(np.ceil(len(rows)//batch_size)))
         for r in rows:
             r = ', '.join(map(str, r.tolist()))
@@ -384,7 +395,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 
     if values_only:
         for col in columns:
-            value = __decompress_values(value=df.loc[:, col].values, column=col)
+            value = bytes2values(value=df.loc[:, col].values, column=col)
             value_list.append(value)
 
         if len(df) == 1 and squeeze_row:
@@ -399,7 +410,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
     # Return pandas.DataFrame
     else:
         for col in columns:
-            value = __decompress_values(value=df.loc[:, col].values, column=col)
+            value = bytes2values(value=df.loc[:, col].values, column=col)
             df.loc[:, col] = numeric2object_array(value)
 
         return df
@@ -408,8 +419,6 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 def set_values_sql(file, table,
                    values, columns, rows=-1, lock=None):
     """
-    Attention! multidimensional numpy arrays have to be saved as flat byte string
-
     values = ([...], [...], [...], ...)
     """
 
@@ -418,6 +427,7 @@ def set_values_sql(file, table,
     # TODO handle array inputs, automatically convert to correct datatype
     rows = rows2sql(rows, values=values[0], dtype=list)
     columns = columns2sql(columns, dtype=list)
+    values = tuple(values2bytes(value=v, column=c) for v, c in zip(values, columns))
 
     columns = '=?, '.join(map(str, columns))
     columns += '=?'
@@ -427,12 +437,6 @@ def set_values_sql(file, table,
     query = f"UPDATE {table} SET {columns} WHERE ROWID=?"
 
     executemany(file=file, query=query, args=values_rows_sql, lock=lock)
-
-
-def dict2cv():
-    pass
-    # c = d.keys()
-    raise NotImplementedError
 
 
 def df2sql(df, file, table, if_exists='fail'):
@@ -447,6 +451,9 @@ def df2sql(df, file, table, if_exists='fail'):
         print('No DataFrame was provided...')
         return
 
+    data = df.to_dict(orient='list')
+    data = values2bytes_dict(data=data)
+    df = pd.DataFrame(data=data)
     with open_db_connection(file=file, close=True, lock=None) as con:
         df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None)
 

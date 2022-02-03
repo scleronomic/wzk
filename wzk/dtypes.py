@@ -17,7 +17,11 @@ __str2np = {'f128': np.float64,
 
 def str2np(s: str, strip: bool = True):
     if strip:
-        s = s.split('_')[-1]
+        s = s.split('_')
+        if len(s) == 1:
+            return None
+        else:
+            s = s[-1]
     return __str2np[s]
 
 

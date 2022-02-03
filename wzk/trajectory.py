@@ -163,6 +163,12 @@ def get_substeps_adjusted(x, n,
     return x_n
 
 
+def get_q_bee(q, n_wp):
+    q_se = q[:, [0, -1], :]
+    q0 = get_substeps(q_se, n=n_wp-1, include_start=True)
+    return q0
+
+
 def get_path_adjusted(x, m=50, is_periodic=None, weighting=None):
     n = x.shape[-2]
     return get_substeps_adjusted(x=x, n=(n - 1) * m + 1, is_periodic=is_periodic, weighting=weighting)[..., ::m, :]

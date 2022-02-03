@@ -1,4 +1,7 @@
 from unittest import TestCase
+
+import numpy as np
+
 from wzk.sql2 import *
 from wzk.files import safe_remove
 
@@ -9,9 +12,9 @@ class Test(TestCase):
     def __create_dummy_db(mode):
         if mode == 'A':
             columns = ['A', 'B', 'C', 'DD']
-            data = [[1,   2,   3.3,  'four'],
-                    [10,  20,  33.3,  'forty'],
-                    [100, 300, 333.3, 'four-hundred']]
+            data = [[1,   2,   3.3,  4],
+                    [10,  20,  33.3,  40],
+                    [100, 300, 333.3, 400]]
             df = pd.DataFrame(columns=columns, data=data, index=None)
             return df
         elif mode == 'B':
@@ -35,6 +38,19 @@ class Test(TestCase):
             df = pd.DataFrame(columns=columns, data=data, index=None)
             return df
 
+        elif mode == 'D':
+            columns = ['A_f32', 'B', 'C']
+            data = [[np.random.random((20, 4)), 1, 33.3],
+                    [np.random.random((20, 4)), 2, 33.3],
+                    [np.random.random((20, 4)), 3, 33.3],
+                    [np.random.random((20, 4)), 4, 33.3],
+                    [np.random.random((20, 4)), 5, 33.3],
+                    [np.random.random((20, 4)), 6, 33.3],
+                    [np.random.random((20, 4)), 7, 33.3],
+                    [np.random.random((20, 4)), 8, 33.3]]
+            df = pd.DataFrame(columns=columns, data=data, index=None)
+            return df
+
         else:
             raise ValueError
 
@@ -46,8 +62,8 @@ class Test(TestCase):
 
         df = self.__create_dummy_db('A')
 
-        file1 = f"{self.get_path()}/dummy1.db"
-        file2 = f"{self.get_path()}/dummy2.db"
+        file1 = f"{self.get_path()}/dummy_test_concatenate_tables_1.db"
+        file2 = f"{self.get_path()}/dummy_test_concatenate_tables_2.db"
         tableA = 'tableA'
         tableB = 'tableB'
         df2sql(df=df, file=file1, table=tableA, if_exists='replace')
@@ -65,9 +81,10 @@ class Test(TestCase):
         #
 
         safe_remove(file1)
+        safe_remove(file2)
 
     def test_set_values(self):
-        file = f"{self.get_path()}/dummy1.db"
+        file = f"{self.get_path()}/dummy_test_set_values.db"
         table = 'dummytable'
         df = self.__create_dummy_db('A')
         df2sql(df=df, file=file, table=table, if_exists='replace')
@@ -80,11 +97,29 @@ class Test(TestCase):
         v1 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
         self.assertTrue(np.array_equal(v, v1))
         #
+        safe_remove(file)
+
+    def test_set_values_2(self):
+        file = f"{self.get_path()}/dummy_test_set_values_2.db"
+        table = 'dummytable'
+        df = self.__create_dummy_db('D')
+        df2sql(df=df, file=file, table=table, if_exists='replace')
+
+        #
+        c = 'A_f32'
+        r = [0, 1]
+        v = np.arange(2*20*4).reshape((2, 20, 4))
+        v0 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
+        set_values_sql(file=file, table=table, values=(v,), columns=c, rows=r)
+        v1 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
+        v1 = v1.reshape((2, 20, 4))
+        self.assertTrue(np.array_equal(v, v1))
+        #
 
         safe_remove(file)
 
     def test_delete_rows(self):
-        file = f"{self.get_path()}/dummy1.db"
+        file = f"{self.get_path()}/dummy_test_delete_rows.db"
         table = 'dummytable'
         df = self.__create_dummy_db('A')
         df2sql(df=df, file=file, table=table, if_exists='replace')
@@ -104,7 +139,7 @@ class Test(TestCase):
         safe_remove(file)
 
     def test_get_columns(self):
-        file = f"{self.get_path()}/dummy1.db"
+        file = f"{self.get_path()}/dummy_test_get_columns.db"
         table = 'dummytable'
         df = self.__create_dummy_db('A')
         df2sql(df=df, file=file, table=table, if_exists='replace')
@@ -117,7 +152,7 @@ class Test(TestCase):
         safe_remove(file)
 
     def test_change_column_dtype(self):
-        file = f"{self.get_path()}/dummy2.db"
+        file = f"{self.get_path()}/dummy_test_change_column_dtype.db"
         table = 'dummytable'
         df = self.__create_dummy_db('B')
         df2sql(df=df, file=file, table=table, if_exists='replace')
@@ -131,11 +166,12 @@ class Test(TestCase):
         safe_remove(file)
 
     def test_alter_table(self):
-        file = f"{self.get_path()}/dummy2.db"
+        file = f"{self.get_path()}/dummy_test_alter_table.db"
         df = self.__create_dummy_db('B')
         table = 'dummytable'
         df2sql(df=df, file=file, table=table, if_exists='replace')
 
+        #
         new_columns = ['bb', 'aa', 'cc']
         new_types = [TYPE_TEXT, TYPE_INTEGER, TYPE_REAL]
         alter_table(file=file, table=table, columns=new_columns, dtypes=new_types)
@@ -149,19 +185,24 @@ class Test(TestCase):
         self.assertTrue(isinstance(bb[0], str))
         self.assertTrue(isinstance(aa[0], np.int64))
         self.assertTrue(isinstance(cc[0], float))
+        #
+
+        safe_remove(file)
 
     def test_sort_table(self):
-        file = f"{self.get_path()}/dummy2.db"
+        file = f"{self.get_path()}/dummy_test_sort_table.db"
         df = self.__create_dummy_db('C')
         table = 'dummytable'
         df2sql(df=df, file=file, table=table, if_exists='replace')
 
+        #
         sort_table(file=file, table=table, order_by=['A', 'ROWID'])
-
         data2 = get_values_sql(file=file, table=table)
         print(data2)
-
         a2 = get_values_sql(file=file, table=table, columns='A', values_only=True)
-
         self.assertTrue(np.all(np.argsort(a2) == np.arange(len(a2))))
+        #
+
+        safe_remove(file)
+
 

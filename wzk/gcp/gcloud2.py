@@ -134,6 +134,8 @@ def upload2bucket(disks, file, bucket):
 def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0, sleep=100):
     machine = 'c2-standard-60'
     snapshot = 'tenh-setup-clean'
+    snapshot_size = 30
+    disk_size = 20
     startup_script = startup.make_startup_file(user=GCP_USER,
                                                bash_file=f"/home/{GCP_USER}/src/mogen/mogen/Cloud/Startup/ompgen.sh")
 
@@ -144,8 +146,8 @@ def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0, sleep=100):
     cmd_instances = []
     cmd_attach_disks = []
     for i in range(n):
-        disk = dict(name=disk_list[i], size=100, labels=GCP_USER_LABEL)
-        disk_boot = dict(name=instance_list[i], snapshot=snapshot, size=30, autodelete='yes', boot='yes')
+        disk = dict(name=disk_list[i], size=disk_size, labels=GCP_USER_LABEL)
+        disk_boot = dict(name=instance_list[i], snapshot=snapshot, size=snapshot_size, autodelete='yes', boot='yes')
         instance = dict(name=instance_list[i],
                         machine=machine, disks_new=disk_boot, disks_old=[],
                         startup_script=startup_script, labels=GCP_USER_LABEL)
