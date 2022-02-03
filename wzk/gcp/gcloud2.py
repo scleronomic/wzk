@@ -7,8 +7,7 @@ import pandas as pd
 from io import StringIO
 
 from wzk.subprocess2 import call2, popen_list
-from wzk.files import safe_makedir
-from wzk.dicts_lists_tuples import atleast_list, flatten
+from wzk.dicts_lists_tuples import atleast_list
 from wzk.gcp import startup
 
 GCP_PROJECT = os.environ['GCP_PROJECT']
