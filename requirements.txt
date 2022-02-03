@@ -1,0 +1,13 @@
+numpy
+pyvista
+scipy
+matplotlib
+pandas
+screeninfo
+setuptools
+ray
+fire
+zlib
+scikit-image
+msgpack
+tables

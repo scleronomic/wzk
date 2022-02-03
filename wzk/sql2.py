@@ -268,7 +268,7 @@ def delete_rows(file: str, table: str, rows, lock=None):
 
     if batch_size is None or batch_size > len(rows):
         rows = rows2sql(rows, dtype=str)
-        execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})", isolation_level=None)
+        execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})")
 
     else:  # experienced some memory errors
         assert isinstance(batch_size, int)
@@ -279,7 +279,7 @@ def delete_rows(file: str, table: str, rows, lock=None):
         rows = np.array_split(rows, int(np.ceil(len(rows)//batch_size)))
         for r in rows:
             r = ', '.join(map(str, r.tolist()))
-            execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})", isolation_level=None)
+            execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})")
 
     vacuum(file)
 
@@ -455,7 +455,6 @@ def df2sql(df, file, table, if_exists='fail'):
 
 def test_set_sql_speed():
     from wzk import tictoc
-    import pandas as pd
     n = 10000
     data = np.random.random((n, 3))
 
