@@ -112,21 +112,31 @@ def mount_disk_cmd(disk, directory):
     return f"sudo mount -t ext4 {disk} {directory}"
 
 
+def lsblk():
+    s = call2('lsblk')
+    blk = pd.read_table(StringIO(s), delim_whitespace=True)
+    return blk
+
+
 def umount_disk_cmd(disk):
     return f"sudo umount {disk}"
 
 
-def upload2bucket(disks, file, bucket, __sdX='sdb'):
+def upload2bucket(disks, file, bucket):
 
     instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
 
     directory = f'/home/{GCP_USER}/sdb'
     for i, d in enumerate(disks):
+        blk0 = set(lsblk().NAME.values)
         subprocess.call(attach_disk_cmd(instance=instance, disk=d), shell=True)
-        subprocess.call(mount_disk_cmd(disk=f"/dev/{__sdX}", directory=directory), shell=True)
+        blk1 = set(lsblk().NAME.values)
+        sdX = blk1.difference(blk0)
+        sdX = list(sdX)[0]
+        subprocess.call(mount_disk_cmd(disk=f"/dev/{sdX}", directory=directory), shell=True)
         copy(src=file, dst=f"{bucket}/{file_name}_{i}{file_ext}")
-        subprocess.call(umount_disk_cmd(disk=f"/dev/{__sdX}"), shell=True)
+        subprocess.call(umount_disk_cmd(disk=f"/dev/{sdX}"), shell=True)
         subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
 
 
