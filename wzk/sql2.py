@@ -424,7 +424,6 @@ def set_values_sql(file, table,
 
     set_journal_mode_wal(file=file)
 
-    # TODO handle array inputs, automatically convert to correct datatype
     rows = rows2sql(rows, values=values[0], dtype=list)
     columns = columns2sql(columns, dtype=list)
     values = tuple(values2bytes(value=v, column=c) for v, c in zip(values, columns))

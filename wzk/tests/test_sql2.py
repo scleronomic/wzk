@@ -118,6 +118,24 @@ class Test(TestCase):
 
         safe_remove(file)
 
+    def test_add_column(self):
+        file = f"{self.get_path()}/dummy_test_set_values_3.db"
+        table = 'dummytable'
+        df = self.__create_dummy_db('B')
+        df2sql(df=df, file=file, table=table, if_exists='replace')
+
+        #
+        c = 'dd'
+        r = np.arange(11)
+        v = np.random.random(11)
+        add_column(file=file, table=table, column=c, dtype=TYPE_REAL)
+        set_values_sql(file=file, table=table, values=(v,), columns=c, rows=r)
+        v1 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
+        self.assertTrue(np.array_equal(v, v1))
+        #
+
+        safe_remove(file)
+
     def test_delete_rows(self):
         file = f"{self.get_path()}/dummy_test_delete_rows.db"
         table = 'dummytable'

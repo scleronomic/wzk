@@ -116,7 +116,7 @@ def umount_disk_cmd(disk):
     return f"sudo umount {disk}"
 
 
-def upload2bucket(disks, file, bucket):
+def upload2bucket(disks, file, bucket, __sdX='sdb'):
 
     instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
@@ -124,9 +124,9 @@ def upload2bucket(disks, file, bucket):
     directory = f'/home/{GCP_USER}/sdb'
     for i, d in enumerate(disks):
         subprocess.call(attach_disk_cmd(instance=instance, disk=d), shell=True)
-        subprocess.call(mount_disk_cmd(disk='/dev/sdb', directory=directory), shell=True)
+        subprocess.call(mount_disk_cmd(disk=f"/dev/{__sdX}", directory=directory), shell=True)
         copy(src=file, dst=f"{bucket}/{file_name}_{i}{file_ext}")
-        subprocess.call(umount_disk_cmd(disk='/dev/sdb'), shell=True)
+        subprocess.call(umount_disk_cmd(disk=f"/dev/{__sdX}"), shell=True)
         subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
 
 
@@ -170,30 +170,6 @@ def connect_cmd(instance):
 def copy(src, dst):
     subprocess.call(f"gsutil cp {src} {dst}", shell=True)
 
-# def mount_disk_cmd():
-#     return [f"sudo mkfs.ext4 /dev/sdb"
-#             f"sudo mount -t ext4 /dev/sdb /home/{GCP_USER}/sdb"]
-
-
-# def pull_git_cmd():
-#     return f"python  /home/{GCP_USER}/src/wzk/wzk.git2.py"
-
-
-# def tmux_cmd(name='default'):
-#     return f"tmux new -s {name}"
-
-
-# def connect_pull_mount_call(instance, cmd):
-#     cmd2 = [connect_cmd(instance=instance),
-#             mount_disk_cmd(),
-#             pull_git_cmd(),
-#             tmux_cmd(),
-#             atleast_list(cmd,
-#                          convert=False)]
-#     cmd2 = flatten(cmd2)
-#     # call('; '.join(cmd2), shell=False)
-#     run('; '.join(cmd2), shell=False)
-
 
 def __delete_xyz(_type, names):
     names = atleast_list(names, convert=False)
@@ -214,15 +190,15 @@ def delete_snapshots(snapshots):
 
 
 def main_upload2bucket():
-    disks = [f"tenh-ompgen-disk-{i}" for i in range(20)]
-    file = '/home/johannes_tenhumberg/sdb/StaticArm04.db'
+    disks = [f"tenh-ompgen-disk-{i}" for i in range(40)]
+    file = '/home/johannes_tenhumberg/sdb/Justin19.db'
     bucket = 'gs://tenh_jo'
-    upload2bucket(disks, file=file, bucket=bucket)
+    upload2bucket(disks, file=file, bucket=bucket, __sdX='sdc')
 
 
 if __name__ == '__main__':
-    create_instances_and_disks_ompgen(n=20, n0=20, sleep=600)
-    # main_upload2bucket()
+    # create_instances_and_disks_ompgen(n=20, n0=20, sleep=600)
+    main_upload2bucket()
     # connect_pull_mount_call(instance='ompgen-0', cmd=['ls', 'whoami'])
 
 
