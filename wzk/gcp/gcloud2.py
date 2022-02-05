@@ -203,7 +203,7 @@ def main_upload2bucket():
     disks = [f"tenh-ompgen-disk-{i}" for i in range(40)]
     file = '/home/johannes_tenhumberg/sdb/Justin19.db'
     bucket = 'gs://tenh_jo'
-    upload2bucket(disks, file=file, bucket=bucket, __sdX='sdc')
+    upload2bucket(disks, file=file, bucket=bucket)
 
 
 if __name__ == '__main__':
