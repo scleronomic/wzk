@@ -542,7 +542,7 @@ def get_points_on_sphere_nd():
     # https://stackoverflow.com/questions/57123194/how-to-distribute-points-evenly-on-the-surface-of-hyperspheres-in-higher-dimensi
 
 
-def hcp_grid(limits: np.ndarray, radius: np.ndarray) -> np.ndarray:
+def hcp_grid(limits: np.ndarray, radius: float) -> np.ndarray:
     """
     hexagonal closed packing
     https://en.wikipedia.org/wiki/Close-packing_of_equal_spheres

@@ -237,6 +237,7 @@ def concatenate_tables(file, table, table2, file2=None, lock=None):
         execute(file=file, query=f"INSERT INTO {table} SELECT * FROM {table2}", lock=lock)
 
     else:
+
         query = f"ATTACH DATABASE '{file2}' AS filetwo; INSERT INTO {table} SELECT * FROM filetwo.{table2}"
         executescript(file=file, query=query, lock=None)
 

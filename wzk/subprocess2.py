@@ -26,7 +26,6 @@ def __run_ssh(temp, cmd, check, host):
 def call2(cmd, check=False):
     """Not the most elegant way, but was not able to get the stdout without error / messed up shells otherwise"""
     temp = f"{os.path.dirname(__file__)}/{uuid4()}.txt"
-    print(temp)
     __run(temp=temp, cmd=cmd, check=check)
     return __read_and_delete(temp=temp)
 

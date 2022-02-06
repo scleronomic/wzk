@@ -207,8 +207,8 @@ def main_upload2bucket():
 
 
 if __name__ == '__main__':
-    # create_instances_and_disks_ompgen(n=20, n0=20, sleep=600)
-    main_upload2bucket()
+    create_instances_and_disks_ompgen(n=20, n0=40, sleep=600)
+    # main_upload2bucket()
     # connect_pull_mount_call(instance='ompgen-0', cmd=['ls', 'whoami'])
 
 

@@ -21,7 +21,7 @@ def stack_videos(videos=None, file=None):
     if file is None:
         file = f"stacked_video__{s[0]}x{s[1]}__{uuid4()}.{_format}"
 
-    uuid_list = [f'{uuid4()}.{_format}' for _ in range(s[0])]
+    uuid_list = [f"{uuid4()}.{_format}" for _ in range(s[0])]
 
     for i, in_i in enumerate(videos):
         in_i_str = ' -i '.join(in_i)
