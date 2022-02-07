@@ -10,4 +10,3 @@ fire
 zlib
 scikit-image
 msgpack
-tables

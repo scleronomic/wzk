@@ -1,14 +1,12 @@
 import os
+import fire
 import socket
 import subprocess
-import time
-
 import pandas as pd
 from io import StringIO
 
 from wzk.subprocess2 import call2, popen_list
 from wzk.dicts_lists_tuples import atleast_list
-from wzk.gcp import startup
 
 GCP_PROJECT = os.environ['GCP_PROJECT']
 GCP_ACCOUNT_NR = os.environ['GCP_ACCOUNT_NR']
@@ -27,6 +25,8 @@ GCP_USER_LABEL = f'user={GCP_USER_SHORT}'
 
 
 def add_old_disks_flag(disks):
+    if disks is None:
+        return ''
     disks = atleast_list(disks, convert=False)
     cmd = [f"--disk=boot=no,device-name={d['name']},name={d['name']},mode=rw" for d in disks]
     cmd = ' '.join(cmd)
@@ -34,6 +34,8 @@ def add_old_disks_flag(disks):
 
 
 def add_new_disks_flag(disks):
+    if disks is None:
+        return ''
     disks = atleast_list(disks, convert=False)
     cmd = [f"--create-disk=boot={d['boot']}," 
            f"auto-delete={d['autodelete']},"
@@ -46,18 +48,29 @@ def add_new_disks_flag(disks):
     return cmd
 
 
+def add_local_disks_flag(disks):
+    if disks is None:
+        return ''
+    interface = disks['interface']  # 'SCSI' or 'NVME'
+    n = disks['n']  # 8
+
+    cmd = f"--local-ssd=interface={interface}"
+    cmd = ' '.join([cmd]*n)
+    return cmd
+
+
 def get_disks():
     cmd = "gcloud compute disks list"
     s = call2(cmd)
-    disks = pd.read_table(StringIO(s), delim_whitespace=True)
+    disks = pd.read_table(StringIO(s), delim_whitespace=True)  # noqa
     return disks
 
 
 def add_startup_script_flag(startup_script):
-    if startup_script is not None and startup_script != '':
-        return f'--metadata=startup-script="{startup_script}"'
-    else:
+    if startup_script is None or startup_script == '':
         return ''
+    else:
+        return f'--metadata=startup-script="{startup_script}"'
 
 
 def create_instance_cmd(config):
@@ -65,6 +78,7 @@ def create_instance_cmd(config):
           f"--machine-type={config['machine']} " \
           f"{add_new_disks_flag(config['disks_new'])} " \
           f"{add_old_disks_flag(config['disks_old'])} " \
+          f"{add_local_disks_flag(config['disks_local'])} " \
           f"{add_startup_script_flag(config['startup_script'])} " \
           f"--zone={GCP_ZONE} " \
           f"--project={GCP_PROJECT} " \
@@ -114,7 +128,7 @@ def mount_disk_cmd(disk, directory):
 
 def lsblk():
     s = call2('lsblk')
-    blk = pd.read_table(StringIO(s), delim_whitespace=True)
+    blk = pd.read_table(StringIO(s), delim_whitespace=True)  # noqa
     return blk
 
 
@@ -138,39 +152,6 @@ def upload2bucket(disks, file, bucket):
         copy(src=file, dst=f"{bucket}/{file_name}_{i}{file_ext}")
         subprocess.call(umount_disk_cmd(disk=f"/dev/{sdX}"), shell=True)
         subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
-
-
-def create_instances_and_disks_ompgen(name='ompgen', n=10, n0=0, sleep=100):
-    machine = 'c2-standard-60'
-    snapshot = 'tenh-setup'
-    snapshot_size = 30
-    disk_size = 20
-    startup_script = startup.make_startup_file(user=GCP_USER,
-                                               bash_file=f"/home/{GCP_USER}/src/mogen/mogen/Cloud/Startup/ompgen.sh")
-
-    instance_list = [f"{GCP_USER_SHORT}-{name}-{n0+i}" for i in range(n)]
-    disk_list = [f"{GCP_USER_SHORT}-{name}-disk-{n0+i}" for i in range(n)]
-
-    cmd_disks = []
-    cmd_instances = []
-    cmd_attach_disks = []
-    for i in range(n):
-        disk = dict(name=disk_list[i], size=disk_size, labels=GCP_USER_LABEL)
-        disk_boot = dict(name=instance_list[i], snapshot=snapshot, size=snapshot_size, autodelete='yes', boot='yes')
-        instance = dict(name=instance_list[i],
-                        machine=machine, disks_new=disk_boot, disks_old=[],
-                        startup_script=startup_script, labels=GCP_USER_LABEL)
-
-        cmd_disks.append(create_disk_cmd(disk))
-        cmd_instances.append(create_instance_cmd(instance))
-        cmd_attach_disks.append(attach_disk_cmd(instance=instance, disk=disk))
-
-    popen_list(cmd_list=cmd_disks)
-
-    for a, b in zip(cmd_instances, cmd_attach_disks):
-        subprocess.call(a, shell=True)
-        subprocess.call(b, shell=True)
-        time.sleep(sleep)
 
 
 def connect_cmd(instance):
@@ -199,19 +180,14 @@ def delete_snapshots(snapshots):
     __delete_xyz(_type='snapshots', names=snapshots)
 
 
-def main_upload2bucket():
-    disks = [f"tenh-ompgen-disk-{i}" for i in range(40)]
-    file = '/home/johannes_tenhumberg/sdb/Justin19.db'
-    bucket = 'gs://tenh_jo'
-    upload2bucket(disks, file=file, bucket=bucket)
+def connect2(name):
+    cmd = f'gcloud compute ssh "{name}" --zone "{GCP_ZONE}" --project "{GCP_PROJECT}"'
+    subprocess.call(cmd, shell=True)
 
 
 if __name__ == '__main__':
-    create_instances_and_disks_ompgen(n=20, n0=40, sleep=600)
-    # main_upload2bucket()
-    # connect_pull_mount_call(instance='ompgen-0', cmd=['ls', 'whoami'])
-
-
+    fire.Fire({'connect2': connect2})
+    
 # gcloud compute instances create instance-2
 # --project=neon-polymer-214621
 # --zone=us-central1-a
@@ -251,9 +227,3 @@ if __name__ == '__main__':
 #
 #     return instance_list
 #
-
-
-# s = "gcloud compute instances create tenh-ompgen-0 --project=neon-polymer-214621 --zone=us-central1-a --machine-type=e2-medium --network-interface=network-tier=PREMIUM,subnet=default --no-restart-on-failure --maintenance-policy=TERMINATE --preemptible --service-account=508084122889-compute@developer.gserviceaccount.com --disk=boot=no,device-name=tenh-ompgen-disk-0,mode=rw,name=tenh-ompgen-disk-0 --create-disk=auto-delete=yes,boot=yes,device-name=tenh-ompgen-0,mode=rw,size=30,source-snapshot=projects/neon-polymer-214621/global/snapshots/tenh-default-setup,type=projects/neon-polymer-214621/zones/us-central1-a/diskTypes/pd-balanced --labels=user=tenh --reservation-affinity=any"
-
-
-# print('\n'.join(s.split()))

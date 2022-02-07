@@ -93,7 +93,7 @@ def get_substeps(x, n,
 
     *shape, m, d = x.shape
 
-    # only fill in substeps if the the number is greater 1,
+    # only fill in substeps if the number is greater 1,
     if n <= 1 or m <= 1:
         if include_start:
             return x
@@ -152,7 +152,7 @@ def get_substeps_adjusted(x, n,
 
     n_sub_cs = np.hstack((0, n_sub.cumsum())) + 1
 
-    # Add the linear interpolation between the random waypoints step by step for each dimension
+    # Add the linear interpolation between the random waypoints - step by step for each dimension
     x_n = np.empty((n, d))
     x_n[0, :] = x[0, :]
     for i in range(m1):
@@ -164,7 +164,7 @@ def get_substeps_adjusted(x, n,
 
 
 def get_q_bee(q, n_wp):
-    q_se = q[:, [0, -1], :]
+    q_se = q[..., [0, -1], :]
     q0 = get_substeps(q_se, n=n_wp-1, include_start=True)
     return q0
 
@@ -249,11 +249,11 @@ def d_substeps__dx(n, order=0):
     (n-1)*n_s  # substeps (total)
 
     n_s = 5
-    jac0 = ([[1. , 0.8, 0.6, 0.4, 0.2],  # following step  (including way point (1.))
-             [0. , 0.2, 0.4, 0.6, 0.8]]) # previous step  (excluding way point (1.))
+    jac0 = ([[1., 0.8, 0.6, 0.4, 0.2],  # following step  (including way point (1.))
+             [0., 0.2, 0.4, 0.6, 0.8]]) # previous step  (excluding way point (1.))
 
-    jac1 = ([[0.2, 0.4, 0.6, 0.8, 1. ],  # previous step  (including way point (2.))
-             [0.8, 0.6, 0.4, 0.2, 0. ]])  # following step  (excluding way point (2.))
+    jac1 = ([[0.2, 0.4, 0.6, 0.8, 1.],  # previous step  (including way point (2.))
+             [0.8, 0.6, 0.4, 0.2, 0.]])  # following step  (excluding way point (2.))
 
     """
 
