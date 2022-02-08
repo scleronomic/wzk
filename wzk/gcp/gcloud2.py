@@ -111,14 +111,14 @@ def __resource2name(resource):
 def attach_disk_cmd(instance, disk):
     instance = __resource2name(instance)
     disk = __resource2name(disk)
-    cmd = f"gcloud compute instances attach-disk {instance} --disk {disk}"
+    cmd = f'gcloud compute instances attach-disk {instance} --disk {disk} --zone "{GCP_ZONE}"'
     return cmd
 
 
 def detach_disk_cmd(instance, disk):
     instance = __resource2name(instance)
     disk = __resource2name(disk)
-    cmd = f"gcloud compute instances detach-disk {instance} --disk {disk}"
+    cmd = f'gcloud compute instances detach-disk {instance} --disk {disk} --zone "{GCP_ZONE}"'
     return cmd
 
 
