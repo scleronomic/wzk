@@ -136,22 +136,25 @@ def umount_disk_cmd(disk):
     return f"sudo umount {disk}"
 
 
-def upload2bucket(disks, file, bucket):
+def upload2bucket(disk, file, bucket, n, n0=0):
 
     instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
 
     directory = f'/home/{GCP_USER}/sdb'
-    for i, d in enumerate(disks):
+    for i in range(n0, n+n0):
+        disk_i = f"{disk}-{i}"
+        file_i = f"{bucket}/{file_name}_{i}{file_ext}"
+
         blk0 = set(lsblk().NAME.values)
-        subprocess.call(attach_disk_cmd(instance=instance, disk=d), shell=True)
+        subprocess.call(attach_disk_cmd(instance=instance, disk=disk_i), shell=True)
         blk1 = set(lsblk().NAME.values)
         sdX = blk1.difference(blk0)
         sdX = list(sdX)[0]
         subprocess.call(mount_disk_cmd(disk=f"/dev/{sdX}", directory=directory), shell=True)
-        copy(src=file, dst=f"{bucket}/{file_name}_{i}{file_ext}")
+        copy(src=file, dst=file_i)
         subprocess.call(umount_disk_cmd(disk=f"/dev/{sdX}"), shell=True)
-        subprocess.call(detach_disk_cmd(instance=instance, disk=d), shell=True)
+        subprocess.call(detach_disk_cmd(instance=instance, disk=disk_i), shell=True)
 
 
 def connect_cmd(instance):
