@@ -115,7 +115,8 @@ def uuid4():
     return uuid.uuid4().hex
 
 
-def str2list(s):
+def str2eval(s):
+    s = s.replace('null', 'None')
     return eval(s, {'__builtins__': None}, {})
 
 

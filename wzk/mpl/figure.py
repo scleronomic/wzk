@@ -39,7 +39,7 @@ def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
     return width, height
 
 
-def new_fig(*, width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
+def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
             n_dim=2,
             n_rows=1, n_cols=1,
             share_x='none', share_y='none',  # : bool or {'none', 'all', 'row', 'col'},

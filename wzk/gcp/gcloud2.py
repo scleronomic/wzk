@@ -152,7 +152,7 @@ def upload2bucket(disk, file, bucket, n, n0=0):
         sdX = blk1.difference(blk0)
         sdX = list(sdX)[0]
         subprocess.call(mount_disk_cmd(disk=f"/dev/{sdX}", directory=directory), shell=True)
-        copy(src=file, dst=file_i)
+        gsutil_cp(src=file, dst=file_i)
         subprocess.call(umount_disk_cmd(disk=f"/dev/{sdX}"), shell=True)
         subprocess.call(detach_disk_cmd(instance=instance, disk=disk_i), shell=True)
 
@@ -161,7 +161,7 @@ def connect_cmd(instance):
     return f'gcloud beta compute ssh --project "{GCP_PROJECT}" --zone "{GCP_ZONE}" {GCP_USER}@"{instance}"'
 
 
-def copy(src, dst):
+def gsutil_cp(src, dst):
     subprocess.call(f"gsutil cp {src} {dst}", shell=True)
 
 
@@ -184,7 +184,7 @@ def delete_snapshots(snapshots):
 
 
 def connect2(name):
-    cmd = f'gcloud compute ssh "{name}" --zone "{GCP_ZONE}" --project "{GCP_PROJECT}"'
+    cmd = connect_cmd(instance=name)
     subprocess.call(cmd, shell=True)
 
 
@@ -230,3 +230,8 @@ if __name__ == '__main__':
 #
 #     return instance_list
 #
+
+
+
+
+
