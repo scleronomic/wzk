@@ -116,9 +116,13 @@ def uuid4():
 
 
 def str2eval(s):
+    print(s)
     s = s.replace('null', 'None')
-    return eval(s, {'__builtins__': None}, {})
-
+    try:
+        s = eval(s, {'__builtins__': None}, {})
+    except TypeError:
+        print(s)
+        raise TypeError
 
 #
 # "[[38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [38, 76, 152, 76, 38], [190, 380, 760, 380, 190], [190, 380, 760, 380, 190], [190, 380, 760, 380, 190]]"

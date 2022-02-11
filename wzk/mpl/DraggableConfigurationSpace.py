@@ -7,7 +7,7 @@ from wzk.mpl import DraggableEllipseList, new_fig
 
 def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):
     x = np.squeeze(x)
-    n_waypoints, n_dof = x.shape
+    n_wp, n_dof = x.shape
 
     if n_dof > 5:
         n_cols, n_rows = get_mean_divisor_pair(n=n_dof)
@@ -17,9 +17,9 @@ def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):
     fig, axes = new_fig(n_rows=n_rows, n_cols=n_cols, share_x=True)
     fig.subplots_adjust(hspace=0.0, wspace=0.2)
 
-    axes.flatten()[-1].set_xlim([-1, n_waypoints])
-    axes.flatten()[-1].set_xticks(np.arange(n_waypoints))
-    axes.flatten()[-1].set_xticklabels([str(i) if i % 2 == 0 else '' for i in range(n_waypoints)])
+    axes.flatten()[-1].set_xlim([-1, n_wp])
+    axes.flatten()[-1].set_xticks(np.arange(n_wp))
+    axes.flatten()[-1].set_xticklabels([str(i) if i % 2 == 0 else '' for i in range(n_wp)])
 
     for ax, limits_i in zip(axes.flatten(), limits):
         limits_i_larger = add_safety_limits(limits=limits_i, factor=0.05)
@@ -29,7 +29,7 @@ def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):
         ax.set_yticklabels(["{:.2f}".format(v) for v in y_ticks])
         ax.set_ylim(limits_i_larger)
 
-    x_temp = np.arange(n_waypoints)
+    x_temp = np.arange(n_wp)
 
     h_lines = [ax.plot(x_temp, x_i, **kwargs)[0] for ax, x_i in zip(axes.flatten(), x.T)]
 
