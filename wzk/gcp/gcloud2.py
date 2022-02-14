@@ -70,7 +70,7 @@ def add_startup_script_flag(startup_script):
     if startup_script is None or startup_script == '':
         return ''
     else:
-        return f'--metadata=startup-script="{startup_script}"'
+        return f',startup-script="{startup_script}"'
 
 
 def create_instance_cmd(config):
@@ -79,12 +79,13 @@ def create_instance_cmd(config):
           f"{add_new_disks_flag(config['disks_new'])} " \
           f"{add_old_disks_flag(config['disks_old'])} " \
           f"{add_local_disks_flag(config['disks_local'])} " \
-          f"{add_startup_script_flag(config['startup_script'])} " \
           f"--zone={GCP_ZONE} " \
           f"--project={GCP_PROJECT} " \
           f"--scopes={__GCP_SCOPES} " \
           f"--labels={config['labels']} " \
           f"--service-account={GCP_ACCOUNT_NR}-compute@developer.gserviceaccount.com " \
+          f"--metadata enable-oslogin=TRUE" \
+          f"{add_startup_script_flag(config['startup_script'])} " \
           f"--preemptible " \
           f"--no-restart-on-failure " \
           f"--reservation-affinity=any " \

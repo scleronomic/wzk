@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.interpolate import UnivariateSpline
 
 from wzk.math2 import angle2minuspi_pluspi
 
@@ -281,3 +282,64 @@ def combine_d_substeps__dx(d_dxs, n):
         return d_dx
     else:
         raise ValueError
+
+
+def to_spline(x, n_c=4):
+
+    n_wp, n_dof = x.shape[-2:]
+    xx = np.linspace(0, 1, n_wp)
+
+    if np.ndim(x) == 2:
+        c = np.zeros((n_c, n_dof))
+        for i_d in range(n_dof):
+            spl = UnivariateSpline(x=xx, y=x[:, i_d])
+            c[:, i_d] = spl.get_coeffs()
+
+    elif np.ndim(x) == 3:
+        n = x.shape[0]
+
+        c = np.zeros((n, n_c, n_dof))
+        for i_n in range(n):
+            for i_d in range(n_dof):
+                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
+                c[i_n, :, i_d] = spl.get_coeffs()
+
+    else:
+        raise ValueError
+
+    return c
+
+
+def set_spline_coeffs(spl, coeffs):
+    data = spl._data  # noqa
+    k, n = data[5], data[7]
+    data[9][:n - k - 1] = np.ravel(coeffs)
+    spl._data = data
+
+
+def from_spline(c, n_wp):
+    xx = np.linspace(0, 1, n_wp)
+    spl = UnivariateSpline(x=xx, y=xx)
+
+    n_c, n_dof = c.shape[-2:]
+
+    if np.ndim(c) == 2:
+        x = np.zeros((n_wp, n_dof))
+        for i_d in range(n_dof):
+            set_spline_coeffs(spl, coeffs=c[:, i_d])
+            x[:, i_d] = spl(xx)
+
+    elif np.ndim(c) == 3:
+        n = c.shape[0]
+
+        x = np.zeros((n, n_wp, n_dof))
+        for i_n in range(n):
+            for i_d in range(n_dof):
+                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
+                set_spline_coeffs(spl, coeffs=c[i_n, :, i_d])
+                x[i_n, :, i_d] = spl(xx)
+
+    else:
+        raise ValueError
+
+    return x

@@ -335,6 +335,7 @@ def copy_table(file, table_src, table_dst, columns=None, dtypes=None, order_by=N
 
 
 def sort_table(file, table, order_by):
+    print(f'sort {file} : {table}')
     alter_table(file=file, table=table, columns=None, dtypes=None, order_by=order_by)
 
 

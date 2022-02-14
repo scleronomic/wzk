@@ -16,5 +16,6 @@ if platform.system() == 'Linux':
 
 elif platform.system() == 'Darwin':
     mpl.use('TkAgg')  # Alternative for Mac: 'Qt5Agg', interplay with PyVista often a bit tricky otherwise
+    # mpl.use('Agg')  # Alternative for Mac: 'Qt5Agg', interplay with PyVista often a bit tricky otherwise
 
 import matplotlib.pyplot as plt  # noqa
