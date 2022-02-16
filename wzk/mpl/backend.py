@@ -1,10 +1,10 @@
 import os
-import platform
+from sys import platform
 import matplotlib as mpl
 
 
 headless = False
-if platform.system() == 'Linux':
+if platform == 'linux':
     try:
         display = os.environ['DISPLAY']
         mpl.use('TkAgg')
@@ -14,7 +14,7 @@ if platform.system() == 'Linux':
         headless = True
         mpl.use('Agg')
 
-elif platform.system() == 'Darwin':
+elif platform == 'darwin':
     mpl.use('TkAgg')  # Alternative for Mac: 'Qt5Agg', interplay with PyVista often a bit tricky otherwise
     # mpl.use('Agg')  # Alternative for Mac: 'Qt5Agg', interplay with PyVista often a bit tricky otherwise
 

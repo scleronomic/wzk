@@ -1,3 +1,4 @@
+import os
 from sys import platform
 import numpy as np
 import pyvista as pv
@@ -15,6 +16,13 @@ from typing import Union
 
 pv.set_plot_theme('document')
 
+headless = False
+if platform == 'linux':
+    try:
+        display = os.environ['DISPLAY']
+    except KeyError:
+        headless = True
+
 
 def plotter_wrapper(p: Union[pv.Plotter, dict],
                     window_size: tuple = (2048, 1536), camera_position=None,
@@ -27,8 +35,10 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         lighting = p.pop('window_size', lighting)
         off_screen = p.pop('off_screen', off_screen)
         gif = p.pop('gif', gif)
+        off_screen = headless and off_screen  # Endog
 
         if off_screen:
+            print(platform)
             if platform == 'linux':
                 pv.start_xvfb()  # start_xvfb only supported on linux
 
