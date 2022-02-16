@@ -432,6 +432,6 @@ def compressed2img(img_cmp, shape, n_dim=None, n_channels=None, dtype=None):
 def bool_img2surf(img, limits):
     lower_left = limits[:, 0]
     voxel_size = limits2cell_size(shape=img.shape, limits=limits)
-    verts, faces, _, _ = measure.marching_cubes_lewiner(img, level=0, spacing=(voxel_size,) * img.ndim)
+    verts, faces, _, _ = measure.marching_cubes(img, level=0, spacing=(voxel_size,) * img.ndim)
     verts = verts + lower_left
     return verts, faces

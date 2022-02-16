@@ -1,3 +1,4 @@
+from sys import platform
 import numpy as np
 import pyvista as pv
 from itertools import combinations
@@ -28,7 +29,8 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         gif = p.pop('gif', gif)
 
         if off_screen:
-            pv.start_xvfb()  #
+            if platform == 'linux':
+                pv.start_xvfb()  # start_xvfb only supported on linux
 
     if not isinstance(p, pv.Plotter):
         p = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
@@ -145,15 +147,14 @@ def plot_bool_vol(img, limits,
     if img is None:
         return
 
-    lower_left = limits[:, 0]
-    upper_right = limits[:, 1]
-
     if mode == 'voxel':
         if h is None:
-            x, y, z = np.meshgrid(*(np.linspace(lower_left[i], upper_right[i], img.shape[i] + 1) for i in range(3)),
+            x, y, z = np.meshgrid(*(np.linspace(limits[i, 0], limits[i, 1], img.shape[i] + 1) for i in range(3)),
                                   indexing='xy')
             h0 = pv.StructuredGrid(x, y, z)
-            h0.hide_cells(~img.transpose(2, 0, 1).ravel().astype(bool))
+            hidden_cells = ~img.transpose(2, 0, 1).ravel().astype(bool)
+            print(hidden_cells.sum())
+            h0.hide_cells(hidden_cells)
             h1 = p.add_mesh(h0, show_scalar_bar=False, **kwargs)
             h = (h0, h1)
         else:
