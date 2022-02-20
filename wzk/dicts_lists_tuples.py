@@ -322,3 +322,28 @@ def read_json2dict(file):
 def rename_dict_keys(d, new_keys_dict):
     for old_k in new_keys_dict:
         d[new_keys_dict[old_k]] = d.pop(old_k)
+
+
+"""
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{cc|cc|cc}
+\toprule
+\multicolumn{2}{c}{Dataset}  &  \multicolumn{2}{c}{Training}  &  \multicolumn{2}{c}{Feasibility} \\
+Gen.  &  Dist.               & Aug.  &  Boost                 & Pred.  &  +OMP       \\
+\midrule
+0  &  easy                   & no  &  no                      &  0.2  &  C         \\
+0  &  random                 & no  &  no                      &  0.2  &           \\
+0  &  hard                   & no  &  no                      &  0.2  &           \\
+\midrule
+1  &  hard                   & no  & no                       &  0.2  &  0.813    \\
+1  &  hard                   & no  & yes                      &  0.2  &  0.874    \\
+2  &  hard                   & no  & no                       &  0.2  &  0.865    \\
+2  &  hard                   & no  & yes                      &  0.2  &  0.937    \\
+X  &  hard                   & no  & no                       &  0.2  &  0.961    \\
+X  &  hard                   & no  & yes                      &  0.2  &  0.81        \\
+\midrule
+2  & hard                    & yes & yes                      &  0.23  &  1.0      \\
+\bottomrule
+\end{tabular}
+}
+"""

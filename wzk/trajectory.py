@@ -175,7 +175,7 @@ def get_path_adjusted(x, m=50, is_periodic=None, weighting=None):
     return get_substeps_adjusted(x=x, n=(n - 1) * m + 1, is_periodic=is_periodic, weighting=weighting)[..., ::m, :]
 
 
-def order_path(x, start=None, end=None, infinity_joints=None, weights=1.):
+def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
     """
     Order the points given by 'x' [2d: (n, d)] according to a weighted euclidean distance
     so that always the nearest point comes next.
@@ -204,7 +204,7 @@ def order_path(x, start=None, end=None, infinity_joints=None, weights=1.):
     # Order the points, so that always the nearest is visited next, according to the euclidean distance
     x_o[0, :] = start.ravel()
     for i in range(n):
-        x_diff = np.linalg.norm(periodic_dof_wrapper(x - start, is_periodic=infinity_joints) * weights, axis=-1)
+        x_diff = np.linalg.norm(periodic_dof_wrapper(x - start, is_periodic=is_periodic) * weights, axis=-1)
         i_min = np.argmin(x_diff)
         x_o[1 + i, :] = x[i_min, :]
         start = x[i_min, :]
