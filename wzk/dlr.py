@@ -7,8 +7,10 @@ def where_am_i():
     location_dict = dict(jote='mac',
                          tenh_jo='dlr',
                          johannes_tenhumberg_gmail_com='gcp')
-
-    location = location_dict[USERNAME]
+    try:
+        location = location_dict[USERNAME]
+    except KeyError:
+        location = 'dlr'
     return location
 
 
