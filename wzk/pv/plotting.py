@@ -49,6 +49,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         p.camera_position = camera_position
 
     if gif:
+        pass
         assert isinstance(gif, str)
         if not gif.endswith('.gif'):
             gif = f"{gif}.gif"

@@ -20,7 +20,9 @@ TYPE_BLOB = 'BLOB'
 
 
 def rows2sql(rows: object, dtype: object = str, values=None) -> object:
-    if isinstance(rows, (int, np.int16, np.int32, np.int64)):
+    if isinstance(rows, (int,
+                         np.int, np.int8, np.int16, np.int32, np.int64,
+                         np.uint, np.uint8, np.uint16, np.uint32, np.uint64)):
         if rows == -1:
             if values is None:
                 return -1
@@ -31,7 +33,7 @@ def rows2sql(rows: object, dtype: object = str, values=None) -> object:
     elif isinstance(rows, np.ndarray) and rows.dtype == bool:
         rows = np.nonzero(rows)[0]
 
-    rows = np.array(rows) + 1  # Attention! Unlike in Python, SQL indices start at 1
+    rows = np.array(rows, dtype=int).reshape(-1) + 1  # Attention! Unlike in Python, SQL indices start at 1
 
     if dtype == str:
         return ', '.join(map(str, rows))

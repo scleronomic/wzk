@@ -138,7 +138,8 @@ def reduce_shape(img, shape, n_dim, n_channels, kernel, pooling_type='average', 
         pool = np.max
         dtype = bool
 
-    shape_new = shape // kernel
+    shape_new = np.array(shape) // np.array(kernel)
+    shape_new = shape_new.astype(int)
     img_new = initialize_image_array(shape=shape_new, n_dim=n_dim, n_channels=n_channels, n_samples=n_samples,
                                      dtype=dtype)
     img = reshape_img(img=img, n_dim=n_dim, n_channels=n_channels, channel_dim=True, n_samples=n_samples,
@@ -147,15 +148,15 @@ def reduce_shape(img, shape, n_dim, n_channels, kernel, pooling_type='average', 
                           sample_dim=True)
 
     if n_dim == 2:
-        for i in range(shape_new):
-            for j in range(shape_new):
+        for i in range(shape_new[0]):
+            for j in range(shape_new[1]):
                 img_new[:, i, j, :] = pool(img[:,
                                            kernel * i: kernel * (i + 1),
                                            kernel * j: kernel * (j + 1), :], axis=(1, 2))
     else:  # n_dim == 3
-        for i in range(shape_new):
-            for j in range(shape_new):
-                for k in range(shape_new):
+        for i in range(shape_new[0]):
+            for j in range(shape_new[1]):
+                for k in range(shape_new[2]):
                     img_new[:, i, j, k, :] = pool(img[:,
                                                   kernel * i: kernel * (i + 1),
                                                   kernel * j: kernel * (j + 1),

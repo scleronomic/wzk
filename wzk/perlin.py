@@ -24,7 +24,7 @@ def perlin_noise_1d(n, m, scale):
     return y2
 
 
-def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpolant):
+def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpolant, seed=None):
     """Generate a 2D numpy array of perlin noise.
     Args:
         shape: The shape of the generated array (tuple of two ints).
@@ -41,6 +41,9 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
     Raises:
         ValueError: If shape is not a multiple of res.
     """
+
+    if seed is not None:
+        np.random.seed(seed)
 
     if tileable is None:
         tileable = (False, False)

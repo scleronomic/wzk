@@ -84,7 +84,7 @@ _16 = ['#e6194B', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#42d4f4', '#f032e
 _7 = ['#ffe119', '#4363d8', '#f58231', '#dcbeff', '#800000', '#000075', '#a9a9a9']
 
 
-def arr2rgba(*, img, cmap, vmin=None, vmax=None, mask=None, axis_order=None):
+def arr2rgba(img, cmap, vmin=None, vmax=None, mask=None, axis_order=None):
     img = __arr2rgba(arr=img, cmap=cmap, vmin=vmin, vmax=vmax)
     if mask is not None:
         img[mask.astype(bool), 3] = 0
@@ -96,7 +96,10 @@ def arr2rgba(*, img, cmap, vmin=None, vmax=None, mask=None, axis_order=None):
 def __arr2rgba(arr, cmap, vmin=None, vmax=None):
     norm = colors.Normalize(vmin=vmin, vmax=vmax)
     try:
-        return cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)
-    except ValueError:
+        sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+
+    except (ValueError, AttributeError):
         cmap = colors.ListedColormap([cmap])
-        return cm.ScalarMappable(cmap=cmap, norm=norm).to_rgba(arr, bytes=True)
+        sm = cm.ScalarMappable(cmap=cmap, norm=norm)
+
+    return sm.to_rgba(arr, bytes=True, norm=True)

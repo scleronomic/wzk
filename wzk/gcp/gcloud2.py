@@ -86,10 +86,12 @@ def create_instance_cmd(config):
           f"--service-account={GCP_ACCOUNT_NR}-compute@developer.gserviceaccount.com " \
           f"--metadata enable-oslogin=TRUE" \
           f"{add_startup_script_flag(config['startup_script'])} " \
+          f"" \
           f"--preemptible " \
           f"--no-restart-on-failure " \
           f"--reservation-affinity=any " \
           f"--maintenance-policy=TERMINATE "
+          # f"--provisioning-model=SPOT " \  # TODO add after this leaves beta
     return cmd
 
 
