@@ -11,6 +11,7 @@ def where_am_i():
         location = location_dict[USERNAME]
     except KeyError:
         location = 'dlr'
+
     return location
 
 
