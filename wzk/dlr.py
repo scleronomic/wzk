@@ -1,6 +1,8 @@
 import os
 
-USERNAME = os.path.expanduser("~").split(sep='/')[-1]
+# USERNAME = os.path.expanduser("~").split(sep='/')[-1]
+# TODO is this smarter static or dynamic
+USERNAME = "tenh_jo"
 
 
 def where_am_i():
