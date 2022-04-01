@@ -100,7 +100,12 @@ def open_db_connection(file, close=True,
 
     file, ext = os.path.splitext(file)
     file = f"{file}{ext or '.db'}"
-    con = sqlite3.connect(database=file, check_same_thread=check_same_thread, isolation_level=isolation_level)
+
+    try:
+        con = sqlite3.connect(database=file, check_same_thread=check_same_thread, isolation_level=isolation_level)
+    except sqlite3.OperationalError as e:
+        print(file)
+        raise e
 
     try:
         yield con
@@ -442,7 +447,7 @@ def set_values_sql(file, table,
     executemany(file=file, query=query, args=values_rows_sql, lock=lock)
 
 
-def df2sql(df, file, table, if_exists='fail'):
+def df2sql(df, file, table, dtype=None, if_exists='fail'):
     """
     From DataFrame.to_sql():
         if_exists : {'fail', 'replace', 'append'}, default 'fail'
@@ -458,7 +463,8 @@ def df2sql(df, file, table, if_exists='fail'):
     data = values2bytes_dict(data=data)
     df = pd.DataFrame(data=data)
     with open_db_connection(file=file, close=True, lock=None) as con:
-        df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None)
+        df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None,
+                  dtype=dtype)
 
     set_journal_mode_wal(file=file)
 

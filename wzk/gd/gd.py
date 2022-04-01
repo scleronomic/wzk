@@ -76,7 +76,6 @@ def gradient_descent(x, fun, grad, gd):
 
     # Gradient Descent Loop
     for i in range(gd.n_steps):
-
         j = grad(x=x, i=i)
 
         # Correct via an approximated hesse function

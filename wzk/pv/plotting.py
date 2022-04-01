@@ -24,6 +24,43 @@ if platform == 'linux':
         headless = True
 
 
+def camera_motion(cp=None, pos=None, focal=None, viewup=None,
+                  mode='circle_xy', radius=None, n=100):
+    pass
+    if viewup is None:
+        if cp is None:
+            viewup = np.array([0., 0., 1.])
+        else:
+            viewup = cp[2]
+    if focal is None:
+        if cp is None:
+            focal = np.array([0., 0., 0.])
+        else:
+            focal = cp[1]
+    if pos is None:
+        if cp is None:
+            pos = np.array([1., 1., 1.])
+        else:
+            pos = cp[0] - focal
+
+    cp = np.array([pos + focal, focal, viewup])
+
+    if mode == 'circle_xy':
+        if radius is None:
+            r_xy = np.sqrt(pos[0]**2 + pos[1]**2)
+        else:
+            r_xy = radius
+
+        for i in range(n):
+            angle = i/(n-1) * (2*np.pi)
+            cp[0, 0] = focal[0] + r_xy * np.cos(angle)
+            cp[0, 1] = focal[1] + r_xy * np.sin(angle)
+            yield cp
+
+    else:
+        raise NotImplementedError
+
+
 def plotter_wrapper(p: Union[pv.Plotter, dict],
                     window_size: tuple = (2048, 1536), camera_position=None,
                     lighting: str = 'three lights', off_screen: bool = False,
@@ -32,7 +69,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
     if isinstance(p, dict):
         camera_position = p.pop('camera_position', None)
         window_size = p.pop('window_size', window_size)
-        lighting = p.pop('window_size', lighting)
+        lighting = p.pop('lighting', lighting)
         off_screen = p.pop('off_screen', off_screen)
         gif = p.pop('gif', gif)
         off_screen = headless and off_screen  # Endog

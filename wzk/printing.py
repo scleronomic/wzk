@@ -2,7 +2,7 @@ import os
 import sys
 import numpy as np
 
-from wzk.numpy2 import get_stats  # TODO get rid of circular environments
+from wzk.numpy2 import get_stats
 
 
 def quiet_mode_on():

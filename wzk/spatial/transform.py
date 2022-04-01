@@ -220,3 +220,24 @@ def apply_noise(f, trans, rot, mode='normal'):
 def sample_frame_noise(trans, rot, shape, mode='normal'):
     f = initialize_frames(shape=shape, n_dim=3, mode='eye')
     return apply_noise(f=f, trans=trans, rot=rot, mode=mode)
+
+
+def rot_x(alpha):
+    return np.array([[1, 0, 0, 0],
+                   [0, +np.cos(alpha), -np.sin(alpha), 0],
+                   [0, +np.sin(alpha), +np.cos(alpha), 0],
+                   [0, 0, 0, 1]])
+
+
+def rot_y(beta):
+    return np.array([[+np.cos(beta), 0, +np.sin(beta), 0],
+                      [0, 1, 0, 0],
+                      [-np.sin(beta), 0, +np.cos(beta), 0],
+                      [0, 0, 0, 1]])
+
+
+def rot_z(gamma):  # theta
+    return np.array([[+np.cos(gamma), -np.sin(gamma), 0, 0],
+                     [+np.sin(gamma), +np.cos(gamma), 0, 0],
+                     [0, 0, 1, 0],
+                     [0, 0, 0, 1]])

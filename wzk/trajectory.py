@@ -5,7 +5,7 @@ from wzk.math2 import angle2minuspi_pluspi
 
 
 def full2inner(x):
-    return x[..., 1:-1, :]
+    return x[..., 1:-1, :].copy()
 
 
 def inner2full(inner, start=None, end=None):
@@ -34,11 +34,11 @@ def inner2full(inner, start=None, end=None):
 
 def full2start_end(x, mode=''):
     if mode == '1':
-        return x[..., [0, -1], :]
+        return x[..., [0, -1], :].copy()
     if mode == '20':
-        return x[..., 0, :], x[..., -1, :]
+        return x[..., 0, :].copy(), x[..., -1, :].copy()
     elif mode == '21':
-        return x[..., :1, :], x[..., -1:, :]
+        return x[..., :1, :].copy(), x[..., -1:, :].copy()
     else:
         raise NotImplementedError
 
@@ -153,9 +153,9 @@ def get_substeps_adjusted(x, n,
 
     n_sub_cs = np.hstack((0, n_sub.cumsum())) + 1
 
-    # Add the linear interpolation between the random waypoints - step by step for each dimension
+    # Add the linear interpolation between the waypoints - step by step for each dimension
     x_n = np.empty((n, d))
-    x_n[0, :] = x[0, :]
+    x_n[0, :] = x[0, :].copy()
     for i in range(m1):
         x_n[n_sub_cs[i]:n_sub_cs[i + 1], :] = \
             get_substeps(x=x[i:i + 2, :], n=n_sub[i], is_periodic=is_periodic, include_start=False)

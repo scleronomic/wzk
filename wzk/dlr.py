@@ -1,13 +1,13 @@
 import os
 
-# USERNAME = os.path.expanduser("~").split(sep='/')[-1]
-# TODO is this smarter static or dynamic
-USERNAME = "tenh_jo"
+USERNAME = os.path.expanduser("~").split(sep='/')[-1]
+# USERNAME = "tenh_jo"
 
 
 def where_am_i():
     location_dict = dict(jote='mac',
                          tenh_jo='dlr',
+                         bauml='dlr',
                          johannes_tenhumberg_gmail_com='gcp')
     try:
         location = location_dict[USERNAME]
@@ -20,9 +20,9 @@ def where_am_i():
 LOCATION = where_am_i()
 
 # Alternative storage places for the samples
-DLR_USERSTORE = f"/volume/USERSTORE/{USERNAME}"  # Daily Back-up, relies on connection -> not for large Measurements
-DLR_HOMELOCAL = f"/home_local/{USERNAME}"        # No Back-up, but fastest drive -> use for calculation
-DLR_USB = f"/var/run/media/{USERNAME}/DLR-MA"
+DLR_USERSTORE = f"/volume/USERSTORE/tenh_jo"  # Daily Back-up, relies on connection -> not for large Measurements
+DLR_HOMELOCAL = f"/home_local/tenh_jo"        # No Back-up, but fastest drive -> use for calculation
+DLR_USB = f"/var/run/media/tenh_jo/DLR-MA"
 
 
 # ----------------------------------------------------------------------------------------------------------------------

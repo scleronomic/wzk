@@ -126,10 +126,10 @@ def dxnorm_dx(x, return_norm=False):
     x_squared = x**2
 
     # Diagonal
-    dxn_x[:, np.arange(n_dim), np.arange(n_dim)] = x_squared[..., off_diag_idx].sum(axis=-1)
+    dxn_x[..., np.arange(n_dim), np.arange(n_dim)] = x_squared[..., off_diag_idx].sum(axis=-1)
 
     # Off-Diagonal
-    dxn_x[:, np.arange(n_dim)[:, np.newaxis], off_diag_idx] = -x[..., np.newaxis] * x[:, off_diag_idx]
+    dxn_x[..., np.arange(n_dim)[..., np.newaxis], off_diag_idx] = -x[..., np.newaxis] * x[..., off_diag_idx]
 
     dxn_x *= (x_squared.sum(axis=-1, keepdims=True)**(-3/2))[..., np.newaxis]
 
