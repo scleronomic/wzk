@@ -223,9 +223,9 @@ def umount_detach(sdx, disk):
 
 
 if __name__ == '__main__':
-    fire.Fire({'connect2': connect2})
-    fire.Fire({'attach_mount': attach_mount})
-    fire.Fire({'umount_detach': umount_detach})
+    fire.Fire({'connect2': connect2,
+               'attach_mount': attach_mount,
+               'umount_detach': umount_detach})
 
 # gcloud compute instances create instance-2
 # --project=neon-polymer-214621
