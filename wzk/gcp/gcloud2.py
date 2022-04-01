@@ -21,7 +21,7 @@ __GCP_SCOPES = "https://www.googleapis.com/auth/devstorage.read_only," \
 GCP_USER = os.environ['GCP_USER']
 GCP_USER_SHORT = os.environ['GCP_USER_SHORT']
 
-GCP_USER_LABEL = f'user={GCP_USER_SHORT}'
+GCP_USER_LABEL = f"user={os.environ['GCP_USER_LABEL']}"
 
 
 def add_old_disks_flag(disks):
@@ -265,9 +265,3 @@ if __name__ == '__main__':
 #         print(f" - {instance.name} ({instance.machine_type})")
 #
 #     return instance_list
-#
-
-
-
-
-
