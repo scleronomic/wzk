@@ -118,6 +118,15 @@ def attach_disk_cmd(instance, disk):
     return cmd
 
 
+def attach_disk(instance, disk):
+    blk0 = set(lsblk().NAME.values)
+    subprocess.call(attach_disk_cmd(instance=instance, disk=disk), shell=True)
+    blk1 = set(lsblk().NAME.values)
+    sdX = blk1.difference(blk0)
+    sdX = list(sdX)[0]
+    return f"/dev/{sdX}"
+
+
 def detach_disk_cmd(instance, disk):
     instance = __resource2name(instance)
     disk = __resource2name(disk)
@@ -125,8 +134,16 @@ def detach_disk_cmd(instance, disk):
     return cmd
 
 
-def mount_disk_cmd(disk, directory):
-    return f"sudo mount -t ext4 {disk} {directory}"
+def detach_disk(instance, disk):
+    subprocess.call(detach_disk_cmd(instance=instance, disk=disk), shell=True)
+
+
+def mount_disk_cmd(sdx, directory):
+    return f"sudo mount -t ext4 {sdx} {directory}"
+
+
+def mount_disk(sdx, directory):
+    subprocess.call(mount_disk_cmd(sdx=sdx, directory=directory), shell=True)
 
 
 def lsblk():
@@ -135,8 +152,13 @@ def lsblk():
     return blk
 
 
-def umount_disk_cmd(disk):
-    return f"sudo umount {disk}"
+def umount_disk_cmd(sdx):
+    return f"sudo umount {sdx}"
+
+
+def umount_disk(sdx):
+    subprocess.call(umount_disk_cmd(sdx=sdx), shell=True)
+
 
 
 def upload2bucket(disk, file, bucket, n, n0=0):
@@ -149,15 +171,11 @@ def upload2bucket(disk, file, bucket, n, n0=0):
         disk_i = f"{disk}-{i}"
         file_i = f"{bucket}/{file_name}_{i}{file_ext}"
 
-        blk0 = set(lsblk().NAME.values)
-        subprocess.call(attach_disk_cmd(instance=instance, disk=disk_i), shell=True)
-        blk1 = set(lsblk().NAME.values)
-        sdX = blk1.difference(blk0)
-        sdX = list(sdX)[0]
-        subprocess.call(mount_disk_cmd(disk=f"/dev/{sdX}", directory=directory), shell=True)
+        sdX = attach_disk(instance=instance, disk=disk_i)
+        mount_disk(sdx=sdX, directory=directory)
         gsutil_cp(src=file, dst=file_i)
-        subprocess.call(umount_disk_cmd(disk=f"/dev/{sdX}"), shell=True)
-        subprocess.call(detach_disk_cmd(instance=instance, disk=disk_i), shell=True)
+        umount_disk(sdx=sdX)
+        detach_disk(instance=instance, disk=disk_i)
 
 
 def connect_cmd(instance):
@@ -191,9 +209,25 @@ def connect2(name):
     subprocess.call(cmd, shell=True)
 
 
+def attach_mount(disk):
+    directory = f'/home/{GCP_USER}/sdb'
+
+    instance = socket.gethostname()
+    sdx = attach_disk(instance=instance, disk=disk)
+    mount_disk(sdx=sdx, directory=directory)
+
+
+def umount_detach(sdx, disk):
+    instance = socket.gethostname()
+    umount_disk(sdx=sdx)
+    detach_disk(instance=instance, disk=disk)
+
+
 if __name__ == '__main__':
     fire.Fire({'connect2': connect2})
-    
+    fire.Fire({'attach_mount': attach_mount})
+    fire.Fire({'umount_detach': umount_detach})
+
 # gcloud compute instances create instance-2
 # --project=neon-polymer-214621
 # --zone=us-central1-a
