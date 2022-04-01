@@ -122,9 +122,9 @@ def attach_disk(instance, disk):
     blk0 = set(lsblk().NAME.values)
     subprocess.call(attach_disk_cmd(instance=instance, disk=disk), shell=True)
     blk1 = set(lsblk().NAME.values)
-    sdX = blk1.difference(blk0)
-    sdX = list(sdX)[0]
-    return f"/dev/{sdX}"
+    sdx = blk1.difference(blk0)
+    sdx = list(sdx)[0]
+    return sdx
 
 
 def detach_disk_cmd(instance, disk):
@@ -139,7 +139,7 @@ def detach_disk(instance, disk):
 
 
 def mount_disk_cmd(sdx, directory):
-    return f"sudo mount -t ext4 {sdx} {directory}"
+    return f"sudo mount -t ext4 /dev/{sdx} {directory}"
 
 
 def mount_disk(sdx, directory):
@@ -153,12 +153,11 @@ def lsblk():
 
 
 def umount_disk_cmd(sdx):
-    return f"sudo umount {sdx}"
+    return f"sudo umount /dev/{sdx}"
 
 
 def umount_disk(sdx):
     subprocess.call(umount_disk_cmd(sdx=sdx), shell=True)
-
 
 
 def upload2bucket(disk, file, bucket, n, n0=0):
