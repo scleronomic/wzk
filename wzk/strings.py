@@ -1,6 +1,8 @@
 import os
 import re
 import uuid
+import numpy as np
+
 
 abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
        'h', 'o', 'j', 'k', 'l', 'm', 'n',
@@ -123,6 +125,13 @@ def str2eval(s):
         print(s)
         raise TypeError
     return s
+
+
+def find_one_of_n(s, n):
+    b = [n_i in s for n_i in n]
+    assert sum(b) == 1
+    i = np.where(b)[0]
+    return n[i]
 
 
 #

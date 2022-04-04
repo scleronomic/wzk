@@ -170,10 +170,10 @@ def upload2bucket(disk, file, bucket, n, n0=0):
         disk_i = f"{disk}-{i}"
         file_i = f"{bucket}/{file_name}_{i}{file_ext}"
 
-        sdX = attach_disk(instance=instance, disk=disk_i)
-        mount_disk(sdx=sdX, directory=directory)
+        sdx = attach_disk(instance=instance, disk=disk_i)
+        mount_disk(sdx=sdx, directory=directory)
         gsutil_cp(src=file, dst=file_i)
-        umount_disk(sdx=sdX)
+        umount_disk(sdx=sdx)
         detach_disk(instance=instance, disk=disk_i)
 
 
