@@ -378,7 +378,7 @@ def change_column_dtype(file, table, column, dtype, lock=None):
 
 # Get and Set SQL values
 def get_values_sql(file: str, table: str, columns=None, rows=-1,
-                   values_only: bool = False, squeeze_col: bool = True, squeeze_row: bool = True):
+                   values_only: bool = True, squeeze_col: bool = True, squeeze_row: bool = True):
     """
     'i_samples' == i_samples_global
     """
