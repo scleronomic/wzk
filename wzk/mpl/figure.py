@@ -105,6 +105,7 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
     formats = set(formats)
     formats.union(set(ext))
 
+    formats = list(formats)
     for f in formats:
         file_f = f'{file}.{f}'
 
