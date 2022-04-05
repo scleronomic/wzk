@@ -97,7 +97,7 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
     if ext == '':
         ext = tuple()
     else:
-        ext = tuple([ext])
+        ext = tuple([ext[1:]])
 
     if formats is None:
         formats = tuple()
