@@ -1,10 +1,11 @@
 import numpy as np
 
 
-__str2np = {'f128': np.float64,
+__str2np = {'f': np.float64,
             'f64': np.float64,
             'f32': np.float32,
             'f16': np.float16,
+            'i': np.int32,
             'i64': np.int64,
             'i32': np.int32,
             'i16': np.int16,

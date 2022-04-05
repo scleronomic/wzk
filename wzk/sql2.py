@@ -20,8 +20,7 @@ TYPE_BLOB = 'BLOB'
 
 
 def rows2sql(rows: object, dtype: object = str, values=None) -> object:
-    if isinstance(rows, (int,
-                         np.int, np.int8, np.int16, np.int32, np.int64,
+    if isinstance(rows, (int, np.int8, np.int16, np.int32, np.int64,
                          np.uint, np.uint8, np.uint16, np.uint32, np.uint64)):
         if rows == -1:
             if values is None:
@@ -213,6 +212,8 @@ def rename_columns(file: str, table: str, columns: dict) -> None:
             new = columns[old]
             cur.execute(f"ALTER TABLE `{table}` RENAME COLUMN `{old}` TO `{new}`")
 
+    print(get_columns(file=file, table=table))
+
 
 def get_n_rows(file, table):
     """
@@ -250,10 +251,11 @@ def concatenate_tables(file, table, table2, file2=None, lock=None):
 
 
 def values2bytes(value, column):
+    value = np.array(value, dtype=str2np(column))
     if np.size(value[0]) > 1 and not isinstance(value[0], bytes):
-        value = np.array(value, dtype=str2np(column))
-        value = [xx.tobytes() for xx in value]
-    return value
+        return [xx.tobytes() for xx in value]
+    else:
+        return value.tolist()
 
 
 def values2bytes_dict(data: dict) -> dict:
@@ -404,6 +406,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 
     if values_only:
         for col in columns:
+            # print(col)
             value = bytes2values(value=df.loc[:, col].values, column=col)
             value_list.append(value)
 
@@ -436,6 +439,9 @@ def set_values_sql(file, table,
     rows = rows2sql(rows, values=values[0], dtype=list)
     columns = columns2sql(columns, dtype=list)
     values = tuple(values2bytes(value=v, column=c) for v, c in zip(values, columns))
+
+    # values2 = np.array(values[2], dtype=float)
+    # values = (values[0], values[1], values2)
 
     columns = '=?, '.join(map(str, columns))
     columns += '=?'

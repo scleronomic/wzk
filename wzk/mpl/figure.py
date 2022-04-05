@@ -93,7 +93,18 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
     if dir_name != '':
         safe_makedir(directory=dir_name)
 
+    file, ext = os.path.splitext(file)
+    if ext == '':
+        ext = tuple()
+    else:
+        ext = tuple([ext])
+
+    if formats is None:
+        formats = tuple()
     formats = atleast_tuple(formats, convert=False)
+    formats = set(formats)
+    formats.union(set(ext))
+
     for f in formats:
         file_f = f'{file}.{f}'
 
