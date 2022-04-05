@@ -103,10 +103,9 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
         formats = tuple()
     formats = atleast_tuple(formats, convert=False)
     formats = set(formats)
-    formats.union(set(ext))
+    formats = formats.union(set(ext))
 
     formats = list(formats)
-    print(formats)
     for f in formats:
         file_f = f'{file}.{f}'
 
