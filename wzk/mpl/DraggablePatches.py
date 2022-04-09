@@ -260,10 +260,12 @@ class DraggablePatchList:
     def __n_index_wrapper(self, i, n):
         if i is None:
             i = np.arange(n)
-        elif i == -1:
-            i = np.arange(len(self.dp_list))
         elif isinstance(i, int):
-            i = [i]
+            if i == -1:
+                i = np.arange(len(self.dp_list))
+            else:
+                i = [i]
+
         n = int(np.max([n, np.size(i)]))
 
         return n, i

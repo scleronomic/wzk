@@ -251,8 +251,9 @@ def concatenate_tables(file, table, table2, file2=None, lock=None):
 
 
 def values2bytes(value, column):
+
     value = np.array(value, dtype=str2np(column))
-    if np.size(value[0]) > 1 and not isinstance(value[0], bytes):
+    if np.size(value[0]) > 1 and not isinstance(value[0], bytes) and not isinstance(value[0], str):
         return [xx.tobytes() for xx in value]
     else:
         return value.tolist()
@@ -439,9 +440,6 @@ def set_values_sql(file, table,
     rows = rows2sql(rows, values=values[0], dtype=list)
     columns = columns2sql(columns, dtype=list)
     values = tuple(values2bytes(value=v, column=c) for v, c in zip(values, columns))
-
-    # values2 = np.array(values[2], dtype=float)
-    # values = (values[0], values[1], values2)
 
     columns = '=?, '.join(map(str, columns))
     columns += '=?'

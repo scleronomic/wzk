@@ -54,6 +54,21 @@ def denormalize_11(x, low, high):
     return (x + 1) * (high - low)/2 + low
 
 
+# Standardize
+def standardize_01(x, mean, std, axis=None):
+    if mean is None:
+        mean = np.mean(x, axis=axis, keepdims=True)
+
+    if std is None:
+        std = np.std(x, axis=axis, keepdims=True)
+
+    return (x-mean) / std
+
+
+def destandardize_01(x, mean, std):
+    return mean + x*std
+
+
 def euclidean_norm(arr, axis=-1, squared=False):
     if squared:
         return (arr**2).sum(axis=axis)
