@@ -329,7 +329,7 @@ def circle_circle_intersection(xy0, r0, xy1, r1):
 
     d = np.linalg.norm(xy1 - xy0)
 
-    # non intersecting
+    # non-intersecting
     if d > r0 + r1:
         return None
     # One circle within other
@@ -352,9 +352,9 @@ def circle_circle_intersection(xy0, r0, xy1, r1):
 
 def ray_sphere_intersection(rays, spheres):
     """
-    :param rays: n_rays x 2 x 3    (axis=1: origin, target)
-    :param spheres: n_spheres x 4  (axis=1: x, y, z, r)
-    :return: n_rays x n_spheres (boolean array) with res[o, j] = True if ray o intersects with sphere j
+    rays: n_rays x 2 x 3    (axis=1: origin, target)
+    spheres: n_spheres x 4  (axis=1: x, y, z, r)
+    return: n_rays x n_spheres (boolean array) with res[o, j] = True if ray o intersects with sphere j
     Formula from: https:#en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
     """
 

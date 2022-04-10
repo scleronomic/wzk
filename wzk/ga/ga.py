@@ -1,7 +1,7 @@
 import numpy as np
 
-class GA:
 
+class GA:
     def __init__(self, pop_size, n_var,
                  n_gen=10,
                  n_keep_best=None,

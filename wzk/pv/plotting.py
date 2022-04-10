@@ -7,7 +7,6 @@ from scipy.spatial import ConvexHull
 from matplotlib import colors
 
 from wzk.numpy2 import scalar2array, array2array
-from wzk.dicts_lists_tuples import atleast_list
 from wzk.image import bool_img2surf
 from wzk.spatial import invert
 from wzk.geometry import cube
@@ -72,7 +71,7 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
         lighting = p.pop('lighting', lighting)
         off_screen = p.pop('off_screen', off_screen)
         gif = p.pop('gif', gif)
-        off_screen = headless and off_screen  # Endog
+        off_screen = headless and off_screen
 
         if off_screen:
             print(platform)

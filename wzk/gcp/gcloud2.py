@@ -5,7 +5,7 @@ import subprocess
 import pandas as pd
 from io import StringIO
 
-from wzk.subprocess2 import call2, popen_list
+from wzk.subprocess2 import call2
 from wzk.dicts_lists_tuples import atleast_list
 
 GCP_PROJECT = os.environ['GCP_PROJECT']

@@ -83,7 +83,7 @@ def reshape_img(img, n_dim=2, sample_dim=True, channel_dim=True,
 
 def concatenate_images(*imgs, axis=-1):
     """
-    could add parameters which allow to stack horizontal, vertical, channel_wise, and sample wise
+    could add parameters which allow stacking horizontal, vertical, channel_wise, and sample wise
     """
     n_dim = np.max([i.ndim for i in imgs])
     if axis == +1:
@@ -175,7 +175,7 @@ def pooling(mat, kernel, method='max', pad=False):
                    'mean' for mean-pooling.
     <pad>: bool, pad <mat> or not. If no pad, output has shape
            n//f, n being <mat> shape, f being kernel shape.
-           if pad, output has shape ceil(n/f).
+           if pad output has shape ceil(n/f).
 
     Return <result>: pooled matrix.
     """
@@ -394,7 +394,7 @@ def img2compressed(img, n_dim=-1, level=9):
     Compress the given image with the zlib routine to a binary string.
     Level of compression can be adjusted. A timing with respect to different compression levels for decompression showed
     no difference, so the highest level is default, this corresponds to the largest compression.
-    For compression it is slightly slower but this happens just once and not during keras training, so the smaller
+    For compression, it is slightly slower but this happens just once and not during keras training, so the smaller
     needed memory was favoured.
 
     Alternative:

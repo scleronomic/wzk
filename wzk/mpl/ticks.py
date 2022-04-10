@@ -143,7 +143,7 @@ def get_ticks_index(ax, axis, v, squeeze=True):
 
 def remove_ticks(ax, v, axis='x'):
     """
-    Remove the ticks corresponding to values in v from the axis.
+    Remove the ticks corresponding to the values in v from the axis.
     If the values are not found they are ignored.
     """
 

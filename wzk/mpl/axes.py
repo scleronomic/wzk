@@ -22,13 +22,11 @@ def get_pip(ax, x, y, width, height, **kwargs):
 # Axes
 def get_xaligned_axes(ax, y_distance=0.05, height=0.03, factor=1., **kwargs):
     """
-
-    :param ax:
-    :param y_distance: negative distance in y direction to the x axis
-    :param height: height of the new axes
-    :param factor: factor for scaling the fig_width_inch of the new axes
-    :param kwargs: kwargs passed to matplotlib.pyplot.axes()
-    :return:
+    ax:
+    y_distance: negative distance in y direction to the x-axis
+    height: height of the new axes
+    factor: factor for scaling the fig_width_inch of the new axes
+    kwargs: kwargs passed to matplotlib.pyplot.axes()
     """
     p = ax.get_position()
     x0, y0, width0 = p.x0, p.y0, p.width

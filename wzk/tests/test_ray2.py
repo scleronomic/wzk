@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from wzk.ray2 import ray, ray_init, start_ray_cluster
+from wzk.ray2 import ray, ray_init
 from wzk import tic, toc
 from wzk.multiprocessing2 import mp_wrapper
 
@@ -23,12 +23,10 @@ def speed():
         time.sleep(t)
         return np.ones((2, 1))
 
-
     @ray.remote
     def test():
         time.sleep(t)
         return 1
-
 
     def test_ray():
         tic()
@@ -39,12 +37,10 @@ def speed():
         tt = toc('ray')
         return tt
 
-
     def compare_times(tt):
         t0 = (t*n/n_cpu)
         print(t0)
         print((tt - t0)/n)
-
 
     test_ray()
     test_ray()
@@ -56,7 +52,6 @@ def speed():
     for i in range(n//n_cpu):
         test0()
     toc()
-
 
     tic()
     mp_wrapper(n, fun=test0, n_processes=n_cpu)

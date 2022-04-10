@@ -45,7 +45,7 @@ class Test(TestCase):
 
         fig, ax = new_fig(title='lower, ji')
         h = imshow(ax=ax, img=arr, limits=limits, cmap='Blues', mask=mask, origin='lower', axis_order='ji')
-        imshow_update(h=h, img=arr, mask=arr % 2 == 1, cmap='Reds', axis_order='ji')
+        imshow(h=h, img=arr, mask=arr % 2 == 1, cmap='Reds', axis_order='ji')
 
         fig, ax = new_fig(aspect=1)
         arr = np.arange(42).reshape(6, 7)

@@ -334,7 +334,7 @@ def digitize_group(x, bins, right=False):
     """
     https://stackoverflow.com/a/26888164/7570817
     Similar to scipy.stats.binned_statistic but just return the indices corresponding to each bin.
-    Same signature as numpy.digitize
+    Same signature as numpy.digitize()
     """
     idx_x = np.digitize(x=x, bins=bins, right=right)
     n, m = len(x), len(bins) + 1
@@ -356,7 +356,8 @@ def rolling_window(a, window):
 
 def find_subarray(a, b):
     """
-    Find b in a. Return the index where the overlap begins.
+    Find b in a.
+    Return the index where the overlap begins.
 
     # a = np.array((2, 3, 4, 3, 5, 1))
     # b = np.array((3, 4, 3))
@@ -488,13 +489,13 @@ def get_interval_indices(bool_array):
 def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     """
     Adjust the boundaries to fit small array in a larger image.
-    :param pos:  idx where the small image should be set in the bigger picture, option A
-    :param mode:  mode how to position theta smaller array in the larger:
+    pos:  idx where the small image should be set in the bigger picture, option A
+    mode:  mode how to position theta smaller array in the larger:
                   "center": pos describes the center of the small array inside the big array (shape_small must be odd)
                   "lower_left":
                   "upper_right":
-    :param shape_small:  Size of the small image (=2*sm-1) in (number of pixels in each dimension)
-    :param shape_big:  Size of the large image in (number of pixels in each dimension)
+    shape_small:  Size of the small image (=2*sm-1) in (number of pixels in each dimension)
+    shape_big:  Size of the large image in (number of pixels in each dimension)
     :return:
     """
 
@@ -578,6 +579,7 @@ def idx2boolmat(idx, n=100):
     """
     The last dimension of idx contains the indices. n-1 is the maximal possible index
     Returns matrix with shape np.shape(idx)[:-1] + (n,)
+
     """
 
     s = np.shape(idx)[:-1]
@@ -648,6 +650,7 @@ def block_view(a, shape, aslist=False, require_aligned_blocks=True):
     <BLANKLINE>
       [[13 14]
        [18 19]]]]
+
     Inspired by the 2D example shown here: https://stackoverflow.com/a/8070716/162094
     """
     assert a.flags["C_CONTIGUOUS"], "This function relies on the memory layout of the array."
@@ -904,5 +907,5 @@ def find_largest_consecutives(x):
     return n, find_consecutives(x, n=n)
 
 
-def squeeze(*args):
+def squeeze_all(*args):
     return [np.squeeze(a) for a in args]

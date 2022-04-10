@@ -11,5 +11,4 @@ def make_startup_file(user, bash_file):
         f"sudo -H -u {user} tmux -2  attach-session -t main\n"
     return s
 
-
- # f"python /home/{user}/src/wzk/wzk/git2.py\n" \         # f"sudo chmod 777 -R /home/{user}/src/\n" \
+# f"python /home/{user}/src/wzk/wzk/git2.py\n" \         # f"sudo chmod 777 -R /home/{user}/src/\n" \

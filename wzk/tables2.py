@@ -9,7 +9,7 @@ import numpy as np
 import tables as tb
 
 
-#'-**-**-**-**-**-**- user record definition  -**-**-**-**-**-**-**-'
+# '-**-**-**-**-**-**- user record definition  -**-**-**-**-**-**-**-'
 
 # Define a user record to characterize some kind of particles
 class Particle(tb.IsDescription):
@@ -21,6 +21,7 @@ class Particle(tb.IsDescription):
     grid_j = tb.Int32Col()      # integer
     pressure = tb.Float32Col()  # float  (single-precision)
     energy = tb.Float64Col()    # double (double-precision)
+
 
 print()
 print('-**-**-**-**-**-**- file creation  -**-**-**-**-**-**-**-')
@@ -74,7 +75,7 @@ print('-**-**-**-**-**-**- table data reading & selection  -**-**-**-**-**-')
 # on entries where TDCcount field is greater than 3 and pressure less than 50
 xs = [x for x in table.iterrows()
       if x['TDCcount'] > 3 and 20 <= x['pressure'] < 50]
-pressure = [x['pressure'] for x in xs ]
+pressure = [x['pressure'] for x in xs]
 print("Last record read:")
 print(repr(xs[-1]))
 print("Field pressure elements satisfying the cuts:")
@@ -109,5 +110,3 @@ print(h5file)
 # Close the file
 h5file.close()
 print("File '" + filename + "' created")
-
-

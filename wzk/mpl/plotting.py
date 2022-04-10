@@ -102,9 +102,9 @@ def color_plot_connected(y, color_s, x=None, connect_jumps=True, ax=None, **kwar
     y: array_like
         y-Measurements
     color_s: array_like
-        Same length as y, colors for each Measurements point.
+        Same length as y, colors for each measurement's point.
     x:
-        x-Measurements
+        x-measurements
     connect_jumps: bool
         If True, the border between two different colors is drawn 50 / 50 with both neighboring colors
     **d:
@@ -169,13 +169,13 @@ def line_2colored(x, y, colors, ax=None, **kwargs):
 def color_plot(x, y, color_s, plot_fcn, **kwargs):
     """
     Plot a line with an individual color for each point.
-    :param x: Data for x-axis
-    :param y: Data for y-axis
-    :param color_s: array of colors with the same length as x and y respectively. If now enough colors are given,
-                    use just the first (only) one given
-    :param plot_fcn: Matplotlib function, which should be used for plotting -> use ax.METHOD to ensure that the right
-                     axis is used
-    :param kwargs: Additional d for matplotlib.pyplot.plot()
+    x: Data for x-axis
+    y: Data for y-axis
+    color_s: array of colors with the same length as x and y respectively. If now enough colors are given,
+             use just the first (only) one given
+    plot_fcn: Matplotlib function, which should be used for plotting -> use ax.METHOD to ensure that the right
+              axis is used
+    kwargs: Additional d for matplotlib.pyplot.plot()
     """
 
     h = []
@@ -195,7 +195,6 @@ def draw_lines_between(*, x1=None, x2=None, y1, y2, ax=None, **kwargs):
     cl = collections.LineCollection(np.stack((np.c_[x1, x2], np.c_[y1, y2]), axis=2), **kwargs)
     ax.add_collection(cl)
     return cl
-
 
 
 def get_hist(ax):

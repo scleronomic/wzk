@@ -81,8 +81,8 @@ def aaa(t):
                 active[i] = True
 
 
-
-aaa(np.pi/10)
+if __name__ == '__main__':
+    aaa(np.pi/10)
 
 # for tt in [np.pi/15, np.pi/20, np.pi/25]:
 #     aaa(tt)

@@ -198,7 +198,7 @@ def divisors(n, with_1_and_n=False):
 
     primes = list(factors.keys())
 
-    # Generates factors from primes[k:] subset
+    # Generate factors from primes[k:] subset
     def generate(k):
         if k == len(primes):
             yield 1
@@ -269,7 +269,7 @@ def modulo(x, low, high):
 def angle2minuspi_pluspi(x):
     return modulo(x=x, low=-np.pi, high=+np.pi)
     # modulo is faster for larger arrays, for small ones they are similar but arctan is faster in this region
-    #  -> as always you have to make an trade-off
+    #  -> as always you have to make a trade-off
     # return np.arctan2(np.sin(x), np.cos(x))
 
 

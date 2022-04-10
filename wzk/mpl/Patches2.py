@@ -33,7 +33,7 @@ class FancyArrowX2(patches.FancyArrow):
 
 
 class FancyBbox(patches.FancyBboxPatch):
-    def __init__(self, xy=(0., 0.), width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
+    def __init__(self, xy, width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
         if boxstyle in ['Roundtooth', 'Sawtooth']:
             bs = patches.BoxStyle(boxstyle, pad=pad, tooth_size=corner_size)
         elif boxstyle in ['Round', 'Round4']:
@@ -78,7 +78,7 @@ class RoundedPolygon(patches.PathPatch):
 
 class CurlyBrace(patches.PathPatch):
     """
-    Create a matplotlib patch corresponding to a curly brace (i.e. this thing: { )
+    Create a matplotlib patch corresponding to a curly brace (i.e. these things: { / } )
 
     Adopted from
     https://github.com/bensondaled/curly_brace/blob/master/curly_brace_patch.py
@@ -123,12 +123,12 @@ def do_aff_trafo(patch, theta, xy=None, por=(0, 0)):
 def get_aff_trafo(xy0=None, xy1=None, theta=0, por=(0, 0), ax=None, patch=None):
     """
 
-    :param xy0: current position of the object, if not provided patch.get_xy() is used
-    :param xy1: desired position of the object
-    :param theta: rotation in degrees
-    :param por: point of rotation relative to the objects coordinates
-    :param ax:
-    :param patch:
+    xy0: current position of the object, if not provided patch.get_xy() is used
+    xy1: desired position of the object
+    theta: rotation in degrees
+    por: point of rotation relative to the objects coordinates
+    ax:
+    patch:
     :return:
     """
 

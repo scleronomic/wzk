@@ -5,7 +5,7 @@ from wzk.numpy2 import shape_wrapper
 from wzk.random2 import noise, random_uniform_ndim
 from wzk.geometry import sample_points_on_sphere_3d
 
-# angle axis representation is like a onion, the singularity is the boarder to the next 360 shell
+# angle axis representation is like an onion, the singularity is the boarder to the next 360 shell
 # 0 is 1360 degree away from the next singularity -> nice  # what???
 
 # Nomenclature
@@ -224,16 +224,16 @@ def sample_frame_noise(trans, rot, shape, mode='normal'):
 
 def rot_x(alpha):
     return np.array([[1, 0, 0, 0],
-                   [0, +np.cos(alpha), -np.sin(alpha), 0],
-                   [0, +np.sin(alpha), +np.cos(alpha), 0],
-                   [0, 0, 0, 1]])
+                     [0, +np.cos(alpha), -np.sin(alpha), 0],
+                     [0, +np.sin(alpha), +np.cos(alpha), 0],
+                     [0, 0, 0, 1]])
 
 
 def rot_y(beta):
     return np.array([[+np.cos(beta), 0, +np.sin(beta), 0],
-                      [0, 1, 0, 0],
-                      [-np.sin(beta), 0, +np.cos(beta), 0],
-                      [0, 0, 0, 1]])
+                     [0, 1, 0, 0],
+                     [-np.sin(beta), 0, +np.cos(beta), 0],
+                     [0, 0, 0, 1]])
 
 
 def rot_z(gamma):  # theta

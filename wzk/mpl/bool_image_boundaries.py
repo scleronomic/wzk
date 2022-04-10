@@ -73,7 +73,7 @@ def get_edges(img):
 def combine_edges(ij_edges, clean=True):
     """
     Connect all edges defined by 'xy_boundary' (result from the function 'get_all_boundary_edges()')
-    to closed boundaries around a object.
+    to closed boundaries around am object.
     If not all edges are part of the surface of one object a list of closed boundaries is returned (one for every
     object).
     """
@@ -246,7 +246,7 @@ def combine_faces(face_vtx, verbose=0):
                     raise IndexError
 
                 if free_direction != -1:
-                    # Replace the the coordinates of one edge by the edge of the other face to get the combined face
+                    # Replace the coordinates of one edge by the edge of the other face to get the combined face
                     fd_coord_set_1 = set(face_vtx[i, :, free_direction])
                     fd_coord_set_2 = set(face_vtx[j, :, free_direction])
                     old_value = list(fd_coord_set_1.difference(fd_coord_set_2))[0]

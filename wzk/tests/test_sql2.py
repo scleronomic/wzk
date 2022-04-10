@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import numpy as np
-
 from wzk.sql2 import *
 from wzk.files import safe_rmdir
 

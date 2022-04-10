@@ -1,3 +1,5 @@
+# TODO clean this up and make it general
+
 import numpy as np
 import pandas as pd
 
