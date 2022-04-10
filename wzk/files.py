@@ -24,7 +24,7 @@ def get_pythonpath():
 
 def safe_rmdir(directory: str):
     if os.path.exists(directory):
-        os.removedirs(directory)
+        shutil.rmtree(path=directory)
     else:
         pass
 
