@@ -22,17 +22,21 @@ def get_pythonpath():
         return []
 
 
-def safe_remove(file: str):
-    if os.path.exists(file):
-        os.remove(file)
+def safe_rmdir(directory: str):
+    if os.path.exists(directory):
+        os.remove(directory)
     else:
         pass
 
 
-def delete_dir(directory):
+def rm_files_in_dir(directory):
     file_list = os.listdir(directory)
     for file in file_list:
         os.remove(os.path.join(directory, file))
+
+
+def safe_mkdir(directory: str):
+    os.makedirs(directory, exist_ok=True)
 
 
 def start_open(file: str):
@@ -67,11 +71,6 @@ def load_pickle(file: str):
 
 def list_files(directory):
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
-
-
-def safe_makedir(directory: str):
-    if not os.path.exists(directory):
-        os.makedirs(directory)
 
 
 def ensure_extension_point(ext):

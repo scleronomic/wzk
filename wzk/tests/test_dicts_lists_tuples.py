@@ -1,6 +1,6 @@
 from unittest import TestCase
 from wzk.dicts_lists_tuples import *
-from wzk.files import safe_remove
+from wzk.files import safe_rmdir
 
 
 class Test(TestCase):
@@ -50,7 +50,7 @@ class Test(TestCase):
 
         write_dict2json(file=dummy_file, d=dict_1, indent=4)
         dict_2 = read_json2dict(dummy_file)
-        safe_remove(dummy_file)
+        safe_rmdir(dummy_file)
 
         self.assertTrue(dict_1 == dict_2)
 

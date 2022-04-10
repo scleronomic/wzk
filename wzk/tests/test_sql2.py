@@ -3,7 +3,7 @@ from unittest import TestCase
 import numpy as np
 
 from wzk.sql2 import *
-from wzk.files import safe_remove
+from wzk.files import safe_rmdir
 
 
 class Test(TestCase):
@@ -80,8 +80,8 @@ class Test(TestCase):
         self.assertTrue(np.all(df == df2))
         #
 
-        safe_remove(file1)
-        safe_remove(file2)
+        safe_rmdir(file1)
+        safe_rmdir(file2)
 
     def test_set_values(self):
         file = f"{self.get_path()}/dummy_test_set_values.db"
@@ -97,7 +97,7 @@ class Test(TestCase):
         v1 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
         self.assertTrue(np.array_equal(v, v1))
         #
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_set_values_2(self):
         file = f"{self.get_path()}/dummy_test_set_values_2.db"
@@ -116,7 +116,7 @@ class Test(TestCase):
         self.assertTrue(np.array_equal(v, v1))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_add_column(self):
         file = f"{self.get_path()}/dummy_test_set_values_3.db"
@@ -134,7 +134,7 @@ class Test(TestCase):
         self.assertTrue(np.array_equal(v, v1))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_delete_rows(self):
         file = f"{self.get_path()}/dummy_test_delete_rows.db"
@@ -154,7 +154,7 @@ class Test(TestCase):
         self.assertTrue(np.array_equal(df.iloc[2:3, :].values, df2.values))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_get_columns(self):
         file = f"{self.get_path()}/dummy_test_get_columns.db"
@@ -167,7 +167,7 @@ class Test(TestCase):
         self.assertTrue(np.array_equal(df.columns.values, c))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_change_column_dtype(self):
         file = f"{self.get_path()}/dummy_test_change_column_dtype.db"
@@ -181,7 +181,7 @@ class Test(TestCase):
         self.assertTrue(np.all(get_values_sql(file=file, table=table, values_only=True) == 0))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_alter_table(self):
         file = f"{self.get_path()}/dummy_test_alter_table.db"
@@ -205,7 +205,7 @@ class Test(TestCase):
         self.assertTrue(isinstance(cc[0], float))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
     def test_sort_table(self):
         file = f"{self.get_path()}/dummy_test_sort_table.db"
@@ -221,6 +221,6 @@ class Test(TestCase):
         self.assertTrue(np.all(np.argsort(a2) == np.arange(len(a2))))
         #
 
-        safe_remove(file)
+        safe_rmdir(file)
 
 
