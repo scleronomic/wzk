@@ -28,7 +28,7 @@ class DraggablePatch(DummyPatch):
         ax.add_patch(self)
 
         self.vary_xy = np.array(vary_xy)
-        self.callback_drag = callback  # Patches already have an attribute callback, add_callback()
+        self.callback_drag = [callback] if isinstance(callback, Callable) else callback  # Patches already have an attribute callback, add_callback()
         self.limits = limits
 
         self.wsad = wsad
@@ -52,7 +52,6 @@ class DraggablePatch(DummyPatch):
     def add_callback_drag(self, callback):
         if self.callback_drag is None:
             self.set_callback_drag(callback=callback)
-
         else:
             self.callback_drag.append(callback)
 
@@ -175,7 +174,8 @@ class DraggablePatch(DummyPatch):
 
         self.set_xy_drag(xy=self.apply_limits(xy=xy))
         if self.callback_drag is not None:
-            self.callback_drag()
+            for cb_i in self.callback_drag:
+                cb_i(self)
 
         plt.show()
 
