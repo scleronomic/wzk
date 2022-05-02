@@ -25,7 +25,7 @@ def get_n_samples_per_process(n_samples, n_processes):
 
 
 def mp_wrapper(*args, fun,
-               n_processes=1, max_chunk_size=None, __debug_loop=False):
+               n_processes=1, max_chunk_size=None, use_loop=False):
     """
     Multiprocessing Wrapper for a function with a single argument.
     arg must be an iterative and will be split along its first dimension and fed to the different processes
@@ -101,7 +101,7 @@ def mp_wrapper(*args, fun,
                     return fun(*map(lambda a: a[n_samples_pp_cs[i_process]:n_samples_pp_cs[i_process+1]],
                                     args))
 
-        if __debug_loop:
+        if use_loop:
             return combine_results([fun_i(i_process=ip) for ip in range(n_processes)])
 
         def __fun_wrapper(i_process, queue):
