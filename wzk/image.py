@@ -3,9 +3,14 @@ import numpy as np
 from scipy.signal import convolve2d, convolve
 from skimage.io import imread, imsave  # noqa
 from skimage import measure
+from skimage.morphology import flood_fill
 
 from wzk.dicts_lists_tuples import tuple_extract
-from wzk.numpy2 import align_shapes, get_cropping_indices, flatten_without_last, initialize_array, limits2cell_size
+from wzk.numpy2 import (align_shapes, get_cropping_indices, flatten_without_last, initialize_array, limits2cell_size,
+                        grid_x2i, grid_i2x)
+from wzk.trajectory import get_substeps_adjusted
+from wzk.geometry import discretize_triangle_mesh
+from wzk.math2 import make_even_odd
 
 
 def imread_bw(file, threshold):
@@ -94,6 +99,32 @@ def concatenate_images(*imgs, axis=-1):
         raise NotImplementedError
 
     return np.concatenate(imgs, axis=axis)
+
+
+def add_padding(img, padding, value):
+    shape = np.array(img.shape)
+    padding_arr = np.zeros((img.ndim, 2), dtype=int)
+
+    if isinstance(padding, str):
+        padding_arr[:, 0] = make_even_odd(shape, mode=padding, rounding=+1) - shape
+
+    elif isinstance(padding, int):
+        padding_arr[:] = padding
+
+    elif isinstance(padding, (np.ndarray, tuple, list)):
+        if padding.ndim == 2:
+            padding_arr[:] = padding
+        elif len(padding) == len(shape):
+            padding_arr[:] = np.expand_dims(padding, axis=1)
+
+    else:
+        raise ValueError
+
+    print(padding_arr)
+    new_shape = shape + padding_arr.sum(axis=1)
+    new_img = np.full(shape=new_shape, fill_value=value, dtype=img.dtype)
+    new_img[tuple(map(slice, padding_arr[:, 0], padding_arr[:, 0]+shape))] = img
+    return new_img
 
 
 def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder=0, dtype=float):
@@ -443,3 +474,46 @@ def bool_img2surf(img, limits):
         verts = verts + lower_left
 
     return verts, faces
+
+
+def mesh2bool_img(p, shape, limits, f=None):
+
+    img = np.zeros(shape, dtype=int)
+
+    voxel_size = limits2cell_size(shape=shape, limits=limits)
+    if img.ndim == 2:
+        p2 = np.concatenate((p, p[:1]), axis=0)
+        p2 = get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
+        i2 = grid_x2i(x=p2, limits=limits, shape=shape)
+        img[i2[:, 0], i2[:, 1]] = 1
+
+    elif img.ndim == 3:
+        p2 = discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
+        i2 = grid_x2i(x=p2, limits=limits, shape=shape)
+        img[i2[:, 0], i2[:, 1], i2[:, 2]] = 1
+
+    else:
+        raise ValueError
+
+    img = flood_fill(img, seed_point=(0,)*img.ndim, connectivity=1, new_value=2)
+    img = np.array(img != 2)
+
+    return img
+
+
+def test_mesh2bool_img():
+
+    p = np.random.random((10, 2))
+    limits = np.array([[0, 1],
+                       [0, 1]])
+    img = mesh2bool_img(p=p, shape=(64, 64), limits=limits)
+
+    from wzk.mpl import new_fig, imshow
+
+    fig, ax = new_fig()
+    ax.plot(*p.T, ls='', marker='o')
+    imshow(ax=ax, img=img, mask=~img, limits=limits)
+
+
+if __name__ == '__main__':
+    test_mesh2bool_img()

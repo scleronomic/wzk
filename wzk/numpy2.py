@@ -502,7 +502,7 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     shape_small, shape_big = args2arrays(shape_small, shape_big)
 
     if mode == 'center':
-        assert np.all(np.array(shape_small) % 2 == 1)
+        assert np.all(np.array(shape_small) % 2 == 1), shape_small
         shape_small2 = (np.array(shape_small) - 1) // 2
 
         ll_big = pos - shape_small2

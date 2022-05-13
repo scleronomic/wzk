@@ -281,7 +281,7 @@ def combine_d_substeps__dx(d_dxs, n):
         d_dx[:, :-1, :] += np.einsum('ijkl, ijkl -> ijl', d_dxs[:, 1:, :, :], ss_jac[:, :, 1, :, :])
         return d_dx
     else:
-        raise ValueError
+        raise ValueError(f"{d_dxs.ndim}")
 
 
 def to_spline(x, n_c=4):

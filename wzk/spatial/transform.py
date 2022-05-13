@@ -4,6 +4,8 @@ from scipy.spatial.transform import Rotation
 from wzk.numpy2 import shape_wrapper
 from wzk.random2 import noise, random_uniform_ndim
 from wzk.geometry import sample_points_on_sphere_3d
+from wzk.trajectory import get_substeps
+
 
 # angle axis representation is like an onion, the singularity is the boarder to the next 360 shell
 # 0 is 1360 degree away from the next singularity -> nice  # what???
@@ -176,9 +178,9 @@ def sample_matrix(shape=None):
     return quaternions2matrix(quat=quat)
 
 
-def sample_matrix_noise(shape, scale=0.01, mode='normal'):
+def sample_matrix_noise(shape=None, scale=0.01, mode='normal'):
     """
-    samples rotation matrix with the absolute value of the rotation relates to 'scale'
+    samples rotation matrix with the absolute value of the rotation relates to 'scale' in rad
     """
 
     rv = sample_points_on_sphere_3d(shape)
@@ -241,3 +243,37 @@ def rot_z(gamma):  # theta
                      [+np.sin(gamma), +np.cos(gamma), 0, 0],
                      [0, 0, 1, 0],
                      [0, 0, 0, 1]])
+
+
+def get_frames_between(f0, f1, n):
+
+    x = get_substeps(x=np.concatenate((f0[:-1, -1:], f1[:-1, -1:]), axis=1).T, n=n-1,)
+
+    dm = f0[:-1, :-1].T @ f1[:-1, :-1]
+    rv = matrix2rotvec(dm)
+    a = np.linalg.norm(rv)
+    rvn = rv/a
+    a2 = np.linspace(0, a, n)
+    rv2 = a2[:, np.newaxis] * rvn[np.newaxis, :]
+    dm2 = rotvec2matrix(rv2)
+
+    m = f0[:-1, :-1] @ dm2
+    f = trans_matrix2frame(trans=x, matrix=m)
+    return f
+
+
+def test_get_frames_between():
+
+
+    n = 10
+    f0 = sample_frames()
+    f1 = sample_frames()
+
+    f = get_frames_between(f0=f0, f1=f1, n=n)
+
+    assert np.allclose(f0, f[0])
+    assert np.allclose(f1, f[-1])
+    from wzk.pv.plotting import plot_frames, pv
+    p = pv.Plotter()
+    plot_frames(p=p, f=f, scale=0.2)
+    p.show()

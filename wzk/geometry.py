@@ -660,17 +660,19 @@ def discretize_triangle(x=None,
 
 
 def test_discretize_triangle():
-    a = np.array([0, 0])
-    b = np.array([1, 0])
-    c = np.array([0, 1])
-    x2 = discretize_triangle(a=a, b=b, c=c, n=10, verbose=10)
+    x0 = np.array([[0, 0],
+                  [1, 0],
+                  [0, 1]])
+    x2 = discretize_triangle(a=x0[0], b=x0[1], c=x0[2], n=10, verbose=10)
 
     from wzk.mpl import new_fig
     fig, ax = new_fig(aspect=1)
-    ax.plot(*a, color='blue', ls='', marker='o')
-    ax.plot(*b, color='blue', ls='', marker='o')
-    ax.plot(*c, color='blue', ls='', marker='o')
+    ax.plot(*x0.T, color='blue', marker='o')
     ax.plot(*x2.T, color='red', marker='x')
+
+
+if __name__ == '__main__':
+    test_discretize_triangle()
 
 
 # def line_line33(u, v, w):

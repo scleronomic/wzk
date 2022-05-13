@@ -12,6 +12,23 @@ def number2digits(num):
     return [int(x) for x in str(num)]
 
 
+def make_odd(x, rounding=+1):
+    return x - rounding * (x % 2 - 1)
+
+
+def make_even(x, rounding=+1):
+    return x + rounding * (x % 2)
+
+
+def make_even_odd(x, mode, rounding=+1):
+    if mode == 'even':
+        return make_even(x=x, rounding=rounding)
+    elif mode == 'odd':
+        return make_odd(x=x, rounding=rounding)
+    else:
+        raise ValueError
+
+
 # Normalize
 def normalize_01(x, low=None, high=None, axis=None):
     """
