@@ -9,7 +9,7 @@ from wzk.dicts_lists_tuples import tuple_extract
 from wzk.numpy2 import (align_shapes, get_cropping_indices, flatten_without_last, initialize_array, limits2cell_size,
                         grid_x2i, grid_i2x)
 from wzk.trajectory import get_substeps_adjusted
-from wzk.geometry import discretize_triangle_mesh
+from wzk.geometry import discretize_triangle_mesh, ConvexHull
 from wzk.math2 import make_even_odd
 
 
@@ -120,7 +120,6 @@ def add_padding(img, padding, value):
     else:
         raise ValueError
 
-    print(padding_arr)
     new_shape = shape + padding_arr.sum(axis=1)
     new_img = np.full(shape=new_shape, fill_value=value, dtype=img.dtype)
     new_img[tuple(map(slice, padding_arr[:, 0], padding_arr[:, 0]+shape))] = img
@@ -242,7 +241,7 @@ def pooling(mat, kernel, method='max', pad=False):
 def get_outer_edge(img):
     n_dim = np.ndim(img)
     kernel = np.ones((3,)*n_dim)
-    edge_img = convolve(img, kernel, mode='same', method='direct')
+    edge_img = convolve(img, kernel, mode='same', method='direct') > 0
     return np.logical_xor(edge_img, img)
 
 
@@ -488,6 +487,10 @@ def mesh2bool_img(p, shape, limits, f=None):
         img[i2[:, 0], i2[:, 1]] = 1
 
     elif img.ndim == 3:
+        if f is None:
+            ch = ConvexHull(p)
+            p = ch.points
+            f = ch.simplices  # noqa
         p2 = discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
         i2 = grid_x2i(x=p2, limits=limits, shape=shape)
         img[i2[:, 0], i2[:, 1], i2[:, 2]] = 1
