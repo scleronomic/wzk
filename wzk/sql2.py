@@ -407,7 +407,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 
     if values_only:
         for col in columns:
-            # print(col)
+
             value = bytes2values(value=df.loc[:, col].values, column=col)
             value_list.append(value)
 
@@ -467,8 +467,7 @@ def df2sql(df, file, table, dtype=None, if_exists='fail'):
     data = values2bytes_dict(data=data)
     df = pd.DataFrame(data=data)
     with open_db_connection(file=file, close=True, lock=None) as con:
-        df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None,
-                  dtype=dtype)
+        df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None, dtype=dtype)
 
     set_journal_mode_wal(file=file)
 

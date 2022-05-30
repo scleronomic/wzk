@@ -129,7 +129,7 @@ def color_plot_connected(y, color_s, x=None, connect_jumps=True, ax=None, **kwar
         h.append(ax.plot(x[i:j], y[i:j], c=cur_col, **kwargs)[0])
 
         if connect_jumps:
-            h.append(line_2colored(ax, x[j - 1:j + 1], y[j - 1:j + 1], colors=color_s[j - 1:j + 1], **kwargs))
+            h.append(line_2colored(ax=ax, x=x[j - 1:j + 1], y=y[j - 1:j + 1], colors=color_s[j - 1:j + 1], **kwargs))
         i = j
 
     return h
@@ -173,7 +173,7 @@ def color_plot(x, y, color_s, plot_fcn, **kwargs):
     y: Data for y-axis
     color_s: array of colors with the same length as x and y respectively. If now enough colors are given,
              use just the first (only) one given
-    plot_fcn: Matplotlib function, which should be used for plotting -> use ax.METHOD to ensure that the right
+    plot_fcn: Matplotlib function, which should be used for plotting -> use ax.fun() to ensure that the right
               axis is used
     kwargs: Additional d for matplotlib.pyplot.plot()
     """
