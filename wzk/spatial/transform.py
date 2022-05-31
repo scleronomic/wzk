@@ -252,10 +252,14 @@ def get_frames_between(f0, f1, n):
     dm = f0[:-1, :-1].T @ f1[:-1, :-1]
     rv = matrix2rotvec(dm)
     a = np.linalg.norm(rv)
-    rvn = rv/a
-    a2 = np.linspace(0, a, n)
-    rv2 = a2[:, np.newaxis] * rvn[np.newaxis, :]
-    dm2 = rotvec2matrix(rv2)
+    if np.allclose(a, 0):
+        dm2 = np.zeros((n, 3, 3))
+        dm2[:] = np.eye(3)
+    else:
+        rvn = rv/a
+        a2 = np.linspace(0, a, n)
+        rv2 = a2[:, np.newaxis] * rvn[np.newaxis, :]
+        dm2 = rotvec2matrix(rv2)
 
     m = f0[:-1, :-1] @ dm2
     f = trans_matrix2frame(trans=x, matrix=m)
