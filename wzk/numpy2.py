@@ -356,7 +356,7 @@ def rolling_window(a, window):
 
 def find_subarray(a, b):
     """
-    Find b in a.
+    Find b in a
     Return the index where the overlap begins.
 
     # a = np.array((2, 3, 4, 3, 5, 1))
@@ -507,9 +507,11 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
 
         ll_big = pos - shape_small2
         ur_big = pos + shape_small2 + 1
+
     elif mode == 'lower_left':
         ll_big = pos
         ur_big = pos + shape_small
+
     elif mode == 'upper_right':
         ll_big = pos - shape_small
         ur_big = pos
@@ -528,6 +530,30 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     ur_big = np.where(shape_big - ur_big < 0, shape_big, ur_big)
 
     return ll_big, ur_big, ll_small, ur_small
+
+
+def safe_add_small2big(idx, small, big, mode='center'):
+    """
+    Insert a small picture into the complete picture at the position 'idx'
+    Assumption: all dimension of the small_img are odd, and idx indicates the center of the image,
+    if this is not the case, there are zeros added at the end of each dimension to make the image shape odd
+    """
+    # TODO add mode to replace instead of add
+
+    idx = flatten_without_last(idx)
+    n_samples, n_dim = idx.shape
+    ll_big, ur_big, ll_small, ur_small = get_cropping_indices(pos=idx, mode=mode,
+                                                              shape_small=small.shape[-n_dim:],
+                                                              shape_big=big.shape)
+
+    if small.ndim > n_dim:
+        for ll_b, ur_b, ll_s, ur_s, s in zip(ll_big, ur_big, ll_small, ur_small, small):
+            big[tuple(map(slice, ll_b, ur_b))] += s[tuple(map(slice, ll_s, ur_s))]
+    else:
+        for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
+            print(ll_b, ur_b)
+            print(ll_s, ur_s)
+            big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
 
 
 def get_exclusion_mask(a, exclude_values):

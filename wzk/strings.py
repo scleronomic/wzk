@@ -5,8 +5,8 @@ import numpy as np
 
 
 abc = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
-       'h', 'o', 'j', 'k', 'l', 'm', 'n',
-       'c', 'p', 'q', 'r', 's', 't', 'u',
+       'h', 'i', 'j', 'k', 'l', 'm', 'n',
+       'o', 'p', 'q', 'r', 's', 't', 'u',
        'v', 'w', 'x', 'y', 'z']
 ABC = [letter.upper() for letter in abc]
 

@@ -65,7 +65,7 @@ def move_fig(fig, position=None, monitor=-1):
     fig_width = screen_width // n_cols
     fig_height = screen_height // n_rows
 
-    offset_y, offset_x = np.unravel_index(index-1, dims=(n_rows, n_cols))
+    offset_y, offset_x = np.unravel_index(index-1, shape=(n_rows, n_cols))
     offset_x *= fig_width
     offset_y *= fig_height
 

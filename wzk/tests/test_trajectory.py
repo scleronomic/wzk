@@ -80,3 +80,16 @@ class Test(TestCase):
                          90, 68, 46, 24, 2,
                          -20])[:, np.newaxis]
         self.assertTrue(compare_arrays(x2, true))
+
+    def test_get_path_adjusted(self):
+        n0 = 3
+        n1 = 300
+        n_dof = 2
+        x0 = np.random.random((n0, n_dof))
+        x1 = get_path_adjusted(x=x0, n=n1)
+
+        from wzk.mpl import new_fig
+
+        fig, ax = new_fig(aspect=1)
+        ax.plot(*x0.T, marker='o')
+        ax.plot(*x1.T, marker='s')

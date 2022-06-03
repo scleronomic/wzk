@@ -114,6 +114,12 @@ def get_substeps(x, n,
     return x_ss
 
 
+def get_steps_between(q0, q1, n, is_periodic=None):  # TODO use this function more often, how to find the other usages
+    q = np.concatenate((q0[..., np.newaxis, :],  q1[..., np.newaxis, :]), axis=-2)
+    q = get_substeps(q, n=n-1, is_periodic=is_periodic)
+    return q
+
+
 def get_substeps_adjusted(x, n,
                           is_periodic=None, weighting=None):
 
@@ -170,9 +176,14 @@ def get_q_bee(q, n_wp):
     return q0
 
 
-def get_path_adjusted(x, m=50, is_periodic=None, weighting=None):
-    n = x.shape[-2]
-    return get_substeps_adjusted(x=x, n=(n - 1) * m + 1, is_periodic=is_periodic, weighting=weighting)[..., ::m, :]
+def get_path_adjusted(x, n=None, is_periodic=None, weighting=None):
+    m = 3
+    n0 = x.shape[-2]
+    if n is None:
+        n = n0
+    else:
+        pass
+    return get_substeps_adjusted(x=x, n=(n - 1) * (n0*m) + 1, is_periodic=is_periodic, weighting=weighting)[..., ::(n0*m), :]
 
 
 def order_path(x, start=None, end=None, is_periodic=None, weights=1.):

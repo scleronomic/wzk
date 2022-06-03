@@ -87,7 +87,7 @@ def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto',
     comb = combinations(np.arange(n), 2)
     for i, c in enumerate(comb):
         i = np.unravel_index(i, shape=ax.shape)
-        ax[i].plot(*x[..., c].T, ls='', **kwargs)
+        ax[i].plot(*x[..., c].T, **kwargs)
         ax[i].set_xlabel(dim_labels[c[0]])
         ax[i].set_ylabel(dim_labels[c[1]])
         if limits is not None:

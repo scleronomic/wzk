@@ -268,7 +268,6 @@ def get_frames_between(f0, f1, n):
 
 def test_get_frames_between():
 
-
     n = 10
     f0 = sample_frames()
     f1 = sample_frames()

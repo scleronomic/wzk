@@ -7,7 +7,7 @@ from scipy.spatial import ConvexHull
 from matplotlib import colors
 
 from wzk.numpy2 import scalar2array, array2array
-from wzk.image import bool_img2surf
+from wzk.bimage import bimg2surf
 from wzk.spatial import invert
 from wzk.geometry import cube
 
@@ -186,10 +186,10 @@ def set_color(h, color):
     p.SetColor(colors.to_rgb(color))
 
 
-def plot_bool_vol(img, limits,
-                  mode='voxel',
-                  p=None, h=None,
-                  **kwargs):
+def plot_bimg(img, limits,
+              mode='mesh',
+              p=None, h=None,
+              **kwargs):
 
     if img is None:
         return
@@ -208,7 +208,7 @@ def plot_bool_vol(img, limits,
             h[0].hide_cells(~img.ravel())
 
     elif mode == 'mesh':
-        verts, faces = bool_img2surf(img=img, limits=limits)
+        verts, faces = bimg2surf(img=img, limits=limits)
         faces = faces2pyvista(faces)
 
         if h is None:

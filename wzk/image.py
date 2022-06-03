@@ -1,16 +1,13 @@
 import zlib
 import numpy as np
-from scipy.signal import convolve2d, convolve
+from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa
-from skimage import measure
-from skimage.morphology import flood_fill
 
 from wzk.dicts_lists_tuples import tuple_extract
-from wzk.numpy2 import (align_shapes, get_cropping_indices, flatten_without_last, initialize_array, limits2cell_size,
-                        grid_x2i, grid_i2x)
-from wzk.trajectory import get_substeps_adjusted
-from wzk.geometry import discretize_triangle_mesh, ConvexHull
+from wzk.numpy2 import (align_shapes, initialize_array,
+                        limits2cell_size, grid_x2i, grid_i2x, scalar2array)  # noqa
 from wzk.math2 import make_even_odd
+from wzk.bimage import sample_bimg_i
 
 
 def imread_bw(file, threshold):
@@ -238,13 +235,6 @@ def pooling(mat, kernel, method='max', pad=False):
     return result
 
 
-def get_outer_edge(img):
-    n_dim = np.ndim(img)
-    kernel = np.ones((3,)*n_dim)
-    edge_img = convolve(img, kernel, mode='same', method='direct') > 0
-    return np.logical_xor(edge_img, img)
-
-
 def tile_2d(*, pattern, v_in_row, v_to_next_row, offset=(0, 0),
             shape):
     """
@@ -389,33 +379,10 @@ def check_overlap(a, b, return_arr=False):
         return np.logical_and(a, b).any()
 
 
-def safe_add_small2big(idx, small_img, big_img, mode='center'):
-    """
-    Insert a small picture into the complete picture at the position 'idx'
-    Assumption: all dimension of the small_img are odd, and idx indicates the center of the image,
-    if this is not the case, there are zeros added at the end of each dimension to make the image shape odd
-    Not both 'big_img' and 'shape' can be None. One is needed to calculate the other.
-    """
 
-    idx = flatten_without_last(idx)
-    n_samples, n_dim = idx.shape
-    ll_big, ur_big, ll_small, ur_small = get_cropping_indices(pos=idx, mode=mode,
-                                                              shape_small=small_img.shape[-n_dim:],
-                                                              shape_big=big_img.shape)
-
-    if small_img.ndim > n_dim:
-        for ll_b, ur_b, ll_s, ur_s, img_s in zip(ll_big, ur_big, ll_small, ur_small, small_img):
-            big_img[tuple(map(slice, ll_b, ur_b))] += img_s[tuple(map(slice, ll_s, ur_s))]
-    else:
-        for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
-            big_img[tuple(map(slice, ll_b, ur_b))] += small_img[tuple(map(slice, ll_s, ur_s))]
-
-
-def sample_from_img(img, range_, n, replace=False):
-    b = np.logical_and(range_[0] < img, img < range_[1])
-    idx = np.array(np.nonzero(b)).T
-    i = np.random.choice(a=np.arange(len(idx)), size=n, replace=replace)
-    return idx[i]
+def sample_from_img(img, range, n, replace=False):   # noqa
+    bimg = np.logical_and(range[0] < img, img < range[1])
+    return sample_bimg_i(img=bimg, n=n, replace=replace)
 
 
 # Image Compression <-> Decompression
@@ -460,63 +427,4 @@ def compressed2img(img_cmp, shape, n_dim=None, n_channels=None, dtype=None):
         return np.frombuffer(zlib.decompress(img_cmp), dtype=dtype).reshape(shape2)
 
 
-def bool_img2surf(img, limits):
-    lower_left = limits[:, 0]
-    voxel_size = limits2cell_size(shape=img.shape, limits=limits)
-    if img.sum() == 0:
-        verts = np.zeros((3, 3))
-        faces = np.zeros((1, 3), dtype=int)
-        faces[:] = np.arange(3)
-
-    else:
-        verts, faces, _, _ = measure.marching_cubes(img, level=0, spacing=(voxel_size,) * img.ndim)
-        verts = verts + lower_left
-
-    return verts, faces
-
-
-def mesh2bool_img(p, shape, limits, f=None):
-
-    img = np.zeros(shape, dtype=int)
-
-    voxel_size = limits2cell_size(shape=shape, limits=limits)
-    if img.ndim == 2:
-        p2 = np.concatenate((p, p[:1]), axis=0)
-        p2 = get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
-        i2 = grid_x2i(x=p2, limits=limits, shape=shape)
-        img[i2[:, 0], i2[:, 1]] = 1
-
-    elif img.ndim == 3:
-        if f is None:
-            ch = ConvexHull(p)
-            p = ch.points
-            f = ch.simplices  # noqa
-        p2 = discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
-        i2 = grid_x2i(x=p2, limits=limits, shape=shape)
-        img[i2[:, 0], i2[:, 1], i2[:, 2]] = 1
-
-    else:
-        raise ValueError
-
-    img = flood_fill(img, seed_point=(0,)*img.ndim, connectivity=1, new_value=2)
-    img = np.array(img != 2)
-
-    return img
-
-
-def test_mesh2bool_img():
-
-    p = np.random.random((10, 2))
-    limits = np.array([[0, 1],
-                       [0, 1]])
-    img = mesh2bool_img(p=p, shape=(64, 64), limits=limits)
-
-    from wzk.mpl import new_fig, imshow
-
-    fig, ax = new_fig()
-    ax.plot(*p.T, ls='', marker='o')
-    imshow(ax=ax, img=img, mask=~img, limits=limits)
-
-
-if __name__ == '__main__':
-    test_mesh2bool_img()
+# TODO check which functions belong into separate module for binary images
