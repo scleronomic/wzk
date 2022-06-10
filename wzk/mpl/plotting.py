@@ -406,3 +406,21 @@ def plot_circles(x, r,
             if color is not None:
                 h_i.set_color(color)
         return h
+
+
+def plot_colored_segments(ax, x, y, c, a, **kwargs):
+    n = len(x)
+    assert len(x)-1 == len(c)
+
+    c, a = scalar2array(c, a, shape=n-1)
+    for i in range(n-1):
+        ax.plot(x[i:i+2], y[i:i+2], color=c[i], alpha=a[i], **kwargs)
+
+
+def test_plot_colored_segments():
+    fig, ax = new_fig()
+    y = np.random.random(20)
+    b = y[1:] > y[:-1]
+    c = ['red' if bb else 'blue' for bb in b]
+    plot_colored_segments(ax=ax, x=np.arange(len(y)), y=y, c=c, a=0.3)
+

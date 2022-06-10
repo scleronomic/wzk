@@ -114,8 +114,8 @@ def get_substeps(x, n,
     return x_ss
 
 
-def get_steps_between(q0, q1, n, is_periodic=None):  # TODO use this function more often, how to find the other usages
-    q = np.concatenate((q0[..., np.newaxis, :],  q1[..., np.newaxis, :]), axis=-2)
+def get_steps_between(q_start, q_end, n, is_periodic=None):  # TODO use this function more often, how to find the other usages
+    q = np.concatenate((q_start[..., np.newaxis, :],  q_end[..., np.newaxis, :]), axis=-2)
     q = get_substeps(q, n=n-1, is_periodic=is_periodic)
     return q
 
@@ -354,3 +354,7 @@ def from_spline(c, n_wp):
         raise ValueError
 
     return x
+
+
+def fromto_spline(x, n_c=4):
+    return from_spline(c=to_spline(x=x, n_c=n_c), n_wp=x.shape[-2])

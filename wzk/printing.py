@@ -111,7 +111,7 @@ def print_correlation(bool_lists, names, dec=4):
     return total
 
 
-def verbose_level_wrapper(verbose=None, level=0):
+def verbose_level_wrapper(verbose=None, level=0):  # TODO make more convenient and use it consistently
     if isinstance(verbose, tuple):
         verbose, level = verbose
     elif verbose is None:
@@ -137,14 +137,6 @@ def print2(*args, verbose=None, level=0,
         print(f"{t}{sep.join(args)}", sep=sep, end=end, file=file, flush=flush)
 
 
-def test_print2():
-    print2("aaa", 1, 2, verbose=(1, 0))
-    print2(dict(b=1, bb=2), 11, 22, verbose=(1, 1))
-    print2("ccc", [3, "cc", 333], 33, verbose=(1, 2), sep='---')
-    print2("nice", "a", "staircase", verbose=(1, 1), sep='    ')
-    print2("back", "to", "level", "zero", verbose=(1, 0), sep='::')
-
-
 def print_array_3d(array_3d,
                    verbose=None, level=0):
     l, k, n = array_3d.shape
@@ -159,11 +151,6 @@ def print_array_3d(array_3d,
             s[kk] += ss[kk]
 
     print2('\n'.join(s), verbose=verbose, level=level)
-
-
-def test_print_array_3d():
-    array_3d = np.arange(4*5*6).reshape((4, 5, 6))
-    print_array_3d(array_3d)
 
 
 def color_text(s, color, background='w', weight=0):
@@ -182,6 +169,19 @@ def color_text(s, color, background='w', weight=0):
     return f"\033[{weight};3{tc};4{bc}m{s}\033"
 
 
+def test_print2():
+    print2("aaa", 1, 2, verbose=(1, 0))
+    print2(dict(b=1, bb=2), 11, 22, verbose=(1, 1))
+    print2("ccc", [3, "cc", 333], 33, verbose=(1, 2), sep='---')
+    print2("nice", "a", "staircase", verbose=(1, 1), sep='    ')
+    print2("back", "to", "level", "zero", verbose=(1, 0), sep='::')
+
+
+def test_print_array_3d():
+    array_3d = np.arange(4*5*6).reshape((4, 5, 6))
+    print_array_3d(array_3d)
+
+
 def test_color():
     print("normal")
     print(color_text(s="normal2", color='k', background='w'))
@@ -198,3 +198,7 @@ def test_color():
 
     for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
         print(color_text(s=c, color=c, background='k'))
+
+
+if __name__ == '__main__':
+    test_print2()

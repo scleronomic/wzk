@@ -551,8 +551,8 @@ def safe_add_small2big(idx, small, big, mode='center'):
             big[tuple(map(slice, ll_b, ur_b))] += s[tuple(map(slice, ll_s, ur_s))]
     else:
         for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
-            print(ll_b, ur_b)
-            print(ll_s, ur_s)
+            # print(ll_b, ur_b)  # TODO sometimes this fails, check
+            # print(ll_s, ur_s)
             big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
 
 
