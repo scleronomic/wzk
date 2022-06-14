@@ -5,6 +5,7 @@ from wzk.numpy2 import shape_wrapper
 from wzk.random2 import noise, random_uniform_ndim
 from wzk.geometry import sample_points_on_sphere_3d
 from wzk.trajectory import get_substeps
+from wzk.math2 import angle2minuspi_pluspi
 
 
 # angle axis representation is like an onion, the singularity is the boarder to the next 360 shell
@@ -219,7 +220,7 @@ def apply_noise(f, trans, rot, mode='normal'):
     return f2
 
 
-def sample_frame_noise(trans, rot, shape, mode='normal'):
+def sample_frame_noise(trans, rot, shape=None, mode='normal'):
     f = initialize_frames(shape=shape, n_dim=3, mode='eye')
     return apply_noise(f=f, trans=trans, rot=rot, mode=mode)
 
@@ -280,3 +281,26 @@ def test_get_frames_between():
     p = pv.Plotter()
     plot_frames(p=p, f=f, scale=0.2)
     p.show()
+
+
+def offset_frame(f, i=None, vm=None,
+                 offset=0.01):
+    """
+    offset: in [m]
+    i: is along which axis to offset
+    """
+    assert (i is None) ^ (vm is None)
+
+    f = f.copy()
+    if i is not None:
+        d = f[..., :-1, i]
+
+    elif vm is None:
+        d = f[..., :-1, :-1] @ vm
+
+    else:
+        raise RuntimeError('i and vm can not both be None')
+
+    d = d * offset / np.linalg.norm(d, axis=-1, keepdims=True)
+    f[..., :3, -1] -= d
+    return f

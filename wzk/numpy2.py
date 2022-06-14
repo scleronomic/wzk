@@ -115,8 +115,12 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
     res = []
     for voa in val_or_arr:
         try:
-            voa = np.array(voa).item()
-            res.append(np.full(shape=shape, fill_value=voa, dtype=type(voa)))
+            # voa = np.array(voa).item()
+            # res.append(np.full(shape=shape, fill_value=voa, dtype=type(voa)))
+            res_i = np.empty(shape=shape, dtype=type(voa))  # TODO check if this works for my examples
+            res_i[:] = np.array(voa).copy()  # would be cleaner as just the regular numpy broadcasting stuff applies
+            res.append(res_i)
+
         except ValueError:
             if safe:
                 assert np.all(np.shape(voa) == shape), f"{np.shape(voa)} != {shape}"
@@ -551,8 +555,11 @@ def safe_add_small2big(idx, small, big, mode='center'):
             big[tuple(map(slice, ll_b, ur_b))] += s[tuple(map(slice, ll_s, ur_s))]
     else:
         for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
-            # print(ll_b, ur_b)  # TODO sometimes this fails, check
-            # print(ll_s, ur_s)
+            # print('idx', idx)
+            # print('big', ll_b, ur_b)  # TODO sometimes this fails, check
+            # print('big', big[tuple(map(slice, ll_b, ur_b))].shape)
+            # print('small', ll_s, ur_s)
+            # print('small', small[tuple(map(slice, ll_s, ur_s))].shape)
             big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
 
 

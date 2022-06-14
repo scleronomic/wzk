@@ -176,7 +176,8 @@ def mesh2bimg(p, shape, limits, f=None):
         p2 = np.concatenate((p, p[:1]), axis=0)
         p2 = get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
         i2 = grid_x2i(x=p2, limits=limits, shape=shape)
-        img[i2[:, 0], i2[:, 1]] = 1
+        img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
+            np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1)] = 1
 
     elif img.ndim == 3:
         if f is None:
@@ -185,7 +186,9 @@ def mesh2bimg(p, shape, limits, f=None):
             f = ch.simplices  # noqa
         p2 = discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
         i2 = grid_x2i(x=p2, limits=limits, shape=shape)
-        img[i2[:, 0], i2[:, 1], i2[:, 2]] = 1
+        img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
+            np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1),
+            np.clip(i2[:, 2], a_min=0, a_max=img.shape[2]-1)] = 1
 
     else:
         raise ValueError
