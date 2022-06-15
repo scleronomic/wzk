@@ -93,6 +93,8 @@ def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto',
         if limits is not None:
             set_ax_limits(ax=ax[i], limits=limits[c, :])
 
+    return ax
+
 
 def color_plot_connected(y, color_s, x=None, connect_jumps=True, ax=None, **kwargs):
     """
