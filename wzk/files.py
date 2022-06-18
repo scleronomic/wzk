@@ -35,6 +35,11 @@ def rm_files_in_dir(directory):
         os.remove(os.path.join(directory, file))
 
 
+def safe_mkdirs(*directory_list):
+    for directory in directory_list:
+        safe_mkdir(directory=directory)
+
+
 def safe_mkdir(directory: str):
     os.makedirs(directory, exist_ok=True)
 

@@ -873,7 +873,8 @@ def grid_x2i(x, limits, shape):
 
     if x is None:
         return None
-    voxel_size = limits2cell_size(shape=shape, limits=limits)
+    # voxel_size = limits2cell_size(shape=shape, limits=limits)
+    voxel_size = np.diff(limits, axis=-1)[:, 0] / np.array(shape)
     lower_left = limits[:, 0]
     
     return np.asarray((x - lower_left) / voxel_size, dtype=int)
