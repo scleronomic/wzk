@@ -1,5 +1,4 @@
 import numpy as np
-# from pyOpt import pyOpt
 
 from pyOpt.pySLSQP.pySLSQP import SLSQP
 from pyOpt import Optimization

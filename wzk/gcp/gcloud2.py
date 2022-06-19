@@ -90,8 +90,8 @@ def create_instance_cmd(config):
           f"--preemptible " \
           f"--no-restart-on-failure " \
           f"--reservation-affinity=any " \
-          f"--maintenance-policy=TERMINATE "
-          # f"--provisioning-model=SPOT " \  # TODO add after this leaves beta
+          f"--maintenance-policy=TERMINATE " \
+          # f"--provisioning-model=SPOT " \   # TODO add after this leaves beta
     return cmd
 
 

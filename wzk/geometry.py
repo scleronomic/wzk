@@ -425,11 +425,25 @@ def sample_points_on_disc(radius, shape=None):
     return xy
 
 
+def get_points_in_sphere_3d(n=10):
+    x = np.zeros()
+
+    theta = np.linspace(start=-np.pi, end=+np.pi, num=n)
+    phi = np.arccos(1-2*np.linspace(start=0, end=1, num=n))
+    sin_phi = np.sin(phi)
+    r = np.linspace(start=0, stop=1, num=n)
+
+    x[..., 0] = sin_phi * np.cos(theta)
+    x[..., 1] = sin_phi * np.sin(theta)
+    x[..., 2] = np.cos(phi)
+
+
+
 def sample_points_on_sphere_3d(shape):
-    size = shape_wrapper(shape=shape)
-    x = np.empty(tuple(size) + (3,))
-    theta = np.random.uniform(low=0, high=2*np.pi, size=size)
-    phi = np.arccos(1-2*np.random.uniform(low=0, high=1, size=size))
+    shape = shape_wrapper(shape=shape)
+    x = np.empty(tuple(shape) + (3,))
+    theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
+    phi = np.arccos(1-2*np.random.uniform(low=0, high=1, size=shape))
     sin_phi = np.sin(phi)
     x[..., 0] = sin_phi * np.cos(theta)
     x[..., 1] = sin_phi * np.sin(theta)

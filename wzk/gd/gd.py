@@ -80,9 +80,6 @@ def gradient_descent(x, fun, grad, gd):
 
         # Correct via an approximated hesse function
         if gd.hesse_inv is not None and gd.hesse_weighting[i] > 0:
-            # FIXME for is_periodic the formulation of the hesse matrix is not correct, but it works nevertheless
-            #   one possibility is to use relative motions, or to unravel the interval [0,360]
-            #   does it really work nevertheless -> check please???
             h = (gd.hesse_inv[np.newaxis, ...] @ j.reshape(-1, gd.hesse_inv.shape[-1], 1)).reshape(j.shape)
             j = j * (1 - gd.hesse_weighting[i]) + h * gd.hesse_weighting[i]
             pass
@@ -98,7 +95,7 @@ def gradient_descent(x, fun, grad, gd):
 
         if gd.return_x_list:
             x_list[i] = x
-            f_list[i] = fun(x)  # TODO only for debugging, is inefficient to call separately
+            f_list[i] = fun(x)  # only for debugging, is inefficient to call separately
 
     f = fun(x=x)
 

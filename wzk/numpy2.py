@@ -110,15 +110,14 @@ def array2array(a, shape):
 
 # scalar <-> matrix
 def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
+    # standard numpy broadcasting rules apply
     shape = shape_wrapper(shape)
 
     res = []
     for voa in val_or_arr:
         try:
-            # voa = np.array(voa).item()
-            # res.append(np.full(shape=shape, fill_value=voa, dtype=type(voa)))
-            res_i = np.empty(shape=shape, dtype=type(voa))  # TODO check if this works for my examples
-            res_i[:] = np.array(voa).copy()  # would be cleaner as just the regular numpy broadcasting stuff applies
+            res_i = np.empty(shape=shape, dtype=type(voa))
+            res_i[:] = np.array(voa).copy()
             res.append(res_i)
 
         except ValueError:
@@ -536,17 +535,16 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     return ll_big, ur_big, ll_small, ur_small
 
 
-def safe_add_small2big(idx, small, big, mode='center'):
+def safe_add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
     """
     Insert a small picture into the complete picture at the position 'idx'
     Assumption: all dimension of the small_img are odd, and idx indicates the center of the image,
     if this is not the case, there are zeros added at the end of each dimension to make the image shape odd
     """
-    # TODO add mode to replace instead of add
 
     idx = flatten_without_last(idx)
     n_samples, n_dim = idx.shape
-    ll_big, ur_big, ll_small, ur_small = get_cropping_indices(pos=idx, mode=mode,
+    ll_big, ur_big, ll_small, ur_small = get_cropping_indices(pos=idx, mode=mode_crop,
                                                               shape_small=small.shape[-n_dim:],
                                                               shape_big=big.shape)
 
@@ -560,7 +558,10 @@ def safe_add_small2big(idx, small, big, mode='center'):
             # print('big', big[tuple(map(slice, ll_b, ur_b))].shape)
             # print('small', ll_s, ur_s)
             # print('small', small[tuple(map(slice, ll_s, ur_s))].shape)
-            big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
+            if mode_add == 'add':
+                big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
+            elif mode_add == 'replace':
+                big[tuple(map(slice, ll_b, ur_b))] = small[tuple(map(slice, ll_s, ur_s))]
 
 
 def get_exclusion_mask(a, exclude_values):

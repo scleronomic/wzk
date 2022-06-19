@@ -425,6 +425,3 @@ def compressed2img(img_cmp, shape, n_dim=None, n_channels=None, dtype=None):
 
     else:
         return np.frombuffer(zlib.decompress(img_cmp), dtype=dtype).reshape(shape2)
-
-
-# TODO check which functions belong into separate module for binary images
