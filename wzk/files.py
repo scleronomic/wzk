@@ -80,6 +80,10 @@ def list_files(directory: str):
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
 
+def list_directories(directory: str):
+    return [d for d in os.listdir(directory) if os.path.isdir(os.path.join(directory, d))]
+
+
 def ensure_extension_point(ext: str):
     if ext[0] != '.':
         ext = '.' + ext
