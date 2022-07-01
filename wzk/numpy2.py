@@ -384,6 +384,21 @@ def find_values(arr, values):
     return res
 
 
+def find_array_occurrences(a, o):
+    assert a.ndim == o.ndim
+    assert a.shape[-1] == o.shape[-1]
+
+    if a.ndim == 2:
+        b = a[:, np.newaxis, :] == o[np.newaxis, :, :]
+        b = np.sum(b, axis=-1) == o.shape[-1]
+        i = np.array(np.nonzero(b)).T
+
+    else:
+        raise ValueError
+
+    return i
+
+
 def get_element_overlap(arr1, arr2=None, verbose=0):
     """
     arr1 is a 2D array (n, matrix)
@@ -904,6 +919,7 @@ def add_safety_limits(limits, factor):
                      limits[..., 1] + factor * diff]).T
 
 
+#
 def get_stats(x, axis=None, return_array=False):
     stats = {'mean': np.mean(x, axis=axis),
              'std':  np.std(x, axis=axis),
@@ -915,6 +931,15 @@ def get_stats(x, axis=None, return_array=False):
         return np.array([stats['mean'], stats['std'], stats['median'], stats['min'], stats['max']])
 
     return stats
+
+
+def verbose_reject_x(title, x, b):
+    if b.size == 0:
+        mean = 0
+    else:
+        mean = b.mean()
+    print(f"{title}: {b.sum()}/{b.size} ~ {np.round(mean * 100, 3)}%")
+    return x[b]
 
 
 def aranges(stops=None, starts=None, steps=None):

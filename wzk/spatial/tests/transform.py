@@ -15,8 +15,8 @@ def understand_rotvec():
     f = spatial.trans_rotvec2frame(trans=x, rotvec=rv)
     from wzk.pv.plotting import pv, plot_frames
 
-    p = pv.Plotter()
-    plot_frames(f=f, p=p)
-    p.add_axes_at_origin(labels_off=False)
+    pl = pv.Plotter()
+    plot_frames(f=f, pl=pl)
+    pl.add_axes_at_origin(labels_off=False)
 
-    p.show()
+    pl.show()

@@ -279,9 +279,9 @@ def test_get_frames_between():
     assert np.allclose(f0, f[0])
     assert np.allclose(f1, f[-1])
     from wzk.pv.plotting import plot_frames, pv
-    p = pv.Plotter()
-    plot_frames(p=p, f=f, scale=0.2)
-    p.show()
+    pl = pv.Plotter()
+    plot_frames(pl=pl, f=f, scale=0.2)
+    pl.show()
 
 
 def offset_frame(f, i=None, vm=None,

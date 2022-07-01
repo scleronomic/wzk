@@ -3,7 +3,7 @@ from wzk.geometry import make_rhs
 
 
 class RHSWidget:
-    def __init__(self, p, origin=None, xyz=None, scale=1.0, color='k',
+    def __init__(self, pl, origin=None, xyz=None, scale=1.0, color='k',
                  callback=None):
 
         if origin is None:
@@ -11,7 +11,7 @@ class RHSWidget:
         if xyz is None:
             xyz = np.eye(3)
 
-        self.p = p
+        self.pl = pl
         self.custom_callback = callback
         self.scale = scale
         self.order = [0, 1]
@@ -19,11 +19,11 @@ class RHSWidget:
                                     normal_rotation=True,
                                     outline_translation=False, origin_translation=False,
                                     test_callback=False, implicit=True, factor=1)
-        self.wx = p.add_plane_widget(self.update_x, normal='x', color='r', **plane_widget_options)
-        self.wy = p.add_plane_widget(self.update_y, normal='y', color='g', **plane_widget_options)
-        self.wz = p.add_plane_widget(self.update_z, normal='z', color='b', **plane_widget_options)
-        self.wo = p.add_sphere_widget(self.update_o, center=origin, radius=scale * 0.1, color=color,
-                                      test_callback=False)
+        self.wx = self.pl.add_plane_widget(self.update_x, normal='x', color='r', **plane_widget_options)
+        self.wy = self.pl.add_plane_widget(self.update_y, normal='y', color='g', **plane_widget_options)
+        self.wz = self.pl.add_plane_widget(self.update_z, normal='z', color='b', **plane_widget_options)
+        self.wo = self.pl.add_sphere_widget(self.update_o, center=origin, radius=scale * 0.1, color=color,
+                                            test_callback=False)
         self.set_xyz(xyz=xyz)
 
     def get_xyz(self) -> np.ndarray:
@@ -74,7 +74,7 @@ class RHSWidget:
         o = self.get_origin()
 
         self.callback(o, xyz)
-        self.p.render()
+        self.pl.render()
 
     def update_o(self, o):
         o = np.array(o)
@@ -84,19 +84,19 @@ class RHSWidget:
         self.set_xyz(xyz)
 
         self.callback(o, xyz)
-        self.p.render()
+        self.pl.render()
 
     def callback(self, o, xyz):
         if self.custom_callback is not None:
             self.custom_callback((o, xyz))
 
 
-def add_rhs_widget(p, origin, xyz=None,
+def add_rhs_widget(pl, origin, xyz=None,
                    scale=1.0, color='k', callback=None):
-    return RHSWidget(p=p, origin=origin, xyz=xyz, scale=scale, color=color, callback=callback)
+    return RHSWidget(pl=pl, origin=origin, xyz=xyz, scale=scale, color=color, callback=callback)
 
 
-def add_multiple_slider_widgets(p, ranges=None, names=None, grid=None, idx=None,
+def add_multiple_slider_widgets(pl, ranges=None, names=None, grid=None, idx=None,
                                 callback=None, x0=None,
                                 style='modern', title_height=0.02):
 
@@ -116,16 +116,16 @@ def add_multiple_slider_widgets(p, ranges=None, names=None, grid=None, idx=None,
         i, j = idx[k]
         pointa = np.array((grid_xy[0][i], grid_xy[1][j]))
         pointb = pointa + np.array((grid_s[0], 0))
-        p.add_slider_widget(callback=cb_wrapper(k),
-                            rng=ranges[k],
-                            value=x0[k],
-                            title=names[k],
-                            pointa=pointa, pointb=pointb,
-                            title_height=title_height,
-                            style=style)
+        pl.add_slider_widget(callback=cb_wrapper(k),
+                             rng=ranges[k],
+                             value=x0[k],
+                             title=names[k],
+                             pointa=pointa, pointb=pointb,
+                             title_height=title_height,
+                             style=style)
 
 
-def add_key_slider_widget(p, slider, callback, step=1.):
+def add_key_slider_widget(pl, slider, callback, step=1.):
     r = slider.GetRepresentation()
     mi = r.GetMinimumValue()
     ma = r.GetMaximumValue()
@@ -135,7 +135,7 @@ def add_key_slider_widget(p, slider, callback, step=1.):
         v2 = np.clip(v2, a_min=mi, a_max=ma)
         r.SetValue(v2)
         callback(v2)
-        p.render()
+        pl.render()
 
     def on_left():
         __on_key(s=-step)
@@ -149,7 +149,7 @@ def add_key_slider_widget(p, slider, callback, step=1.):
     def on_up():
         __on_key(s=+step*100)
 
-    p.add_key_event(key='Left', callback=on_left)
-    p.add_key_event(key='Right', callback=on_right)
-    p.add_key_event(key='Down', callback=on_down)
-    p.add_key_event(key='Up', callback=on_up)
+    pl.add_key_event(key='Left', callback=on_left)
+    pl.add_key_event(key='Right', callback=on_right)
+    pl.add_key_event(key='Down', callback=on_down)
+    pl.add_key_event(key='Up', callback=on_up)

@@ -4,6 +4,12 @@ from scipy.spatial import ConvexHull
 from wzk.numpy2 import shape_wrapper
 
 
+def safe_arccos(c):
+    c = np.clip(c, a_min=-1, a_max=+1)
+    angle = np.arccos(c)
+    return angle
+
+
 def angle_resolution_wrapper(n, angle):
 
     if isinstance(n, float):
@@ -350,31 +356,13 @@ def circle_circle_intersection(xy0, r0, xy1, r1):
         return xy3, xy4
 
 
-def ray_sphere_intersection(rays, spheres):
+def ray_sphere_intersection(rays, spheres, r):
     """
-    rays: n_rays x 2 x 3    (axis=1: origin, target)
-    spheres: n_spheres x 4  (axis=1: x, y, z, r)
-    return: n_rays x n_spheres (boolean array) with res[o, j] = True if ray o intersects with sphere j
-    Formula from: https:#en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
-    """
+    rays: n x n_rays x 2 x 3    (axis=-2: origin, target)
+    spheres: n x n_spheres x 3  (axis=-1: x, y, z)
+    r: n_spheres
 
-    o = rays[:, 0]
-    u = np.diff(rays, axis=1)
-    u = u / np.linalg.norm(u, axis=-1, keepdims=True)
-
-    c = spheres[:, :3]
-    r = spheres[:, 3:].T
-    co = (o[:, np.newaxis, :] - c[np.newaxis, :, :])
-    res = (u * co).sum(axis=-1)**2 - (co**2).sum(axis=-1) + r**2
-    return res >= 0
-
-
-def ray_sphere_intersection_2(rays, spheres, r):
-    """
-    :param rays: n x n_rays x 2 x 3    (axis=2: origin, target)
-    :param spheres: n x n_spheres x 3  (axis=2: x, y, z)
-    :param r: n_spheres
-    :return: n x n_rays x n_spheres (boolean array) with res[:, o, j] = True if ray o intersects with sphere j
+    return: n x n_rays x n_spheres (boolean array) with res[:, o, j] = True if ray o intersects with sphere j
     Formula from: https:#en.wikipedia.org/wiki/Line%E2%80%93sphere_intersection
 
     rays = np.random.random((10, 4, 2, 3))
@@ -383,14 +371,36 @@ def ray_sphere_intersection_2(rays, spheres, r):
     res = ray_sphere_intersection_2(rays=rays, spheres=spheres, r=r)
     """
 
-    o = rays[:, :, 0]
+    o = rays[..., 0, :]
     u = np.diff(rays, axis=-2)
     u = u / np.linalg.norm(u, axis=-1, keepdims=True)
 
     c = spheres[..., :3]
-    co = (o[:, :, np.newaxis, :] - c[:, np.newaxis, :, :])
+    if r is None:
+        r = spheres[..., 3:].T
+
+    co = (o[..., np.newaxis, :] - c[..., np.newaxis, :, :])
     res = (u * co).sum(axis=-1)**2 - (co**2).sum(axis=-1) + r**2
     return res >= 0
+
+
+def angle_between_vectors(a, b):
+    an = a / np.linalg.norm(a, axis=-1, keepdims=True)
+    bn = b / np.linalg.norm(b, axis=-1, keepdims=True)
+
+    angle = safe_arccos((an * bn).sum(axis=-1))
+    return angle
+
+
+def angle_between_axis_and_point(f, p, axis=2):
+
+    d = (p - f[..., :-1, -1])
+    dn = d / np.linalg.norm(d, axis=-1, keepdims=True)
+
+    v = f[..., :-1, axis]
+
+    angle = safe_arccos((dn * v).sum(axis=-1))
+    return angle
 
 
 def rotation_between_vectors(a, b):
@@ -425,25 +435,11 @@ def sample_points_on_disc(radius, shape=None):
     return xy
 
 
-def get_points_in_sphere_3d(n=10):
-    x = np.zeros()
-
-    theta = np.linspace(start=-np.pi, end=+np.pi, num=n)
-    phi = np.arccos(1-2*np.linspace(start=0, end=1, num=n))
-    sin_phi = np.sin(phi)
-    r = np.linspace(start=0, stop=1, num=n)
-
-    x[..., 0] = sin_phi * np.cos(theta)
-    x[..., 1] = sin_phi * np.sin(theta)
-    x[..., 2] = np.cos(phi)
-
-
-
 def sample_points_on_sphere_3d(shape):
     shape = shape_wrapper(shape=shape)
     x = np.empty(tuple(shape) + (3,))
     theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
-    phi = np.arccos(1-2*np.random.uniform(low=0, high=1, size=shape))
+    phi = safe_arccos(1-2*np.random.uniform(low=0, high=1, size=shape))
     sin_phi = np.sin(phi)
     x[..., 0] = sin_phi * np.cos(theta)
     x[..., 1] = sin_phi * np.sin(theta)
@@ -647,7 +643,7 @@ def discretize_triangle_mesh(p, f, voxel_size):
 
 def discretize_triangle(x=None,
                         a=None, b=None, c=None,
-                        n=2, verbose=0):
+                        n=2):
     """there is no ordering in the output"""
     if a is None:
         if n <= 2:
@@ -677,7 +673,7 @@ def test_discretize_triangle():
     x0 = np.array([[0, 0],
                   [1, 0],
                   [0, 1]])
-    x2 = discretize_triangle(a=x0[0], b=x0[1], c=x0[2], n=10, verbose=10)
+    x2 = discretize_triangle(a=x0[0], b=x0[1], c=x0[2], n=10)
 
     from wzk.mpl import new_fig
     fig, ax = new_fig(aspect=1)

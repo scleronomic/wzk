@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+import numpy as np
 
 from wzk.trajectory import *
 from wzk.testing import compare_arrays
@@ -22,7 +23,7 @@ class Test(TestCase):
         self.assertTrue(compare_arrays(x_ss, x_true))
 
         # B
-        q = np.array([[0, 1],
+        x = np.array([[0, 1],
                       [1, 1],
                       [2, 2]])
         # B1
@@ -36,10 +37,10 @@ class Test(TestCase):
         self.assertTrue(compare_arrays(x_ss, x_true))
         # B2
         x_ss = get_substeps(x=x, n=0)
-        self.assertTrue(compare_arrays(x_ss, q))
+        self.assertTrue(compare_arrays(x_ss, x))
         # B3
         x_ss = get_substeps(x=x, n=1)
-        self.assertTrue(compare_arrays(x_ss, q))
+        self.assertTrue(compare_arrays(x_ss, x))
 
     def test_inner2full(self):
 
@@ -69,7 +70,7 @@ class Test(TestCase):
     def test_get_substeps_adjusted(self):
         x = np.array([0, 2, 10, 19])[:, np.newaxis]
         x2 = get_substeps_adjusted(x=x, n=20)
-        true = np.arange(20)
+        true = np.arange(20)[:, np.newaxis]
         self.assertTrue(compare_arrays(x2, true))
 
         x = np.deg2rad(np.array([[-150], [+150], [90], [-20]]))

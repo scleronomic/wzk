@@ -50,7 +50,7 @@ def astype(a, s):
     return a.astype(str2np(s))
 
 
-c2np = {bool: bool,
+c2np = {bool: np.bool_,
         str: np.str_,
         int: np.integer,
         float: np.floating}

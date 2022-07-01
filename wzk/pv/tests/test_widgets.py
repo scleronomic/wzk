@@ -13,7 +13,7 @@ def test_add_rhs_widget():
     origin0 = np.zeros(3)
     origin1 = np.ones(3) * (-0.2)
     scale = 0.2
-    p = pv.Plotter()
+    pl = pv.Plotter()
 
     h = plot_frames(f=np.eye(4), scale=scale, p=p)
 
@@ -24,16 +24,16 @@ def test_add_rhs_widget():
         f[:3, -1] = o
         plot_frames(f=f, h=h, scale=scale)
 
-    RHSWidget(p=p, origin=origin0, scale=scale, callback=update)
-    RHSWidget(p=p, origin=origin1, scale=.3)
+    RHSWidget(pl=pl, origin=origin0, scale=scale, callback=update)
+    RHSWidget(pl=pl, origin=origin1, scale=.3)
 
-    p.show()
+    pl.show()
 
 
 def test_key_slider_widget():
-    p = pv.Plotter()
-    add_key_slider_widget(p=p, slider=None, callback=lambda x: print('A'), step=2.)
-    p.show()
+    pl = pv.Plotter()
+    add_key_slider_widget(pl=pl, slider=None, callback=lambda x: print('A'), step=2.)
+    pl.show()
 
 
 if __name__ == '__main__':

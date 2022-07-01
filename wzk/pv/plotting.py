@@ -15,6 +15,8 @@ from typing import Union
 
 pv.set_plot_theme('document')
 
+Plotter = pv.Plotter
+
 headless = False
 if platform == 'linux':
     try:
@@ -60,17 +62,17 @@ def camera_motion(cp=None, pos=None, focal=None, viewup=None,
         raise NotImplementedError
 
 
-def plotter_wrapper(p: Union[pv.Plotter, dict],
+def plotter_wrapper(pl: Union[pv.Plotter, dict],
                     window_size: tuple = (2048, 1536), camera_position=None,
                     lighting: str = 'three lights', off_screen: bool = False,
                     gif=False):
 
-    if isinstance(p, dict):
-        camera_position = p.pop('camera_position', None)
-        window_size = p.pop('window_size', window_size)
-        lighting = p.pop('lighting', lighting)
-        off_screen = p.pop('off_screen', off_screen)
-        gif = p.pop('gif', gif)
+    if isinstance(pl, dict):
+        camera_position = pl.pop('camera_position', None)
+        window_size = pl.pop('window_size', window_size)
+        lighting = pl.pop('lighting', lighting)
+        off_screen = pl.pop('off_screen', off_screen)
+        gif = pl.pop('gif', gif)
         off_screen = headless and off_screen
 
         if off_screen:
@@ -78,20 +80,20 @@ def plotter_wrapper(p: Union[pv.Plotter, dict],
             if platform == 'linux':
                 pv.start_xvfb()  # start_xvfb only supported on linux
 
-    if not isinstance(p, pv.Plotter):
-        p = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
+    if not isinstance(pl, pv.Plotter):
+        pl = pv.Plotter(window_size=window_size, off_screen=off_screen, lighting=lighting)
 
     if camera_position is not None:
-        p.camera_position = camera_position
+        pl.camera_position = camera_position
 
     if gif:
         pass
         assert isinstance(gif, str)
         if not gif.endswith('.gif'):
             gif = f"{gif}.gif"
-        p.open_gif(gif)  # noqa
+        pl.open_gif(gif)  # noqa
 
-    return p
+    return pl
 
 
 class DummyPlotter:
@@ -115,7 +117,7 @@ def pyvista2faces(f: np.ndarray):
 
 
 def plot_convex_hull(x=None, hull=None,
-                     p=None, h=None,
+                     pl=None, h=None,
                      **kwargs):
 
     if hull is None:
@@ -124,7 +126,7 @@ def plot_convex_hull(x=None, hull=None,
 
     if h is None:
         h0 = pv.PolyData(hull.points, faces=faces)
-        h1 = p.add_mesh(h0, **kwargs)
+        h1 = pl.add_mesh(h0, **kwargs)
         h = (h0, h1)
 
     else:
@@ -135,7 +137,7 @@ def plot_convex_hull(x=None, hull=None,
 
 
 def plot_connections(x, pairs=None,
-                     p=None, h=None,
+                     pl=None, h=None,
                      **kwargs):
 
     if x.ndim == 2:
@@ -157,7 +159,7 @@ def plot_connections(x, pairs=None,
 
     if h is None:
         h0 = pv.PolyData(x, lines=lines)
-        h1 = p.add_mesh(h0, **kwargs)
+        h1 = pl.add_mesh(h0, **kwargs)
         h = (h0, h1)
     else:
         h[0].points = x.copy()
@@ -167,28 +169,28 @@ def plot_connections(x, pairs=None,
     return h
 
 
-def plot_cube(limits, p=None, **kwargs):
+def plot_cube(limits, pl=None, **kwargs):
     # r = [[ll, ll + side_length] for ll in lower_left]
     if limits is None:
         return
     v, e, f = cube(limits=limits)
-    plot_connections(x=v, pairs=e, p=p, **kwargs)
+    plot_connections(x=v, pairs=e, pl=pl, **kwargs)
 
 
-def plot_collision(p, xa, xb, ab, **kwargs):
-    plot_convex_hull(p=p, x=xa, opacity=0.2)
-    plot_convex_hull(p=p, x=xb, opacity=0.2)
-    plot_connections(x=ab, p=p, **kwargs)
+def plot_collision(pl, xa, xb, ab, **kwargs):
+    plot_convex_hull(pl=pl, x=xa, opacity=0.2)
+    plot_convex_hull(pl=pl, x=xb, opacity=0.2)
+    plot_connections(x=ab, pl=pl, **kwargs)
 
 
 def set_color(h, color):
-    p = h[1].GetProperty()
-    p.SetColor(colors.to_rgb(color))
+    pl = h[1].GetProperty()
+    pl.SetColor(colors.to_rgb(color))
 
 
 def plot_bimg(img, limits,
               mode='mesh',
-              p=None, h=None,
+              pl=None, h=None,
               **kwargs):
 
     if img is None:
@@ -202,7 +204,7 @@ def plot_bimg(img, limits,
             hidden_cells = ~img.transpose(2, 0, 1).ravel().astype(bool)
             print(hidden_cells.sum())
             h0.hide_cells(hidden_cells)
-            h1 = p.add_mesh(h0, show_scalar_bar=False, **kwargs)
+            h1 = pl.add_mesh(h0, show_scalar_bar=False, **kwargs)
             h = (h0, h1)
         else:
             h[0].hide_cells(~img.ravel())
@@ -213,7 +215,7 @@ def plot_bimg(img, limits,
 
         if h is None:
             h0 = pv.PolyData(verts, faces=faces)
-            h1 = p.add_mesh(h0, **kwargs)
+            h1 = pl.add_mesh(h0, **kwargs)
             h = (h0, h1)
 
         else:
@@ -227,12 +229,12 @@ def plot_bimg(img, limits,
 
 
 def plot_spheres(x, r,
-                 p=None, h=None,
+                 pl=None, h=None,
                  **kwargs):
     r = scalar2array(r, shape=len(x), safe=True)
     h0 = [pv.Sphere(center=xi, radius=ri) for xi, ri in zip(x, r)]
     if h is None:
-        h1 = [p.add_mesh(h0i, **kwargs) for h0i in h0]
+        h1 = [pl.add_mesh(h0i, **kwargs) for h0i in h0]
         h = (h0, h1)
     else:
         for h0i, h0i_new in zip(h[0], h0):
@@ -243,7 +245,7 @@ def plot_spheres(x, r,
 
 def plot_frames(f,
                 scale=1., shift=np.zeros(3),
-                p=None, h=None,
+                pl=None, h=None,
                 color=None, opacity=None, **kwargs):
 
     if np.ndim(f) == 3:
@@ -251,7 +253,7 @@ def plot_frames(f,
         h = scalar2array(h, shape=n, safe=False)
         color = array2array(color, shape=(n, 3))
         opacity = array2array(opacity, shape=(n, 3))
-        h = [plot_frames(f=fi, p=p, h=hi, color=ci,  opacity=oi, scale=scale, shift=shift,
+        h = [plot_frames(f=fi, pl=pl, h=hi, color=ci,  opacity=oi, scale=scale, shift=shift,
                          **kwargs) for fi, hi, ci, oi in zip(f, h, color, opacity)]
         return h
 
@@ -267,7 +269,7 @@ def plot_frames(f,
         color, opacity = scalar2array(color, opacity, shape=3, safe=False)
         h0 = [pv.Arrow(start=f[:3, -1]+shift[i]*f[:3, i], direction=f[:3, i], scale=scale) for i in range(3)]
         if h is None:
-            h1 = [p.add_mesh(h0i, color=color[i], opacity=opacity[i], **kwargs) for i, h0i in enumerate(h0)]
+            h1 = [pl.add_mesh(h0i, color=color[i], opacity=opacity[i], **kwargs) for i, h0i in enumerate(h0)]
             h = (h0, h1)
         else:
             for i, h0i in enumerate(h[0]):
@@ -295,13 +297,13 @@ class TransformableMesh:
 
 
 def plot_mesh(m, f,
-              p, h, **kwargs):
+              pl, h, **kwargs):
 
     if h is None:
         h0 = pv.PolyData(m)
         h0 = TransformableMesh(h0)
         h0.transform(f)
-        h1 = p.add_mesh(h0.mesh, **kwargs)
+        h1 = pl.add_mesh(h0.mesh, **kwargs)
         h = (h0, h1)
 
     else:

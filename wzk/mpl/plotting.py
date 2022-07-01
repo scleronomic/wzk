@@ -307,7 +307,7 @@ def hist_vlines(x, name, bins=100,
         _range = (np.percentile(x, lower_perc), np.percentile(x, upper_perc))
     else:
         _range = None
-    fig, ax = new_fig(title=f'Histogram: {name}', scale=2)
+    fig, ax = new_fig(title=f'Histogram: {name}')
     hist = ax.hist(x, bins=bins, range=_range)
 
     perc_i = []
@@ -367,7 +367,7 @@ def correlation_plot(a, b, name_a, name_b,
 
         if regression_line and i+1 == len(a):
             la = None if la is None else la.format(r)
-            ax.plot(aa, bb, color=co, label=la, ls=ma, lw=ms, alpha=al, zorder=zo)
+            ax.plot(aa, bb, color=co, label=la, ls='-', marker=ms, alpha=al, zorder=zo)
         else:
             ax.plot(aa, bb, ls='', marker=ma, color=co, label=la, markersize=ms, alpha=al, zorder=zo, **kwargs)
 

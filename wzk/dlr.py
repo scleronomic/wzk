@@ -1,7 +1,9 @@
 import os
 
+from wzk.files import ICLOUD  # noqa
+
+
 USERNAME = os.path.expanduser("~").split(sep='/')[-1]
-# USERNAME = "tenh_jo"
 
 
 def where_am_i():

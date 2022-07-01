@@ -14,6 +14,8 @@ __open_cmd_dict = {'Linux': 'xdg-open',
                    'Darwin': 'open',
                    'Windows': 'start'}
 
+ICLOUD = 'Library/Mobile Documents/com~apple~CloudDocs'
+
 
 def get_pythonpath():
     try:
@@ -29,7 +31,7 @@ def safe_rmdir(directory: str):
         pass
 
 
-def rm_files_in_dir(directory):
+def rm_files_in_dir(directory: str):
     file_list = os.listdir(directory)
     for file in file_list:
         os.remove(os.path.join(directory, file))
@@ -74,17 +76,17 @@ def load_pickle(file: str):
     return ret_di
 
 
-def list_files(directory):
+def list_files(directory: str):
     return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
 
-def ensure_extension_point(ext):
+def ensure_extension_point(ext: str):
     if ext[0] != '.':
         ext = '.' + ext
     return ext
 
 
-def ensure_file_extension(*, file, ext):
+def ensure_file_extension(file: str, ext: str):
     ext = ensure_extension_point(ext)
 
     if file[-len(ext)] != ext:

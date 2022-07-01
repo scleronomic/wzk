@@ -33,7 +33,7 @@ class FancyArrowX2(patches.FancyArrow):
 
 
 class FancyBbox(patches.FancyBboxPatch):
-    def __init__(self, xy, width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
+    def __init__(self, xy: np.ndarray = np.zeros(2), width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
         if boxstyle in ['Roundtooth', 'Sawtooth']:
             bs = patches.BoxStyle(boxstyle, pad=pad, tooth_size=corner_size)
         elif boxstyle in ['Round', 'Round4']:
@@ -163,7 +163,7 @@ def make_every_box_fancy(ax,
             continue
 
         if abs(bb.height) > 0.5:
-            p_bbox = FancyBbox(xy=(bb.xmin+shrink_x/2, bb.ymin+shrink_y/2),
+            p_bbox = FancyBbox(xy=np.array((bb.xmin+shrink_x/2, bb.ymin+shrink_y/2)),
                                width=abs(bb.width)-shrink_x,
                                height=abs(bb.height)-shrink_y,
                                pad=pad,
@@ -175,4 +175,3 @@ def make_every_box_fancy(ax,
 
     for patch in new_patches:
         ax.add_patch(patch)
-
