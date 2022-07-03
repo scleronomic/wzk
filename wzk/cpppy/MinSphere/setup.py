@@ -13,7 +13,7 @@ boost_include_dir = os.environ.get("BOOST_INCLUDE_DIR",  # either user-defined
 # '/opt/homebrew/Cellar/boost/1.76.0/include'
 
 ext = Extension(
-    name='MinSphere',
+    name='wzkMinSphere',
     sources=['./MinSphere.cpp'],
     extra_compile_args=['-std=c++1y', '-ffast-math', '-Ofast', '-fpermissive'],
     # -lgmp
@@ -24,7 +24,7 @@ ext = Extension(
 )
 #
 setup(
-    name='MinSphere',
+    name='wzkMinSphere',
     version='0.1.0',
     ext_modules=[ext],
 )

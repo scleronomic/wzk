@@ -164,9 +164,9 @@ PyMethodDef module_methods[] = {
     {NULL},
 };
 
-PyModuleDef module_def = {PyModuleDef_HEAD_INIT, "MinSphere", NULL, -1, module_methods};
+PyModuleDef module_def = {PyModuleDef_HEAD_INIT, "wzkMinSphere", NULL, -1, module_methods};
 
-extern "C" PyObject * PyInit_MinSphere() {
+extern "C" PyObject * PyInit_wzkMinSphere() {
     PyObject * module = PyModule_Create(&module_def);
     return module;
 }

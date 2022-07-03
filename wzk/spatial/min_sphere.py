@@ -1,5 +1,5 @@
 import numpy as np
-import wzk.cpppy.MinSphere.MinSphere as MinSphere
+import wzk.cpppy.MinSphere.wzkMinSphere as MinSphere
 
 
 def min_sphere(x, r) -> (np.ndarray, float):
