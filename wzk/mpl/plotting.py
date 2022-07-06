@@ -5,7 +5,7 @@ from scipy.stats import linregress
 from matplotlib import collections, patches
 
 from wzk.mpl.figure import plt, new_fig, subplot_grid
-from wzk.mpl.colors import arr2rgba
+from wzk.mpl.colors2 import arr2rgba
 from wzk.mpl.axes import limits4axes, limits2extent, set_ax_limits
 from wzk.mpl.legend import rectangle_legend
 

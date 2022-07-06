@@ -16,7 +16,7 @@ import matplotlib as mpl
 from matplotlib import figure
 
 shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / golden_ratio]
-shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 12) / golden_ratio]
+shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 16) / golden_ratio]
 
 
 def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
