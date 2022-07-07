@@ -235,6 +235,10 @@ def copy2clipboard(file: str):
                     'set the clipboard to POSIX file "{}"'.format(file)])
 
 
+def cp(src, dst):
+    subprocess.call(f"cp {src} {dst}", shell=True)
+
+
 # shutil.move("path/to/current/file.foo", "path/to/new/destination/for/file.foo")
 def split_files_into_dirs(file_list: list,
                           bool_fun,
