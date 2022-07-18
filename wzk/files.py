@@ -239,6 +239,11 @@ def cp(src, dst):
     subprocess.call(f"cp {src} {dst}", shell=True)
 
 
+def replace_dir(directory):
+    uuid = str(uuid4())
+    cp()
+
+
 # shutil.move("path/to/current/file.foo", "path/to/new/destination/for/file.foo")
 def split_files_into_dirs(file_list: list,
                           bool_fun,

@@ -2,6 +2,8 @@ import json
 from collections.abc import Iterable
 import numpy as np
 
+from wzk.numpy2 import safe_round
+
 
 class ObjectDict:
     def to_dict(self):
@@ -323,3 +325,26 @@ def rename_dict_keys(d, new_keys_dict):
     for old_k in new_keys_dict:
         d[new_keys_dict[old_k]] = d.pop(old_k)
 
+
+def round_dict(d, decimals=None):
+    for key in d.keys():
+        value = d[key]
+        if isinstance(value, dict):
+            d[key] = round_dict(d=value, decimals=decimals)
+        else:
+            d[key] = safe_round(x=value, decimals=decimals)
+
+    return d
+
+
+def test_round_dict():
+    d = {'a': 1.123,
+         'b': {'c': np.arange(5) / 27,
+               'd': {'e': 'why',
+                     'f': ['why', 'not', 'why']
+                     }
+               }
+         }
+
+    d_round = round_dict(d=d, decimals=1)
+    print(d_round)

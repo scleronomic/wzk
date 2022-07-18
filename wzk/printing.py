@@ -68,7 +68,7 @@ def print_dict(d, newline=True, message=None):
 
     for key in d:
         print(key, ':')
-        print(d[key])
+        print(repr(d[key]))
 
         if newline:
             print()

@@ -70,7 +70,7 @@ def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
     return fig, ax
 
 
-def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str, tuple] = ('png',),
+def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str, tuple] = None,
              dpi: int = 300, bbox: Optional[str] = 'tight', pad: float = 0.1,
              save: bool = True, replace: bool = True, view: bool = False, copy2cb: bool = False,
              verbose: int = 1, **kwargs):

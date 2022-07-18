@@ -969,3 +969,12 @@ def find_largest_consecutives(x):
 
 def squeeze_all(*args):
     return [np.squeeze(a) for a in args]
+
+
+def safe_round(x,
+               decimals=None):  # TODO think about hte safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
+    try:
+        return np.round(x, decimals=decimals)
+
+    except (TypeError, np.core._exceptions.UFuncTypeError):
+        return np.array(x)

@@ -1,5 +1,12 @@
 from .__multiprocessing2 import *  # must be imported before multiprocessing / numpy
 
+try:  # must be imported before skimage / did not find out why yet
+    from pyOpt.pySLSQP.pySLSQP import SLSQP as _
+
+except ImportError:
+    pass
+
+
 from .mpl.figure import *  # must be imported before matplotlib
 from .mpl import plotting
 
