@@ -170,10 +170,31 @@ def get_substeps_adjusted(x, n,
     return x_n
 
 
-def get_q_bee(q, n_wp):
-    q_se = q[..., [0, -1], :]
-    q0 = get_substeps(q_se, n=n_wp-1, include_start=True)
-    return q0
+def x2bee(x, n_wp=None):
+    x_se = x[..., [0, -1], :]
+    if n_wp is None:
+        n_wp = x.shape[-2]
+
+    bee = get_substeps(x_se, n=n_wp-1, include_start=True)
+    return bee
+
+
+def x2beerel(x, n_wp=None, eps=1e-4):
+    bee = x2bee(x, n_wp=n_wp)
+    beerel = x - bee
+
+    d = np.linalg.norm(x[..., 1, :] - x[..., -1, :], axis=-1, keepdims=True) + eps
+    beerel = beerel / d
+    return beerel
+
+
+def beerel2x(beerel, se, eps=1e-4):
+    n_wp = beerel.shape[-2]
+    assert np.all(beerel[..., [0, -1], :] == 0)
+    bee = x2bee(x=se, n_wp=n_wp)
+    d = np.linalg.norm(se[..., -1, :] - se[..., 0, :], axis=-1, keepdims=True) + eps
+    x = bee + beerel * d
+    return x
 
 
 def get_path_adjusted(x, n=None, is_periodic=None, weighting=None):
@@ -295,7 +316,7 @@ def combine_d_substeps__dx(d_dxs, n):
         raise ValueError(f"{d_dxs.ndim}")
 
 
-def to_spline(x, n_c=4):
+def to_spline(x, n_c=4, start_end0=False):
 
     n_wp, n_dof = x.shape[-2:]
     xx = np.linspace(0, 1, n_wp)
@@ -318,6 +339,9 @@ def to_spline(x, n_c=4):
     else:
         raise ValueError
 
+    if start_end0:
+        c[..., [0, -1], :] = 0
+
     return c
 
 
@@ -330,10 +354,10 @@ def set_spline_coeffs(spl, coeffs):
 
 def from_spline(c, n_wp):
     xx = np.linspace(0, 1, n_wp)
-    spl = UnivariateSpline(x=xx, y=xx)
+    spl = UnivariateSpline(x=xx, y=xx, )
 
     n_c, n_dof = c.shape[-2:]
-
+    # print('n_c, n_dof', n_c, n_dof)
     if np.ndim(c) == 2:
         x = np.zeros((n_wp, n_dof))
         for i_d in range(n_dof):
@@ -357,17 +381,16 @@ def from_spline(c, n_wp):
 
 
 # TODO which way is the best? Start and end MUST match
-def fromto_spline(x, n_c=4):
-    return from_spline(c=to_spline(x=x, n_c=n_c), n_wp=x.shape[-2])
+def fromto_spline(x, n_c=4, start_end0=False):
+    return from_spline(c=to_spline(x=x, n_c=n_c, start_end0=start_end0), n_wp=x.shape[-2])
 
 
-def fromto_spline2(x, n_c=4):
+def fromto_spline2(x, n_c=4, start_end0=False):
     n_wp = x.shape[-2]
     x2 = get_steps_between(start=x[..., 0, :], end=x[..., -1, :], n=n_wp)
     dx = x - x2
-    c = to_spline(dx, n_c=n_c)
+    c = to_spline(dx, n_c=n_c, start_end0=start_end0)
     dx_spline = from_spline(c=c, n_wp=n_wp)
-    dx_spline[..., [0, -1], :] = 0  # This needs to be done to ensure that start and end match precisely
     x_spline = x2 + dx_spline
     x_spline = get_path_adjusted(x=x_spline)
     return x_spline
