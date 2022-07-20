@@ -184,7 +184,7 @@ def mesh2bimg(p, shape, limits, f=None):
             ch = ConvexHull(p)
             p = ch.points
             f = ch.simplices  # noqa
-        p2 = discretize_triangle_mesh(pl=pl, f=f, voxel_size=voxel_size)
+        p2 = discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
         i2 = grid_x2i(x=p2, limits=limits, shape=shape)
         img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
             np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1),
@@ -265,7 +265,7 @@ def test_mesh2bimg():
     p = np.random.random((10, 2))
     limits = np.array([[0, 1],
                        [0, 1]])
-    img = mesh2bimg(pl=pl, shape=(64, 64), limits=limits)
+    img = mesh2bimg(p=p, shape=(64, 64), limits=limits)
 
     from wzk.mpl import new_fig, imshow
 
