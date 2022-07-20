@@ -183,7 +183,7 @@ def x2beerel(x, n_wp=None, eps=1e-4):
     bee = x2bee(x, n_wp=n_wp)
     beerel = x - bee
 
-    d = np.linalg.norm(x[..., 1, :] - x[..., -1, :], axis=-1, keepdims=True) + eps
+    d = np.linalg.norm(x[..., -1, :] - x[..., 0, :], axis=-1, keepdims=True)[..., np.newaxis] + eps
     beerel = beerel / d
     return beerel
 
@@ -192,7 +192,7 @@ def beerel2x(beerel, se, eps=1e-4):
     n_wp = beerel.shape[-2]
     assert np.all(beerel[..., [0, -1], :] == 0)
     bee = x2bee(x=se, n_wp=n_wp)
-    d = np.linalg.norm(se[..., -1, :] - se[..., 0, :], axis=-1, keepdims=True) + eps
+    d = np.linalg.norm(se[..., -1, :] - se[..., 0, :], axis=-1, keepdims=True)[..., np.newaxis] + eps
     x = bee + beerel * d
     return x
 
