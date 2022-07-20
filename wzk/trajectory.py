@@ -198,7 +198,7 @@ def beerel2x(beerel, se, eps=1e-4):
 
 
 def get_path_adjusted(x, n=None, is_periodic=None, weighting=None):
-    m = 3
+    m = 5
     n0 = x.shape[-2]
     if n is None:
         n = n0

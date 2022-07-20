@@ -5,7 +5,6 @@ from wzk.mpl.figure import shape_1c_ieee, shape_2c_ieee
 # fig.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=None)[source]
 
 
-
 def __no_borders(pad=0.0):
     return {'figure.subplot.left': 0.0 + pad,
             'figure.subplot.right': 1.0 - pad,
