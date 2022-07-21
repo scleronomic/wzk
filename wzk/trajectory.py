@@ -325,7 +325,7 @@ def to_spline(x, n_c=4, start_end0=False):
         c = np.zeros((n_c, n_dof))
         for i_d in range(n_dof):
             spl = UnivariateSpline(x=xx, y=x[:, i_d])
-            c[:, i_d] = spl.get_coeffs()
+            c[..., i_d] = spl.get_coeffs()
 
     elif np.ndim(x) == 3:
         n = x.shape[0]
@@ -340,7 +340,7 @@ def to_spline(x, n_c=4, start_end0=False):
         raise ValueError
 
     if start_end0:
-        c[..., [0, -1], :] = 0
+        c = c[..., 1:-1, :]
 
     return c
 
@@ -352,12 +352,16 @@ def set_spline_coeffs(spl, coeffs):
     spl._data = data
 
 
-def from_spline(c, n_wp):
+def from_spline(c, n_wp, start_end0=False):
     xx = np.linspace(0, 1, n_wp)
     spl = UnivariateSpline(x=xx, y=xx, )
 
+    if start_end0:
+        z = np.zeros_like(c[..., :1, :])
+        c = np.concatenate((z, c, z), axis=-2)
+
     n_c, n_dof = c.shape[-2:]
-    # print('n_c, n_dof', n_c, n_dof)
+
     if np.ndim(c) == 2:
         x = np.zeros((n_wp, n_dof))
         for i_d in range(n_dof):
