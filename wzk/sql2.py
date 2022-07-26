@@ -285,7 +285,8 @@ def delete_tables(file, tables):
 
 def delete_rows(file: str, table: str, rows, lock=None):
     batch_size = int(1e5)
-
+    print(f"delete_rows {file} {table}")
+    
     if batch_size is None or batch_size > len(rows):
         rows = rows2sql(rows, dtype=str)
         execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({rows})")
