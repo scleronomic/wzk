@@ -32,7 +32,6 @@ def rows2sql(rows: object, dtype: object = str, values=None) -> object:
     elif isinstance(rows, np.ndarray) and rows.dtype == bool:
         rows = np.nonzero(rows)[0]
 
-    print(rows)
     rows = np.array(rows, dtype=int).reshape(-1) + 1  # Attention! Unlike in Python, SQL indices start at 1
 
     if dtype == str:
