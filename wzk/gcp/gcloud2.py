@@ -139,7 +139,8 @@ def detach_disk(instance, disk):
 
 
 def mount_disk_cmd(sdx, directory):
-    return f"sudo mount -t ext4 /dev/{sdx} {directory}"
+    # return f"sudo mount -t ext4 /dev/{sdx} {directory}"
+    return f"sudo mount -o discard,defaults -t ext4 /dev/{sdx} {directory}"
 
 
 def mount_disk(sdx, directory):

@@ -320,7 +320,6 @@ def to_spline(x, n_c=4, start_end0=False):
 
     n_wp, n_dof = x.shape[-2:]
     xx = np.linspace(0, 1, n_wp)
-
     if np.ndim(x) == 2:
         c = np.zeros((n_c, n_dof))
         for i_d in range(n_dof):
