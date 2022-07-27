@@ -8,6 +8,7 @@ import numpy as np
 from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
 from wzk.cpu import ssh_call2, get_n_cpu
 
+# rmc-lx0095
 # Johannes Pitz: 0392, 0179, 0145, 0115
 # Leon: 0144
 # ['rmc-lx0140',  'rmc-lx0271'] no longer available

@@ -94,6 +94,10 @@ def print_stats(*args, names=None, dec=4):
     return np.array(stats)
 
 
+def print_stats_bool(b, name='', dec=4):
+    print(f"{name}: {b.sum()}/{len(b)} = {b.mean():.{dec}f}")
+
+
 def print_correlation(bool_lists, names, dec=4):
     arr = np.zeros((len(bool_lists), len(bool_lists)))
     total = np.ones_like(bool_lists[0], dtype=bool)
