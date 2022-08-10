@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from wzk.time import *
+from wzk.time2 import *
 
 
 class Test(TestCase):

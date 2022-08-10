@@ -135,7 +135,7 @@ def save_ani(file: str, fig: mpl.figure.Figure, ani,
         n = np.arange(n)
 
     for nn in n:
-        print_progress(i=nn, n=n[-1]+1)
+        print_progress_bar(i=nn, n=n[-1]+1)
         ani(nn)
         save_fig(file="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats=('png', ), dpi=dpi, bbox=bbox,
                  verbose=0)

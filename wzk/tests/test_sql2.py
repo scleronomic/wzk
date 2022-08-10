@@ -67,19 +67,19 @@ class Test(TestCase):
 
         file1 = f"{directory}/dummy_test_concatenate_tables_1.db"
         file2 = f"{directory}/dummy_test_concatenate_tables_2.db"
-        tableA = 'tableA'
-        tableB = 'tableB'
-        df2sql(df=df, file=file1, table=tableA, if_exists='replace')
-        df2sql(df=df, file=file1, table=tableB, if_exists='replace')
-        df2sql(df=df, file=file2, table=tableA, if_exists='replace')
+        table_a = 'tableA'
+        table_b = 'tableB'
+        df2sql(df=df, file=file1, table=table_a, if_exists='replace')
+        df2sql(df=df, file=file1, table=table_b, if_exists='replace')
+        df2sql(df=df, file=file2, table=table_a, if_exists='replace')
 
         #
-        concatenate_tables(file=file1, table=tableB, table2=tableA)
-        df2 = get_values_sql(file=file1, table=tableB, rows=[3, 4, 5], values_only=False)
+        concatenate_tables(file=file1, table=table_b, table2=table_a)
+        df2 = get_values_sql(file=file1, table=table_b, rows=[3, 4, 5], values_only=False)
         self.assertTrue(np.all(df == df2))
 
-        concatenate_tables(file=file2, table=tableA, file2=file1, table2=tableB)
-        df2 = get_values_sql(file=file2, table=tableA, rows=[6, 7, 8], values_only=False)
+        concatenate_tables(file=file2, table=table_a, file2=file1, table2=table_b)
+        df2 = get_values_sql(file=file2, table=table_a, rows=[6, 7, 8], values_only=False)
         self.assertTrue(np.all(df == df2))
         #
 
@@ -107,7 +107,7 @@ class Test(TestCase):
         c = 'A_f32'
         r = [0, 1]
         v = np.arange(2*20*4).reshape((2, 20, 4))
-        v0 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
+        # v0 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
         set_values_sql(file=file, table=table, values=(v,), columns=c, rows=r)
         v1 = get_values_sql(file=file, table=table, rows=r, columns=c, values_only=True)
         v1 = v1.reshape((2, 20, 4))

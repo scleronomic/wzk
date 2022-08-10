@@ -12,14 +12,14 @@ def intersect(a, b, c, d):
     return ccw(a, c, d) != ccw(b, c, d) and ccw(a, b, c) != ccw(a, b, d)
 
 
-d = 2
+dd = 2
 k = 100
 r = 0.1
-n = int(np.ceil(np.sqrt(d)/r))
+n = int(np.ceil(np.sqrt(dd)/r))
 
 np.random.random()
 
-grid = np.full((n,)*d, -1)
+grid = np.full((n,)*dd, -1)
 limits = np.array([[-1.0, +1.0],
                    [-1.0, +1.0]])
 
@@ -27,7 +27,7 @@ limits = np.array([[-1.0, +1.0],
 #     ax.plot(*xx, color='black', marker='o', markersize=1)
 
 
-def aaa(t):
+def aaa(t, d):
     fig, ax = new_fig(aspect=1)
     ax.set_axis_off()
     ax.set_xlim(-1, +1)
@@ -60,7 +60,7 @@ def aaa(t):
                 # phi = np.random.uniform(low=np.pi/3+0.8, high=2/3*np.pi-0.8)
                 phi = np.random.normal(loc=np.pi/2, scale=t)
             else:
-                dd = x[i] - x0
+                # dd = x[i] - x0
                 # phi = np.random.normal(loc=np.arctan2(dd[1], dd[0]), scale=t)
                 phi = np.random.normal(loc=np.pi/2, scale=t)
 
@@ -82,7 +82,7 @@ def aaa(t):
 
 
 if __name__ == '__main__':
-    aaa(np.pi/10)
+    aaa(np.pi/10, d=dd)
 
 # for tt in [np.pi/15, np.pi/20, np.pi/25]:
 #     aaa(tt)

@@ -59,7 +59,7 @@ def popen_list(cmd_list, _sleep=None):
 
 
 def test_popen_list():
-    from wzk.time import tictoc
+    from wzk.time2 import tictoc
     with tictoc():
         popen_list(cmd_list=['sleep 1', 'sleep 2', 'sleep 3', 'ls'])
 

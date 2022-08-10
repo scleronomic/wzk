@@ -260,10 +260,11 @@ def savgol_error():
 
         # d1_savgol = np.diff(y_fine_savgol, 1)
         # d1_savgol2 = np.diff(y_fine_savgol2, 1)
-        d2_savgol = np.diff(y_fine_savgol, 2)
-        d2_savgol2 = np.diff(y_fine_savgol2, 2)
-        print(np.sum(np.abs(d2_savgol)), np.max(np.abs(d2_savgol)))
-        print(np.sum(np.abs(d2_savgol2)), np.max(np.abs(d2_savgol2)))
+
+        # d2_savgol = np.diff(y_fine_savgol, 2)
+        # d2_savgol2 = np.diff(y_fine_savgol2, 2)
+        # print(np.sum(np.abs(d2_savgol)), np.max(np.abs(d2_savgol)))
+        # print(np.sum(np.abs(d2_savgol2)), np.max(np.abs(d2_savgol2)))
 
         # fig, ax = new_fig()
         # ax.plot(d1_savgol, c='r', marker='o', markersize=5)

@@ -1,7 +1,7 @@
 import time
 from unittest import TestCase
 
-from wzk.time import tic, toc
+from wzk.time2 import tic, toc
 from wzk.multiprocessing2 import *
 from wzk.dicts_lists_tuples import list_allclose
 

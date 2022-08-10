@@ -126,6 +126,16 @@ def weave_lists(*args):
     return [a for b in zip(*args) for a in b]
 
 
+def get_indices(l, items):
+    if isinstance(l, np.ndarray):
+        l = l.tolist()
+
+    indices = []
+    for lo in items:
+        indices.append(l.index(lo))
+    return indices
+
+
 # Slice and range
 def range2slice(r):
     return slice(r.start, r.stop, r.step)
@@ -348,3 +358,5 @@ def test_round_dict():
 
     d_round = round_dict(d=d, decimals=1)
     print(d_round)
+
+

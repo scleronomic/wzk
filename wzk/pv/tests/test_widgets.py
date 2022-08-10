@@ -15,7 +15,7 @@ def test_add_rhs_widget():
     scale = 0.2
     pl = pv.Plotter()
 
-    h = plot_frames(f=np.eye(4), scale=scale, p=p)
+    h = plot_frames(pl=pl, f=np.eye(4), scale=scale)
 
     def update(oxyz):
         o, xyz = oxyz

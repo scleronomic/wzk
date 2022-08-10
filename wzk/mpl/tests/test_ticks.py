@@ -54,6 +54,7 @@ class Test(TestCase):
         plt.pause(0.05)
         change_tick_appearance(ax, position='left', v=2, size=40, color='green')
         change_tick_appearance(ax, position='right', v=0.6, size=30, color='magenta')
+
         ax.text(0.5, 0.5, 'Each Axis should have one larger tick in different colors', ha='center', weight='bold')
         ax.annotate('bottom', (0.6, 0), (0.6, 0.4), arrowprops=dict(arrowstyle='->'))
         ax.annotate('top', (0.4, 1), (0.4, 0.6), arrowprops=dict(arrowstyle='->'))
@@ -71,6 +72,13 @@ class Test(TestCase):
 
         self.assertTrue(True)
 
+    def test_elongate_ticks_and_labels(self):
+
+        fig, ax = new_fig()
+        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='x', position=None)
+        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='y', position=None)
+        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=['a', 'b', 'c', 'd', 'e', 'f'], axis='x', position=None)
+
 
 if __name__ == '__main__':
     test = Test()
@@ -78,3 +86,4 @@ if __name__ == '__main__':
     # test.test_remove_ticks()
     # test.test_remove_ticks()
     test.test_change_tick_appearance()
+    # test.test_elongate_ticks_and_labels()

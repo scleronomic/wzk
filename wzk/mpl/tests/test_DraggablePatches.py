@@ -55,6 +55,26 @@ class TestDraggablePatchList(TestCase):
         self.assertTrue(True)
 
 
+class TestDraggableFrame(TestCase):
+
+    def test_frame(self):
+        fig, ax = new_fig(aspect=1)
+        df = DraggableFrame(ax=ax, xy=np.zeros(2), scale=0.4, color='red')
+        df.update_x(None)
+        ax.set_xlim(-1, 1)
+        ax.set_ylim(-1, 1)
+
+        def callback33(dgr):
+            f = dgr.get_frame()  # noqa
+
+        df.add_callback_drag(callback33)
+        df.update_x(None)
+        df.dp_list[0].on_release(1)
+        if verbose == 0:
+            close_all()
+        self.assertTrue(True)
+
+
 if __name__ == '__main__':
     test = TestDraggableCircle()
     test.test_circles()
@@ -64,3 +84,6 @@ if __name__ == '__main__':
 
     test = TestDraggablePatchList()
     test.test_ellipses()
+
+    test = TestDraggableFrame()
+    test.test_frame()

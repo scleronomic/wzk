@@ -2,6 +2,8 @@ import numpy as np
 import tables as tb
 
 from wzk import tictoc
+
+
 def robot_paths_table(n_wp, n_dof):
 
     class RobotPaths(tb.IsDescription):
@@ -14,7 +16,9 @@ def robot_paths_table(n_wp, n_dof):
 
     return RobotPaths
 
+
 print()
+
 
 """ open a file and create the table """
 fileh = tb.open_file('RobotPaths.h5', mode='w')
@@ -46,7 +50,6 @@ with tictoc('write') as _:
 
 """ check it """
 fileh = tb.open_file('RobotPaths.h5', mode='r')
-len(fileh.root.paths)
-fileh.root.paths[0]['']
+print(len(fileh.root.paths))
+print(fileh.root.paths[0][''])
 fileh.close()
-

@@ -178,7 +178,7 @@ def change_tick_appearance(ax, position, v, size=None, color=None):
         if s is not None:
             h_i.set_markersize(s)
         if c is not None:
-            h_i.set_color(c)
+            h_i.set_markeredgecolor(c)
 
     # Handle different positions and axis
     p_list = ['bottom', 'top', 'left', 'right']
@@ -289,7 +289,7 @@ def handle_newline(newline, n):
 
 def elongate_ticks_and_labels(ax, newline, labels=None, axis='x', position=None):
     newline_size, newline = newline
-    assert axis == 'x' or axis == 'y'
+    assert axis == 'x' or axis == 'y', "axis must be 'x' or 'y'"
     if position is None:
         if axis == 'x':
             position = 'bottom'
@@ -310,14 +310,9 @@ def elongate_ticks_and_labels(ax, newline, labels=None, axis='x', position=None)
     print(labels)
 
     if axis == 'x':
+        ax.set_xticks(ax.get_xticks())  # https://stackoverflow.com/a/68794383/7570817
         ax.set_xticklabels(labels)
-    else:  # == 'y':
+
+    else:  # 'y'
+        ax.set_yticks(ax.get_yticks())
         ax.set_yticklabels(labels, rotation=-90, ha='right', va='center')
-
-
-def test_elongate_ticks_and_labels():
-    from wzk import new_fig
-    fig, ax = new_fig()
-
-    elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='x', position=None)
-    elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='y', position=None)

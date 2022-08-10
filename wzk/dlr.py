@@ -49,10 +49,9 @@ ICRA23_IK = DIR_PAPER + '/23ICRA_IK'
 
 # Projects
 __automatica22_dict = dict(dlr='/volume/USERSTORE/tenh_jo/Automatica2022',
-                                 mac='/Users/jote/Documents/DLR/Data/mogen/Automatica2022',
-                                 gcp='/home/johannes_tenhumberg_gmail_com/sdb/Automatica2022')
+                           mac='/Users/jote/Documents/DLR/Data/mogen/Automatica2022',
+                           gcp='/home/johannes_tenhumberg_gmail_com/sdb/Automatica2022')
 Automatica22 = __automatica22_dict[LOCATION]
-
 
 
 # ----------------------------------------------------------------------------------------------------------------------

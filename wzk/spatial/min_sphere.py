@@ -1,4 +1,6 @@
 import numpy as np
+
+# noinspection PyUnresolvedReferences
 import wzk.cpppy.MinSphere.wzkMinSphere as MinSphere
 
 

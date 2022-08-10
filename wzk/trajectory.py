@@ -250,7 +250,7 @@ def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
 
 def d_substeps__dx(n, order=0):
     """
-    Get the dependence of substeps (') on the outer way points (x).
+    Get the dependence of substeps ' on the outer way points (x).
     The substeps are placed linear between the waypoints.
     To prevent counting points double one step includes only one of the two endpoints
     This gives a symmetric number of steps but ignores either the start or the end in

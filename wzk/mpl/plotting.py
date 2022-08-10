@@ -14,7 +14,7 @@ from wzk.numpy2 import scalar2array, add_safety_limits
 from wzk.dicts_lists_tuples import tuple_extract, atleast_tuple
 
 
-def imshow(ax: plt.Axes, img: np.ndarray, h=None,
+def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
            cmap=None,
            limits: np.ndarray = None, origin: str = 'lower', axis_order: str = 'ij->yx',
            mask: np.ndarray = None, vmin: float = None, vmax: float = None, **kwargs):
@@ -422,7 +422,6 @@ def plot_colored_segments(ax, x, y, c, a, **kwargs):
 def test_plot_colored_segments():
     fig, ax = new_fig()
     y = np.random.random(20)
-    b = y[1:] > y[:-1]
+    b = np.array(y[1:] > y[:-1])
     c = ['red' if bb else 'blue' for bb in b]
     plot_colored_segments(ax=ax, x=np.arange(len(y)), y=y, c=c, a=0.3)
-

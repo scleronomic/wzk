@@ -1,41 +1,22 @@
 import numpy as np
 
+# noinspection PyUnresolvedReferences
 from pyOpt.pySLSQP.pySLSQP import SLSQP
+# noinspection PyUnresolvedReferences
 from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
 # from pyOpt.pyNLPQLP.pyNLPQLP import NLPQLP
 
+# noinspection PyUnresolvedReferences
 from pyOpt import Optimization
 
 
-# def minimize_nlpqlp(fun, x0, options, verbose=0):
-#     nlpqlp = NLPQLP(pll_type=options['pll_type'])
-#
-#     def fun2(_x):
-#         f = fun(_x)
-#         g = []
-#         fail = 0
-#         return f, g, fail
-#
-#     opt_prob = Optimization('', fun2)
-#     for i, x0_i in enumerate(x0):
-#         opt_prob.addVar(f"x{i+1}", 'c', lower=x0_i-1, upper=x0_i+1, value=x0_i)
-#     opt_prob.addObj('f')
-#     nlpqlp(opt_prob)
-#
-#     res = opt_prob.solution(0)
-#     if verbose > 1:
-#         print('------ Result ------')
-#         print(res)
-#
-#     vs = res.getVarSet()
-#     x = np.array([vs[key].value for key in range(len(x0))])
-#     return x
+def print_result(res, verbose):
+    if verbose > 1:
+        print('------ Result ------')
+        print(res)
 
 
-def minimize_cobyla(fun, x0, options, verbose=0):
-    cobyla = COBYLA(pll_type=options['pll_type'])
-    cobyla.setOption('IPRINT', 3)
-    cobyla.setOption('MAXFUN', 10000)
+def fun_wrapper(fun):
 
     def fun2(_x):
         f = fun(_x)
@@ -43,16 +24,22 @@ def minimize_cobyla(fun, x0, options, verbose=0):
         fail = 0
         return f, g, fail
 
-    opt_prob = Optimization('', fun2)
+    return fun2
+
+
+def minimize_cobyla(fun, x0, options, verbose=0):
+    cobyla = COBYLA(pll_type=options['pll_type'])
+    cobyla.setOption('IPRINT', 3)
+    cobyla.setOption('MAXFUN', 10000)
+
+    opt_prob = Optimization('', fun_wrapper(fun))
     for i, x0_i in enumerate(x0):
         opt_prob.addVar(f"x{i+1}", 'c', lower=x0_i-1, upper=x0_i+1, value=x0_i)
     opt_prob.addObj('f')
     cobyla(opt_prob)
 
     res = opt_prob.solution(0)
-    if verbose > 1:
-        print('------ Result ------')
-        print(res)
+    print_result(res=res, verbose=verbose)
 
     vs = res.getVarSet()
     x = np.array([vs[key].value for key in range(len(x0))])
@@ -68,13 +55,7 @@ def minimize_slsqp(fun, x0, options, verbose=0):
     except KeyError:
         pass
 
-    def fun2(_x):
-        f = fun(_x)
-        g = []
-        fail = 0
-        return f, g, fail
-
-    opt_prob = Optimization('', fun2)
+    opt_prob = Optimization('', fun_wrapper(fun))
     for i, x0_i in enumerate(x0):
         opt_prob.addVar(f"x{i+1}", 'c', lower=x0_i-1, upper=x0_i+1, value=x0_i)
         # opt_prob.addVar(f"x{i+1}", 'c', lower=-10, upper=+10, value=x0_i)
@@ -84,9 +65,7 @@ def minimize_slsqp(fun, x0, options, verbose=0):
           sens_step=options['sens_step'])
 
     res = opt_prob.solution(0)
-    if verbose > 1:
-        print('------ Result ------')
-        print(res)
+    print_result(res=res, verbose=verbose)
 
     vs = res.getVarSet()
     x = np.array([vs[key].value for key in range(len(x0))])

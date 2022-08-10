@@ -898,7 +898,7 @@ def grid_x2i(x, limits, shape):
 
 def grid_i2x(i, limits, shape, mode='c'):
     """
-    Get the coordinates of the grid at the index 'o' in a grid with symmetric cells.
+    Get the coordinates of the grid at the index "o" in a grid with symmetric cells.
     borders: 0 | 2 | 4 | 6 | 8 | 10
     centers: | 1 | 3 | 5 | 7 | 9 |
     """
@@ -973,6 +973,7 @@ def squeeze_all(*args):
 
 def safe_round(x,
                decimals=None):  # TODO think about hte safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
+    # noinspection PyProtectedMember
     try:
         return np.round(x, decimals=decimals)
 
