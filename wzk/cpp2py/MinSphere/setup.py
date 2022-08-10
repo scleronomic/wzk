@@ -4,13 +4,10 @@ from setuptools import Extension, setup
 
 HOMEBREW_PREFIX = '/opt/homebrew/Cellar'
 cgal_include_dir = os.environ.get('CGAL_INCLUDE_DIR',  # either user-defined
-                                  HOMEBREW_PREFIX + '/cgal/5.3/include')  # or installed via homebrew
+                                  HOMEBREW_PREFIX + '/cgal/5.5/include')  # or installed via homebrew
 
 boost_include_dir = os.environ.get("BOOST_INCLUDE_DIR",  # either user-defined
-                                   HOMEBREW_PREFIX + 'boost/1.76.0/include')  # or installed via homebrew
-
-# '/opt/homebrew/Cellar/cgal/5.3/include'
-# '/opt/homebrew/Cellar/boost/1.76.0/include'
+                                   HOMEBREW_PREFIX + 'boost/1.79.0_1/include')  # or installed via homebrew
 
 ext = Extension(
     name='wzkMinSphere',
@@ -28,3 +25,7 @@ setup(
     version='0.1.0',
     ext_modules=[ext],
 )
+
+# # '/opt/homebrew/Cellar/cgal/5.3/include'
+# # '/opt/homebrew/Cellar/boost/1.76.0/include'
+# pip install -e .

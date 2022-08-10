@@ -1,7 +1,7 @@
 import numpy as np
+import importlib
 
-# noinspection PyUnresolvedReferences
-import wzk.cpppy.MinSphere.wzkMinSphere as MinSphere
+MinSphere = importlib.import_module('wzk.cpp2py.MinSphere.wzkMinSphere')
 
 
 def min_sphere(x, r) -> (np.ndarray, float):

@@ -26,7 +26,6 @@ class Naive(Optimizer):
 
 # TODO Annealing
 
-
 class Momentum(Optimizer):
     name = 'Momentum'
 

@@ -114,7 +114,7 @@ def get_substeps(x, n,
     return x_ss
 
 
-def get_steps_between(start, end, n, is_periodic=None):  # TODO use this function more often, how to find the other usages
+def get_steps_between(start, end, n, is_periodic=None):
     q = np.concatenate((start[..., np.newaxis, :], end[..., np.newaxis, :]), axis=-2)
     q = get_substeps(q, n=n-1, is_periodic=is_periodic)
     return q

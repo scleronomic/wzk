@@ -972,7 +972,7 @@ def squeeze_all(*args):
 
 
 def safe_round(x,
-               decimals=None):  # TODO think about hte safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
+               decimals=None):  # TODO think about the safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
     # noinspection PyProtectedMember
     try:
         return np.round(x, decimals=decimals)

@@ -556,9 +556,6 @@ def hcp_grid(limits: np.ndarray, radius: float) -> np.ndarray:
     """
     hexagonal closed packing
     https://en.wikipedia.org/wiki/Close-packing_of_equal_spheres
-    :params limits TODO
-    radius
-    return
     """
 
     n_dim = len(limits)
