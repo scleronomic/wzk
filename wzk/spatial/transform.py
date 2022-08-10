@@ -5,7 +5,7 @@ from wzk.numpy2 import shape_wrapper
 from wzk.random2 import noise, random_uniform_ndim
 from wzk.geometry import sample_points_on_sphere_3d
 from wzk.trajectory import get_substeps
-from wzk.math2 import angle2minuspi_pluspi
+from wzk.math2 import angle2minuspi_pluspi  # noqa
 
 
 # angle axis representation is like an onion, the singularity is the boarder to the next 360 shell
@@ -69,6 +69,10 @@ def frame2trans_quat(f):
     return f[..., :-1, -1], frame2quat(f=f)
 
 
+def frame2trans_euler(f, seq='ZXZ'):
+    return f[..., :-1, -1], frame2euler(f=f, seq=seq)
+
+
 # 2frame
 def __shape_wrapper(a, b):
     return a.shape if a is not None else b.shape
@@ -97,12 +101,12 @@ def trans_rotvec2frame(trans=None, rotvec=None):
     return f
 
 
-def trans_euler2frame(trans=None, euler=None):
+def trans_euler2frame(trans=None, euler=None, seq='ZXZ'):
     s = __shape_wrapper(trans, euler)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
     fill_frames_trans(f=f, trans=trans)
-    f[..., :-1, :-1] = euler2matrix(euler=euler)
+    f[..., :-1, :-1] = euler2matrix(euler=euler, seq=seq)
     return f
 
 

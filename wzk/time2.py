@@ -3,13 +3,18 @@ from datetime import datetime
 from wzk.printing import print2, verbose_level_wrapper
 
 
-def get_timestamp(year=True, month=True, day=True, hour=True, minute=True, second=True, millisecond=False,
+def get_timestamp(t=None, year=True, month=True, day=True, hour=True, minute=True, second=True, millisecond=False,
                   date_separator='-', date_time_separator='_', time_separator=':'):
     """
     Crete a datetime string including year, month, day; hour, minute, second, millisecond.
     With options for each of the elements if it should be included and how the symbol separating
     two elements should look like.
     """
+
+    if t is None:
+        t = datetime.now()
+
+    assert isinstance(t, datetime)
 
     # Create a boolean list indicating which elements to keep
     bool_list = [bool(b) for b in [year, month, day, hour, minute, second, millisecond]]
@@ -20,7 +25,7 @@ def get_timestamp(year=True, month=True, day=True, hour=True, minute=True, secon
                       time_separator, time_separator, time_separator]
 
     # Clean the datetime string and split it into separate elements
-    stamp_list = str(datetime.now())
+    stamp_list = str(t)
     stamp_list = stamp_list.replace('-', 'x')
     stamp_list = stamp_list.replace(':', 'x')
     stamp_list = stamp_list.replace(' ', 'x')

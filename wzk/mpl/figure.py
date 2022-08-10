@@ -9,7 +9,7 @@ from wzk.mpl.move_figure import move_fig
 from wzk.dicts_lists_tuples import atleast_tuple
 from wzk.files import start_open, safe_mkdir, copy2clipboard
 from wzk.math2 import get_mean_divisor_pair, golden_ratio
-from wzk.printing import print_progress
+from wzk.printing import print_progress_bar
 from wzk.strings import uuid4
 
 import matplotlib as mpl

@@ -556,6 +556,9 @@ def hcp_grid(limits: np.ndarray, radius: float) -> np.ndarray:
     """
     hexagonal closed packing
     https://en.wikipedia.org/wiki/Close-packing_of_equal_spheres
+    :params limits TODO
+    radius
+    return
     """
 
     n_dim = len(limits)
@@ -659,7 +662,7 @@ def discretize_triangle(x=None,
 
     *shape, n_dim = a.shape
 
-    u, v = np.meshgrid(np.linspace(0, 1, n), np.linspace(0, 1, n))
+    u, v = np.meshgrid(*[np.linspace(0, 1, n)]*2, indexing='ij')
     u, v = u[:, :, np.newaxis], v[:, :, np.newaxis]
     a, b, c = a[..., np.newaxis, np.newaxis, :], b[..., np.newaxis, np.newaxis, :], c[..., np.newaxis, np.newaxis, :]
 

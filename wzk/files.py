@@ -6,8 +6,8 @@ import platform
 import subprocess
 import numpy as np
 
-from wzk.printing import print_progress
-from wzk.time import get_timestamp
+from wzk.printing import print_progress_bar
+from wzk.time2 import get_timestamp
 
 __pickle_extension = '.pkl'
 __open_cmd_dict = {'Linux': 'xdg-open',
@@ -137,7 +137,7 @@ def combine_npz_files(*, directory,
 
     for i, file in enumerate(file_list):
         if verbose > 0:
-            print_progress(i=i, n=len(file_list))
+            print_progress_bar(i=i, n=len(file_list))
 
         data = np.load(directory + file)
         if i == 0:
@@ -237,11 +237,6 @@ def copy2clipboard(file: str):
 
 def cp(src, dst):
     subprocess.call(f"cp {src} {dst}", shell=True)
-
-
-def replace_dir(directory):
-    uuid = str(uuid4())
-    cp()
 
 
 # shutil.move("path/to/current/file.foo", "path/to/new/destination/for/file.foo")

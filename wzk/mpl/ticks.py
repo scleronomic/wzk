@@ -24,6 +24,11 @@ def turn_ticks_off(ax):
     set_ticks_position(ax=ax, position='none')
 
 
+def turn_ticks_and_labels_off(ax):
+    turn_ticks_off(ax=ax)
+    turn_ticklabels_off(ax=ax)
+
+
 def __position2tlbr(position='default'):
     """map keywords to booleans indicating which axis are active"""
     bottom = top = left = right = False

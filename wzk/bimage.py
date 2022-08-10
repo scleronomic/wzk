@@ -5,7 +5,7 @@ from skimage.morphology import flood_fill
 
 from wzk.geometry import discretize_triangle_mesh, ConvexHull, rectangle, cube
 from wzk.numpy2 import (limits2cell_size, grid_x2i, grid_i2x, scalar2array, flatten_without_last, safe_add_small2big)
-from wzk.printing import print_progress
+from wzk.printing import print_progress_bar
 from wzk.trajectory import get_substeps_adjusted
 
 
@@ -117,7 +117,7 @@ def get_sphere_stencil(r: float, voxel_size: float, n_dim: int = 2) -> (np.ndarr
 
     img = np.zeros((len(x_center),) + (2 * half_side + 1,) * n_dim, dtype=bool)
     for i in range(len(x_center)):
-        x_closest_i = np.array(np.meshgrid(*x_closest[i].T)).T
+        x_closest_i = np.array(np.meshgrid(*x_closest[i].T, indexing='ij')).T
         img[i, ...] = __compare_dist_against_radius(x_a=x_center[i], x_b=x_closest_i, r=r)
 
     inner = img.sum(axis=0) == img.shape[0]
@@ -144,7 +144,7 @@ def create_stencil_dict(voxel_size, n_dim):
     stencil_dict = dict()
     n = int(5*(1//voxel_size))
     for i, r in enumerate(np.linspace(voxel_size/10, 2, num=n)):
-        print_progress(i=i, n=n, prefix='create_stencil_dict')
+        print_progress_bar(i=i, n=n, prefix='create_stencil_dict')
         l = int((r // voxel_size) * 2 + 3)
         if l not in stencil_dict.keys():
             stencil = np.logical_or(*get_sphere_stencil(r=r, voxel_size=voxel_size, n_dim=n_dim))

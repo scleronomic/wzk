@@ -27,7 +27,7 @@ from .strings import *
 from .spatial.transform import *
 from .splines import *
 from .testing import *
-from .time import *
+from .time2 import *
 from .training import *
 
 # modules which require additional repositories

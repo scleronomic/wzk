@@ -20,29 +20,44 @@ def quiet_mode_on():
 #     pass
 
 
-def print_progress(i, n, prefix='', suffix='', decimals=1, bar_length=50):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        i           - Required  : current iteration (Int)
-        n           - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        bar_length  - Optional  : character length of bar (Int)
-    """
+def pre_string_suf(s: str, prefix: str = '', suffix: str = '', delimiter: str = ' | ') -> str:
+    if s == '':
+        s = prefix
+    elif prefix == '':
+        s = s
+    else:
+        s = f"{prefix}{delimiter}{s}"
+
+    if s == '':
+        s = suffix
+    elif suffix == '':
+        s = s
+    else:
+        s = f"{s}{delimiter}{suffix}"
+
+    return s
+
+
+def get_progress_bar(i, n, prefix='', suffix='', bar='█'):
+    bar = bar * i + '-' * (n - i)
+    return f"\r{prefix} |{bar}| {suffix}"
+
+
+def print_progress_bar(i, n, prefix='', suffix='', bar_length=None):
+    bar_length_max = 100
+    if bar_length is None:
+        bar_length = n
+
+    bar_length = min(bar_length, bar_length_max)
 
     if n == 0:
-        n = 1
-        i = 0
+        i, n = 0, 1
 
     i += 1
-    str_format = "{0:." + str(decimals) + "f}"
-    percents = str_format.format(100 * (i / float(n)))
     filled_length = int(round(bar_length * i / float(n)))
-    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+    s = get_progress_bar(i=filled_length, n=bar_length, prefix=prefix, suffix=suffix)
 
-    sys.stdout.write('\r%s |%s| %s%s %s' % (prefix, bar, percents, '%', suffix)),
+    sys.stdout.write(s)
 
     if i == n:
         sys.stdout.write('\n')
@@ -157,6 +172,11 @@ def print_array_3d(array_3d,
     print2('\n'.join(s), verbose=verbose, level=level)
 
 
+def clear_previous_line():
+    sys.stdout.write("\033[F")  # back to previous line
+    sys.stdout.write("\033[K")  # clear line
+
+
 def color_text(s, color, background='w', weight=0):
     """you have to print normally (black / white) once to don't have any sight effects """
     color_dict = dict(black=0, k=0,
@@ -171,38 +191,3 @@ def color_text(s, color, background='w', weight=0):
     tc = color_dict[color.lower()]
     bc = color_dict[background.lower()]
     return f"\033[{weight};3{tc};4{bc}m{s}\033"
-
-
-def test_print2():
-    print2("aaa", 1, 2, verbose=(1, 0))
-    print2(dict(b=1, bb=2), 11, 22, verbose=(1, 1))
-    print2("ccc", [3, "cc", 333], 33, verbose=(1, 2), sep='---')
-    print2("nice", "a", "staircase", verbose=(1, 1), sep='    ')
-    print2("back", "to", "level", "zero", verbose=(1, 0), sep='::')
-
-
-def test_print_array_3d():
-    array_3d = np.arange(4*5*6).reshape((4, 5, 6))
-    print_array_3d(array_3d)
-
-
-def test_color():
-    print("normal")
-    print(color_text(s="normal2", color='k', background='w'))
-    print(color_text(s="red", color='red', background='w'))
-    print(color_text(s="red", color='red', background='k'))
-    print(color_text(s="normal2", color='k', background='w'))
-    print("normal")
-
-    for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
-        print(color_text(s=c, color=c, background='w'))
-
-    for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
-        print(color_text(s=c, color=c, background=c))
-
-    for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
-        print(color_text(s=c, color=c, background='k'))
-
-
-if __name__ == '__main__':
-    test_print2()

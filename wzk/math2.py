@@ -291,6 +291,7 @@ def angle2minuspi_pluspi(x):
 
 
 def log_b(x, base=np.e):
+    # https://stackoverflow.com/questions/25169297/numpy-logarithm-with-base-n
     return np.log(x) / np.log(base)
 
 
