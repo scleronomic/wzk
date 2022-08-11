@@ -568,15 +568,18 @@ def safe_add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
             big[tuple(map(slice, ll_b, ur_b))] += s[tuple(map(slice, ll_s, ur_s))]
     else:
         for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
-            # print('idx', idx)
-            # print('big', ll_b, ur_b)  # TODO sometimes this fails, check
-            # print('big', big[tuple(map(slice, ll_b, ur_b))].shape)
-            # print('small', ll_s, ur_s)
-            # print('small', small[tuple(map(slice, ll_s, ur_s))].shape)
-            if mode_add == 'add':
-                big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
-            elif mode_add == 'replace':
-                big[tuple(map(slice, ll_b, ur_b))] = small[tuple(map(slice, ll_s, ur_s))]
+
+            try:
+                if mode_add == 'add':
+                    big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
+                elif mode_add == 'replace':
+                    big[tuple(map(slice, ll_b, ur_b))] = small[tuple(map(slice, ll_s, ur_s))]
+            except ValueError:
+                print('idx', idx)
+                print('big', ll_b, ur_b)  # TODO sometimes this fails, check
+                print('big', big[tuple(map(slice, ll_b, ur_b))].shape)
+                print('small', ll_s, ur_s)
+                print('small', small[tuple(map(slice, ll_s, ur_s))].shape)
 
 
 def get_exclusion_mask(a, exclude_values):

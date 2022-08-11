@@ -625,9 +625,10 @@ def refine_triangle_mesh(p, f):
 
 def discretize_triangle_mesh(p, f, voxel_size):
     pf = p[f]
-    d_max = np.vstack((np.linalg.norm(pf[..., 0, :] - pf[..., 1, :], axis=-1),
-                       np.linalg.norm(pf[..., 0, :] - pf[..., 2, :], axis=-1),
-                       np.linalg.norm(pf[..., 1, :] - pf[..., 2, :], axis=-1))).max(axis=0, initial=0)
+    d = np.vstack((np.linalg.norm(pf[..., 0, :] - pf[..., 1, :], axis=-1),
+                   np.linalg.norm(pf[..., 0, :] - pf[..., 2, :], axis=-1),
+                   np.linalg.norm(pf[..., 1, :] - pf[..., 2, :], axis=-1)))
+    d_max = np.max(d, axis=0)
     n = (3*(d_max // voxel_size)).astype(int)
     n, i, c = np.unique(n, return_inverse=True, return_counts=True)
 
