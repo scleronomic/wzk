@@ -1,8 +1,10 @@
 import numpy as np
 import importlib
 
-MinSphere = importlib.import_module('wzk.cpp2py.MinSphere.wzkMinSphere')
-
+try:
+    MinSphere = importlib.import_module('wzk.cpp2py.MinSphere.wzkMinSphere')
+except ModuleNotFoundError:
+    MinSphere = None
 
 def min_sphere(x, r) -> (np.ndarray, float):
     n, d = np.shape(x)

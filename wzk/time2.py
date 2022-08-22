@@ -1,6 +1,6 @@
 from time import time, sleep  # noqa
 from datetime import datetime
-from wzk.printing import print2, verbose_level_wrapper
+from wzk.printing import print2, verbose_level_wrapper, check_verbosity
 
 
 def get_timestamp(t=None, year=True, month=True, day=True, hour=True, minute=True, second=True, millisecond=False,
@@ -81,10 +81,10 @@ class tictoc:
         self.decimals = decimals
 
     def __enter__(self):
-        if self.verbose[0] > 0:
+        if check_verbosity(self.verbose, 0):
             tic()
             print2(self.text+'...', verbose=self.verbose)
 
     def __exit__(self, *args):
-        if self.verbose[0] > 0:
-            toc(text=None, decimals=self.decimals, verbose=(self.verbose[0], self.verbose[1]+1))
+        if check_verbosity(self.verbose, 0):
+            toc(text=None, decimals=self.decimals, verbose=self.verbose+1)
