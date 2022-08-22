@@ -1,5 +1,6 @@
 import os
 import sys
+
 import numpy as np
 
 from wzk.numpy2 import get_stats
@@ -131,29 +132,14 @@ def print_correlation(bool_lists, names, dec=4):
     return total
 
 
-def verbose_level_wrapper(verbose=None, level=0):  # TODO make more convenient and use it consistently
-    if isinstance(verbose, tuple):
-        verbose, level = verbose
-    elif verbose is None:
-        verbose = 1
-    return verbose, level
-
-
-def check_verbosity(verbose, threshold=0):
-    if isinstance(verbose, int):
-        return verbose > threshold
-    elif isinstance(verbose, tuple):
-        return verbose[0] > threshold
-
-
 def print2(*args, verbose=None, level=0,
            sep=' ', end='\n', file=None, flush=False):
-    verbose, level = verbose_level_wrapper(verbose=verbose, level=level)
-    level = max(0, level)
+    v = verbose_level_wrapper(verbose=verbose, level=level)
+    v.level = max(0, level)
 
-    if verbose > 0:
+    if v.verbose > 0:
         args = [str(a) for a in args]
-        t = '\t'*level
+        t = '\t'*v.level
         print(f"{t}{sep.join(args)}", sep=sep, end=end, file=file, flush=flush)
 
 
@@ -192,3 +178,70 @@ def color_text(s, color, background='w', weight=0):
     tc = color_dict[color.lower()]
     bc = color_dict[background.lower()]
     return f"\033[{weight};3{tc};4{bc}m{s}\033"
+
+
+def verbose_level_wrapper(verbose=None, level=None):  # TODO make more convenient and use it consistently
+    if isinstance(verbose, Verbosity):
+        if level is not None:
+            verbose.level = level
+
+        return verbose
+
+    elif isinstance(verbose, tuple):
+        return Verbosity(verbose=verbose[0], level=verbose[0])
+
+    else:
+        if verbose is None:
+            verbose = 1
+
+        if level is None:
+            level = 0
+
+        return Verbosity(verbose=verbose, level=level)
+
+
+def check_verbosity(verbose, threshold=0):
+    if isinstance(verbose, int):
+        return verbose > threshold
+    elif isinstance(verbose, tuple):
+        return verbose[0] > threshold
+
+
+class Verbosity:
+    verbose: int
+    level: int
+
+    def __init__(self, verbose=0, level=0):
+        self.verbose = verbose
+        self.level = level
+
+    def __add__(self, other):
+        if isinstance(other, Verbosity):
+            other = other.verbose
+        res = self.copy()
+        res.verbose += other
+        return res
+
+    def __sub__(self, other):
+        if isinstance(other, Verbosity):
+            other = other.verbose
+        res = self.copy()
+        res.verbose -= other
+        return res
+
+    def copy(self):
+        return Verbosity(verbose=self.verbose, level=self.level)
+
+    def __repr__(self):
+        return f"(verbose: {self.verbose}, level: {self.level})"
+
+
+def test_verbosity():
+    v10 = Verbosity(verbose=1, level=0)
+
+    v20 = v10 + 1
+    v00 = v10 - 1
+
+    print(v10)
+    print(v20)
+    print(v00)

@@ -43,3 +43,32 @@ class Test(TestCase):
 
         for c in ['w', 'r', 'g', 'y', 'b', 'm', 'c', 'l', 'k', 'w']:
             print(color_text(s=c, color=c, background='k'))
+
+    def test_save_string_concatenate(self):
+        s = 'test - full'
+        prefix = 'hello'
+        suffix = 'bye'
+        delimiter = ' | '
+        assert pre_string_suf(s=s, prefix=prefix, suffix=suffix,
+                              delimiter=delimiter) == f"{prefix}{delimiter}{s}{delimiter}{suffix}"
+
+        s = ''
+        prefix = 'hello'
+        suffix = 'bye'
+        delimiter = ' / '
+        assert pre_string_suf(s=s, prefix=prefix, suffix=suffix,
+                              delimiter=delimiter) == f"{prefix}{delimiter}{suffix}"
+
+        s = 'test - only prefix'
+        prefix = 'hello'
+        suffix = ''
+        delimiter = ' : '
+        assert pre_string_suf(s=s, prefix=prefix, suffix=suffix,
+                              delimiter=delimiter) == f"{prefix}{delimiter}{s}"
+
+        s = 'test - only suffix'
+        prefix = ''
+        suffix = 'bye'
+        delimiter = ' : '
+        assert pre_string_suf(s=s, prefix=prefix, suffix=suffix,
+                              delimiter=delimiter) == f"{s}{delimiter}{suffix}"

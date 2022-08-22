@@ -197,7 +197,7 @@ def range_add(a, b):
     return range(a[0]+b[0], a[1]+b[1], max(a[2], b[2]))
 
 
-def tl_add(a, b):
+def el_add(a, b):
     """
     Element-wise addition for tuples or lists.
     """

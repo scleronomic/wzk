@@ -1,5 +1,7 @@
 import numpy as np
+
 from wzk.geometry import make_rhs
+from wzk.mpl.plotting import create_grid
 
 
 class RHSWidget:
@@ -96,7 +98,7 @@ def add_rhs_widget(pl, origin, xyz=None,
     return RHSWidget(pl=pl, origin=origin, xyz=xyz, scale=scale, color=color, callback=callback)
 
 
-def add_multiple_slider_widgets(pl, ranges=None, names=None, grid=None, idx=None,
+def add_multiple_slider_widgets(pl, ranges, names, grid, idx,
                                 callback=None, x0=None,
                                 style='modern', title_height=0.02):
 
@@ -112,17 +114,20 @@ def add_multiple_slider_widgets(pl, ranges=None, names=None, grid=None, idx=None
         return cb
 
     grid_xy, grid_s = grid
+    h = []
     for k, r in enumerate(ranges):
         i, j = idx[k]
         pointa = np.array((grid_xy[0][i], grid_xy[1][j]))
         pointb = pointa + np.array((grid_s[0], 0))
-        pl.add_slider_widget(callback=cb_wrapper(k),
-                             rng=ranges[k],
-                             value=x0[k],
-                             title=names[k],
-                             pointa=pointa, pointb=pointb,
-                             title_height=title_height,
-                             style=style)
+        h.append(pl.add_slider_widget(callback=cb_wrapper(k),
+                                      rng=ranges[k],
+                                      value=x0[k],
+                                      title=names[k],
+                                      pointa=pointa, pointb=pointb,
+                                      title_height=title_height,
+                                      style=style))
+
+    return h
 
 
 def add_key_slider_widget(pl, slider, callback, step=1.):
@@ -153,3 +158,53 @@ def add_key_slider_widget(pl, slider, callback, step=1.):
     pl.add_key_event(key='Right', callback=on_right)
     pl.add_key_event(key='Down', callback=on_down)
     pl.add_key_event(key='Up', callback=on_up)
+
+
+class MultipleSpheresWidget:
+
+    def __init__(self, pl, n=None,
+                 callback=None, **kwargs):
+        self.x = np.zeros((n, 3))
+        self.r = np.ones(n) * 0.1
+
+        self.callback = callback if callback is not None else lambda x, r: None
+
+        limits = np.zeros((n, 2))
+        limits[:, 0] = 0.01
+        limits[:, 1] = 0.20
+
+        grid = create_grid(ll=(0.05, 0.05), ur=(0.95, 0.22), n=(n, 1), pad=(-0.015, 0.05))
+        names = [f'{i}' for i in range(n)]
+        idx = np.zeros((n, 2), dtype=int)
+        idx[:n, 0] = np.arange(n)
+
+        self.h_spheres = [pl.add_sphere_widget(callback=self.update_spheres, center=x, radius=r,
+                                               test_callback=False, **kwargs)
+                          for x, r in zip(self.x, self.r)]
+
+        self.h_slider = add_multiple_slider_widgets(pl=pl, ranges=limits, grid=grid, idx=idx, names=names,
+                                                    callback=self.update_slider, x0=self.r)
+
+    def update_slider(self, value, idx):
+        self.r[idx] = value
+        self.h_spheres[idx].SetRadius(value)
+
+        self.update()
+
+    def update_spheres(self, *args):
+        print(*args)
+        self.x = np.array([h.GetCenter() for h in self.h_spheres])
+
+        self.update()
+
+    def update(self):
+        print('x', repr(self.x))
+        print('r', repr(self.r))
+        self.callback(self.x, self.r)
+
+
+if __name__ == '__main__':
+    import pyvista as pv
+    pl = pv.Plotter()
+    MultipleSpheresWidget(pl=pl, n=3)
+    pl.show()

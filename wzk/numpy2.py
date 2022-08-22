@@ -295,7 +295,9 @@ def __fill_index_with(idx, axis, shape, mode='slice'):
 
     elif mode == 'orange':
         idx_with_ = np.ogrid[[range(s) for i, s in enumerate(shape) if i not in axis]]
-
+    
+    elif mode is None:
+        return idx
     else:
         raise ValueError(f"Unknown mode {mode}")
 
@@ -661,6 +663,13 @@ def tile_offset(a, reps, offsets=None):
     return b
 
 
+def construct_array(shape, val, idx, init_mode='zeros', dtype=None,
+                    axis=None, insert_mode=None):
+    a = initialize_array(shape=shape, mode=init_mode, dtype=dtype)
+    insert(a=a, val=val, idx=idx, axis=axis, mode=insert_mode)
+    return a
+
+
 # Block lists
 def block_view(a, shape, aslist=False, require_aligned_blocks=True):
     """
@@ -982,3 +991,11 @@ def safe_round(x,
 
     except (TypeError, np.core._exceptions.UFuncTypeError):
         return np.array(x)
+
+
+def test_construct_array():
+    b = construct_array(shape=10, val=[1, 2, 3], idx=[2, 4, 5], dtype=None, mode=None)
+
+
+if __name__ == '__main__':
+    test_construct_array()

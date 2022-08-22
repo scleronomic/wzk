@@ -1,7 +1,7 @@
 import numpy as np
 from matplotlib import pyplot as plt, patches
 
-from wzk.geometry import circle_circle_intersection, theta_wrapper, angle_resolution_wrapper
+from wzk import geometry
 from wzk.mpl import Patches2, size_units2points, plotting
 
 
@@ -10,15 +10,10 @@ def draw_arc(xy, radius, theta0=0., theta1=2 * np.pi, n=0.01, ax=None, **kwargs)
     if ax is None:
         ax = plt.gca()
 
-    theta0, theta1 = theta_wrapper(theta0=theta0, theta1=theta1)
-    n = angle_resolution_wrapper(n, angle=theta1 - theta0)
+    x = geometry.get_arc(xy=xy, radius=radius, theta0=theta0, theta1=theta1, n=n)
+    h = ax.plot(*x.T, **kwargs)[0]
 
-    theta = np.linspace(start=theta0, stop=theta1, num=n)
-    x = xy[0] + np.cos(theta) * radius
-    y = xy[1] + np.sin(theta) * radius
-    h = ax.plot(x, y, **kwargs)[0]
-
-    return np.array([x, y]).T, h
+    return x, h
 
 
 def fill_circle_intersection(xy0, r0, xy1, r1, ax=None, **kwargs):
@@ -26,7 +21,7 @@ def fill_circle_intersection(xy0, r0, xy1, r1, ax=None, **kwargs):
     if ax is None:
         ax = plt.gca()
 
-    int01 = circle_circle_intersection(xy0=xy0, r0=r0, xy1=xy1, r1=r1)
+    int01 = geometry.circle_circle_intersection(xy0=xy0, r0=r0, xy1=xy1, r1=r1)
     if int01 is None:
         return
     else:
@@ -55,7 +50,7 @@ def draw_rays(xy, radius0, radius1, theta0=0., theta1=None, n=1, ax=None, **kwar
     if ax is None:
         ax = plt.gca()
 
-    theta0, theta1 = theta_wrapper(theta0=theta0, theta1=theta1)
+    theta0, theta1 = geometry.theta_wrapper(theta0=theta0, theta1=theta1)
 
     h = np.zeros(n, dtype=object)
     for i in range(n):

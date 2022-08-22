@@ -2,12 +2,41 @@ import numpy as np
 from scipy.spatial import ConvexHull
 
 from wzk.numpy2 import shape_wrapper
+from wzk.cpp2py.min_sphere import min_sphere  # noqa
+
+
+def get_ortho_star_2d(x):
+    assert x.shape[-1] == 2
+    x4 = np.zeros(x.shape[:-1] + (4, 2))
+    x4[..., 0, :] = x.copy()
+
+    x4[..., 1, 0] = -x[..., 1]
+    x4[..., 1, 1] = x[..., 0]
+
+    x4[..., 2, 0] = -x[..., 0]
+    x4[..., 2, 1] = -x[..., 1]
+
+    x4[..., 3, 0] = x[..., 1]
+    x4[..., 3, 1] = -x[..., 0]
+
+    return x4
 
 
 def safe_arccos(c):
     c = np.clip(c, a_min=-1, a_max=+1)
     angle = np.arccos(c)
     return angle
+
+
+def get_arc(xy, radius, theta0=0., theta1=2 * np.pi, n=0.01):
+
+    theta0, theta1 = theta_wrapper(theta0=theta0, theta1=theta1)
+    n = angle_resolution_wrapper(n, angle=theta1 - theta0)
+
+    theta = np.linspace(start=theta0, stop=theta1, num=n)
+    x = xy[0] + np.cos(theta) * radius
+    y = xy[1] + np.sin(theta) * radius
+    return np.array([x, y]).T
 
 
 def angle_resolution_wrapper(n, angle):
@@ -176,13 +205,19 @@ def __clip_ppp(o: np.ndarray,
                vv: np.ndarray) -> (np.ndarray, np.ndarray):
 
     n = np.cross(u, v)
-    nn = (n*n).sum(axis=-1)
-    mua = (+n * np.cross(v, o)).sum(axis=-1) / nn
-    mub = (-n * np.cross(u, o)).sum(axis=-1) / nn
+
+    if u.shape[-1] == 2:
+        mua = np.cross(v, o) / n
+        mub = -np.cross(u, o) / n
+    else:
+        nn = (n*n).sum(axis=-1)
+        mua = (+n * np.cross(v, o)).sum(axis=-1) / nn
+        mub = (-n * np.cross(u, o)).sum(axis=-1) / nn
 
     uv = (u*v).sum(axis=-1)
     mua2 = mua + uv / uu * __flip_and_clip_mu(mu=mub)
     mub2 = mub + uv / vv * __flip_and_clip_mu(mu=mua)
+
     return np.clip(mua2, 0, 1), np.clip(mub2, 0, 1)
 
 
@@ -221,13 +256,22 @@ def __line_line(x1: np.ndarray, x3: np.ndarray,
                 __return_mu: bool) -> (np.ndarray, np.ndarray):
 
     mua, mub = __clip_ppp(o=o, u=u, v=-v, uu=uu, vv=vv)  # attention sign change for v
+
     xa = x1 + mua[..., np.newaxis] * u
     xb = x3 + mub[..., np.newaxis] * v
-
     if __return_mu:
         return (xa, xb), (mua, mub)
     else:
         return xa, xb
+
+
+def two_to_three(*args):
+    res = []
+    for a in args:
+        a3 = np.zeros(a.shape[:-1] + (3,))
+        a3[..., :2] = a
+        res.append(a3)
+    return res
 
 
 def line_line(line_a: np.ndarray, line_b: np.ndarray, __return_mu: bool = False) -> (np.ndarray, np.ndarray):
@@ -248,10 +292,13 @@ def line_line(line_a: np.ndarray, line_b: np.ndarray, __return_mu: bool = False)
 
     x1, x2 = line_a
     x3, x4 = line_b
+
+    # if x1.shape[-1] == 2:
+    #     x1, x2, x3, x4 = two_to_three(x1, x2, x3, x4)
+
     u = x2 - x1
     v = x4 - x3
     o = x1 - x3
-
     return __line_line(x1=x1, x3=x3,
                        o=o, u=u, v=v, uu=(u*u).sum(axis=-1), vv=(v*v).sum(axis=-1),
                        __return_mu=__return_mu)
@@ -670,6 +717,44 @@ def discretize_triangle(x=None,
     return x2.reshape(shape + [i.sum(), n_dim])
 
 
+def string_of_pearls2surface(x, r):
+    eps0 = 1e-6
+    n_arc = 0.05
+
+    # go back and forth over the line
+    x = np.concatenate((x, x[-2::-1], x[[1]]), axis=0)
+    r = np.concatenate((r, r[-2::-1], r[[1]]), axis=0)
+
+    # calculate the steps
+    dx = x[1:] - x[:-1]
+    dxn = dx / np.linalg.norm(dx, axis=1, keepdims=True)
+
+    # get the tangential points on the circles
+    x4 = get_ortho_star_2d(dxn)
+    x0 = x[:-1, np.newaxis, :] + r[:-1, np.newaxis, np.newaxis] * x4
+    x1 = x[1:, np.newaxis, :] + r[1:, np.newaxis, np.newaxis] * x4
+
+    # get intersections
+    k = np.array([x0[:, 1], x1[:, 1]])
+    ki = np.array(line_line(line_a=k[:, :-1], line_b=k[:, 1:]))
+
+    # alternate between arcs and intersections depending on if the angles are obtuse or acute
+    p = [k[[0], 0]]
+    for i in range(len(r)-2):
+        print(np.linalg.norm(ki[0][i] - ki[1][i]))
+        if np.linalg.norm(ki[0][i] - ki[1][i]) < eps0:
+            p.append(ki[[0], i])
+
+        else:
+            theta0 = np.arctan2(x4[i+1, 1, 1], x4[i+1, 1, 0])
+            theta1 = np.arctan2(x4[i, 1, 1], x4[i, 1, 0])
+            c = get_arc(x[i+1], radius=r[i+1], theta0=theta0, theta1=theta1, n=n_arc)[::-1]
+            p.append(c)
+
+    p = np.concatenate(p, axis=0)
+    return p
+
+
 def test_discretize_triangle():
     x0 = np.array([[0, 0],
                   [1, 0],
@@ -682,8 +767,31 @@ def test_discretize_triangle():
     ax.plot(*x2.T, color='red', marker='x')
 
 
+def test_string_of_pearls2surface():
+    from wzk.mpl import new_fig, plot_circles
+    x = np.array([[0, 0],
+                  [0.05, 0],
+                  [0.06, 0],
+                  [1, 2],
+                  [0, 1],
+                  [0, 3],
+                  [1, 2.5]])
+    r = np.array([0.2, 0.19, 0.18, 0.15, 0.1, 0.3, 0.1])
+
+    # x = np.random.random((10, 2))
+    # r = np.random.random(10) / 20
+    #
+    p = string_of_pearls2surface(x, r)
+    #
+    fig, ax = new_fig(aspect=1)
+    ax.plot(*x.T, marker='o', color='k')
+    plot_circles(x=x, r=r, ax=ax, alpha=0.1, edgecolor='k', facecolor='none')
+    ax.plot(*p.T, color='r')
+
+
 if __name__ == '__main__':
-    test_discretize_triangle()
+    pass
+    # test_discretize_triangle()
 
 
 # def line_line33(u, v, w):
