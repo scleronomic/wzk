@@ -1,5 +1,7 @@
 import numpy as np
 
+import pyvista as pv
+
 from wzk.geometry import make_rhs
 from wzk.mpl.plotting import create_grid
 
@@ -203,8 +205,53 @@ class MultipleSpheresWidget:
         self.callback(self.x, self.r)
 
 
+def add_ruler_widget(pl):
+
+    h_center = pv.PolyData(np.random.random((3, 3)))
+    h_center["My Labels"] = np.array(['a', 'center', 'b'])
+    pl.add_mesh(h_center, color='r', point_size=10)
+    # h_labels = pl.add_point_labels(h_center, "My Labels", point_size=20, font_size=36)
+
+    def update(pointa, pointb):
+        pointa, pointb = np.atleast_1d(pointa, pointb)
+        h_center.points = np.stack([pointa,
+                                    pointa + (pointb-pointa)/2,
+                                    pointb])
+
+        d = np.linalg.norm(pointa - pointb)
+        print(d)
+        h_center["My Labels"] = np.array([f"({pointa[0]}, {pointa[1]}, {pointa[2]})",
+                                          f"{d:.3f}",
+                                          f"({pointb[0]}, {pointb[1]}, {pointb[2]})"])
+        pl.render()
+
+    h_ruler = pl.add_line_widget(callback=update, use_vertices=True)
+
+    return h_ruler
+
+
 if __name__ == '__main__':
-    import pyvista as pv
-    pl = pv.Plotter()
-    MultipleSpheresWidget(pl=pl, n=3)
-    pl.show()
+    pass
+    # import pyvista as pv
+    # pl = pv.Plotter()
+    # MultipleSpheresWidget(pl=pl, n=3)
+    # add_ruler_widget(pl=pl)
+    # pl.show()
+    #
+    # import numpy as np
+
+    # import pyvista as pv
+    # # from wzk.pv
+    #
+    # pl = pv.Plotter()
+    # pl.add_axes()
+    # h_center = pv.PolyData(np.random.random((3, 3)))
+    # h_center["My Labels"] = np.array(['a', 'center', 'b'])
+    # pl.add_mesh(h_center, color='r', point_size=10)
+    # h_labels = pl.add_point_labels(h_center, "My Labels", point_size=20, font_size=36)
+    #
+    #
+    #
+    #
+    # h = pl.add_line_widget(callback=simulate, use_vertices=True)
+    # pl.show()
