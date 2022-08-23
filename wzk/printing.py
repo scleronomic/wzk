@@ -1,5 +1,6 @@
 import os
 import sys
+import select
 
 import numpy as np
 
@@ -19,6 +20,40 @@ def quiet_mode_on():
 #
 # def toggle_quiet_mode():
 #     pass
+
+
+def input_timed(prompt, seconds, clear=True):
+    if prompt is not None and prompt != '':
+        print(prompt)
+
+    i, o, e = select.select([sys.stdin], [], [], seconds)
+    s = sys.stdin.readline().strip() if i else None
+
+    if clear:
+        clear_previous_line()
+
+    return s
+
+
+def input_clear(prompt):
+    s = input(prompt)
+    clear_previous_line()
+    return s
+
+
+def input_clear_loop(prompt, condition, error_prompt):
+    i = 0
+    while True:
+        s = input_clear(prompt)
+
+        if i > 0:
+            clear_previous_line()
+
+        if condition(s):
+            return s
+        else:
+            print(f"Try {i}: {error_prompt}")
+        i += 1
 
 
 def pre_string_suf(s: str, prefix: str = '', suffix: str = '', delimiter: str = ' | ') -> str:
