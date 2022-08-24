@@ -5,8 +5,6 @@ from itertools import product
 from wzk.dtypes import c2np
 
 
-# TODO think about the safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
-
 class DummyArray:
     """Allows indexing but always returns the same 'dummy' value"""
     def __init__(self, arr, shape):
@@ -133,7 +131,7 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
         return res
 
 
-def safe_unify(x):
+def unify(x):
     x = np.atleast_1d(x)
     assert np.allclose(x-x.mean(), np.zeros_like(x))
     x_mean = np.mean(x)
@@ -554,7 +552,7 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     return ll_big, ur_big, ll_small, ur_small
 
 
-def safe_add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
+def add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
     """
     Insert a small picture into the complete picture at the position 'idx'
     Assumption: all dimension of the small_img are odd, and idx indicates the center of the image,
@@ -878,7 +876,7 @@ def get_points_inbetween(x, extrapolate=False):
 
 def limits2cell_size(shape, limits):
     voxel_size = np.diff(limits, axis=-1)[:, 0] / np.array(shape)
-    return safe_unify(x=voxel_size)
+    return unify(x=voxel_size)
 
 
 def __mode2offset(voxel_size, mode='c'):
@@ -985,8 +983,8 @@ def squeeze_all(*args):
     return [np.squeeze(a) for a in args]
 
 
-def safe_round(x,
-               decimals=None):
+def round2(x,
+           decimals=None):
     # noinspection PyProtectedMember
     try:
         return np.round(x, decimals=decimals)

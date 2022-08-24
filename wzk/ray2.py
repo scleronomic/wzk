@@ -5,7 +5,7 @@ import ray  # noqa
 import fire
 import numpy as np
 
-from wzk.dicts_lists_tuples import safe_squeeze, atleast_list
+from wzk.dicts_lists_tuples import squeeze, atleast_list
 from wzk.cpu import ssh_call2, get_n_cpu
 
 # rmc-lx0095
@@ -40,9 +40,9 @@ def __start_head(head, perc, verbose=0):
 def __get_address_password(stdout):
     pattern_adr = r"--address='\S*'"
     pattern_pwd = r"--redis-password='\S*'"
-    address = safe_squeeze(re.compile(pattern_adr).findall(stdout))
+    address = squeeze(re.compile(pattern_adr).findall(stdout))
     address = address[address.find('=')+1:]
-    password = safe_squeeze(re.compile(pattern_pwd).findall(stdout))
+    password = squeeze(re.compile(pattern_pwd).findall(stdout))
     password = password[password.find('=')+1:]
 
     _address[0] = address

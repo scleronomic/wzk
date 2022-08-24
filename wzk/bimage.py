@@ -4,7 +4,7 @@ from skimage import measure
 from skimage.morphology import flood_fill
 
 from wzk.geometry import discretize_triangle_mesh, ConvexHull, rectangle, cube
-from wzk.numpy2 import (limits2cell_size, grid_x2i, grid_i2x, scalar2array, flatten_without_last, safe_add_small2big)
+from wzk.numpy2 import (limits2cell_size, grid_x2i, grid_i2x, scalar2array, flatten_without_last, add_small2big)
 from wzk.printing import print_progress_bar
 from wzk.trajectory import get_substeps_adjusted
 
@@ -217,7 +217,7 @@ def spheres2bimg(x, r, shape, limits,
         else:
             stencil = np.logical_or(*get_sphere_stencil(r=r[i], voxel_size=voxel_size, n_dim=n_dim))
         # img[tuple(map(slice, j - (l - 1) // 2, j + (l - 1) // 2 + 1))] += stencil
-        safe_add_small2big(idx=j, small=stencil, big=img)
+        add_small2big(idx=j, small=stencil, big=img)
 
     return img
 

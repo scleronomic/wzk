@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.patches as patches
 from typing import Callable
 
-from wzk.numpy2 import scalar2array, max_size, safe_unify
+from wzk.numpy2 import scalar2array, max_size, unify
 from wzk.mpl.axes import get_aspect_ratio
 from wzk.mpl.geometry import plot_coordinate_frame
 from wzk.mpl.figure import plt
@@ -332,7 +332,7 @@ class DraggablePatchList:
 
     def toggle_visibility(self, value=None):
         v = [dp.toggle_visibility(value=value) for dp in self.dp_list]
-        return safe_unify(v)
+        return unify(v)
 
 
 class DraggableCircleList(DraggablePatchList):

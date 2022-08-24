@@ -215,7 +215,7 @@ def color_text(s, color, background='w', weight=0):
     return f"\033[{weight};3{tc};4{bc}m{s}\033"
 
 
-def verbose_level_wrapper(verbose=None, level=None):  # TODO make more convenient and use it consistently
+def verbose_level_wrapper(verbose=None, level=None):
     if isinstance(verbose, Verbosity):
         if level is not None:
             verbose.level = level

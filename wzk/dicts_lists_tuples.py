@@ -2,7 +2,7 @@ import json
 from collections.abc import Iterable
 import numpy as np
 
-from wzk.numpy2 import safe_round
+from wzk.numpy2 import round2
 
 
 class ObjectDict:
@@ -68,7 +68,7 @@ def tuple_extract(t, default, mode='default'):
         raise ValueError(f"Unknown mode {mode}")
 
 
-def safe_squeeze(s):
+def squeeze(s):
     assert len(s) == 1
     return s[0]
 
@@ -342,7 +342,7 @@ def round_dict(d, decimals=None):
         if isinstance(value, dict):
             d[key] = round_dict(d=value, decimals=decimals)
         else:
-            d[key] = safe_round(x=value, decimals=decimals)
+            d[key] = round2(x=value, decimals=decimals)
 
     return d
 

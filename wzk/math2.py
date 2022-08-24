@@ -267,7 +267,7 @@ def get_mean_divisor_pair(n):
         return div[idx_center_minus1], div[idx_center_plus1]
 
 
-def get_divisor_safe(numerator, denominator):
+def get_divisor(numerator, denominator):
     divisor = numerator / denominator
     divisor_int = int(divisor)
 

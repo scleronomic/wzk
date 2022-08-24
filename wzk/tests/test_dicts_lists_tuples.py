@@ -24,8 +24,8 @@ class Test(TestCase):
         self.assertTrue(tuple_extract(t=(1, (3, 4)), default=(0, 0, (0, 0)), mode='default') == (1, (3, 4), (0, 0)))
 
     def test_safe_squeeze(self):
-        self.assertTrue(safe_squeeze(s=(1.1,)) == 1.1)
-        self.assertRaises(AssertionError, safe_squeeze, (1, (3, 4)))
+        self.assertTrue(squeeze(s=(1.1,)) == 1.1)
+        self.assertRaises(AssertionError, squeeze, (1, (3, 4)))
 
     def remove_nones(self):
         self.assertTrue(remove_nones([1, None, 2, None, None, 3, None, None]) == [1, 2, 3])

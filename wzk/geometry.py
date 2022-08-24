@@ -22,7 +22,7 @@ def get_ortho_star_2d(x):
     return x4
 
 
-def safe_arccos(c):
+def arccos2(c):
     c = np.clip(c, a_min=-1, a_max=+1)
     angle = np.arccos(c)
     return angle
@@ -435,7 +435,7 @@ def angle_between_vectors(a, b):
     an = a / np.linalg.norm(a, axis=-1, keepdims=True)
     bn = b / np.linalg.norm(b, axis=-1, keepdims=True)
 
-    angle = safe_arccos((an * bn).sum(axis=-1))
+    angle = arccos2((an * bn).sum(axis=-1))
     return angle
 
 
@@ -446,7 +446,7 @@ def angle_between_axis_and_point(f, p, axis=2):
 
     v = f[..., :-1, axis]
 
-    angle = safe_arccos((dn * v).sum(axis=-1))
+    angle = arccos2((dn * v).sum(axis=-1))
     return angle
 
 
@@ -486,7 +486,7 @@ def sample_points_on_sphere_3d(shape):
     shape = shape_wrapper(shape=shape)
     x = np.empty(tuple(shape) + (3,))
     theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
-    phi = safe_arccos(1-2*np.random.uniform(low=0, high=1, size=shape))
+    phi = arccos2(1 - 2 * np.random.uniform(low=0, high=1, size=shape))
     sin_phi = np.sin(phi)
     x[..., 0] = sin_phi * np.cos(theta)
     x[..., 1] = sin_phi * np.sin(theta)

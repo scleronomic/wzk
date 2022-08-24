@@ -117,7 +117,7 @@ def open_db_connection(file, close=True,
             lock.release()
 
 
-def __safe_commit(con):
+def __commit(con):
     try:
         con.execute("COMMIT")
     except sqlite3.OperationalError:
@@ -129,19 +129,19 @@ def execute(file, query, isolation_level='DEFERRED', lock=None):
         # con.execute("PRAGMA max_page_count = 200000")
         # con.execute("PRAGMA page_size = 65536")
         con.execute(query)
-        __safe_commit(con=con)
+        __commit(con=con)
 
 
 def executemany(file, query, args, lock=None):
     with open_db_connection(file=file, close=True, lock=lock) as con:
         con.executemany(query, args)
-        __safe_commit(con=con)
+        __commit(con=con)
 
 
 def executescript(file, query, lock=None):
     with open_db_connection(file=file, close=True, lock=lock) as con:
         con.executescript(query)
-        __safe_commit(con=con)
+        __commit(con=con)
 
 
 def set_journal_mode_wal(file):
