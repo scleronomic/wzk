@@ -2,8 +2,10 @@ import os
 import re
 import pickle
 import shutil
+from typing import Union
 import platform
 import subprocess
+
 import numpy as np
 
 from wzk.printing import print_progress_bar
@@ -24,11 +26,15 @@ def get_pythonpath():
         return []
 
 
-def safe_rmdir(directory: str):
-    if os.path.exists(directory):
-        shutil.rmtree(path=directory)
+def rmdirs(directory: Union[str, list]):
+    if isinstance(directory, list):
+        for d in directory:
+            rmdirs(d)
     else:
-        pass
+        if os.path.exists(directory):
+            shutil.rmtree(path=directory)
+        else:
+            pass
 
 
 def rm_files_in_dir(directory: str):
@@ -37,13 +43,12 @@ def rm_files_in_dir(directory: str):
         os.remove(os.path.join(directory, file))
 
 
-def safe_mkdirs(*directory_list):
-    for directory in directory_list:
-        safe_mkdir(directory=directory)
-
-
-def safe_mkdir(directory: str):
-    os.makedirs(directory, exist_ok=True)
+def mkdirs(directory: Union[str, list]):
+    if isinstance(directory, list):
+        for d in directory:
+            mkdirs(d)
+    else:
+        os.makedirs(directory, exist_ok=True)
 
 
 def start_open(file: str):

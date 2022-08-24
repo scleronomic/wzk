@@ -39,7 +39,7 @@ def value_counts(s, ordering=None):
 
     if ordering is not None:
         if isinstance(ordering[0], str):
-            ordering = get_indices(l=v, items=ordering)
+            ordering = get_indices(li=v, el=ordering)
         v = v[ordering]
         c = c[ordering]
 

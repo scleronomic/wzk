@@ -2,7 +2,7 @@ import os
 
 from unittest import TestCase
 from wzk.dicts_lists_tuples import *
-from wzk.files import safe_mkdir, safe_rmdir
+from wzk.files import mkdirs, rmdirs
 
 
 directory = f"{os.path.split(__file__)[0]}/tmp"
@@ -44,7 +44,7 @@ class Test(TestCase):
         self.assertTrue(atleast_tuple(np.array((1, 2, 3)), convert=True) == (1, 2, 3))
 
     def test_dict2json(self):
-        safe_mkdir(directory)
+        mkdirs(directory)
 
         dummy_file = f"{directory}/dummy_dict.json"
         dict_1 = {'a': 1,
@@ -59,7 +59,7 @@ class Test(TestCase):
         dict_2 = read_json2dict(dummy_file)
         self.assertTrue(dict_1 == dict_2)
 
-        safe_rmdir(directory)
+        rmdirs(directory)
 
     def test_flatten(self):
         list_nested = [(4, (1, (2, (1, [13, 13]))))]

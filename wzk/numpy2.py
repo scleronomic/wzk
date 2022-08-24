@@ -5,6 +5,8 @@ from itertools import product
 from wzk.dtypes import c2np
 
 
+# TODO think about the safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
+
 class DummyArray:
     """Allows indexing but always returns the same 'dummy' value"""
     def __init__(self, arr, shape):
@@ -984,7 +986,7 @@ def squeeze_all(*args):
 
 
 def safe_round(x,
-               decimals=None):  # TODO think about the safe keyword, does it mean it handles the exceptions for you or does it mean that it throws an error if it fails?
+               decimals=None):
     # noinspection PyProtectedMember
     try:
         return np.round(x, decimals=decimals)
@@ -994,7 +996,8 @@ def safe_round(x,
 
 
 def test_construct_array():
-    b = construct_array(shape=10, val=[1, 2, 3], idx=[2, 4, 5], dtype=None, mode=None)
+    b = construct_array(shape=10, val=[1, 2, 3], idx=[2, 4, 5], dtype=None, insert_mode=None)
+    print(b)
 
 
 if __name__ == '__main__':

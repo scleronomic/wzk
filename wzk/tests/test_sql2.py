@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from wzk.sql2 import *
-from wzk.files import safe_rmdir, safe_mkdir
+from wzk.files import rmdirs, mkdirs
 
 
 directory = f"{os.path.split(__file__)[0]}/tmp"
@@ -10,10 +10,10 @@ directory = f"{os.path.split(__file__)[0]}/tmp"
 class Test(TestCase):
 
     def setUp(self):
-        safe_mkdir(directory=directory)
+        mkdirs(directory=directory)
 
     def tearDown(self):
-        safe_rmdir(directory=directory)
+        rmdirs(directory=directory)
 
     @staticmethod
     def __create_dummy_db(mode):

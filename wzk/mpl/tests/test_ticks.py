@@ -75,9 +75,9 @@ class Test(TestCase):
     def test_elongate_ticks_and_labels(self):
 
         fig, ax = new_fig()
-        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='x', position=None)
-        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='y', position=None)
-        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=['a', 'b', 'c', 'd', 'e', 'f'], axis='x', position=None)
+        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='x')
+        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=None, axis='y')
+        elongate_ticks_and_labels(ax, newline=(10, [1, 2]), labels=['a', 'b', 'c', 'd', 'e', 'f'], axis='x')
 
 
 if __name__ == '__main__':

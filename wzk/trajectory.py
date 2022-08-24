@@ -203,7 +203,8 @@ def get_path_adjusted(x, n=None, is_periodic=None, weighting=None, __m=5):
         n = n0
     else:
         pass
-    return get_substeps_adjusted(x=x, n=(n - 1) * (n0*__m) + 1, is_periodic=is_periodic, weighting=weighting)[..., ::(n0*__m), :]
+    return get_substeps_adjusted(x=x, n=(n - 1) * (n0*__m) + 1,
+                                 is_periodic=is_periodic, weighting=weighting)[..., ::(n0*__m), :]
 
 
 def order_path(x, start=None, end=None, is_periodic=None, weights=1.):

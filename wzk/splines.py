@@ -29,7 +29,8 @@ class NURBS:
                  [self.n_points-1] * (self.degree+1-deg2))
 
         k = np.atleast_1d(k)
-        assert len(k) == self.degree + self.n_points + 1, f"len(k)[{len(k)}] == self.degree[{self.degree}] + self.n_points[{self.n_points}] + 1"
+        assert len(k) == self.degree + self.n_points + 1, \
+            f"len(k)[{len(k)}] == self.degree[{self.degree}] + self.n_points[{self.n_points}] + 1"
         self.k = k
         self.normalize_knotvector_01()
 

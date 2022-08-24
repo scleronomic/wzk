@@ -145,11 +145,11 @@ def create_stencil_dict(voxel_size, n_dim):
     n = int(5*(1//voxel_size))
     for i, r in enumerate(np.linspace(voxel_size/10, 2, num=n)):
         print_progress_bar(i=i, n=n, prefix='create_stencil_dict')
-        l = int((r // voxel_size) * 2 + 3)
-        if l not in stencil_dict.keys():
+        d = int((r // voxel_size) * 2 + 3)
+        if d not in stencil_dict.keys():
             stencil = np.logical_or(*get_sphere_stencil(r=r, voxel_size=voxel_size, n_dim=n_dim))
-            assert l == stencil.shape[0]
-            stencil_dict[l] = stencil
+            assert d == stencil.shape[0]
+            stencil_dict[d] = stencil
     return stencil_dict
 
 
@@ -211,9 +211,9 @@ def spheres2bimg(x, r, shape, limits,
 
     for i in range(n):
         j = grid_x2i(x[i], limits=limits, shape=shape)
-        l = int((r[i] // voxel_size) * 2 + 3)
+        d = int((r[i] // voxel_size) * 2 + 3)
         if stencil_dict:
-            stencil = stencil_dict[l]
+            stencil = stencil_dict[d]
         else:
             stencil = np.logical_or(*get_sphere_stencil(r=r[i], voxel_size=voxel_size, n_dim=n_dim))
         # img[tuple(map(slice, j - (l - 1) // 2, j + (l - 1) // 2 + 1))] += stencil

@@ -1,5 +1,4 @@
 from unittest import TestCase
-import pyvista as pv
 
 from wzk.pv.widgets import *
 from wzk.pv.plotting import plot_frames

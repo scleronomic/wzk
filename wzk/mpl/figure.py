@@ -7,7 +7,7 @@ from wzk.mpl.backend import plt
 from wzk.mpl.move_figure import move_fig
 
 from wzk.dicts_lists_tuples import atleast_tuple
-from wzk.files import start_open, safe_mkdir, copy2clipboard
+from wzk.files import start_open, mkdirs, copy2clipboard
 from wzk.math2 import get_mean_divisor_pair, golden_ratio
 from wzk.printing import print_progress_bar
 from wzk.strings import uuid4
@@ -91,7 +91,7 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
 
     dir_name = os.path.dirname(file)
     if dir_name != '':
-        safe_mkdir(directory=dir_name)
+        mkdirs(directory=dir_name)
 
     file, ext = os.path.splitext(file)
     if ext == '':

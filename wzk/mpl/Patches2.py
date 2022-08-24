@@ -33,7 +33,8 @@ class FancyArrowX2(patches.FancyArrow):
 
 
 class FancyBbox(patches.FancyBboxPatch):
-    def __init__(self, xy: np.ndarray = np.zeros(2), width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None, **kwargs):
+    def __init__(self, xy: np.ndarray = np.zeros(2), width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None,
+                 **kwargs):
         if boxstyle in ['Roundtooth', 'Sawtooth']:
             bs = patches.BoxStyle(boxstyle, pad=pad, tooth_size=corner_size)
         elif boxstyle in ['Round', 'Round4']:
