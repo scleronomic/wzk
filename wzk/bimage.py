@@ -4,8 +4,8 @@ from skimage import measure
 from skimage.morphology import flood_fill
 
 from wzk.geometry import discretize_triangle_mesh, ConvexHull, rectangle, cube
-from wzk.numpy2 import (limits2cell_size, grid_x2i, grid_i2x, scalar2array, flatten_without_last, add_small2big)
-from wzk.printing import print_progress_bar
+from wzk.np2 import (limits2cell_size, grid_x2i, grid_i2x, scalar2array, flatten_without_last, add_small2big)
+from wzk.printing import progress_bar
 from wzk.trajectory import get_substeps_adjusted
 
 
@@ -144,7 +144,7 @@ def create_stencil_dict(voxel_size, n_dim):
     stencil_dict = dict()
     n = int(5*(1//voxel_size))
     for i, r in enumerate(np.linspace(voxel_size/10, 2, num=n)):
-        print_progress_bar(i=i, n=n, prefix='create_stencil_dict')
+        progress_bar(i=i, n=n, prefix='create_stencil_dict')
         d = int((r // voxel_size) * 2 + 3)
         if d not in stencil_dict.keys():
             stencil = np.logical_or(*get_sphere_stencil(r=r, voxel_size=voxel_size, n_dim=n_dim))
@@ -267,7 +267,7 @@ def test_mesh2bimg():
                        [0, 1]])
     img = mesh2bimg(p=p, shape=(64, 64), limits=limits)
 
-    from wzk.mpl import new_fig, imshow
+    from wzk.mpl2 import new_fig, imshow
 
     fig, ax = new_fig()
     ax.plot(*p.T, ls='', marker='o')
@@ -285,9 +285,9 @@ def test_spheres2bimg():
     r = np.random.uniform(low=0.1, high=0.2, size=n)
     img = spheres2bimg(x=x, r=r, shape=shape, limits=limits)
     
-    from wzk.pv.plotting import plot_bimg, pv
-    pl = pv.Plotter()
-    plot_bimg(pl=pl, img=img, limits=limits)
+    from wzk import pv2
+    pl = pv2.Plotter()
+    pv2.plot_bimg(pl=pl, img=img, limits=limits)
     pl.show()
     
     

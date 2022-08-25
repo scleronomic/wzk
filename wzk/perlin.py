@@ -1,7 +1,7 @@
 """https://github.com/pvigier/perlin-numpy/blob/master/perlin_numpy/perlin3d.py"""
 
 import numpy as np
-from wzk.numpy2 import scalar2array
+from wzk.np2 import scalar2array
 from scipy.signal import savgol_filter as savgol
 from scipy.interpolate import interp1d
 

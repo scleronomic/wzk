@@ -1,7 +1,7 @@
 import numpy as np
 
-from wzk.numpy2 import block_shuffle
-from wzk.dicts_lists_tuples import change_tuple_order
+from wzk.np2 import block_shuffle
+from wzk.ltd import change_tuple_order
 
 
 def n2train_test(n, split=0.2):

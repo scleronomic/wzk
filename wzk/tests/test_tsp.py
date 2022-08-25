@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from wzk.mpl import new_fig
+from wzk.mpl2 import new_fig
 from wzk.tsp import *
 
 

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 
-from wzk.numpy2 import shape_wrapper
+from wzk.np2 import shape_wrapper
 
 
 def p_normal_skew(x, loc=0.0, scale=1.0, a=0.0):

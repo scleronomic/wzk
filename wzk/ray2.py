@@ -5,7 +5,7 @@ import ray  # noqa
 import fire
 import numpy as np
 
-from wzk.dicts_lists_tuples import squeeze, atleast_list
+from wzk.ltd import squeeze, atleast_list
 from wzk.cpu import ssh_call2, get_n_cpu
 
 # rmc-lx0095

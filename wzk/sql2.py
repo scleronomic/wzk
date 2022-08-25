@@ -5,8 +5,8 @@ import numpy as np
 import pandas as pd
 import sqlite3
 
-from wzk.numpy2 import numeric2object_array
-from wzk.dicts_lists_tuples import change_tuple_order, atleast_list
+from wzk.np2 import numeric2object_array
+from wzk.ltd import change_tuple_order, atleast_list
 from wzk.dtypes import str2np
 from wzk.strings import uuid4
 

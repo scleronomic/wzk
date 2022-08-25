@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from wzk.numpy2 import shape_wrapper
+from wzk.np2 import shape_wrapper
 from wzk.random2 import noise, random_uniform_ndim
 from wzk.geometry import sample_points_on_sphere_3d
 from wzk.trajectory import get_substeps
@@ -282,9 +282,9 @@ def test_get_frames_between():
 
     assert np.allclose(f0, f[0])
     assert np.allclose(f1, f[-1])
-    from wzk.pv.plotting import plot_frames, pv
-    pl = pv.Plotter()
-    plot_frames(pl=pl, f=f, scale=0.2)
+    from wzk import pv2
+    pl = pv2.Plotter()
+    pv2.plot_frames(pl=pl, f=f, scale=0.2)
     pl.show()
 
 

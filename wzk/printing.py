@@ -4,7 +4,7 @@ import select
 
 import numpy as np
 
-from wzk.numpy2 import get_stats
+from wzk.np2 import get_stats
 
 
 def quiet_mode_on():
@@ -79,7 +79,7 @@ def get_progress_bar(i, n, prefix='', suffix='', bar='█'):
     return f"\r{prefix} |{bar}| {suffix}"
 
 
-def print_progress_bar(i, n, prefix='', suffix='', bar_length=None):
+def progress_bar(i, n, prefix='', suffix='', bar_length=None):
     bar_length_max = 100
     if bar_length is None:
         bar_length = n

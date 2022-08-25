@@ -8,7 +8,7 @@ import subprocess
 
 import numpy as np
 
-from wzk.printing import print_progress_bar
+from wzk.printing import progress_bar
 from wzk.time2 import get_timestamp
 
 __pickle_extension = '.pkl'
@@ -142,7 +142,7 @@ def combine_npz_files(*, directory,
 
     for i, file in enumerate(file_list):
         if verbose > 0:
-            print_progress_bar(i=i, n=len(file_list))
+            progress_bar(i=i, n=len(file_list))
 
         data = np.load(directory + file)
         if i == 0:

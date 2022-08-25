@@ -1,7 +1,7 @@
 import os
 
 from unittest import TestCase
-from wzk.dicts_lists_tuples import *
+from wzk.ltd import *
 from wzk.files import mkdirs, rmdirs
 
 

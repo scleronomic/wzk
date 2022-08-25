@@ -1,5 +1,5 @@
 from unittest import TestCase
-from wzk.numpy2 import *
+from wzk.np2 import *
 from wzk.testing import compare_arrays
 
 

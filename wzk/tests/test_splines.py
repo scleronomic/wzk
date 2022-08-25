@@ -1,6 +1,6 @@
 import numpy as np
 from wzk.splines import NURBS
-from wzk.mpl import new_fig, plt, DraggableCircleList
+from wzk.mpl2 import new_fig, plt, DraggableCircleList
 
 
 def test_basis_function():

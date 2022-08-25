@@ -30,7 +30,7 @@ def min_sphere(x, r) -> (np.ndarray, float):
 
 
 def test_min_sphere():
-    from wzk.mpl import new_fig, plot_circles
+    from wzk.mpl2 import new_fig, plot_circles
     n = 10
     d = 2
     r = np.zeros(n)

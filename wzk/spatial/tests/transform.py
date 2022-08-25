@@ -1,5 +1,5 @@
 import numpy as np
-from wzk import spatial
+from wzk import spatial, pv2
 
 
 def understand_rotvec():
@@ -13,10 +13,9 @@ def understand_rotvec():
     rv[4, 2] += -np.pi
     print(rv)
     f = spatial.trans_rotvec2frame(trans=x, rotvec=rv)
-    from wzk.pv.plotting import pv, plot_frames
 
-    pl = pv.Plotter()
-    plot_frames(f=f, pl=pl)
+    pl = pv2.Plotter()
+    pv2.plot_frames(f=f, pl=pl)
     pl.add_axes_at_origin(labels_off=False)
 
     pl.show()

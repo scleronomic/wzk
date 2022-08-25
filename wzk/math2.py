@@ -1,8 +1,8 @@
 import numpy as np
 from itertools import product
 
-from wzk.numpy2 import axis_wrapper, insert
-from wzk.dicts_lists_tuples import atleast_tuple
+from wzk.np2 import axis_wrapper, insert
+from wzk.ltd import atleast_tuple
 
 # a/b = (a+b) / a -> a / b =
 golden_ratio = (np.sqrt(5.0) + 1) / 2

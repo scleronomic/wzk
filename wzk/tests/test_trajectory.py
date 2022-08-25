@@ -87,7 +87,7 @@ class Test(TestCase):
         x0 = np.random.random((n0, n_dof))
         x1 = get_path_adjusted(x=x0, n=n1)
 
-        from wzk.mpl import new_fig
+        from wzk.mpl2 import new_fig
 
         fig, ax = new_fig(aspect=1)
         ax.plot(*x0.T, marker='o')

@@ -1,6 +1,6 @@
 import numpy as np
 
-from wzk.numpy2 import allclose
+from wzk.np2 import allclose
 
 
 def compare_arrays(a, b, axis=None, verbose=0,

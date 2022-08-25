@@ -1,6 +1,6 @@
 import numpy as np
-from wzk.numpy2 import grid_x2i
-from wzk.mpl import new_fig, plt, imshow, grid_lines
+from wzk.np2 import grid_x2i
+from wzk.mpl2 import new_fig, plt, imshow, grid_lines
 
 
 def ccw(a, b, c):

@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from wzk.time2 import tic, toc
 from wzk.multiprocessing2 import *
-from wzk.dicts_lists_tuples import list_allclose
+from wzk.ltd import list_allclose
 
 
 class Test(TestCase):

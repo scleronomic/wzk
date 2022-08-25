@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 
-from wzk.numpy2 import shape_wrapper
+from wzk.np2 import shape_wrapper
 from wzk.cpp2py.min_sphere import min_sphere  # noqa
 
 
@@ -761,14 +761,14 @@ def test_discretize_triangle():
                   [0, 1]])
     x2 = discretize_triangle(a=x0[0], b=x0[1], c=x0[2], n=10)
 
-    from wzk.mpl import new_fig
+    from wzk.mpl2 import new_fig
     fig, ax = new_fig(aspect=1)
     ax.plot(*x0.T, color='blue', marker='o')
     ax.plot(*x2.T, color='red', marker='x')
 
 
 def test_string_of_pearls2surface():
-    from wzk.mpl import new_fig, plot_circles
+    from wzk.mpl2 import new_fig, plot_circles
     x = np.array([[0, 0],
                   [0.05, 0],
                   [0.06, 0],

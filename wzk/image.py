@@ -3,8 +3,8 @@ import numpy as np
 from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa
 
-from wzk.dicts_lists_tuples import tuple_extract
-from wzk.numpy2 import (align_shapes, initialize_array,
+from wzk.ltd import tuple_extract
+from wzk.np2 import (align_shapes, initialize_array,
                         limits2cell_size, grid_x2i, grid_i2x, scalar2array)  # noqa
 from wzk.math2 import make_even_odd
 from wzk.bimage import sample_bimg_i
