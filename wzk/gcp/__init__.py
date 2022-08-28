@@ -1,3 +1,3 @@
 from . import billing
-from . import gcloud2
+from .gcloud2 import *
 from . import startup

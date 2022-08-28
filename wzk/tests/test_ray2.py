@@ -1,6 +1,6 @@
 import numpy as np
 import time
-from wzk.ray2 import ray, ray_init
+from wzk.ray2 import ray, init
 from wzk import tic, toc
 from wzk.multiprocessing2 import mp_wrapper
 
@@ -10,7 +10,7 @@ def speed():
     #          'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
     # n_cpu = start_ray_cluster(head=None, nodes=nodes, perc=50)
     n_cpu = 30
-    ray_init()
+    init()
 
     # ray.init(address='auto', log_to_driver=False)
 

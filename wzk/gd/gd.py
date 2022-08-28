@@ -9,7 +9,7 @@ class GradientDescent(CopyableObject):
     __slots__ = ('n_steps',                        # int                 | Number of iterations
                  'stepsize',                       # float               |
                  'opt',                            # Optimizer           | Adam, RMSProp, ...
-                 'clipping',                       # float[n_steps]      |
+                 'clip',                       # float[n_steps]      |
                  'callback',                       # fun()               |
                  'limits',                         # fun()               |
                  'n_processes',                    # int                 |
@@ -20,10 +20,10 @@ class GradientDescent(CopyableObject):
                  'active_dims'                     # bool[n_var]         |
                  )
 
-    def __init__(self, n_steps=100, stepsize=0.001, opt=Naive(), clipping=0.1, n_processes=1):
+    def __init__(self, n_steps=100, stepsize=0.001, opt=Naive(), clip=0.1, n_processes=1):
         self.n_steps = n_steps
         self.stepsize = stepsize
-        self.clipping = clipping
+        self.clip = clip
         self.opt = opt
         self.active_dims = None
 
@@ -60,8 +60,8 @@ def gradient_descent(x, fun, grad, gd):
         active_dims = slice(x.shape[-1])
 
     # If the parameters aren't given for all steps, expand them
-    if np.size(gd.clipping) == 1:
-        gd.clipping = np.full(gd.n_steps, fill_value=float(gd.clipping))
+    if np.size(gd.clip) == 1:
+        gd.clip = np.full(gd.n_steps, fill_value=float(gd.clip))
 
     if np.size(gd.hesse_weighting) == 1:
         gd.hesse_weighting = np.full(gd.n_steps, fill_value=float(gd.hesse_weighting))
@@ -88,7 +88,7 @@ def gradient_descent(x, fun, grad, gd):
             j = gd.callback(x=x.copy(), jac=j.copy())  # , count=o) -> callback function handles count
 
         v = gd.opt.update(x=x, v=j)
-        v = __clipping(v=v, c=gd.clipping[i])
+        v = __clipping(v=v, c=gd.clip[i])
         x[..., active_dims] += v[..., active_dims]
 
         x = gd.limits(x)

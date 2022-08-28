@@ -300,7 +300,7 @@ def delete_rows(file: str, table: str, rows, lock=None):
         rows.sort()
         rows = rows[::-1]
 
-        rows = np.array_split(rows, int(np.ceil(len(rows)//batch_size)))
+        rows = np.array_split(rows, max(2, int(np.ceil(len(rows)//batch_size))))
         for r in rows:
             r = ', '.join(map(str, r.tolist()))
             execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})")

@@ -1,12 +1,18 @@
 import re
 import socket
 
-import ray  # noqa
+import ray
 import fire
 import numpy as np
 
 from wzk.ltd import squeeze, atleast_list
 from wzk.cpu import ssh_call2, get_n_cpu
+
+#
+remote = ray.remote
+put = ray.put
+get = ray.get
+
 
 # rmc-lx0095
 # Johannes Pitz: 0392, 0179, 0145, 0115
@@ -107,7 +113,7 @@ def ray_main(mode='start', nodes=None, head=None, perc=80, verbose=2):
         raise ValueError
 
 
-def ray_init(perc=100):
+def init(perc=100):
     try:
         ray.init(address=_address[0], log_to_driver=False, ignore_reinit_error=True)
     except ConnectionError:

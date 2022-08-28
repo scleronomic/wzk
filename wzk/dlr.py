@@ -36,9 +36,9 @@ TENH_USERSTORE = f"/volume/USERSTORE/{TENH_JO}"
 
 # Paper
 if PLATFORM_IS_LINUX:
-    DIR_PAPER = f"{DLR_USERSTORE}/Paper/"
+    DIR_PAPER = f"{DLR_USERSTORE}/Paper"
 else:
-    DIR_PAPER = f'/Users/jote/{ICLOUD}/Paper/'
+    DIR_PAPER = f'/Users/jote/{ICLOUD}/Paper'
 
 
 Humanoids22_AutoCalibration = DIR_PAPER + '/22AutoCalibration'

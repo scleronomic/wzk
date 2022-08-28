@@ -5,6 +5,7 @@ import shutil
 from typing import Union
 import platform
 import subprocess
+import msgpack
 
 import numpy as np
 
@@ -331,3 +332,15 @@ def dir_dir2file_array(directory: str = None,
         file_arr.append(f_list)
 
     return file_arr
+
+
+def read_msgpack(file):
+    with open(file, 'rb') as f:
+        b = f.read()
+    return msgpack.unpackb(b)
+
+
+def write_msgpack(file, nested_list):
+    arr_bin = msgpack.packb(nested_list, use_bin_type=True)
+    with open(file, 'wb') as f:
+        f.write(arr_bin)
