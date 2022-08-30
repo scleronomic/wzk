@@ -1,5 +1,5 @@
 import numpy as np
-from pymesh import tetgen
+import pymesh
 
 
 def reduce_mesh_resolution(mesh, detail="normal"):

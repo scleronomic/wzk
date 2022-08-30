@@ -1,25 +1,23 @@
 import os
 import shutil
+from typing import Union, Optional
+
 import numpy as np
 
-from typing import Union, Optional
 from wzk.mpl2.backend import plt
+from wzk.mpl2.axes import set_ax_limits
 from wzk.mpl2.move_figure import move_fig
 
-from wzk.ltd import atleast_tuple
-from wzk.files import start_open, mkdirs, copy2clipboard
-from wzk.math2 import get_mean_divisor_pair, golden_ratio
-from wzk.printing import progress_bar
-from wzk.strings import uuid4
+from wzk import files, ltd, math2, printing, strings
 
 import matplotlib as mpl
 from matplotlib import figure
 
-shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / golden_ratio]
-shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 16) / golden_ratio]
+shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / math2.golden_ratio]
+shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 16) / math2.golden_ratio]
 
 
-def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
+def figsize_wrapper(width, height=None, height_ratio=1/math2.golden_ratio):
     # https://www.ieee.org/content/dam/ieee-org/ieee/web/org/pubs/eic-guide.pdf
     if isinstance(width, str):
         if width.lower() == 'ieee1c':
@@ -39,11 +37,11 @@ def figsize_wrapper(width, height=None, height_ratio=1/golden_ratio):
     return width, height
 
 
-def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
+def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / math2.golden_ratio,
             n_dim=2,
             n_rows=1, n_cols=1,
             share_x='none', share_y='none',  # : bool or {'none', 'all', 'row', 'col'},
-            aspect='auto',
+            aspect='auto', limits=None,
             title=None,
             position=None, monitor=-1,
             **kwargs):
@@ -56,12 +54,16 @@ def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / golden_ratio,
         if isinstance(ax, np.ndarray):
             for i in np.ndindex(*np.shape(ax)):
                 ax[i].set_aspect(aspect)  # Not implemented for 3D
+                set_ax_limits(ax=ax, limits=limits)
+
         else:
             ax.set_aspect(aspect)
+            set_ax_limits(ax=ax, limits=limits)
 
     else:
         import mpl_toolkits.mplot3d.art3d as art3d  # noqa
         ax = plt.axes(projection='3d')
+        set_ax_limits(ax=ax, limits=limits)
 
     if title is not None:
         fig.suptitle(title)
@@ -91,7 +93,7 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
 
     dir_name = os.path.dirname(file)
     if dir_name != '':
-        mkdirs(directory=dir_name)
+        files.mkdirs(directory=dir_name)
 
     file, ext = os.path.splitext(file)
     if ext == '':
@@ -101,7 +103,7 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
 
     if formats is None:
         formats = tuple()
-    formats = atleast_tuple(formats, convert=False)
+    formats = ltd.atleast_tuple(formats, convert=False)
     formats = set(formats)
     formats = formats.union(set(ext))
 
@@ -117,10 +119,10 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
             print(f'{file_f} already exists')
 
     if view:
-        start_open(file=f"{file}.{formats[0]}")
+        files.start_open(file=f"{file}.{formats[0]}")
 
     if copy2cb:
-        copy2clipboard(file=f"{file}.{formats[0]}")
+        files.copy2clipboard(file=f"{file}.{formats[0]}")
 
 
 def save_ani(file: str, fig: mpl.figure.Figure, ani,
@@ -129,13 +131,13 @@ def save_ani(file: str, fig: mpl.figure.Figure, ani,
     if dir_temp == '':
         dir_temp = os.getcwd()
         file = dir_temp + '/' + file
-    dir_temp += '/' + uuid4()
+    dir_temp += '/' + strings.uuid4()
 
     if isinstance(n, int):
         n = np.arange(n)
 
     for nn in n:
-        progress_bar(i=nn, n=n[-1] + 1)
+        printing.progress_bar(i=nn, n=n[-1] + 1)
         ani(nn)
         save_fig(file="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats=('png', ), dpi=dpi, bbox=bbox,
                  verbose=0)
@@ -173,10 +175,10 @@ def close_all():
 
 
 def subplot_grid(n: int, squeeze: bool = False, **kwargs):
-    n_rows, n_cols = get_mean_divisor_pair(n)
+    n_rows, n_cols = math2.get_mean_divisor_pair(n)
 
     if n >= 7 and n_rows == 1:
-        n_rows, n_cols = get_mean_divisor_pair(n+1)
+        n_rows, n_cols = math2.get_mean_divisor_pair(n+1)
 
     _, ax = new_fig(n_rows=n_rows, n_cols=n_cols, **kwargs)
 

@@ -1,9 +1,27 @@
 # Lists, Tuples, Dicts
 import json
 from collections.abc import Iterable
+from collections import namedtuple
+
 import numpy as np
 
 from wzk.np2 import round2
+
+
+def nesteddict2namedtuple(name, d):
+
+    values, keys = [], []
+    for k in d:
+        keys.append(k)
+
+        v = d[k]
+        if isinstance(v, dict):
+            values.append(nesteddict2namedtuple(name, v))
+        else:
+            values.append(v)
+
+    T = namedtuple(name, keys)
+    return T(*values)
 
 
 class ObjectDict:

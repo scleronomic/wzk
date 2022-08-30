@@ -96,3 +96,12 @@ class Test(TestCase):
 
         a = weave_lists(*x)
         self.assertTrue(a == res)
+
+    def test_nesteddict2namedtuple(self):
+        test_dict = {'a': 1, 'b': 2, 'c': {'d': 3, 'e': 4}}
+        nnt = nesteddict2namedtuple('test', d=test_dict)
+
+        self.assertTrue(nnt.a == test_dict['a'])
+        self.assertTrue(nnt.b == test_dict['b'])
+        self.assertTrue(nnt.c.d == test_dict['c']['d'])
+        self.assertTrue(nnt.c.e == test_dict['c']['e'])

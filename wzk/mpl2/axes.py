@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from wzk.ltd import atleast_list
+from wzk import ltd
 
 
 def get_pip(ax, x, y, width, height, **kwargs):
@@ -87,6 +87,9 @@ def limits2extent(limits, origin, axis_order):
 
 
 def set_ax_limits(ax, limits, n_dim=2):
+    if limits is None:
+        return
+
     mins, maxs = limits4axes(limits=limits, n_dim=n_dim)
 
     if n_dim == 2:
@@ -156,7 +159,7 @@ def size_units2points_listener(ax, h, size, reference='y', mode='ms'):
     elif mode == 'both':
         mode = ['ms', 'lw']
 
-    h, mode = atleast_list(h, mode)
+    h, mode = ltd.atleast_list(h, mode)
 
     def on_change(*args):  # noqa
         size_new = size_units2points(ax=ax, size=size, reference=reference)
