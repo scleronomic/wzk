@@ -30,7 +30,7 @@ def solve_tsp(points, dist_mat=None, time_limit=10,
     if dist_mat is None:
         dist_mat = distance_matrix(points, points)
 
-    if dist_mat.dtype != np.integer:
+    if not (dist_mat.dtype == np.int64 or dist_mat.dtype == np.int32 or dist_mat.dtype == np.int16):
         min_dist = dist_mat[dist_mat != 0].min()
         if min_dist < 1:
             dist_mat /= min_dist
