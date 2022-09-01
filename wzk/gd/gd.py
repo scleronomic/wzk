@@ -2,7 +2,7 @@ import numpy as np  # noqa
 
 from wzk.multiprocessing2 import mp_wrapper
 from wzk.object2 import CopyableObject
-from wzk.gd.Optimizer import *
+from wzk.gd.optimizer import *
 
 
 class GradientDescent(CopyableObject):
