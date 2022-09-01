@@ -153,7 +153,7 @@ def create_stencil_dict(voxel_size, n_dim):
     return stencil_dict
 
 
-def bimg2surf(img, limits):
+def bimg2surf(img, limits, level=None):
     lower_left = limits[:, 0]
     voxel_size = limits2cell_size(shape=img.shape, limits=limits)
     if img.sum() == 0:
@@ -162,7 +162,7 @@ def bimg2surf(img, limits):
         faces[:] = np.arange(3)
 
     else:
-        verts, faces, _, _ = measure.marching_cubes(img, level=0, spacing=(voxel_size,) * img.ndim)
+        verts, faces, _, _ = measure.marching_cubes(img, level=level, spacing=(voxel_size,) * img.ndim)
         verts = verts + lower_left
 
     return verts, faces

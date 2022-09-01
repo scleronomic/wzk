@@ -2,14 +2,12 @@ import os
 from sys import platform
 import numpy as np
 import pyvista as pv
+
 from itertools import combinations
 from scipy.spatial import ConvexHull
 from matplotlib import colors
 
-from wzk.np2 import scalar2array, array2array
-from wzk.bimage import bimg2surf
-from wzk.spatial import invert
-from wzk.geometry import cube
+from wzk import np2, bimage, spatial, geometry
 
 from typing import Union
 
@@ -174,7 +172,7 @@ def plot_cube(limits, pl=None, **kwargs):
     # r = [[ll, ll + side_length] for ll in lower_left]
     if limits is None:
         return
-    v, e, f = cube(limits=limits)
+    v, e, f = geometry.cube(limits=limits)
     plot_connections(x=v, pairs=e, pl=pl, **kwargs)
 
 
@@ -211,7 +209,8 @@ def plot_bimg(img, limits,
             h[0].hide_cells(~img.ravel())
 
     elif mode == 'mesh':
-        verts, faces = bimg2surf(img=img, limits=limits)
+        verts, faces = bimage.bimg2surf(img=img, level=None, limits=limits)
+        verts += np2.limits2cell_size(shape=img.shape, limits=limits) / 2  # shift half a cell size
         faces = faces2pyvista(faces)
 
         if h is None:
@@ -232,7 +231,7 @@ def plot_bimg(img, limits,
 def plot_spheres(x, r,
                  pl=None, h=None,
                  **kwargs):
-    r = scalar2array(r, shape=len(x), safe=True)
+    r = np2.scalar2array(r, shape=len(x), safe=True)
     h0 = [pv.Sphere(center=xi, radius=ri) for xi, ri in zip(x, r)]
     if h is None:
         h1 = [pl.add_mesh(h0i, **kwargs) for h0i in h0]
@@ -251,9 +250,7 @@ def plot_frames(f,
 
     if np.ndim(f) == 3:
         n = len(f)
-        h = scalar2array(h, shape=n, safe=False)
-        color = array2array(color, shape=(n, 3))
-        opacity = array2array(opacity, shape=(n, 3))
+        h, color, opacity = np2.scalar2array(h, color, opacity, shape=n, safe=False)
         h = [plot_frames(f=fi, pl=pl, h=hi, color=ci,  opacity=oi, scale=scale, shift=shift,
                          **kwargs) for fi, hi, ci, oi in zip(f, h, color, opacity)]
         return h
@@ -267,7 +264,7 @@ def plot_frames(f,
         if opacity is None:
             opacity = np.ones(3)
 
-        color, opacity = scalar2array(color, opacity, shape=3, safe=False)
+        color, opacity = np2.scalar2array(color, opacity, shape=3, safe=False)
         h0 = [pv.Arrow(start=f[:3, -1]+shift[i]*f[:3, i], direction=f[:3, i], scale=scale) for i in range(3)]
         if h is None:
             h1 = [pl.add_mesh(h0i, color=color[i], opacity=opacity[i], **kwargs) for i, h0i in enumerate(h0)]
@@ -291,7 +288,7 @@ class TransformableMesh:
         # p2 = * T_ob * T_oa' * (T_oa * p)
         # p2 = * T_ob * T_oa' * p1
 
-        f_ab = f @ invert(self.f_oa)
+        f_ab = f @ spatial.invert(self.f_oa)
         self.f_oa = f.copy()
         if not np.allclose(f_ab, np.eye(4)):
             self.mesh.transform(f_ab.copy(), inplace=True)
