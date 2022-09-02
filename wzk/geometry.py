@@ -92,6 +92,8 @@ def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
         v = limits[np.arange(3)[np.newaxis, :].repeat(8, axis=0), v]
 
     # via
+    # from itertools import combinations
+    # d = 3
     # def get_vi(x):
     #     return np.nonzero((v == x).sum(axis=-1) == 3)[0][0]
     # for s, e in combinations(v, 2):

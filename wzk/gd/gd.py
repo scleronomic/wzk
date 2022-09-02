@@ -20,7 +20,7 @@ class GradientDescent(CopyableObject):
                  'active_dims'                     # bool[n_var]         |
                  )
 
-    def __init__(self, n_steps=100, stepsize=0.001, opt=Naive(), clip=0.1, n_processes=1):
+    def __init__(self, n_steps=100, stepsize=0.001, opt=KNaive(), clip=0.1, n_processes=1):
         self.n_steps = n_steps
         self.stepsize = stepsize
         self.clip = clip

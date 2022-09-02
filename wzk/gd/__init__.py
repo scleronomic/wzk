@@ -1,2 +1,2 @@
 from . import gd
-from . import Optimizer
+from . import optimizer
