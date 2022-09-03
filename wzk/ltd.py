@@ -84,7 +84,7 @@ def tuple_extract(t, default, mode='default'):
         return t * length_default
 
     else:
-        raise ValueError(f"Unknown mode {mode}")
+        raise ValueError(f"Unknown mode '{mode}'")
 
 
 def squeeze(s):

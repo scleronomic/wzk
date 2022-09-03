@@ -223,7 +223,7 @@ def plot_bimg(img, limits,
             h[0].faces = faces
 
     else:
-        raise ValueError(f"Unknown mode {mode}; either 'mesh' or 'voxel'")
+        raise ValueError(f"Unknown mode: '{mode}' | ['mesh', 'voxel']")
 
     return h
 

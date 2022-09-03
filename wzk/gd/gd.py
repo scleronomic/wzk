@@ -1,17 +1,18 @@
 import numpy as np  # noqa
 
-from wzk.multiprocessing2 import mp_wrapper
-from wzk.object2 import CopyableObject
+from wzk import np2, multiprocessing2, object2
 from wzk.gd.optimizer import *
 
 
-class GradientDescent(CopyableObject):
+class GradientDescent(object2.CopyableObject):
     __slots__ = ('n_steps',                        # int                 | Number of iterations
                  'stepsize',                       # float               |
                  'opt',                            # Optimizer           | Adam, RMSProp, ...
-                 'clip',                       # float[n_steps]      |
+                 'clip',                           # float[n_steps]      |
+                 'clip_mode',                      # str                 | 'jump', 'clip', 'ignore'
                  'callback',                       # fun()               |
                  'limits',                         # fun()               |
+                 'limits_mode',                    # str                 |
                  'n_processes',                    # int                 |
                  'use_loop_instead_of_processes',  # bool                |
                  'hesse_inv',                      # float[n_var][n_var] |
@@ -20,10 +21,12 @@ class GradientDescent(CopyableObject):
                  'active_dims'                     # bool[n_var]         |
                  )
 
-    def __init__(self, n_steps=100, stepsize=0.001, opt=Naive(), clip=0.1, n_processes=1):
+    def __init__(self, n_steps=100, stepsize=1, opt=Naive(), clip=0.1, n_processes=1):
         self.n_steps = n_steps
         self.stepsize = stepsize
         self.clip = clip
+        self.clip_mode = 'value'
+        self.limits_mode = 'clip'
         self.opt = opt
         self.active_dims = None
 
@@ -46,7 +49,7 @@ def gradient_descent_mp(x, fun, grad, gd):
     def gd_wrapper(xx):
         return gradient_descent(x=xx, fun=fun, grad=grad, gd=gd)
 
-    return mp_wrapper(x, fun=gd_wrapper, n_processes=gd.n_processes)
+    return multiprocessing2.mp_wrapper(x, fun=gd_wrapper, n_processes=gd.n_processes)
 
 
 def gradient_descent(x, fun, grad, gd):
@@ -88,7 +91,7 @@ def gradient_descent(x, fun, grad, gd):
             j = gd.callback(x=x.copy(), jac=j.copy())  # , count=o) -> callback function handles count
 
         v = gd.opt.update(x=x, v=j)
-        v = __clipping(v=v, c=gd.clip[i])
+        v = np2.clip2(v, clip=gd.clip[i], mode=gd.clip_mode)
         x[..., active_dims] += v[..., active_dims]
 
         x = gd.limits(x)
@@ -111,7 +114,3 @@ def __x_wrapper(x):
         x = x[np.newaxis, :]
 
     return x
-
-
-def __clipping(v, c):
-    return np.clip(v, a_min=-c, a_max=c)

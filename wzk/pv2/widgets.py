@@ -2,8 +2,7 @@ import numpy as np
 
 import pyvista as pv
 
-from wzk.geometry import make_rhs
-from wzk.mpl2.plotting import create_grid
+from wzk import geometry, spatial, np2
 
 
 class RHSWidget:
@@ -30,21 +29,28 @@ class RHSWidget:
                                             test_callback=False)
         self.set_xyz(xyz=xyz)
 
+    def get_origin(self):
+        return np.array(self.wo.GetCenter())
+
     def get_xyz(self) -> np.ndarray:
         return np.array((self.wx.GetNormal(), self.wy.GetNormal(), self.wz.GetNormal()))
 
-    def set_xyz(self, xyz):
-        self.wx.SetNormal(xyz[:, 0])
-        self.wy.SetNormal(xyz[:, 1])
-        self.wz.SetNormal(xyz[:, 2])
+    def get_frame(self):
+        return spatial.trans_matrix2frame(trans=self.get_origin(), matrix=self.get_xyz().T)
 
     def set_origin(self, o):
         self.wx.SetOrigin(o)
         self.wy.SetOrigin(o)
         self.wz.SetOrigin(o)
 
-    def get_origin(self):
-        return np.array(self.wo.GetCenter())
+    def set_xyz(self, xyz):
+        self.wx.SetNormal(xyz[:, 0])
+        self.wy.SetNormal(xyz[:, 1])
+        self.wz.SetNormal(xyz[:, 2])
+
+    def set_frame(self, f):
+        self.set_origin(f[:-1, -1])
+        self.set_xyz(f[:-1, :-1])
 
     def set_bounds(self, b):
         self.wx.PlaceWidget(b)
@@ -73,11 +79,10 @@ class RHSWidget:
         return self.order
 
     def update_xyz(self, i):
-        xyz = make_rhs(self.get_xyz(), order=tuple(self.update_order(i=i))).T  # not sure if this is the best way
+        xyz = geometry.make_rhs(self.get_xyz(), order=tuple(self.update_order(i=i))).T  # not sure if this is the best way
         self.set_xyz(xyz)
-        o = self.get_origin()
 
-        self.callback(o, xyz)
+        self.callback()
         self.pl.render()
 
     def update_o(self, o):
@@ -87,12 +92,12 @@ class RHSWidget:
         self.set_origin(o)
         self.set_xyz(xyz)
 
-        self.callback(o, xyz)
+        self.callback()
         self.pl.render()
 
-    def callback(self, o, xyz):
+    def callback(self):
         if self.custom_callback is not None:
-            self.custom_callback((o, xyz))
+            self.custom_callback(self.get_frame())
 
 
 def add_rhs_widget(pl, origin, xyz=None,
@@ -175,7 +180,7 @@ class MultipleSpheresWidget:
         limits[:, 0] = 0.01
         limits[:, 1] = 0.20
 
-        grid = create_grid(ll=(0.05, 0.05), ur=(0.95, 0.22), n=(n, 1), pad=(-0.015, 0.05))
+        grid = np2.create_grid(ll=(0.05, 0.05), ur=(0.95, 0.22), n=(n, 1), pad=(-0.015, 0.05))
         names = [f'{i}' for i in range(n)]
         idx = np.zeros((n, 2), dtype=int)
         idx[:n, 0] = np.arange(n)

@@ -9,9 +9,7 @@ from wzk.mpl2.colors2 import arr2rgba
 from wzk.mpl2.axes import limits4axes, limits2extent, set_ax_limits
 from wzk.mpl2.legend import rectangle_legend
 
-from wzk.math2 import binomial
-from wzk.np2 import scalar2array, add_safety_limits
-from wzk.ltd import tuple_extract, atleast_tuple
+from wzk import math2, np2, ltd
 
 
 def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
@@ -74,7 +72,7 @@ def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
 def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto', **kwargs):
     n = x.shape[-1]
 
-    n_comb = binomial(n, 2)
+    n_comb = math2.binomial(n, 2)
     if ax is None:
         ax = subplot_grid(n=n_comb, squeeze=False, aspect=aspect)
     else:
@@ -238,21 +236,10 @@ def quiver(xy, uv,
 
 
 # Grid
-def create_grid(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
-    ll, ur, n, pad = np.atleast_1d(ll, ur, n, pad)
-
-    w = ur - ll
-    s = (w - pad*(n-1))/n
-
-    x = ll[0] + np.arange(n[0])*(s[0]+pad[0])
-    y = ll[1] + np.arange(n[1])*(s[1]+pad[1])
-    return (x, y), s
-
-
 def grid_lines(ax, start, step, limits, **kwargs):
     mins, maxs = limits4axes(limits=limits, n_dim=2)
-    start = tuple_extract(t=start, default=(0, 0), mode='repeat')
-    step = tuple_extract(t=step, default=(0, 0), mode='repeat')
+    start = ltd.tuple_extract(t=start, default=(0, 0), mode='repeat')
+    step = ltd.tuple_extract(t=step, default=(0, 0), mode='repeat')
 
     ax.hlines(y=np.arange(start=start[0], stop=maxs[1], step=step[0]), xmin=mins[0], xmax=maxs[0], **kwargs)
     ax.vlines(x=np.arange(start=start[1], stop=maxs[0], step=step[1]), ymin=mins[1], ymax=maxs[1], **kwargs)
@@ -312,7 +299,7 @@ def hist_vlines(x, name, bins=100,
 
     perc_i = []
     if hl_idx is not None:
-        hl_idx, hl_color, hl_name = scalar2array(hl_idx, hl_color, hl_name, shape=np.size(hl_idx))
+        hl_idx, hl_color, hl_name = np2.scalar2array(hl_idx, hl_color, hl_name, shape=np.size(hl_idx))
         for i, c, n in zip(hl_idx, hl_color, hl_name):
             perc_i.append(np.sum(x[i] > x))
             label = None if n is None else f"{n} | {perc_i[-1]} / {len(x)}"
@@ -338,7 +325,7 @@ def correlation_plot(a, b, name_a, name_b,
     if ax is None:
         fig, ax = new_fig(width=10, title=f"Correlation: {name_a} | {name_b}")
 
-    a, b = atleast_tuple(a, b, convert=False)
+    a, b = ltd.atleast_tuple(a, b, convert=False)
 
     a_all = np.concatenate(a)
     b_all = np.concatenate(b)
@@ -346,7 +333,7 @@ def correlation_plot(a, b, name_a, name_b,
     limits = ((np.percentile(a_all, lower_perc), np.percentile(a_all, upper_perc)),
               (np.percentile(b_all, lower_perc), np.percentile(b_all, upper_perc)))
 
-    limits = add_safety_limits(limits=limits, factor=0.01)
+    limits = np2.add_safety_limits(limits=limits, factor=0.01)
 
     if regression_line:
         s, i, r, p, _ = linregress(a_all, b_all)
@@ -360,7 +347,7 @@ def correlation_plot(a, b, name_a, name_b,
         r = None
 
     labels, colors, markers, markersizes, alphas, zorders = \
-        scalar2array(labels, colors, markers, markersizes, alphas, zorders, shape=len(a))
+        np2.scalar2array(labels, colors, markers, markersizes, alphas, zorders, shape=len(a))
 
     for i, (aa, bb, la, co, ma, ms, al, zo) in enumerate(zip(a, b,
                                                              labels, colors, markers, markersizes, alphas, zorders)):
@@ -388,7 +375,7 @@ def plot_circles(x, r,
                  **kwargs):
     # https://stackoverflow.com/questions/48172928/scale-matplotlib-pyplot-axes-scatter-markersize-by-x-scale
     x = np.reshape(x, (-1, 2))
-    r = scalar2array(r, shape=len(x))
+    r = np2.scalar2array(r, shape=len(x))
 
     if h is None:
         h = []
@@ -414,7 +401,7 @@ def plot_colored_segments(ax, x, y, c, a, **kwargs):
     n = len(x)
     assert len(x)-1 == len(c)
 
-    c, a = scalar2array(c, a, shape=n-1)
+    c, a = np2.scalar2array(c, a, shape=n-1)
     for i in range(n-1):
         ax.plot(x[i:i+2], y[i:i+2], color=c[i], alpha=a[i], **kwargs)
 

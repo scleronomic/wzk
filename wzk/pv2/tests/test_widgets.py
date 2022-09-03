@@ -15,11 +15,7 @@ def test_add_rhs_widget():
 
     h = plot_frames(pl=pl, f=np.eye(4), scale=scale)
 
-    def update(oxyz):
-        o, xyz = oxyz
-        f = np.eye(4)
-        f[:3, :3] = xyz
-        f[:3, -1] = o
+    def update(f):
         plot_frames(f=f, h=h, scale=scale)
 
     RHSWidget(pl=pl, origin=origin0, scale=scale, callback=update)

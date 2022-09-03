@@ -49,4 +49,4 @@ def noise(shape, scale, mode='normal'):
     elif mode == 'normal':
         return np.random.normal(loc=0, scale=scale, size=shape)
     else:
-        raise ValueError(f"Unknown mode {mode}")
+        raise ValueError(f"Unknown mode '{mode}'")

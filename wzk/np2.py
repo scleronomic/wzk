@@ -890,7 +890,7 @@ def __mode2offset(voxel_size, mode='c'):
     elif mode == 'b':
         return 0
     else:
-        raise NotImplementedError(f"Unknown offset mode{mode}")
+        raise NotImplementedError(f"Unknown mode: '{mode}'")
 
 
 def grid_x2i(x, limits, shape):
@@ -929,6 +929,17 @@ def add_safety_limits(limits, factor):
     diff = np.diff(limits, axis=-1)[..., 0]
     return np.array([limits[..., 0] - factor * diff,
                      limits[..., 1] + factor * diff]).T
+
+
+def create_grid(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
+    ll, ur, n, pad = np.atleast_1d(ll, ur, n, pad)
+
+    w = ur - ll
+    s = (w - pad*(n-1))/n
+
+    x = ll[0] + np.arange(n[0])*(s[0]+pad[0])
+    y = ll[1] + np.arange(n[1])*(s[1]+pad[1])
+    return (x, y), s
 
 
 #
@@ -991,6 +1002,27 @@ def round2(x,
 
     except (TypeError, np.core._exceptions.UFuncTypeError):
         return np.array(x)
+
+
+def clip2(x, clip, mode, axis=-1):
+    if mode:
+        if mode == 'value':
+            return np.clip(x, a_min=-clip, a_max=+clip)
+
+        elif mode == 'norm':
+            x = x.copy()
+            n = np.linalg.norm(x, axis=axis, keepdims=True)
+            b = n > clip
+            x[b] = x[b] * (clip / n[b])
+            return x
+
+        elif mode == 'norm-force':
+            n = np.linalg.norm(x, axis=axis, keepdims=True)
+            return x * (clip / n)
+
+        else:
+            raise ValueError(f"Unknown mode: '{mode}'")
+    return x
 
 
 def test_construct_array():
