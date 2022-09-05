@@ -167,10 +167,9 @@ def print_correlation(bool_lists, names, dec=4):
     return total
 
 
-def print2(*args, verbose=None, level=0,
+def print2(*args, verbose=None,
            sep=' ', end='\n', file=None, flush=False):
-    v = verbose_level_wrapper(verbose=verbose, level=level)
-    v.level = max(0, level)
+    v = verbose_level_wrapper(verbose=verbose)
 
     if v.verbose > 0:
         args = [str(a) for a in args]
@@ -179,7 +178,7 @@ def print2(*args, verbose=None, level=0,
 
 
 def print_array_3d(array_3d,
-                   verbose=None, level=0):
+                   verbose=None):
     l, k, n = array_3d.shape
     s = [''] * k
     for ll in range(l):
@@ -191,7 +190,7 @@ def print_array_3d(array_3d,
         for kk in range(k):
             s[kk] += ss[kk]
 
-    print2('\n'.join(s), verbose=verbose, level=level)
+    print2('\n'.join(s), verbose=verbose)
 
 
 def clear_previous_line():
@@ -262,6 +261,11 @@ class Verbosity:
             other = other.verbose
         res = self.copy()
         res.verbose -= other
+        return res
+
+    def add_level(self, other_level):
+        res = self.copy()
+        res.level += other_level
         return res
 
     def copy(self):
