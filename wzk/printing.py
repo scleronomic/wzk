@@ -146,8 +146,7 @@ def print_stats(*args, names=None, dec=4):
 
 
 def print_stats_bool(b, name='', dec=4):
-    b = np.array(b)
-    print(f"{name}: {b.sum()}/{len(b)} = {b.mean():.{dec}f}")
+    print(f"{name}: {np.sum(b)}/{len(b)} = {np.mean(b):.{dec}f}")
 
 
 def print_correlation(bool_lists, names, dec=4):

@@ -277,8 +277,12 @@ def bytes2values(value, column: str):
 
 
 def delete_tables(file, tables):
+
+    tables_old = get_tables(file=file)
     tables = atleast_list(tables, convert=False)
+    print(f"delete_tables {file} {tables}")
     for t in tables:
+        assert t in tables_old, f"table {t} not in {tables_old}"
         execute(file=file, query=f"DROP TABLE {t}")
     vacuum(file=file)
 
@@ -347,7 +351,7 @@ def copy_table(file, table_src, table_dst, columns=None, dtypes=None, order_by=N
 
 
 def sort_table(file, table, order_by):
-    print(f'sort {file} : {table}')
+    print(f"sort file: '{file}' | table:'{table}'")
     alter_table(file=file, table=table, columns=None, dtypes=None, order_by=order_by)
 
 
