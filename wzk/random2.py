@@ -55,7 +55,7 @@ def noise(shape, scale, mode='normal'):
 def get_n_in2(n_in, n_out,
               n_total, n_current):
     safety_factor = 1.01
-    max_current_factor = 16
+    max_current_factor = 128
 
     if n_out == 0:
         n_in2 = n_in*2

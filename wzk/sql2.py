@@ -239,10 +239,17 @@ def integrity_check(file):
     return c.values[0][0]
 
 
-def concatenate_tables(file, table, table2, file2=None, lock=None):
+def concatenate_tables(file, table, table2=None, file2=None, lock=None):
+    if table2 is None:
+        assert file2 is not None
+        table2 = table
 
     if file2 is None:
         execute(file=file, query=f"INSERT INTO {table} SELECT * FROM {table2}", lock=lock)
+
+    elif isinstance(file2, list):
+        for f in file2:
+            concatenate_tables(file=file, table=table, table2=table2, file2=f, lock=lock)
 
     else:
 
