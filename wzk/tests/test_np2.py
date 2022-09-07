@@ -1,4 +1,7 @@
 from unittest import TestCase
+
+import numpy as np
+
 from wzk.np2 import *
 from wzk.testing import compare_arrays
 
@@ -129,3 +132,11 @@ class Test(TestCase):
                          [106, 107, 108, 1106, 1107, 1108, 2106, 2107, 2108],
                          [109, 110, 111, 1109, 1110, 1111, 2109, 2110, 2111]])
         self.assertTrue(np.array_equal(res, true))
+
+    def test_construct_array(self):
+        b = construct_array(shape=10, val=[1, 2, 3], idx=[2, 4, 5], dtype=None, insert_mode=None)
+        self.assertTrue(np.allclose(b, [0, 0, 1, 0, 2, 3, 0, 0, 0, 0]))
+
+
+if __name__ == '__main__':
+    pass

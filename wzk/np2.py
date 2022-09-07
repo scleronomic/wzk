@@ -166,7 +166,7 @@ def axis_wrapper(axis, n_dim, invert=False):
         return tuple(axis)
 
 
-def shape_wrapper(shape=None):
+def shape_wrapper(shape=None) -> tuple:
     """
     Note the inconsistent usage of shape / shape as function arguments in numpy.
     https://stackoverflow.com/questions/44804965/numpy-size-vs-shape-in-function-arguments
@@ -174,10 +174,16 @@ def shape_wrapper(shape=None):
     """
     if shape is None:
         return ()
+
     elif isinstance(shape, int):
         return shape,
+
     elif isinstance(shape, tuple):
         return shape
+
+    elif isinstance(shape, (list, np.ndarray)):
+        return tuple(shape)
+
     else:
         raise ValueError(f"Unknown 'shape': {shape}")
 
@@ -187,14 +193,14 @@ def get_subshape(shape, axis):
 
 
 def align_shapes(a, b):
-    # a = np.array((2, 3, 4, 3, 5, 1))
-    # b = np.array((3, 4, 3))
-    # -> array([-1, 1, 1, 1, -1, -1])
+    """
+    a = np.array((2, 3, 4, 3, 5, 1))
+    b = np.array((3, 4, 3))
+    -> array([-1, 1, 1, 1, -1, -1])
+    """
     idx = find_subarray(a=a, b=b).item()
-
-    aligned_shape = np.ones(len(a), dtype=int)
-    aligned_shape[:idx] = -1
-    aligned_shape[idx+len(b):] = -1
+    aligned_shape = np.full(shape=len(a), fill_value=-1, dtype=int)
+    aligned_shape[idx:idx+len(b)] = 1
     return aligned_shape
 
 
@@ -1023,12 +1029,3 @@ def clip2(x, clip, mode, axis=-1):
         else:
             raise ValueError(f"Unknown mode: '{mode}'")
     return x
-
-
-def test_construct_array():
-    b = construct_array(shape=10, val=[1, 2, 3], idx=[2, 4, 5], dtype=None, insert_mode=None)
-    print(b)
-
-
-if __name__ == '__main__':
-    test_construct_array()

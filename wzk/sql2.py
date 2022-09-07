@@ -197,7 +197,7 @@ def get_columns(file, table, mode: object = None):
 
 def rename_tables(file: str, tables: dict) -> None:
     old_names = get_tables(file=file)
-
+    print(f"rename_tables file:'{file}' {tables}")
     with open_db_connection(file=file, close=True) as con:
         cur = con.cursor()
         for old in old_names:
@@ -207,13 +207,12 @@ def rename_tables(file: str, tables: dict) -> None:
 
 
 def rename_columns(file: str, table: str, columns: dict) -> None:
+    print(f"rename_columns file:'{file}' table:'{table}' {columns}")
     with open_db_connection(file=file, close=True) as con:
         cur = con.cursor()
         for old in columns:
             new = columns[old]
             cur.execute(f"ALTER TABLE `{table}` RENAME COLUMN `{old}` TO `{new}`")
-
-    print(get_columns(file=file, table=table))
 
 
 def get_n_rows(file, table):
@@ -236,7 +235,7 @@ def get_n_samples(file, i_worlds=-1):
 def integrity_check(file):
     with open_db_connection(file=file, close=True, lock=None) as con:
         c = pd.read_sql_query(con=con, sql=f"pragma integrity_check")
-    print(c)
+    print(f"integrity_check file:'{file}' -> {c}")
     return c.values[0][0]
 
 
@@ -280,7 +279,7 @@ def delete_tables(file, tables):
 
     tables_old = get_tables(file=file)
     tables = atleast_list(tables, convert=False)
-    print(f"delete_tables {file} {tables}")
+    print(f"delete_tables file:'{file}' tables:{tables}")
     for t in tables:
         assert t in tables_old, f"table {t} not in {tables_old}"
         execute(file=file, query=f"DROP TABLE {t}")
@@ -289,7 +288,7 @@ def delete_tables(file, tables):
 
 def delete_rows(file: str, table: str, rows, lock=None):
     batch_size = int(1e5)
-    print(f"delete_rows {file} {table}")
+    print(f"delete_rows 'file':{file} table:'{table}' rows:{rows}")
     
     if batch_size is None or batch_size > len(rows):
         rows = rows2sql(rows, dtype=str)
@@ -351,7 +350,7 @@ def copy_table(file, table_src, table_dst, columns=None, dtypes=None, order_by=N
 
 
 def sort_table(file, table, order_by):
-    print(f"sort file: '{file}' | table:'{table}'")
+    print(f"sort_table file:'{file}' table:'{table}'")
     alter_table(file=file, table=table, columns=None, dtypes=None, order_by=order_by)
 
 

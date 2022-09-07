@@ -1,10 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from wzk.np2 import shape_wrapper
-from wzk.random2 import noise, random_uniform_ndim
-from wzk.geometry import sample_points_on_sphere_3d
-from wzk.trajectory import get_substeps
+from wzk import np2, random2, geometry, trajectory
 from wzk.math2 import angle2minuspi_pluspi  # noqa
 
 
@@ -123,7 +120,7 @@ def trans_matrix2frame(trans=None, matrix=None):
 
 
 def initialize_frames(shape, n_dim, mode='hm', dtype=None, order=None):
-    f = np.zeros((shape_wrapper(shape) + (n_dim+1, n_dim+1)), dtype=dtype, order=order)
+    f = np.zeros((np2.shape_wrapper(shape) + (n_dim+1, n_dim+1)), dtype=dtype, order=order)
     if mode == 'zero':
         pass
     elif mode == 'eye':
@@ -189,8 +186,8 @@ def sample_matrix_noise(shape=None, scale=0.01, mode='normal'):
     samples rotation matrix with the absolute value of the rotation relates to 'scale' in rad
     """
 
-    rv = sample_points_on_sphere_3d(shape)
-    rv *= noise(shape=rv.shape[:-1], scale=scale, mode=mode)[..., np.newaxis]
+    rv = geometry.sample_points_on_sphere_3d(shape)
+    rv *= random2.noise(shape=rv.shape[:-1], scale=scale, mode=mode)[..., np.newaxis]
     return rotvec2matrix(rotvec=rv)
 
 
@@ -212,7 +209,7 @@ def round_matrix(matrix, decimals=0):
 
 def sample_frames(x_low=np.zeros(3), x_high=np.ones(3), shape=None):
     assert len(x_low) == 3  # n_dim == 3
-    return trans_quat2frame(trans=random_uniform_ndim(low=x_low, high=x_high, shape=shape),
+    return trans_quat2frame(trans=random2.random_uniform_ndim(low=x_low, high=x_high, shape=shape),
                             quat=sample_quaternions(shape=shape))
 
 
@@ -220,9 +217,16 @@ def apply_noise(f, trans, rot, mode='normal'):
     s = tuple(np.array(np.shape(f))[:-2])
 
     f2 = f.copy()
-    f2[..., :3, 3] += noise(shape=s + (3,), scale=trans, mode=mode)
+    f2[..., :3, 3] += random2.noise(shape=s + (3,), scale=trans, mode=mode)
     f2[..., :3, :3] = f2[..., :3, :3] @ sample_matrix_noise(shape=s, scale=rot, mode=mode)
     return f2
+
+
+def sample_around_f(f, trans, rot, mode='normal', shape=None):
+    shape = np2.shape_wrapper(shape)
+    f0 = np.zeros(shape+f.shape)
+    f0[:] = f.copy()
+    return apply_noise(f=f0, trans=trans, rot=rot, mode=mode)
 
 
 def sample_frame_noise(trans, rot, shape=None, mode='normal'):

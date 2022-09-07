@@ -21,9 +21,9 @@ def make_even(x, rounding=+1):
 
 
 def make_even_odd(x, mode, rounding=+1):
-    if mode == 'even':
+    if mode.lower() == 'even' or mode.lower() == 'e':
         return make_even(x=x, rounding=rounding)
-    elif mode == 'odd':
+    elif mode.lower() == 'odd' or mode.lower() == 'o':
         return make_odd(x=x, rounding=rounding)
     else:
         raise ValueError
@@ -327,8 +327,10 @@ def d_rosenbrock2d(xy, a=1, b=100):
     return np.concatenate((dx[..., np.newaxis], dy[..., np.newaxis]), axis=-1)
 
 
-def bisection(f, a, b, tol):
+def bisection(f, a, b, tol, verbose=0, __depth=0):
     """
+    aka binary search
+
     https://pythonnumericalmethods.berkeley.edu/notebooks/chapter19.03-Bisection-Method.html
     Approximates a root of f bounded by a and b to within tolerance
     | f(m) | < tol with m the midpoint between a and b.
@@ -336,24 +338,45 @@ def bisection(f, a, b, tol):
     Recursive implementation
     """
     # check if a and b bound a root
-    if np.sign(f(a)) == np.sign(f(b)):
-        raise Exception("The scalars a and b do not bound a root")
+    max_depth = 50
+    assert a < b
+
+    fa, fb = f(a), f(b)
+
+    # HEURISTIC
+    if np.sign(fa) == np.sign(fb):
+        print(f"The scalars a {a} and b {b} do not bound a root.\n"
+              f"A heuristic is tried to shift the limits, but this is not guaranteed to work; "
+              f"only if the function is monotonic.\n"
+              f"Check the limits again manually!.")
+
+        if (np.sign(fa) == +1 and fa < fb) or (np.sign(fa) == -1 and fa > fb):
+            return bisection(f=f, a=a/2, b=a, tol=tol, verbose=verbose, __depth=__depth + 1)
+        else:
+            return bisection(f=f, a=b, b=2*b, tol=tol, verbose=verbose, __depth=__depth + 1)
+
+        # else:
+        #     if fa < fb:
+        #         bisection(f=f, a=b, b=2*b, tol=tol)
+        #     else:
+        #         bisection(f=f, a=a/2, b=a, tol=tol)
 
     # get midpoint
     m = (a + b) / 2
+    fm = f(m)
 
-    if np.abs(f(m)) < tol:
-        # stopping condition, report m as root
+    if verbose > 0:
+        print(f"depth {__depth}: a {a}, b {b}, m {m}, f(m) {fm}")
+
+    if np.abs(fm) < tol or __depth > max_depth:  # stopping condition, report m as root
+        print(m)
         return m
 
-    elif np.sign(f(a)) == np.sign(f(m)):
-        # case where m is an improvement on a
-        # Make recursive call with a = m
-        return bisection(f, m, b, tol)
-    elif np.sign(f(b)) == np.sign(f(m)):
-        # case where m is an improvement on b
-        # Make recursive call with b = m
-        return bisection(f, a, m, tol)
+    elif np.sign(fa) == np.sign(fm):  # m is an improvement on a
+        return bisection(f=f, a=m, b=b, tol=tol, verbose=verbose, __depth=__depth+1)
+
+    elif np.sign(fb) == np.sign(fm):  # m is an improvement on b
+        return bisection(f=f, a=a, b=m, tol=tol, verbose=verbose, __depth=__depth + 1)
 
 
 # Derivative
