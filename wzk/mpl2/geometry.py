@@ -62,24 +62,38 @@ def draw_rays(xy, radius0, radius1, theta0=0., theta1=None, n=1, ax=None, **kwar
     return h
 
 
-def plot_coordinate_frame(ax=None, x=None, dcm=None,
-                          color='k', mode='quiver', marker=None,
-                          h=None, **kwargs):
+def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None,
+                           color='k', mode='quiver', marker=None,
+                           h=None, **kwargs):
     """
     Assume matrix is a homogeneous matrix
 
     Note: the columns of the frame are the vectors x, y, z in the base coordinate frame
     """
 
-    if x is None and dcm is None:
+    if x is None and dcm is None and f is None:
         raise ValueError
+    if f is not None:
+        x, dcm = f[..., :-1, -1], f[..., :-1, :-1]
     elif x is None:
-        x = np.zeros(3)
+        x = np.zeros(1, 3)
     elif dcm is None:
-        dcm = np.eye(3)
+        dcm = np.eye(3)[np.newaxis, :, :]
 
-    n_dim = min(len(x), len(dcm))
-    x = x[:n_dim]
+    n_dim = min(x.shape[-1], dcm.shape[-1])
+    x = x[..., :n_dim]
+    dcm = dcm[..., :n_dim, :n_dim]
+
+    n_samples = max(x.shape[0], dcm.shape[0])
+
+    if n_samples > 1:
+        if h is None:
+            h = [None] * n_samples
+        else:
+            assert len(h) == n_samples
+        return [plot_coordinate_frames(ax=ax, x=x[i], dcm=dcm[i], color=color, mode=mode, marker=marker, h=h[i],
+                                       **kwargs)
+                for i in range(n_samples)]
 
     if not isinstance(color, list):
         color = [color]
@@ -89,8 +103,6 @@ def plot_coordinate_frame(ax=None, x=None, dcm=None,
     if h is not None:
         for i, hh in enumerate(h):
             plotting.quiver(ax=ax, xy=x, uv=dcm[:, i], color=color[i], h=hh)
-            # h[i].set_segments([np.array([x,
-            #                              x + dcm[:, i]])])
         return h
 
     h = []

@@ -13,10 +13,10 @@ def test_add_rhs_widget():
     scale = 0.2
     pl = Plotter()
 
-    h = plot_frames(pl=pl, f=np.eye(4), scale=scale)
+    h = plot_coordinate_frames(pl=pl, f=np.eye(4), scale=scale)
 
     def update(f):
-        plot_frames(f=f, h=h, scale=scale)
+        plot_coordinate_frames(f=f, h=h, scale=scale)
 
     RHSWidget(pl=pl, origin=origin0, scale=scale, callback=update)
     RHSWidget(pl=pl, origin=origin1, scale=.3)

@@ -3,7 +3,8 @@ from scipy.spatial.transform import Rotation
 
 from wzk import np2, random2, geometry, trajectory
 from wzk.math2 import angle2minuspi_pluspi  # noqa
-
+from wzk.spatial.util import initialize_frames, fill_frames_trans
+from wzk.spatial.transform_2d import theta2dcm
 
 # angle axis representation is like an onion, the singularity is the boarder to the next 360 shell
 # 0 is 1360 degree away from the next singularity -> nice  # what???
@@ -75,9 +76,7 @@ def __shape_wrapper(a, b):
     return a.shape if a is not None else b.shape
 
 
-def fill_frames_trans(f, trans=None):
-    if trans is not None:
-        f[..., :-1, -1] = trans
+
 
 
 def trans_quat2frame(trans=None, quat=None):
@@ -116,20 +115,6 @@ def trans_matrix2frame(trans=None, matrix=None):
     fill_frames_trans(f=f, trans=trans)
     if matrix is not None:
         f[..., :-1, :-1] = matrix
-    return f
-
-
-def initialize_frames(shape, n_dim, mode='hm', dtype=None, order=None):
-    f = np.zeros((np2.shape_wrapper(shape) + (n_dim+1, n_dim+1)), dtype=dtype, order=order)
-    if mode == 'zero':
-        pass
-    elif mode == 'eye':
-        for i in range(f.shape[-1]):
-            f[..., i, i] = 1
-    elif mode == 'hm':
-        f[..., -1, -1] = 1
-    else:
-        raise ValueError(f"Unknown mode '{mode}'")
     return f
 
 
@@ -181,14 +166,25 @@ def sample_matrix(shape=None):
     return quaternions2matrix(quat=quat)
 
 
-def sample_matrix_noise(shape=None, scale=0.01, mode='normal'):
+def sample_matrix_noise(shape=None, scale=0.01, mode='normal', n_dim=3):
     """
     samples rotation matrix with the absolute value of the rotation relates to 'scale' in rad
     """
 
-    rv = geometry.sample_points_on_sphere_3d(shape)
-    rv *= random2.noise(shape=rv.shape[:-1], scale=scale, mode=mode)[..., np.newaxis]
-    return rotvec2matrix(rotvec=rv)
+    if n_dim == 3:
+        rv = geometry.sample_points_on_sphere_3d(shape)
+        rv *= random2.noise(shape=rv.shape[:-1], scale=scale, mode=mode)[..., np.newaxis]
+        return rotvec2matrix(rotvec=rv)
+
+    elif n_dim == 2:
+        theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
+        if shape[-1] == 1:
+            theta = theta[..., np.newaxis]
+
+        return theta2dcm(theta=theta)
+
+    else:
+        raise ValueError(f"n_dim={n_dim} not supported, only [2, 3]")
 
 
 def round_matrix(matrix, decimals=0):
@@ -214,11 +210,12 @@ def sample_frames(x_low=np.zeros(3), x_high=np.ones(3), shape=None):
 
 
 def apply_noise(f, trans, rot, mode='normal'):
+    n_dim = f.shape[-1] - 1
     s = tuple(np.array(np.shape(f))[:-2])
 
     f2 = f.copy()
-    f2[..., :3, 3] += random2.noise(shape=s + (3,), scale=trans, mode=mode)
-    f2[..., :3, :3] = f2[..., :3, :3] @ sample_matrix_noise(shape=s, scale=rot, mode=mode)
+    f2[..., :-1, -1] += random2.noise(shape=s + (n_dim,), scale=trans, mode=mode)
+    f2[..., :-1, :-1] = f2[..., :-1, :-1] @ sample_matrix_noise(shape=s, scale=rot, mode=mode, n_dim=n_dim)
     return f2
 
 
@@ -257,7 +254,7 @@ def rot_z(gamma):  # theta
 
 def get_frames_between(f0, f1, n):
 
-    x = get_substeps(x=np.concatenate((f0[:-1, -1:], f1[:-1, -1:]), axis=1).T, n=n-1,)
+    x = trajectory.get_substeps(x=np.concatenate((f0[:-1, -1:], f1[:-1, -1:]), axis=1).T, n=n-1,)
 
     dm = f0[:-1, :-1].T @ f1[:-1, :-1]
     rv = matrix2rotvec(dm)
@@ -288,7 +285,7 @@ def test_get_frames_between():
     assert np.allclose(f1, f[-1])
     from wzk import pv2
     pl = pv2.Plotter()
-    pv2.plot_frames(pl=pl, f=f, scale=0.2)
+    pv2.plot_coordinate_frames(pl=pl, f=f, scale=0.2)
     pl.show()
 
 

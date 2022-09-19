@@ -1,6 +1,14 @@
 import numpy as np
 
-from wzk.spatial.transform import initialize_frames, fill_frames_trans
+from wzk.spatial.util import initialize_frames, fill_frames_trans
+
+
+def theta2dcm(theta):
+    theta, shape = __theta_wrapper(theta)
+
+    dcm = initialize_frames(shape=shape, n_dim=1)
+    fill_frames_2d_sc(f=dcm, sin=np.sin(theta), cos=np.cos(theta))
+    return dcm
 
 
 def v2dcm(v):
@@ -33,11 +41,10 @@ def __theta_wrapper(theta):
 
 def trans_theta2frame(trans=None, theta=None):
     theta, shape = __theta_wrapper(theta)
-    sin, cos = np.sin(theta), np.cos(theta)
 
     f = initialize_frames(shape=shape, n_dim=2)
     fill_frames_trans(f=f, trans=trans)
-    fill_frames_2d_sc(f=f, sin=sin, cos=cos)
+    fill_frames_2d_sc(f=f, sin=np.sin(theta), cos=np.cos(theta))
     return f
 
 

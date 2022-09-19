@@ -243,16 +243,16 @@ def plot_spheres(x, r,
     return h
 
 
-def plot_frames(f,
-                scale=1., shift=np.zeros(3),
-                pl=None, h=None,
-                color=None, opacity=None, **kwargs):
+def plot_coordinate_frames(f,
+                           scale=1., shift=np.zeros(3),
+                           pl=None, h=None,
+                           color=None, opacity=None, **kwargs):
 
     if np.ndim(f) == 3:
         n = len(f)
         h, color, opacity = np2.scalar2array(h, color, opacity, shape=n, safe=False)
-        h = [plot_frames(f=fi, pl=pl, h=hi, color=ci,  opacity=oi, scale=scale, shift=shift,
-                         **kwargs) for fi, hi, ci, oi in zip(f, h, color, opacity)]
+        h = [plot_coordinate_frames(f=fi, pl=pl, h=hi, color=ci,  opacity=oi, scale=scale, shift=shift,
+                                    **kwargs) for fi, hi, ci, oi in zip(f, h, color, opacity)]
         return h
 
     else:

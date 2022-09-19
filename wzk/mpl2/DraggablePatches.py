@@ -4,7 +4,7 @@ from typing import Callable
 
 from wzk.np2 import scalar2array, max_size, unify
 from wzk.mpl2.axes import get_aspect_ratio
-from wzk.mpl2.geometry import plot_coordinate_frame
+from wzk.mpl2.geometry import plot_coordinate_frames
 from wzk.mpl2.figure import plt
 
 from wzk.spatial.transform_2d import v2dcm
@@ -392,8 +392,8 @@ class DraggableFrame(DraggableCircleList):
                                                                       self.size_radius_handle * self.size]),
                          **kwargs)
 
-        self.h = plot_coordinate_frame(ax=ax, x=xy, dcm=self.__v2dcm(self.v),
-                                       mode='quiver', zorder=10, **kwargs)
+        self.h = plot_coordinate_frames(ax=ax, x=xy, dcm=self.__v2dcm(self.v),
+                                        mode='quiver', zorder=10, **kwargs)
         super().add_callback_drag(self.update_x, idx=0)
         super().add_callback_drag(self.update_v, idx=1)
 
@@ -416,7 +416,7 @@ class DraggableFrame(DraggableCircleList):
     def __update(self, xc, v):
         xv = self.__x_v2xv(x=xc, v=v)
         self.set_xy(xy=xv, idx=1)
-        self.h = plot_coordinate_frame(x=xc, dcm=self.__v2dcm(v), h=self.h)
+        self.h = plot_coordinate_frames(x=xc, dcm=self.__v2dcm(v), h=self.h)
 
     def get_dcm(self):
         return v2dcm(self.v)

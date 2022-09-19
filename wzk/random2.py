@@ -53,9 +53,9 @@ def noise(shape, scale, mode='normal'):
 
 
 def get_n_in2(n_in, n_out,
-              n_total, n_current):
-    safety_factor = 1.01
-    max_current_factor = 128
+              n_total, n_current,
+              safety_factor=1.01,
+              max_factor=128):
 
     if n_out == 0:
         n_in2 = n_in*2
@@ -64,20 +64,20 @@ def get_n_in2(n_in, n_out,
     # n_in2 = int(n_in2)
     # print(f"total:{n_total} | current:{n_current} | new:{n_out}/{n_in} -> {n_in2}")
 
-    n_in2 = min(n_total * max_current_factor, n_in2)  # otherwise it can grow up to 2**maxiter
+    n_in2 = min(n_total * max_factor, n_in2)  # otherwise it can grow up to 2**maxiter
     n_in2 = max(int(np.ceil(safety_factor * n_in2)), 1)
     return n_in2
 
 
 def fun2n(fun, n,
-          max_iter=20, verbose=0):
+          max_iter=100, max_factor=128, verbose=0):
 
     x = x_new = fun(n)
 
     n_in = n
     for i in range(max_iter):
 
-        n_in = get_n_in2(n_in=n_in, n_out=len(x_new), n_total=n, n_current=len(x))
+        n_in = get_n_in2(n_in=n_in, n_out=len(x_new), n_total=n, n_current=len(x), max_factor=max_factor)
 
         x_new = fun(n_in)
         x = np.concatenate((x, x_new), axis=0)
@@ -89,4 +89,5 @@ def fun2n(fun, n,
             return x[:n]
 
     else:
-        raise RuntimeError('Maximum number of iterations reached!')
+        Warning(f"Maximum number of iterations reached! Only {len(x)} samples could be generated")
+        return x

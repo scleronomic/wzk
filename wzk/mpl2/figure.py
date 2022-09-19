@@ -16,6 +16,21 @@ from matplotlib import figure
 shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / math2.golden_ratio]
 shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 16) / math2.golden_ratio]
 
+axes_type = mpl.axes.Axes
+
+def ax_wrapper(ax: Union[dict, mpl.axes.Axes]):
+    if ax is None:
+        return new_fig()[1]
+
+    elif isinstance(ax, dict):
+        return new_fig(**ax)[1]
+
+    elif isinstance(ax, mpl.axes.Axes):
+        return ax
+
+    else:
+        raise ValueError
+
 
 def figsize_wrapper(width, height=None, height_ratio=1/math2.golden_ratio):
     # https://www.ieee.org/content/dam/ieee-org/ieee/web/org/pubs/eic-guide.pdf

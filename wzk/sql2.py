@@ -410,8 +410,12 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
 
     else:
         with open_db_connection(file=file, close=True, lock=lock) as con:
-            df = pd.read_sql_query(con=con, sql=f"SELECT {columns_str} FROM {table} WHERE ROWID in ({rows})",
-                                   index_col=None)
+            try:
+                df = pd.read_sql_query(con=con, sql=f"SELECT {columns_str} FROM {table} WHERE ROWID in ({rows})",
+                                       index_col=None)
+            except pd.io.sql.DatabaseError:
+                print(f"file '{file}' table '{table}'")
+                raise pd.io.sql.DatabaseError
 
     value_list = []
     if np.any(columns == '*'):
@@ -473,6 +477,10 @@ def df2sql(df, file, table, dtype=None, if_exists='fail'):
     """
     if df is None:
         print('No DataFrame was provided...')
+        return
+
+    elif len(df) == 0:
+        print('DataFrame is empty...')
         return
 
     data = df.to_dict(orient='list')

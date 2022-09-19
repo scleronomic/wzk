@@ -103,3 +103,26 @@ def __arr2rgba(arr, cmap, vmin=None, vmax=None):
         sm = cm.ScalarMappable(cmap=cmap, norm=norm)
 
     return sm.to_rgba(arr, bytes=True, norm=True)
+
+
+def c_list_wrapper(c, n=20):
+    c_list_dict = {'tum_blue443': [pallet_tum['blue_4'],
+                                   pallet_tum['blue_4'],
+                                   pallet_tum['blue_3']],
+                   'tum_blue4432': [pallet_tum['blue_4'],
+                                    pallet_tum['blue_4'],
+                                    pallet_tum['blue_3'],
+                                    pallet_tum['blue_2']],
+                   'k_b_p_t_c_y': ['black', 'blue', 'xkcd:purple', 'xkcd:teal', 'cyan', 'yellow']}
+
+    if c is None:
+        c = 'tum_blue443'
+
+    if c in c_list_dict:
+        c_list = c_list_dict[c]
+    elif isinstance(c, str):
+        c_list = [c]
+    else:
+        raise ValueError
+    c_list *= n // len(c_list) + 1
+    return c_list

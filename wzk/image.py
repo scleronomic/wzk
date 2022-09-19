@@ -386,7 +386,7 @@ def sample_from_img(img, range, n, replace=False):   # noqa
 
 
 # Image Compression <-> Decompression
-def img2compressed(img, n_dim=-1, level=9):
+def img2compressed(img, n_dim: int, level:int = 9):
     """
     Compress the given image with the zlib routine to a binary string.
     Level of compression can be adjusted. A timing with respect to different compression levels for decompression showed

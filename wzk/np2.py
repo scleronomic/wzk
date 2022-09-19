@@ -175,8 +175,8 @@ def shape_wrapper(shape=None) -> tuple:
     if shape is None:
         return ()
 
-    elif isinstance(shape, int):
-        return shape,
+    elif isinstance(shape, (int, np.int_)):
+        return int(shape),
 
     elif isinstance(shape, tuple):
         return shape

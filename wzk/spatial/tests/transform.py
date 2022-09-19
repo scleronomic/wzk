@@ -15,7 +15,7 @@ def understand_rotvec():
     f = spatial.trans_rotvec2frame(trans=x, rotvec=rv)
 
     pl = pv2.Plotter()
-    pv2.plot_frames(f=f, pl=pl)
+    pv2.plot_coordinate_frames(f=f, pl=pl)
     pl.add_axes_at_origin(labels_off=False)
 
     pl.show()

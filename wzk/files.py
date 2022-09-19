@@ -12,7 +12,9 @@ import numpy as np
 from wzk.printing import progress_bar
 from wzk.time2 import get_timestamp
 
-__pickle_extension = '.pkl'
+__pickle_extension_short = '.pkl'  # TODO  check for both and use mor consistently
+__pickle_extension_long = '.pickle'
+
 __open_cmd_dict = {'Linux': 'xdg-open',
                    'Darwin': 'open',
                    'Windows': 'start'}
@@ -66,16 +68,16 @@ def save_object2txt(obj, file: str):
 
 
 def save_pickle(obj, file: str):
-    if file[-4:] != __pickle_extension:
-        file += __pickle_extension
+    if file[-4:] != __pickle_extension_short:
+        file += __pickle_extension_short
 
     with open(file, 'wb') as f:
         pickle.dump(obj, f)
 
 
 def load_pickle(file: str):
-    if file[-4:] != __pickle_extension:
-        file += __pickle_extension
+    if file[-4:] != __pickle_extension_short:
+        file += __pickle_extension_short
 
     with open(file, 'rb') as f:
         ret_di = pickle.load(f)

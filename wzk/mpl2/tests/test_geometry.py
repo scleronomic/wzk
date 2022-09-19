@@ -78,10 +78,10 @@ class Test(unittest.TestCase):
         # 2D
         fig, ax = new_fig(aspect=1, title='2D Coordinate Frames')
 
-        h1 = plot_coordinate_frame(ax=ax, x=[1, 1], dcm=trans_theta2frame(theta=1)[:-1, :-1], color='bb')
-        h2 = plot_coordinate_frame(ax=ax, dcm=trans_theta2frame(theta=2)[:-1, :-1], color='ry')  # noqa
+        h1 = plot_coordinate_frames(ax=ax, x=[1, 1], dcm=trans_theta2frame(theta=1)[:-1, :-1], color='bb')
+        h2 = plot_coordinate_frames(ax=ax, dcm=trans_theta2frame(theta=2)[:-1, :-1], color='ry')  # noqa
 
-        plot_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
+        plot_coordinate_frames(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
         # 3D
         fig, ax = new_fig(aspect=1, title='3D Coordinate Frames')
@@ -91,10 +91,10 @@ class Test(unittest.TestCase):
                                               [-1, 1]]), n_dim=3)
 
         dcm = sample_matrix()
-        h1 = plot_coordinate_frame(ax=ax, dcm=dcm)
-        h2 = plot_coordinate_frame(ax=ax, dcm=dcm)  # noqa
+        h1 = plot_coordinate_frames(ax=ax, dcm=dcm)
+        h2 = plot_coordinate_frames(ax=ax, dcm=dcm)  # noqa
 
-        plot_coordinate_frame(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
+        plot_coordinate_frames(h=h1, dcm=np.eye(3), x=np.ones(3) * 0.1)
 
         self.assertTrue(True)
 

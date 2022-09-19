@@ -1,7 +1,8 @@
 from .difference import *
+from . import transform_2d as twod
+
 from .transform import *
 
-from . import transform_2d as twod
 
 
 # Naming
