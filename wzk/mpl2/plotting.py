@@ -231,7 +231,10 @@ def quiver(xy, uv,
     else:
         h.set_offsets(xy)
         h.set_UVC(*uv.T)
-
+        if 'color' in kwargs:
+            h.set_color(kwargs['color'])
+        if 'alpha' in kwargs:
+            h.set_alpha(kwargs['alpha'])
     return h
 
 

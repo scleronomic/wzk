@@ -62,7 +62,7 @@ def draw_rays(xy, radius0, radius1, theta0=0., theta1=None, n=1, ax=None, **kwar
     return h
 
 
-def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None,
+def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None, scale=1.0,
                            color='k', mode='quiver', marker=None,
                            h=None, **kwargs):
     """
@@ -70,7 +70,6 @@ def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None,
 
     Note: the columns of the frame are the vectors x, y, z in the base coordinate frame
     """
-
     if x is None and dcm is None and f is None:
         raise ValueError
     if f is not None:
@@ -84,6 +83,8 @@ def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None,
     x = x[..., :n_dim]
     dcm = dcm[..., :n_dim, :n_dim]
 
+    x = x.reshape((-1, n_dim))
+    dcm = dcm.reshape((-1, n_dim, n_dim))
     n_samples = max(x.shape[0], dcm.shape[0])
 
     if n_samples > 1:
@@ -94,6 +95,9 @@ def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None,
         return [plot_coordinate_frames(ax=ax, x=x[i], dcm=dcm[i], color=color, mode=mode, marker=marker, h=h[i],
                                        **kwargs)
                 for i in range(n_samples)]
+
+    x = x[0]
+    dcm = dcm[0] * scale
 
     if not isinstance(color, list):
         color = [color]

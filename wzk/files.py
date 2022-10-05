@@ -68,7 +68,7 @@ def save_object2txt(obj, file: str):
 
 
 def save_pickle(obj, file: str):
-    if file[-4:] != __pickle_extension_short:
+    if file[-len(__pickle_extension_short):] != __pickle_extension_short:
         file += __pickle_extension_short
 
     with open(file, 'wb') as f:
@@ -76,12 +76,9 @@ def save_pickle(obj, file: str):
 
 
 def load_pickle(file: str):
-    if file[-4:] != __pickle_extension_short:
-        file += __pickle_extension_short
-
     with open(file, 'rb') as f:
-        ret_di = pickle.load(f)
-    return ret_di
+        res = pickle.load(f)
+    return res
 
 
 def list_files(directory: str):
