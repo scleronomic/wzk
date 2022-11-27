@@ -20,5 +20,7 @@ frankaemika07~=0.1.0
 cython~=0.29.27
 sympy~=1.9
 torchviz~=0.0.2
-ortools
+ortools~=9.4.1874
 pymesh
+einops~=0.6.0
+numba~=0.56.4

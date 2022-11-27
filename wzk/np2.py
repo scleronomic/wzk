@@ -1029,3 +1029,9 @@ def clip2(x, clip, mode, axis=-1):
         else:
             raise ValueError(f"Unknown mode: '{mode}'")
     return x
+
+
+def load_dict(file: str) -> dict:
+    d = np.load(file, allow_pickle=True).item()
+    d = dict(d) # noqa
+    return d

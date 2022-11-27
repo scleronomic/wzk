@@ -2,6 +2,7 @@
 
 import numpy as np
 from wzk.np2 import scalar2array
+
 from scipy.signal import savgol_filter as savgol
 from scipy.interpolate import interp1d
 
@@ -43,31 +44,31 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
         ValueError: If shape is not a multiple of res.
     """
 
-    if seed is not None:
-        np.random.seed(seed)
-
-    if tileable is None:
-        tileable = (False, False)
-
-    shape, res = np.atleast_1d(shape, res)
-    res = scalar2array(res, shape=2)
-    delta = res / shape
-    d = shape // res
+    shape, res, tileable, delta, d = __input_wrapper(n_dim=2, shape=shape, res=res, tileable=tileable, seed=seed)
 
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1, 2, 0) % 1
-
+    print('grid')
+    print(grid[:, :, 0])
     # Gradients
-    angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
+    angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1)).T  # .T only to make it comparable with matlab, remove at some point
+    angles = np.linspace(0, 2*np.pi,(res[0]+1)* (res[1]+1)).reshape(res[0]+1, res[1]+1).T
+    print('angles')
+    print(angles)
     gradients = np.dstack((np.cos(angles), np.sin(angles)))
     if tileable[0]:
         gradients[-1, :] = gradients[0, :]
     if tileable[1]:
         gradients[:, -1] = gradients[:, 0]
+    print('gradients0')
+    print(gradients[:, :, 0])
     gradients = gradients.repeat(d[0], 0).repeat(d[1], 1)
+
     g00 = gradients[:-d[0], :-d[1]]
     g10 = gradients[+d[0]:, :-d[1]]
     g01 = gradients[:-d[0], +d[1]:]
     g11 = gradients[+d[0]:, +d[1]:]
+    print('g11')
+    print(g11[:, -1, 0])
 
     # Ramps
     g0, g1 = grid[:, :, 0], grid[:, :, 1]
@@ -76,15 +77,37 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
     n01 = np.sum(np.dstack((g0,   g1-1)) * g01, 2)
     n11 = np.sum(np.dstack((g0-1, g1-1)) * g11, 2)
 
+    print('n11')
+    print(n11[-1, :])
     # Interpolation
     t = interpolant(grid)
     n0 = n00*(1-t[:, :, 0]) + t[:, :, 0]*n10
     n1 = n01*(1-t[:, :, 0]) + t[:, :, 0]*n11
+
+    from wzk import mpl2
+    fig, ax = mpl2.new_fig()
+    mpl2.imshow(img=n0, ax=ax)
+
     return np.sqrt(2)*((1-t[:, :, 1])*n0 + t[:, :, 1]*n1)
 
 
+def __input_wrapper(n_dim, shape, res, tileable, seed):
+    if seed is not None:
+        np.random.seed(seed)
+
+    if tileable is None:
+        tileable = (False,) * n_dim
+
+    shape, res = np.atleast_1d(shape, res)
+    res = scalar2array(res, shape=n_dim)
+    delta = res / shape
+    d = shape // res
+
+    return shape, res, tileable, delta, d
+
+
 def perlin_noise_3d(shape, res=1, tileable=None,
-                    interpolant=__interpolant):
+                    interpolant=__interpolant, seed=None):
     """Generate a 3D numpy array of perlin noise.
     Args:
         shape: The shape of the generated array (tuple of three ints).
@@ -96,19 +119,14 @@ def perlin_noise_3d(shape, res=1, tileable=None,
             (tuple of three bools). Defaults to (False, False, False).
         interpolant: The interpolation function, defaults to
             t*t*t*(t*(t*6 - 15) + 10).
+        seed: int
     Returns:
         A numpy array of shape with the generated noise.
     Raises:
         ValueError: If shape is not a multiple of res.
     """
 
-    if tileable is None:
-        tileable = (False, False, False)
-
-    shape, res = np.atleast_1d(shape, res)
-    res = scalar2array(res, shape=3)
-    delta = res / shape
-    d = shape // res
+    shape, res, tileable, delta, d = __input_wrapper(n_dim=3, shape=shape, res=res, tileable=tileable, seed=seed)
 
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1], 0:res[2]:delta[2]]
     grid = grid.transpose(1, 2, 3, 0) % 1
@@ -191,3 +209,11 @@ def fractal_noise(shape, res, octaves=1, persistence=0.5, lacunarity=2,
         frequency *= lacunarity
         amplitude *= persistence
     return noise
+
+
+if __name__ == '__main__':
+    np.random.seed(0)
+    img = perlin_noise_2d(shape=(16, 16), res=(4, 4))
+    from wzk import mpl2
+    fig, ax = mpl2.new_fig()
+    mpl2.imshow(img=img, ax=ax)

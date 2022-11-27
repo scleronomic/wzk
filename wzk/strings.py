@@ -132,3 +132,19 @@ def find_one_of_n(s, n):
     assert sum(b) == 1
     i = int(np.where(b)[0])
     return n[i]
+
+
+def arr2str(a, brackets=__brackets_square, sep=', '):
+    # this works only for smaller arrays, see numpy.repr
+    a = repr(a)
+    a = a.replace('array', '')
+    a = a[1:-1]
+    a = a.replace('[', brackets[0])
+    a = a.replace(']', brackets[1])
+    a = a.replace(' ', '')
+    a = a.replace(',', sep)
+
+    return a
+
+
+b = arr2str(a=np.arange(8).reshape(4, 2))

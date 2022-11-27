@@ -316,6 +316,9 @@ def get_first_non_empty(lst):
 
 
 def repeat_dict(d, n):
+    if d is None:
+        d = {}
+
     d_repeat = {}
 
     for i in range(n):
