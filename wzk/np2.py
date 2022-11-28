@@ -2,6 +2,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from itertools import product
 
+from wzk.ltd import slicen
 from wzk.dtypes import c2np
 
 
@@ -209,7 +210,7 @@ def repeat2new_shape(img, new_shape):
     for i in range(img.ndim):
         img = np.repeat(img, repeats=reps[i], axis=i)
 
-    img = img[tuple(map(slice, new_shape))]
+    img = img[slicen(end=new_shape)]
     return img
 
 
@@ -230,7 +231,7 @@ def change_shape(arr, mode='even'):
 
 def fill_with_air_left(arr, out):
     assert arr.ndim == out.ndim
-    out[tuple(map(slice, arr.shape))] = arr
+    out[slicen(end=arr.shape)] = arr
 
 
 def __argfun(a, axis, fun):
@@ -573,21 +574,21 @@ def add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
 
     if small.ndim > n_dim:
         for ll_b, ur_b, ll_s, ur_s, s in zip(ll_big, ur_big, ll_small, ur_small, small):
-            big[tuple(map(slice, ll_b, ur_b))] += s[tuple(map(slice, ll_s, ur_s))]
+            big[slicen(ll_b, ur_b)] += s[slicen(ll_s, ur_s)]
     else:
         for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
 
             try:
                 if mode_add == 'add':
-                    big[tuple(map(slice, ll_b, ur_b))] += small[tuple(map(slice, ll_s, ur_s))]
+                    big[slicen(ll_b, ur_b)] += small[slicen(ll_s, ur_s)]
                 elif mode_add == 'replace':
-                    big[tuple(map(slice, ll_b, ur_b))] = small[tuple(map(slice, ll_s, ur_s))]
+                    big[slicen(ll_b, ur_b)] = small[slicen(ll_s, ur_s)]
             except ValueError:
                 print('idx', idx)
                 print('big', ll_b, ur_b)  # TODO sometimes this fails, check
-                print('big', big[tuple(map(slice, ll_b, ur_b))].shape)
+                print('big', big[slicen(ll_b, ur_b)].shape)
                 print('small', ll_s, ur_s)
-                print('small', small[tuple(map(slice, ll_s, ur_s))].shape)
+                print('small', small[slicen(ll_s, ur_s)].shape)
 
 
 def get_exclusion_mask(a, exclude_values):
@@ -1034,4 +1035,15 @@ def clip2(x, clip, mode, axis=-1):
 def load_dict(file: str) -> dict:
     d = np.load(file, allow_pickle=True).item()
     d = dict(d) # noqa
+    return d
+
+
+def round_dict(d, decimals=None):
+    for key in d.keys():
+        value = d[key]
+        if isinstance(value, dict):
+            d[key] = round_dict(d=value, decimals=decimals)
+        else:
+            d[key] = round2(x=value, decimals=decimals)
+
     return d

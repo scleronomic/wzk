@@ -3,7 +3,7 @@ import numpy as np
 from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa
 
-from wzk.ltd import tuple_extract
+from wzk.ltd import tuple_extract, slicen
 from wzk.np2 import (align_shapes, initialize_array,
                         limits2cell_size, grid_x2i, grid_i2x, scalar2array)  # noqa
 from wzk.math2 import make_even_odd
@@ -119,7 +119,7 @@ def add_padding(img, padding, value):
 
     new_shape = shape + padding_arr.sum(axis=1)
     new_img = np.full(shape=new_shape, fill_value=value, dtype=img.dtype)
-    new_img[tuple(map(slice, padding_arr[:, 0], padding_arr[:, 0]+shape))] = img
+    new_img[slicen(padding_arr[:, 0], padding_arr[:, 0]+shape)] = img
     return new_img
 
 
@@ -386,7 +386,7 @@ def sample_from_img(img, range, n, replace=False):   # noqa
 
 
 # Image Compression <-> Decompression
-def img2compressed(img, n_dim: int, level:int = 9):
+def img2compressed(img, n_dim: int, level: int = 9):
     """
     Compress the given image with the zlib routine to a binary string.
     Level of compression can be adjusted. A timing with respect to different compression levels for decompression showed

@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-import numpy as np
-
 from wzk.np2 import *
 from wzk.testing import compare_arrays
 
@@ -136,6 +134,18 @@ class Test(TestCase):
     def test_construct_array(self):
         b = construct_array(shape=10, val=[1, 2, 3], idx=[2, 4, 5], dtype=None, insert_mode=None)
         self.assertTrue(np.allclose(b, [0, 0, 1, 0, 2, 3, 0, 0, 0, 0]))
+
+    def test_round_dict(self):
+        d = {'a': 1.123,
+             'b': {'c': np.arange(5) / 27,
+                   'd': {'e': 'why',
+                         'f': ['why', 'not', 'why']
+                         }
+                   }
+             }
+
+        d_round = round_dict(d=d, decimals=1)
+        print(d_round)
 
 
 if __name__ == '__main__':

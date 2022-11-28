@@ -216,7 +216,6 @@ def spheres2bimg(x, r, shape, limits,
             stencil = stencil_dict[d]
         else:
             stencil = np.logical_or(*get_sphere_stencil(r=r[i], voxel_size=voxel_size, n_dim=n_dim))
-        # img[tuple(map(slice, j - (l - 1) // 2, j + (l - 1) // 2 + 1))] += stencil
         add_small2big(idx=j, small=stencil, big=img)
 
     return img

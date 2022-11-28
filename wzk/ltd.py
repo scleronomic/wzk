@@ -5,8 +5,6 @@ from collections import namedtuple
 
 import numpy as np
 
-from wzk.np2 import round2
-
 
 def nesteddict2namedtuple(name, d):
 
@@ -156,6 +154,26 @@ def get_indices(li, el):
 
 
 # Slice and range
+def slicen(start=None, end=None, step=None):
+    """n dimensional slice"""
+    # TODO add some edgecases, n_dim=1 and overall same behaviour as 1D slice
+
+    if start is None:
+        start = [None] * len(end)
+        if end is None:
+            raise ValueError('start and end cannot be None at the same time')
+
+    if step is None:
+        step = [None] * len(end)
+
+    return tuple(map(slice, start, end, step))
+
+
+def test_slicen():
+    sl = slicen(1, 2)
+    assert sl == slice(1, 2)
+
+
 def range2slice(r):
     return slice(r.start, r.stop, r.step)
 
@@ -357,26 +375,3 @@ def rename_dict_keys(d, new_keys_dict):
     for old_k in new_keys_dict:
         d[new_keys_dict[old_k]] = d.pop(old_k)
 
-
-def round_dict(d, decimals=None):
-    for key in d.keys():
-        value = d[key]
-        if isinstance(value, dict):
-            d[key] = round_dict(d=value, decimals=decimals)
-        else:
-            d[key] = round2(x=value, decimals=decimals)
-
-    return d
-
-
-def test_round_dict():
-    d = {'a': 1.123,
-         'b': {'c': np.arange(5) / 27,
-               'd': {'e': 'why',
-                     'f': ['why', 'not', 'why']
-                     }
-               }
-         }
-
-    d_round = round_dict(d=d, decimals=1)
-    print(d_round)
