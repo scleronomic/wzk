@@ -145,6 +145,3 @@ def arr2str(a, brackets=__brackets_square, sep=', '):
     a = a.replace(',', sep)
 
     return a
-
-
-b = arr2str(a=np.arange(8).reshape(4, 2))

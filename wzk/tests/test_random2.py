@@ -2,7 +2,7 @@ from unittest import TestCase
 
 import numpy as np
 
-from wzk import random2, mpl2
+from wzk import random2
 
 
 class Test(TestCase):

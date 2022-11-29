@@ -105,3 +105,8 @@ class Test(TestCase):
         self.assertTrue(nnt.b == test_dict['b'])
         self.assertTrue(nnt.c.d == test_dict['c']['d'])
         self.assertTrue(nnt.c.e == test_dict['c']['e'])
+
+    def test_ObjectDict(self):
+        pass
+        # d = dict(a1=1, b1=2, c1=[3, 4], d1=dict(a2=11, b2=22, d2=dict(a3=111, b3=222, c3=333)))
+        # o = ObjectDict(d)

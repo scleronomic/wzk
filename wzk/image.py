@@ -142,57 +142,6 @@ def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder
     return img
 
 
-def reduce_shape(img, shape, n_dim, n_channels, kernel, pooling_type='average', n_samples=None,
-                 sample_dim=False, channel_dim=False):
-    # TODO use scipy method, + clean up
-    # https://stackoverflow.com/questions/59988649/indexing-numpy-array-with-list-of-slices
-    # shape_new = 3
-    # for o in range(shape_new):
-    #     for j in range(shape_new):
-    #         for k in range(shape_new):
-    #             print(o,j,k)
-    #
-    # import itertools
-
-    # for ijk in itertools.product(range(shape_new), repeat=n_dim):
-
-    # if you keep using this method rewrite the difference between 2D and 3d cleaner with map
-    # assert shape % kernel == 0
-    if pooling_type == 'average':
-        pool = np.mean
-        dtype = float
-    else:  # == 'max'
-        pool = np.max
-        dtype = bool
-
-    shape_new = np.array(shape) // np.array(kernel)
-    shape_new = shape_new.astype(int)
-    img_new = initialize_image_array(shape=shape_new, n_dim=n_dim, n_channels=n_channels, n_samples=n_samples,
-                                     dtype=dtype)
-    img = reshape_img(img=img, n_dim=n_dim, n_channels=n_channels, channel_dim=True, n_samples=n_samples,
-                      sample_dim=True)
-    img_new = reshape_img(img=img_new, n_dim=n_dim, n_channels=n_channels, channel_dim=True, n_samples=n_samples,
-                          sample_dim=True)
-
-    if n_dim == 2:
-        for i in range(shape_new[0]):
-            for j in range(shape_new[1]):
-                img_new[:, i, j, :] = pool(img[:,
-                                           kernel * i: kernel * (i + 1),
-                                           kernel * j: kernel * (j + 1), :], axis=(1, 2))
-    else:  # n_dim == 3
-        for i in range(shape_new[0]):
-            for j in range(shape_new[1]):
-                for k in range(shape_new[2]):
-                    img_new[:, i, j, k, :] = pool(img[:,
-                                                  kernel * i: kernel * (i + 1),
-                                                  kernel * j: kernel * (j + 1),
-                                                  kernel * k: kernel * (k + 1), :], axis=(1, 2, 3))
-
-    return reshape_img(img=img_new, n_dim=n_dim, n_channels=n_channels, channel_dim=channel_dim, n_samples=n_samples,
-                       sample_dim=sample_dim)
-
-
 def pooling(mat, kernel, method='max', pad=False):
     """
     Non-overlapping pooling on 2D or 3D Measurements.

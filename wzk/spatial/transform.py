@@ -76,9 +76,6 @@ def __shape_wrapper(a, b):
     return a.shape if a is not None else b.shape
 
 
-
-
-
 def trans_quat2frame(trans=None, quat=None):
     s = __shape_wrapper(trans, quat)
 

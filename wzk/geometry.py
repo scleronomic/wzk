@@ -590,7 +590,7 @@ def get_points_on_sphere(x=None, r=None, n=None, mode='fibonacci', squeeze=True)
         yy = np.sin(theta) * np.sin(phi)
         zz = np.cos(theta)
 
-        xx = xnp.stack((xx, yy, zz), axis=-1)
+        x = np.stack((xx, yy, zz), axis=-1)
         x = x*r
 
     else:

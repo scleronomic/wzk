@@ -1034,7 +1034,7 @@ def clip2(x, clip, mode, axis=-1):
 
 def load_dict(file: str) -> dict:
     d = np.load(file, allow_pickle=True).item()
-    d = dict(d) # noqa
+    assert isinstance(d, dict)
     return d
 
 

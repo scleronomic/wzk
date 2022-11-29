@@ -1,8 +1,11 @@
 from contextlib import contextmanager
 # from threading import Lock  # lock = Lock()
 import os
+
 import numpy as np
 import pandas as pd
+from pandas.io import sql
+
 import sqlite3
 
 from wzk.np2 import numeric2object_array

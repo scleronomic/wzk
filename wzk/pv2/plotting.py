@@ -101,16 +101,20 @@ class DummyPlotter:
 
 
 def faces2pyvista(x):
+    assert x.ndim == 2
+
     n, d = x.shape
-    x2 = np.empty((n, d+1), dtype=int)
+    x2 = np.empty((n, d + 1), dtype=int)
     x2[:, 0] = d
     x2[:, 1:] = x
     return x2.ravel()
 
 
 def pyvista2faces(f: np.ndarray):
+    assert f.ndim == 1
+
     d = int(f[0])
-    f = np.reshape(f, (-1, d+1)).copy()
+    f = np.reshape(f, (-1, d + 1)).copy()
     assert np.all(f[:, 0] == d)
     return f[:, 1:]
 
@@ -121,65 +125,72 @@ def plot_convex_hull(x=None, hull=None,
 
     if hull is None:
         hull = ConvexHull(x.copy())
-    faces = faces2pyvista(hull.simplices)
+
+    return plot_faces(x=hull.points, faces=hull.simplices, pl=pl, h=h, **kwargs)
+
+
+def plot_poly(x, lines=None, faces=None,
+              pl=None, h=None,
+              **kwargs):
+
+    lines = faces2pyvista(lines)
+    faces = faces2pyvista(faces)
 
     if h is None:
-        h0 = PolyData(hull.points, faces=faces)
+        h0 = PolyData(x, lines=lines, faces=faces)
         h1 = pl.add_mesh(h0, **kwargs)
         h = (h0, h1)
-
     else:
-        h[0].points = hull.points.copy()
-        h[0].faces = faces.copy()
+        h[0].points = x.copy()
+        if lines is not None:
+            h[0].lines = lines
+        if faces is not None:
+            h[0].faces = faces
 
     return h
 
 
-def plot_connections(x, pairs=None,
-                     pl=None, h=None,
-                     **kwargs):
+def plot_lines(x, lines=None,
+               pl=None, h=None,
+               **kwargs):
 
     if x.ndim == 2:
-        if pairs is None:
-            pairs2 = np.array(list(combinations(np.arange(len(x)), 2)))
-        else:
-            pairs2 = pairs
+        if lines is None:
+            lines = np.array(list(combinations(np.arange(len(x)), 2)))
     elif x.ndim == 3:
         n, n2, n3 = x.shape
         assert n2 == 2
         assert n3 == 3
-        pairs2 = np.arange(n*2).reshape(n, 2)
+        lines = np.arange(n*2).reshape(n, 2)
         x = x.reshape(-1, 3)
 
     else:
         raise ValueError
 
-    lines = faces2pyvista(pairs2)
-
-    if h is None:
-        h0 = PolyData(x, lines=lines)
-        h1 = pl.add_mesh(h0, **kwargs)
-        h = (h0, h1)
-    else:
-        h[0].points = x.copy()
-        if pairs is not None:
-            h[0].lines = lines
-
-    return h
+    return plot_poly(x=x, lines=lines, pl=pl, h=h, **kwargs)
 
 
-def plot_cube(limits, pl=None, **kwargs):
-    # r = [[ll, ll + side_length] for ll in lower_left]
+def plot_faces(x, faces,
+               pl=None, h=None,
+               **kwargs):
+    return plot_poly(x=x, faces=faces, pl=pl, h=h, **kwargs)
+
+
+def plot_cube(limits, pl=None, mode='faces', **kwargs):
     if limits is None:
         return
     v, e, f = geometry.cube(limits=limits)
-    plot_connections(x=v, pairs=e, pl=pl, **kwargs)
+
+    if mode == 'faces':
+        return plot_faces(x=v, faces=f, pl=pl, **kwargs)
+    elif mode == 'lines':
+        return plot_lines(x=v, lines=e, pl=pl, **kwargs)
 
 
 def plot_collision(pl, xa, xb, ab, **kwargs):
     plot_convex_hull(pl=pl, x=xa, opacity=0.2)
     plot_convex_hull(pl=pl, x=xb, opacity=0.2)
-    plot_connections(x=ab, pl=pl, **kwargs)
+    plot_lines(x=ab, pl=pl, **kwargs)
 
 
 def set_color(h, color):

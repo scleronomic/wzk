@@ -11,12 +11,14 @@ from wzk.mpl2.move_figure import move_fig
 from wzk import files, ltd, math2, printing, strings
 
 import matplotlib as mpl
+from matplotlib import axes
 from matplotlib import figure
 
 shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / math2.golden_ratio]
 shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 16) / math2.golden_ratio]
 
 axes_type = mpl.axes.Axes
+
 
 def ax_wrapper(ax: Union[dict, mpl.axes.Axes]):
     if ax is None:

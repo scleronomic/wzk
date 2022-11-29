@@ -459,7 +459,7 @@ def magic(n):
 
 
 # Clustering
-def k_farthest_neighbors(x, k, weighting=None):
+def k_farthest_neighbors(x, k, weighting=None, mode='inverse'):
     n = len(x)
 
     m_dist = x[np.newaxis, :, :] - x[:, np.newaxis, :]
@@ -468,25 +468,45 @@ def k_farthest_neighbors(x, k, weighting=None):
 
     cum_dist = m_dist.sum(axis=-1)
 
-    idx = [np.argmax(cum_dist)]
+    idx = np.array([np.argmax(cum_dist)])
 
     for i in range(k-1):
         m_dist_cur = m_dist[idx]
-        m_dist_cur_sum = m_dist_cur.sum(axis=0)
+
+        if mode == 'inverse_sum':
+            m_dist_cur[np.arange(i+1), idx] = 1
+            obj = -np.sum(1/m_dist_cur, axis=0)
+
+        elif mode == 'sum':
+            obj = np.sum(m_dist_cur, axis=0)
+
+        else:
+            raise ValueError(f"Unknown mode {mode}")
+
+        # C)
+        # m_dist_cur_sum = m_dist_cur.sum(axis=0)
         # m_dist_cur_std = np.std(m_dist_cur, axis=0)
-        obj = m_dist_cur_sum   # + (m_dist_cur_std.max() - m_dist_cur_std) * 1000
+        # obj = m_dist_cur_sum + (m_dist_cur_std.max(initial=0) - m_dist_cur_std) * 1000
+
+        # D
+        # m_dist_cur[np.arange(i+1), idx] = np.inf
+        # jj = np.argmin(m_dist_cur, axis=1)
+        # kk = np.argmax(m_dist_cur[np.arange(i+1), jj])
+        # idx = np.hstack([idx, [jj[kk]]]).astype(int)
+        # continue
+
         idx_new = np.argsort(obj)[::-1]
         for j in range(n):
             if idx_new[j] not in idx:
-                idx.append(idx_new[j])
+                idx = np.hstack([idx, [idx_new[j]]]).astype(int)
                 break
 
-    return np.array(idx)
+    return idx
 
 
-def test_k_farthest_neighbors():
-    x = np.random.random((200, 2))
-    k = 10
+def vis_k_farthest_neighbors():
+    x = np.random.random((500, 2))
+    k = 5
     idx = k_farthest_neighbors(x=x, k=k)
 
     from wzk import new_fig
@@ -517,3 +537,7 @@ def irwin_hall_distribution(x, n=2):
         f_xn += (-1) ** k * binomial(n, k) * (x - k) ** (n - 1) * np.sign(x - k)
 
     return pre_factor * f_xn
+
+
+if __name__ == '__main__':
+    vis_k_farthest_neighbors()

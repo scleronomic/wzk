@@ -14,7 +14,7 @@ def nesteddict2namedtuple(name, d):
 
         v = d[k]
         if isinstance(v, dict):
-            values.append(nesteddict2namedtuple(name, v))
+            values.append(nesteddict2namedtuple(k, v))
         else:
             values.append(v)
 
@@ -23,6 +23,10 @@ def nesteddict2namedtuple(name, d):
 
 
 class ObjectDict:
+
+    def __init__(self, d):
+        self.update(d)
+
     def to_dict(self):
         return self.__dict__
 
@@ -33,8 +37,7 @@ class ObjectDict:
             self.__dict__.update(new_dict)
 
     def copy(self):
-        new = ObjectDict()
-        new.update(self)
+        new = ObjectDict(self)
         return new
 
 
@@ -156,7 +159,7 @@ def get_indices(li, el):
 # Slice and range
 def slicen(start=None, end=None, step=None):
     """n dimensional slice"""
-    # TODO add some edgecases, n_dim=1 and overall same behaviour as 1D slice
+    # TODO add some edge-cases, n_dim=1 and overall same behaviour as 1D slice
 
     if start is None:
         start = [None] * len(end)
@@ -374,4 +377,3 @@ def read_json2dict(file):
 def rename_dict_keys(d, new_keys_dict):
     for old_k in new_keys_dict:
         d[new_keys_dict[old_k]] = d.pop(old_k)
-
