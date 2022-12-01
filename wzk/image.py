@@ -3,10 +3,9 @@ import numpy as np
 from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa
 
-from wzk.ltd import tuple_extract, slicen
-from wzk.np2 import (align_shapes, initialize_array,
-                        limits2cell_size, grid_x2i, grid_i2x, scalar2array)  # noqa
-from wzk.math2 import make_even_odd
+from wzk import np2, ltd, math2
+from wzk.grid import limits2voxel_size, grid_x2i, grid_i2x  # noqa
+
 from wzk.bimage import sample_bimg_i
 
 
@@ -56,7 +55,7 @@ def image_array_shape(shape, n_samples=None, n_dim=None, n_channels=None):
 def initialize_image_array(shape: tuple, n_dim: int = None, n_samples: int = None, n_channels: int = None,
                            dtype=None, initialization: str = 'zeros') -> np.ndarray:
     shape = image_array_shape(shape=shape, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels)
-    return initialize_array(shape=shape, mode=initialization, dtype=dtype)
+    return np2.initialize_array(shape=shape, mode=initialization, dtype=dtype)
 
 
 def reshape_img(img, n_dim=2, sample_dim=True, channel_dim=True,
@@ -103,7 +102,7 @@ def add_padding(img, padding, value):
     padding_arr = np.zeros((img.ndim, 2), dtype=int)
 
     if isinstance(padding, str):
-        padding_arr[:, 0] = make_even_odd(shape, mode=padding, rounding=+1) - shape
+        padding_arr[:, 0] = math2.make_even_odd(shape, mode=padding, rounding=+1) - shape
 
     elif isinstance(padding, int):
         padding_arr[:] = padding
@@ -119,7 +118,7 @@ def add_padding(img, padding, value):
 
     new_shape = shape + padding_arr.sum(axis=1)
     new_img = np.full(shape=new_shape, fill_value=value, dtype=img.dtype)
-    new_img[slicen(padding_arr[:, 0], padding_arr[:, 0]+shape)] = img
+    new_img[np2.slicen(padding_arr[:, 0], padding_arr[:, 0]+shape)] = img
     return new_img
 
 
@@ -128,8 +127,8 @@ def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder
     assert img_arr.ndim == 4
     n_rows, n_cols, n_x, n_y = img_arr.shape
 
-    bv_i, bh_i = tuple_extract(inner_border, default=(0, 0), mode='repeat')
-    bv_o, bh_o = tuple_extract(outer_border, default=(0, 0), mode='repeat')
+    bv_i, bh_i = ltd.tuple_extract(inner_border, default=(0, 0), mode='repeat')
+    bv_o, bh_o = ltd.tuple_extract(outer_border, default=(0, 0), mode='repeat')
 
     img = np.full(shape=(n_x * n_rows + bv_i * (n_rows - 1) + 2*bv_o,
                          n_y * n_cols + bh_i * (n_cols - 1) + 2*bh_o), fill_value=fill_boarder, dtype=dtype)
@@ -318,7 +317,7 @@ def check_overlap(a, b, return_arr=False):
 
     a, b = (a, b) if a.n_dim > b.n_dim else (b, a)
 
-    aligned_shape = align_shapes(a=a, b=b)
+    aligned_shape = np2.align_shapes(a=a, b=b)
     summation_axis = np.arange(a.n_dim)[aligned_shape == -1]
     a = a.sum(axis=summation_axis)
 

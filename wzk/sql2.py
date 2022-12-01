@@ -493,22 +493,3 @@ def df2sql(df, file, table, dtype=None, if_exists='fail'):
         df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None, dtype=dtype)
 
     set_journal_mode_wal(file=file)
-
-
-def test_set_sql_speed():
-    from wzk import tictoc
-    n = 10000
-    data = np.random.random((n, 3))
-
-    file = '/Users/jote/Documents/Code/Python/DLR/test.db'
-    table = 'paths'
-    df = pd.DataFrame(data=data.tolist(), columns=['a', 'b', 'c'])
-
-    with tictoc('Build Database'):
-        df2sql(df=df, file=file, table=table, if_exists='replace')
-
-    with tictoc('isolation = DEFERRED'):
-        set_values_sql(file=file, table=table, columns='a', values=(np.ones(n).tolist(), ))
-
-    a1 = get_values_sql(file=file, table=table, columns='a', values_only=True)
-    print(a1)

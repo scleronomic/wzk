@@ -7,7 +7,7 @@ from itertools import combinations
 from scipy.spatial import ConvexHull
 from matplotlib import colors
 
-from wzk import np2, bimage, spatial, geometry
+from wzk import np2, bimage, spatial, geometry, grid
 
 from typing import Union
 
@@ -101,6 +101,9 @@ class DummyPlotter:
 
 
 def faces2pyvista(x):
+    if x is None:
+        return None
+
     assert x.ndim == 2
 
     n, d = x.shape
@@ -221,7 +224,7 @@ def plot_bimg(img, limits,
 
     elif mode == 'mesh':
         verts, faces = bimage.bimg2surf(img=img, level=None, limits=limits)
-        verts += np2.limits2cell_size(shape=img.shape, limits=limits) / 2  # shift half a cell size
+        verts += grid.limits2voxel_size(shape=img.shape, limits=limits) / 2  # shift half a cell size
         faces = faces2pyvista(faces)
 
         if h is None:

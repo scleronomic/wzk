@@ -3,10 +3,7 @@ from scipy.signal import convolve
 from skimage import measure
 from skimage.morphology import flood_fill
 
-from wzk.geometry import discretize_triangle_mesh, ConvexHull, rectangle, cube
-from wzk.np2 import (limits2cell_size, grid_x2i, grid_i2x, scalar2array, flatten_without_last, add_small2big)
-from wzk.printing import progress_bar
-from wzk.trajectory import get_substeps_adjusted
+from wzk import geometry, np2, printing, trajectory, grid
 
 
 __eps = 1e-9
@@ -54,13 +51,13 @@ def closest_grid_boundary(*, x, half_side, limits, shape, idx=None):
     """
 
     if idx is None:
-        idx = grid_x2i(x=x, limits=limits, shape=shape)
+        idx = grid.grid_x2i(x=x, limits=limits, shape=shape)
 
-    idx = flatten_without_last(x=idx)
+    idx = np2.flatten_without_last(x=idx)
     rel_idx = __closest_boundary_rel_idx(half_side=half_side)
 
     idx = idx[:, np.newaxis, :] + rel_idx[np.newaxis, :, np.newaxis]
-    x_closest = grid_i2x(i=idx, limits=limits, shape=shape, mode='b')
+    x_closest = grid.grid_i2x(i=idx, limits=limits, shape=shape, mode='b')
 
     x_closest[:, half_side, :] = x
 
@@ -73,10 +70,10 @@ def __get_centers(voxel_size, n_dim):
     limits0[:, 1] = voxel_size - __eps
 
     if n_dim == 2:
-        v, e = rectangle(limits=limits0)
+        v, e = geometry.rectangle(limits=limits0)
 
     elif n_dim == 3:
-        v, e, f = cube(limits=limits0)
+        v, e, f = geometry.cube(limits=limits0)
 
     else:
         raise ValueError
@@ -144,7 +141,7 @@ def create_stencil_dict(voxel_size, n_dim):
     stencil_dict = dict()
     n = int(5*(1//voxel_size))
     for i, r in enumerate(np.linspace(voxel_size/10, 2, num=n)):
-        progress_bar(i=i, n=n, prefix='create_stencil_dict')
+        printing.progress_bar(i=i, n=n, prefix='create_stencil_dict')
         d = int((r // voxel_size) * 2 + 3)
         if d not in stencil_dict.keys():
             stencil = np.logical_or(*get_sphere_stencil(r=r, voxel_size=voxel_size, n_dim=n_dim))
@@ -155,7 +152,7 @@ def create_stencil_dict(voxel_size, n_dim):
 
 def bimg2surf(img, limits, level=None):
     lower_left = limits[:, 0]
-    voxel_size = limits2cell_size(shape=img.shape, limits=limits)
+    voxel_size = grid.limits2voxel_size(shape=img.shape, limits=limits)
     if img.sum() == 0:
         verts = np.zeros((3, 3))
         faces = np.zeros((1, 3), dtype=int)
@@ -171,21 +168,21 @@ def bimg2surf(img, limits, level=None):
 def mesh2bimg(p, shape, limits, f=None):
     img = np.zeros(shape, dtype=int)
 
-    voxel_size = limits2cell_size(shape=shape, limits=limits)
+    voxel_size = grid.limits2voxel_size(shape=shape, limits=limits)
     if img.ndim == 2:
         p2 = np.concatenate((p, p[:1]), axis=0)
-        p2 = get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
-        i2 = grid_x2i(x=p2, limits=limits, shape=shape)
+        p2 = trajectory.get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
+        i2 = grid.grid_x2i(x=p2, limits=limits, shape=shape)
         img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
             np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1)] = 1
 
     elif img.ndim == 3:
         if f is None:
-            ch = ConvexHull(p)
+            ch = geometry.ConvexHull(p)
             p = ch.points
             f = ch.simplices  # noqa
-        p2 = discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
-        i2 = grid_x2i(x=p2, limits=limits, shape=shape)
+        p2 = geometry.discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
+        i2 = grid.grid_x2i(x=p2, limits=limits, shape=shape)
         img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
             np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1),
             np.clip(i2[:, 2], a_min=0, a_max=img.shape[2]-1)] = 1
@@ -205,18 +202,18 @@ def spheres2bimg(x, r, shape, limits,
     n, n_dim = x.shape
     assert len(shape) == n_dim
 
-    r = scalar2array(r, shape=n)
+    r = np2.scalar2array(r, shape=n)
     img = np.zeros(shape, dtype=bool)
-    voxel_size = limits2cell_size(shape=shape, limits=limits)
+    voxel_size = grid.limits2voxel_size(shape=shape, limits=limits)
 
     for i in range(n):
-        j = grid_x2i(x[i], limits=limits, shape=shape)
+        j = grid.grid_x2i(x[i], limits=limits, shape=shape)
         d = int((r[i] // voxel_size) * 2 + 3)
         if stencil_dict:
             stencil = stencil_dict[d]
         else:
             stencil = np.logical_or(*get_sphere_stencil(r=r[i], voxel_size=voxel_size, n_dim=n_dim))
-        add_small2big(idx=j, small=stencil, big=img)
+        np2.add_small2big(idx=j, small=stencil, big=img)
 
     return img
 
@@ -230,8 +227,8 @@ def sample_bimg_i(img, n, replace=True):
 def sample_bimg_x(img, limits, n, replace=True):
 
     i = sample_bimg_i(img=img, n=n, replace=replace)
-    x = grid_i2x(i=i, limits=limits, shape=img.shape)
-    voxel_size2 = limits2cell_size(shape=img.shape, limits=limits) / 2
+    x = grid.grid_i2x(i=i, limits=limits, shape=img.shape)
+    voxel_size2 = grid.limits2voxel_size(shape=img.shape, limits=limits) / 2
     cell_noise = np.random.uniform(low=-voxel_size2, high=+voxel_size2, size=(n, img.ndim))
 
     x += cell_noise

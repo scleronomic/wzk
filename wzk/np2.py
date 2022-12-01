@@ -2,8 +2,7 @@ import numpy as np
 from scipy.sparse import csr_matrix
 from itertools import product
 
-from wzk.ltd import slicen
-from wzk.dtypes import c2np
+from wzk import dtypes
 
 
 class DummyArray:
@@ -73,7 +72,7 @@ def np_isinstance(o, c):
     """
 
     if isinstance(o, np.ndarray):
-        c = (c2np[cc] for cc in c) if isinstance(c, tuple) else c2np[c]
+        c = (dtypes.c2np[cc] for cc in c) if isinstance(c, tuple) else dtypes.c2np[c]
         return isinstance(o.flat[0], c)
 
     else:
@@ -107,6 +106,10 @@ def array2array(a, shape):
     s = tuple([slice(None) if ss == 1 else np.newaxis for ss in s])
     b[:] = a[s]
     return b
+
+
+def max_size(*args):
+    return int(np.max([np.size(a) for a in args]))
 
 
 # scalar <-> matrix
@@ -253,10 +256,6 @@ def __argfun(a, axis, fun):
         idx = np.array(np.unravel_index(idx, shape=shape))
 
         return np.transpose(idx, axes=np.roll(np.arange(idx.ndim), -1))
-
-
-def max_size(*args):
-    return int(np.max([np.size(a) for a in args]))
 
 
 def min_size(*args):
@@ -866,90 +865,6 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
     return idx
 
 
-# Grid
-def get_points_inbetween(x, extrapolate=False):
-    assert x.ndim == 1
-
-    delta = x[1:] - x[:-1]
-    x_new = np.zeros(np.size(x) + 1)
-    x_new[1:-1] = x[:-1] + delta / 2
-    if extrapolate:
-        x_new[0] = x_new[1] - delta[0]
-        x_new[-1] = x_new[-2] + delta[-1]
-        return x_new
-    else:
-        return x_new[1:-1]
-
-
-def limits2cell_size(shape, limits):
-    voxel_size = np.diff(limits, axis=-1)[:, 0] / np.array(shape)
-    return unify(x=voxel_size)
-
-
-def __mode2offset(voxel_size, mode='c'):
-    """Modes
-        'c': center
-        'b': boundary
-
-    """
-    if mode == 'c':
-        return voxel_size / 2
-    elif mode == 'b':
-        return 0
-    else:
-        raise NotImplementedError(f"Unknown mode: '{mode}'")
-
-
-def grid_x2i(x, limits, shape):
-    """
-    Get the indices of the grid cell at the coordinates 'x' in a grid with symmetric cells.
-    Always use mode='boundary'
-    """
-
-    if x is None:
-        return None
-    # voxel_size = limits2cell_size(shape=shape, limits=limits)
-    voxel_size = np.diff(limits, axis=-1)[:, 0] / np.array(shape)
-    lower_left = limits[:, 0]
-    
-    return np.asarray((x - lower_left) / voxel_size, dtype=int)
-
-
-def grid_i2x(i, limits, shape, mode='c'):
-    """
-    Get the coordinates of the grid at the index "o" in a grid with symmetric cells.
-    borders: 0 | 2 | 4 | 6 | 8 | 10
-    centers: | 1 | 3 | 5 | 7 | 9 |
-    """
-
-    if i is None:
-        return None
-    voxel_size = limits2cell_size(shape=shape, limits=limits)
-    lower_left = limits[:, 0]
-    
-    offset = __mode2offset(voxel_size=voxel_size, mode=mode)
-    return np.asarray(lower_left + offset + i * voxel_size, dtype=float)
-
-
-def add_safety_limits(limits, factor):
-    limits = np.atleast_1d(limits)
-    diff = np.diff(limits, axis=-1)[..., 0]
-    return np.array([limits[..., 0] - factor * diff,
-                     limits[..., 1] + factor * diff]).T
-
-
-def create_grid(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
-    ll, ur, n, pad = np.atleast_1d(ll, ur, n, pad)
-
-    w = ur - ll
-    s = (w - pad*(n-1))/n
-
-    x = ll[0] + np.arange(n[0])*(s[0]+pad[0])
-    y = ll[1] + np.arange(n[1])*(s[1]+pad[1])
-    return (x, y), s
-
-
-#
 def get_stats(x, axis=None, return_array=False):
     stats = {'mean': np.mean(x, axis=axis),
              'std':  np.std(x, axis=axis),
@@ -972,10 +887,25 @@ def verbose_reject_x(title, x, b):
     return x[b]
 
 
-def aranges(stops=None, starts=None, steps=None):
-    n = max_size(stops, starts, steps)
-    stops, starts, steps = scalar2array(stops, starts, steps, shape=n)
-    return [np.arange(stops[i], starts[i], steps[i]) for i in range(n)]
+def add_safety_limits(limits, factor):
+    limits = np.atleast_1d(limits)
+    diff = np.diff(limits, axis=-1)[..., 0]
+    return np.array([limits[..., 0] - factor * diff,
+                     limits[..., 1] + factor * diff]).T
+
+
+def get_points_inbetween(x, extrapolate=False):
+    assert x.ndim == 1
+
+    delta = x[1:] - x[:-1]
+    x_new = np.zeros(np.size(x) + 1)
+    x_new[1:-1] = x[:-1] + delta / 2
+    if extrapolate:
+        x_new[0] = x_new[1] - delta[0]
+        x_new[-1] = x_new[-2] + delta[-1]
+        return x_new
+    else:
+        return x_new[1:-1]
 
 
 def find_consecutives(x, n):
@@ -1047,3 +977,84 @@ def round_dict(d, decimals=None):
             d[key] = round2(x=value, decimals=decimals)
 
     return d
+
+
+def arangen(start=None, end=None, step=None):
+    """n dimensional slice"""
+    n = max_size(start, end, step)
+    start, end, step = scalar2array(start, end, step, shape=n)
+    return [np.arange(start[i], end[i], step[i]) for i in range(n)]
+
+
+# Slice Ellipsis Range
+# Slice and range
+def slicen(start=None, end=None, step=None):
+    """n dimensional slice"""
+    n = max_size(start, end, step)
+    start, end, step = scalar2array(start, end, step, shape=n)
+    return tuple(map(slice, start, end, step))
+
+
+def test_slicen():
+    sl = slicen([1], [2])
+    assert sl == (slice(1, 2),)
+
+
+def range2slice(r):
+    return slice(r.start, r.stop, r.step)
+
+
+def slice2range(s):
+    return range(0 if s.start is None else s.start,
+                 s.stop,
+                 1 if s.step is None else s.step)
+
+
+def __slice_or_range2tuple(sor, type2):
+    if type2 == 'slice':
+        default1, default2, default3 = None, None, None
+    elif type2 == 'range':
+        default1, default2, default3 = 0, 1, 1
+    else:
+        raise ValueError(f"Unknown {type2}")
+
+    if isinstance(sor, (slice, range)):
+        return sor.start, sor.stop, sor.step
+
+    elif isinstance(sor, int):
+        return default1, sor, default3
+
+    elif sor is None:
+        return default1, default2, default3
+
+    elif isinstance(sor, tuple):
+        if len(sor) == 1:
+            return default1, sor[0], default3
+        elif len(sor) == 2:
+            return sor[0], sor[1], default3
+        elif len(sor) == 3:
+            return sor
+        else:
+            raise ValueError('tuple must be have length={1, 2, 3}')
+    else:
+        raise TypeError('r must be {slice, range, int, tuple}')
+
+
+def slice2tuple(s):
+    return __slice_or_range2tuple(s, 'slice')
+
+
+def range2tuple(r):
+    return __slice_or_range2tuple(r, 'range')
+
+
+def slice_add(a, b):
+    a = slice2tuple(a)
+    b = slice2tuple(b)
+    return slice(a[0]+b[0], a[1]+b[1], max(a[2], b[2]))
+
+
+def range_add(a, b):
+    a = range2tuple(a)
+    b = range2tuple(b)
+    return range(a[0]+b[0], a[1]+b[1], max(a[2], b[2]))

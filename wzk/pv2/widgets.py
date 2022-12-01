@@ -2,7 +2,8 @@ import numpy as np
 
 import pyvista as pv
 
-from wzk import geometry, spatial, np2
+from wzk import geometry, spatial
+from wzk.grid import create_grid
 
 
 class RHSWidget:
@@ -180,7 +181,7 @@ class MultipleSpheresWidget:
         limits[:, 0] = 0.01
         limits[:, 1] = 0.20
 
-        grid = np2.create_grid(ll=(0.05, 0.05), ur=(0.95, 0.22), n=(n, 1), pad=(-0.015, 0.05))
+        grid = create_grid(ll=(0.05, 0.05), ur=(0.95, 0.22), n=(n, 1), pad=(-0.015, 0.05))
         names = [f'{i}' for i in range(n)]
         idx = np.zeros((n, 2), dtype=int)
         idx[:n, 0] = np.arange(n)

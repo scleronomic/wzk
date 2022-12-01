@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.patches as patches
 from typing import Callable
 
-from wzk.np2 import scalar2array, max_size, unify
+from wzk import np2
 from wzk.mpl2.axes import get_aspect_ratio
 from wzk.mpl2.geometry import plot_coordinate_frames
 from wzk.mpl2.figure import plt
@@ -299,7 +299,7 @@ class DraggablePatchList:
         if xy is not None:
             x, y = xy.T
 
-        n = max_size(x, y)
+        n = np.max_size(x, y)
         n, idx = self.__n_index_wrapper(i=idx, n=n)
 
         xy_cur = self.get_xy(idx=idx)
@@ -332,7 +332,7 @@ class DraggablePatchList:
 
     def toggle_visibility(self, value=None):
         v = [dp.toggle_visibility(value=value) for dp in self.dp_list]
-        return unify(v)
+        return np2.unify(v)
 
 
 class DraggableCircleList(DraggablePatchList):
@@ -341,7 +341,7 @@ class DraggableCircleList(DraggablePatchList):
         self.append(ax=ax, xy=xy, radius=radius, **kwargs)
 
     def append(self, ax, xy, radius, **kwargs):
-        radius = scalar2array(radius, shape=xy.shape[0])
+        radius = np2.scalar2array(radius, shape=xy.shape[0])
         for xy_i, radius_i in zip(xy, radius):
             self.dp_list.append(DraggableCircle(ax=ax, xy=xy_i, radius=radius_i, **kwargs))
 
@@ -355,7 +355,7 @@ class DraggableEllipseList(DraggablePatchList):
 
     def append(self, ax,
                xy, width, height, angle, **kwargs):
-        width, height, angle = scalar2array(width, height, angle, shape=xy.shape[0])
+        width, height, angle = np2.scalar2array(width, height, angle, shape=xy.shape[0])
         for xy_i, width_i, height_i, angle_i in zip(xy, width, height, angle):
             self.dp_list.append(DraggableEllipse(ax=ax,
                                                  xy=xy_i, width=width_i, height=height_i, angle=angle_i, **kwargs))
@@ -370,7 +370,7 @@ class DraggableRectangleList(DraggablePatchList):
 
     def append(self, ax,
                xy, width, height, angle, **kwargs):
-        width, height, angle = scalar2array(width, height, angle, shape=xy.shape[0])
+        width, height, angle = np2.scalar2array(width, height, angle, shape=xy.shape[0])
 
         for xy_i, width_i, height_i, angle_i in zip(xy, width, height, angle):
             self.dp_list.append(DraggableRectangle(ax=ax,

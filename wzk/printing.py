@@ -100,13 +100,13 @@ def progress_bar(i, n, prefix='', suffix='', bar_length=None):
     sys.stdout.flush()
 
 
-def print_table(rows, columns, data, min_cell_size=10, cell_format='.5f'):
-    max_cell_size_c = max([len(c) for c in columns] + [min_cell_size])
-    max_cell_size_r = max([len(r) for r in rows] + [min_cell_size])
+def print_table(rows, columns, data, min_voxel_size=10, cell_format='.5f'):
+    max_voxel_size_c = max([len(c) for c in columns] + [min_voxel_size])
+    max_voxel_size_r = max([len(r) for r in rows] + [min_voxel_size])
 
-    row_format = '{:>' + str(max_cell_size_r) + '}'
-    header_format = row_format + ('{:>' + str(max_cell_size_c) + '}') * len(columns)
-    data_format = row_format + ('{:>' + str(max_cell_size_c) + cell_format + '}') * len(columns)
+    row_format = '{:>' + str(max_voxel_size_r) + '}'
+    header_format = row_format + ('{:>' + str(max_voxel_size_c) + '}') * len(columns)
+    data_format = row_format + ('{:>' + str(max_voxel_size_c) + cell_format + '}') * len(columns)
 
     print(header_format.format('', *columns))
     for row_name, row_data in zip(rows, data):
