@@ -6,7 +6,7 @@ from wzk.mpl2.figure import new_fig
 from wzk.mpl2.axes import set_ax_limits
 from wzk.mpl2 import DraggableCircle
 
-from wzk.spatial.transform import sample_matrix
+from wzk.spatial.transform import sample_dcm
 from wzk.spatial.transform_2d import trans_theta2frame
 
 
@@ -90,7 +90,7 @@ class Test(unittest.TestCase):
                                               [-1, 1],
                                               [-1, 1]]), n_dim=3)
 
-        dcm = sample_matrix()
+        dcm = sample_dcm()
         h1 = plot_coordinate_frames(ax=ax, dcm=dcm)
         h2 = plot_coordinate_frames(ax=ax, dcm=dcm)  # noqa
 

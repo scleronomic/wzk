@@ -3,9 +3,15 @@ import numpy as np
 from wzk import np2
 
 
-def limits2voxel_size(shape, limits):
-    voxel_size = np.diff(limits, axis=-1)[:, 0] / np.array(shape)
-    return np2.unify(x=voxel_size)
+def limits2size(limits):
+    return limits[:, 1] - limits[:, 0]
+
+
+def limits2voxel_size(shape, limits, unify=True):
+    voxel_size = limits2size(limits) / np.array(shape)
+    if unify:
+        voxel_size = np2.unify(x=voxel_size)
+    return voxel_size
 
 
 def __mode2offset(voxel_size, mode='c'):
@@ -39,7 +45,7 @@ def grid_x2i(x, limits, shape):
 
 def grid_i2x(i, limits, shape, mode='c'):
     """
-    Get the coordinates of the grid at the index "o" in a grid with symmetric cells.
+    Get the coordinates of the grid at the index "i" in a grid with symmetric cells.
     borders: 0 | 2 | 4 | 6 | 8 | 10
     centers: | 1 | 3 | 5 | 7 | 9 |
     """

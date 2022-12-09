@@ -31,7 +31,7 @@ def plot_img_outlines(img, limits,
     Plot the image by drawing the outlines of the areas where the values are True.
     """
 
-    combined_edges = get_combined_edges(img)
+    combined_edges = get_combined_edges(bimg=img)
     combined_edges = [grid.grid_i2x(i=ce, shape=img.shape, limits=limits, mode='b')
                       for ce in combined_edges]
 

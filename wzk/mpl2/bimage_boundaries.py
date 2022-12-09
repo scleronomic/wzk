@@ -35,32 +35,31 @@ def clean_grid_line(x, n_dim=2, return_indices=False):
 
 
 # 2D
-def get_edges(img):
+def get_edges(bimg):
     """
     Get a list of all edges (where the value changes from 'True' to 'False') in the image.
     Only works for 2D, see 'get_all_boundary_faces()' for 3D.
     Return the list as indices of the image
     """
-    shape = img.shape
+    shape = bimg.shape
 
     ij_edges = []
-    ii, jj = np.nonzero(img)
+    ii, jj = np.nonzero(bimg)
     for i, j in zip(ii, jj):
         # North
-        if j == shape[1]-1 or not img[i, j+1]:
+        if j == shape[1]-1 or not bimg[i, j+1]:
             ij_edges.append(np.array([[i, j+1],
                                       [i+1, j+1]]))
-
         # East
-        if i == shape[0]-1 or not img[i + 1, j]:
+        if i == shape[0]-1 or not bimg[i+1, j]:
             ij_edges.append(np.array([[i+1, j],
                                       [i+1, j+1]]))
         # South
-        if j == 0 or not img[i, j-1]:
+        if j == 0 or not bimg[i, j-1]:
             ij_edges.append(np.array([[i, j],
                                       [i+1, j]]))
         # West
-        if i == 0 or not img[i-1, j]:
+        if i == 0 or not bimg[i-1, j]:
             ij_edges.append(np.array([[i, j],
                                       [i, j+1]]))
 
@@ -72,15 +71,15 @@ def get_edges(img):
 
 def combine_edges(ij_edges, clean=True):
     """
-    Connect all edges defined by 'xy_boundary' (result from the function 'get_all_boundary_edges()')
-    to closed boundaries around am object.
+    Connect all edges defined by 'ij_edges' (result from the function 'get_edges()')
+    to closed boundaries around an object.
     If not all edges are part of the surface of one object a list of closed boundaries is returned (one for every
     object).
     """
 
     combined_edges_list = []
     while ij_edges.size != 0:
-        # Current loop
+        # Current obstacle
         xy_cl = [ij_edges[0, 0], ij_edges[0, 1]]  # Start with first edge
         ij_edges = np.delete(ij_edges, 0, axis=0)
 
@@ -108,8 +107,8 @@ def combine_edges(ij_edges, clean=True):
     return combined_edges_list
 
 
-def get_combined_edges(img):
-    ij_edges = get_edges(img=img)
+def get_combined_edges(bimg):
+    ij_edges = get_edges(bimg=bimg)
     return combine_edges(ij_edges=ij_edges)
 
 

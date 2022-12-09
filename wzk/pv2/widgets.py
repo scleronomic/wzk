@@ -37,7 +37,7 @@ class RHSWidget:
         return np.array((self.wx.GetNormal(), self.wy.GetNormal(), self.wz.GetNormal()))
 
     def get_frame(self):
-        return spatial.trans_matrix2frame(trans=self.get_origin(), matrix=self.get_xyz().T)
+        return spatial.trans_dcm2frame(trans=self.get_origin(), matrix=self.get_xyz().T)
 
     def set_origin(self, o):
         self.wx.SetOrigin(o)

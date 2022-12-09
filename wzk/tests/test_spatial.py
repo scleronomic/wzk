@@ -9,8 +9,8 @@ class Test(TestCase):
         a = sample_frames(x_low=np.zeros(3), x_high=np.ones(3))
         b = sample_frames(x_low=np.zeros(3), x_high=np.ones(3))
 
-        a[:3, :3] = sample_matrix_noise(shape=1, scale=1e-8)
-        b[:3, :3] = sample_matrix_noise(shape=1, scale=1e-8)
+        a[:3, :3] = sample_dcm_noise(shape=1, scale=1e-8)
+        b[:3, :3] = sample_dcm_noise(shape=1, scale=1e-8)
 
         c = invert(a) @ b
         c_rc = frame2rotvec(c)

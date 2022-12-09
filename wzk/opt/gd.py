@@ -1,14 +1,14 @@
 import numpy as np  # noqa
 
 from wzk import np2, multiprocessing2, object2
-from wzk.gd.optimizer import *
+from wzk.opt.optimizer import *
 
 
 class OPTimizer(object2.CopyableObject):
     __slots__ = ('type',                           # str                 | type of the optimizer: gd, sqp, ...
                  'n_steps',                        # int                 | Number of iterations
                  'stepsize',                       # float               |
-                 'opt',                            # Optimizer           | Adam, RMSProp, ...
+                 'optimizer',                      # Optimizer           | Adam, RMSProp, ...
                  'clip',                           # float[n_steps]      |
                  'clip_mode',                      # str                 | 'jump', 'clip', 'ignore'
                  'callback',                       # fun()               |
@@ -18,18 +18,19 @@ class OPTimizer(object2.CopyableObject):
                  'use_loop_instead_of_processes',  # bool                |
                  'hesse_inv',                      # float[n_var][n_var] |
                  'hesse_weighting',                # float[n_steps]      |
-                 'return_x_list',                  # bool                |  is this a suitable parameter? not really
                  'active_dims',                    # bool[n_var]         |
+                 'staircase',                      # OPTStaircase        |
+                 'return_x_list',                  # bool                |  is this a suitable parameter? not really
                  )
 
-    def __init__(self, n_steps=100, stepsize=1, opt=Naive(), clip=0.1, n_processes=1,
+    def __init__(self, n_steps=100, stepsize=1, optimizer=Naive(), clip=0.1, n_processes=1,
                  clip_mode='value', limits_mode='clip'):
         self.n_steps = n_steps
         self.stepsize = stepsize
         self.clip = clip
         self.clip_mode = clip_mode
         self.limits_mode = limits_mode
-        self.opt = opt
+        self.optimizer = optimizer
         self.active_dims = None
 
         self.n_processes = n_processes
@@ -41,8 +42,23 @@ class OPTimizer(object2.CopyableObject):
         self.hesse_weighting = 0
 
         self.limits = lambda x: x
+
+        self.staircase = OPTStaircase(n_stairs=-1)
+
         # Logging
         self.return_x_list = False
+
+
+class OPTStaircase(object):
+    __slots__ = ('n_stairs',        # int
+                 'n_var',           # int[n_stairs]
+                 'n_steps',         # int[n_stairs]
+                 'clip',            # float[n_stairs]
+                 'hesse_inv_dict',  # dict[n_stairs]
+                 )
+
+    def __init__(self, n_stairs=-1):
+        self.n_stairs = n_stairs
 
 
 # Gradient Descent
@@ -90,7 +106,7 @@ def gradient_descent(x, fun, grad, opt):
         if opt.callback is not None:
             j = opt.callback(x=x.copy(), jac=j.copy())  # , count=o) -> callback function handles count
 
-        v = opt.opt.update(x=x, v=j)
+        v = opt.optimizer.update(x=x, v=j)
         v = np2.clip2(v, clip=opt.clip[i], mode=opt.clip_mode)
         x[..., active_dims] += v[..., active_dims]
 

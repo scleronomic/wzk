@@ -188,6 +188,8 @@ def plot_cube(limits, pl=None, mode='faces', **kwargs):
         return plot_faces(x=v, faces=f, pl=pl, **kwargs)
     elif mode == 'lines':
         return plot_lines(x=v, lines=e, pl=pl, **kwargs)
+    else:
+        raise ValueError
 
 
 def plot_collision(pl, xa, xb, ab, **kwargs):

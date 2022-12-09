@@ -49,7 +49,7 @@ def denormalize_01(x, low, high):
     return x * (high - low) + low
 
 
-def normalize_11(x, low=None, high=None, axis=None):
+def normalize11(x, low=None, high=None, axis=None):
     """
     Normalize [low, high] to [-1, 1]
     low and high should either be scalars or have the same dimension as the last dimension of x
@@ -63,7 +63,7 @@ def normalize_11(x, low=None, high=None, axis=None):
     return 2 * (x - low) / (high - low) - 1
 
 
-def denormalize_11(x, low, high):
+def denormalize11(x, low, high):
     """
     Denormalize [-1, 1] to [low, high]
     low and high should either be scalars or have the same dimension as the last dimension of x

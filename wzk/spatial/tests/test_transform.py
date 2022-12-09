@@ -1,9 +1,20 @@
+import unittest
+
 import numpy as np
 
 from wzk import spatial, pv2
 
 
-def understand_rotvec():
+class Test(unittest.TestCase):
+
+    def test_AxBxC(self):
+        a, b, c = np.random.random((3, 100, 3))
+        r0 = np.cross(a, np.cross(b, c))
+        r1 = spatial.AxBxC(a, b, c)
+        self.assertTrue(np.allclose(r0, r1))
+
+
+def vis_rotvec():
     x = np.zeros((5, 3))
     x[:, 2] = np.arange(5)
     rv = np.zeros((5, 3))

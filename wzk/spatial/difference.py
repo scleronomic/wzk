@@ -1,5 +1,5 @@
 import numpy as np
-from wzk.spatial.transform import matrix2rotvec
+from wzk.spatial.transform import dcm2rotvec
 
 
 # Location
@@ -48,7 +48,7 @@ def rotation_dist(rot):
 def rotation_difference(rot_a, rot_b):
     rot = rot_b @ rot_a.swapaxes(-2, -1)
     if rot.shape[-1] == 3:
-        return np.linalg.norm(matrix2rotvec(rot), axis=-1)  # This is numerically more stable
+        return np.linalg.norm(dcm2rotvec(rot), axis=-1)  # This is numerically more stable
     else:
         return np.arccos(rot[..., 0, 0])
 
