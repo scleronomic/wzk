@@ -539,5 +539,17 @@ def irwin_hall_distribution(x, n=2):
     return pre_factor * f_xn
 
 
+def test_dxnorm_dx():
+    x = np.vstack([magic(3).T]*3)
+    j = dxnorm_dx(x)
+    print(j[0])
+
+
+# if __name__ == '__main__':
+    # vis_k_farthest_neighbors()
+
+
 if __name__ == '__main__':
-    vis_k_farthest_neighbors()
+    test_dxnorm_dx()
+
+

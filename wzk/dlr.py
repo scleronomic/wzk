@@ -8,15 +8,20 @@ PLATFORM_IS_LINUX = platform.system() == 'Linux'
 USERNAME = os.path.expanduser("~").split(sep='/')[-1]
 TENH_JO = 'tenh_jo'
 
+USERNAME_DICT = dict(mac='jote',
+                     dlr='tenh_jo',
+                     gcp='johannes_tenhumberg_gmail_com')
+
+LOCATION_DICT = dict(jote='mac',
+                     tenh_jo='dlr',
+                     baeuml='dlr',
+                     bauml='dlr',
+                     johannes_tenhumberg_gmail_com='gcp')
+
 
 def where_am_i():
-    location_dict = dict(jote='mac',
-                         tenh_jo='dlr',
-                         baeuml='dlr',
-                         bauml='dlr',
-                         johannes_tenhumberg_gmail_com='gcp')
     try:
-        location = location_dict[USERNAME]
+        location = LOCATION_DICT[USERNAME]
     except KeyError:
         location = 'dlr'
 

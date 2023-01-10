@@ -168,3 +168,13 @@ def eye_pov(xy, angle, radius, arc, n_rays=3,
     *_, h_pupil = fill_circle_intersection(xy0=xy, r0=cornea_factor, xy1=pupil_xy, r1=pupil_radius, ax=ax, **kwargs)
 
     return h_edges, h_rays, h_arc, h_pupil
+
+
+def plot_box(ax, limits=None, **kwargs):
+    if limits is None:
+        limits = np.array([[0, 1],
+                           [0, 1]])
+
+    x = _geometry.box(limits)
+
+    ax.plot(*x.T, **kwargs)

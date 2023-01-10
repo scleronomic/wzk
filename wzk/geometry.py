@@ -119,6 +119,15 @@ def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
     return v, e, f
 
 
+def box(limits):
+    x = np.array([[limits[0, 0], limits[1, 0]],
+                  [limits[0, 1], limits[1, 0]],
+                  [limits[0, 1], limits[1, 1]],
+                  [limits[0, 0], limits[1, 1]],
+                  [limits[0, 0], limits[1, 0]]])
+    return x
+
+
 def get_parallel_orthogonal(p: np.ndarray, v: np.ndarray) -> (np.ndarray, np.ndarray):
     parallel = p * (p * v).sum(axis=-1, keepdims=True) / (p * p).sum(axis=-1, keepdims=True)
     orthogonal = v - parallel

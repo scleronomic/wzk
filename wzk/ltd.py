@@ -2,7 +2,7 @@
 import json
 from collections.abc import Iterable
 from collections import namedtuple
-
+import copy
 import numpy as np
 
 
@@ -40,6 +40,12 @@ class AttrDict(dict):
 
         for key in self.keys():
             self[key] = from_nested_dict(self[key])
+
+    def copy(self):
+        return AttrDict(super().copy())
+
+    def deepcopy(self):
+        return AttrDict(copy.deepcopy(super()))
 
 
 class ObjectDict:

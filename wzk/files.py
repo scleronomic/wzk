@@ -12,7 +12,7 @@ import numpy as np
 from wzk.printing import progress_bar
 from wzk.time2 import get_timestamp
 
-__pickle_extension_short = '.pkl'  # TODO  check for both and use mor consistently
+__pickle_extension_short = '.pkl'  # TODO  check for both and use more consistently
 __pickle_extension_long = '.pickle'
 
 __open_cmd_dict = {'Linux': 'xdg-open',

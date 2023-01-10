@@ -309,10 +309,10 @@ def offset_frame(f, i=None, vm=None,
 def frame_logarithm(f):
     # https://github.com/CarletonABL/QuIK/blob/main/C%2B%2B/QuIK/IK/hgtDiff.cpp
 
-    l = np.zeros(f.shape[:-2] + (6,))
+    log = np.zeros(f.shape[:-2] + (6,))
     x, dcm = frame2trans_dcm(f)
-    l[..., :3] = x
-    e = l[..., 3:]
+    log[..., :3] = x
+    e = log[..., 3:]
     e[..., 0] = dcm[..., 2, 1] - dcm[..., 1, 2]
     e[..., 1] = dcm[..., 0, 2] - dcm[..., 2, 0]
     e[..., 2] = dcm[..., 1, 0] - dcm[..., 0, 1]
@@ -334,8 +334,7 @@ def frame_logarithm(f):
     e[b_small] = e_small[b_small]
     e[b_true] = e_true[b_true]
 
-    return l
-
+    return log
 
 
 # +(j1 x j2) x d + j1 x (j2 x d) =

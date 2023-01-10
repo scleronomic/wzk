@@ -29,6 +29,6 @@ def test_key_slider_widget():
     add_key_slider_widget(pl=pl, slider=None, callback=lambda x: print('A'), step=2.)
     pl.show()
 
-22
+
 if __name__ == '__main__':
     test_add_rhs_widget()

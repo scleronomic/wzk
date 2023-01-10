@@ -147,6 +147,19 @@ class Test(TestCase):
         d_round = round_dict(d=d, decimals=1)
         print(d_round)
 
+    def test_get_interval_indices(self):
+        arr, res = [0]*7, [0]*7
+        arr[0], res[0] = np.array([0, 0, 0, 0]), np.zeros((0, 2))
+        arr[1], res[1] = np.array([0, 0, 0, 1]), np.array([[3, 4]])
+        arr[2], res[2] = np.array([0, 1, 1, 0]), np.array([[1, 3]])
+        arr[3], res[3] = np.array([1, 0, 0, 0]), np.array([[0, 1]])
+        arr[4], res[4] = np.array([1, 0, 0, 1]), np.array([[0, 1], [3, 4]])
+        arr[5], res[5] = np.array([1, 1, 0, 1]), np.array([[0, 2], [3, 4]])
+        arr[6], res[6] = np.array([1, 1, 1, 1]), np.array([[0, 4]])
+
+        for aa, rr in zip(arr, res):
+            self.assertTrue(np.array_equal(get_interval_indices(aa), rr))
+
 
 if __name__ == '__main__':
     pass

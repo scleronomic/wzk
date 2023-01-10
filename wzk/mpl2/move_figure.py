@@ -1,21 +1,21 @@
 import numpy as np
 
-try:
-    import screeninfo
-except ModuleNotFoundError:
-    screeninfo = None
-    monitors = [[1440, 900]]
-if screeninfo is not None:
-    try:
-        monitors = [(m.width, m.height) for m in screeninfo.get_monitors()]
-    except screeninfo.common.ScreenInfoError:
-        # Fallback for my mac
-        # monitors = [[2560, 1600]]
-        monitors = [[1440, 900]]
-        # from screeninfo import get_monitors, Enumerator
-        # for matrix in get_monitors(Enumerator.OSX):
-        #     print(str(matrix))
-        # ( ModuleNotFoundError, NotImplementedError, NameError, screeninfo.common.ScreenInfoError):
+# try:
+#     # import screeninfo
+# except ModuleNotFoundError:
+screeninfo = None
+monitors = [[2560, 1600]]
+# if screeninfo is not None:
+#     try:
+#         monitors = [(m.width, m.height) for m in screeninfo.get_monitors()]
+#     except screeninfo.common.ScreenInfoError:
+#         # Fallback for my Mac
+#         monitors = [[2560, 1600]]
+#         # monitors = [[1440, 900]]
+#         # from screeninfo import get_monitors, Enumerator
+#         # for matrix in get_monitors(Enumerator.OSX):
+#         #     print(str(matrix))
+#         # ( ModuleNotFoundError, NotImplementedError, NameError, screeninfo.common.ScreenInfoError):
 
 
 def move_fig(fig, position=None, monitor=-1):

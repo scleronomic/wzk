@@ -486,7 +486,7 @@ def fill_interval_indices(interval_list, n):
     return np.array(interval_list)
 
 
-def get_interval_indices(bool_array):
+def get_interval_indices(bool_array, expand=False):
     """
     Get list of start and end indices, which indicate the sections of True values in the array.
 
@@ -501,15 +501,19 @@ def get_interval_indices(bool_array):
     [1, 1, 1, 1]  ->  [[0, 4]]
 
     """
-
+    bool_array = bool_array.astype(bool)
     assert bool_array.ndim == 1
-    interval_list = np.where(np.diff(bool_array.astype(bool)) != 0)[0] + 1
+    interval_list = np.where(np.diff(bool_array) != 0)[0] + 1
     if bool_array[0]:
         interval_list = np.concatenate([[0], interval_list])
     if bool_array[-1]:
         interval_list = np.concatenate([interval_list, bool_array.shape])
+    interval_list = interval_list.reshape(-1, 2)
 
-    return interval_list.reshape(-1, 2)
+    if expand:
+        interval_list = [list(range(i0, i1)) for (i0, i1) in interval_list]
+
+    return interval_list
 
 
 def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):

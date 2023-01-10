@@ -1,7 +1,4 @@
 from unittest import TestCase
-# import matplotlib as mpl
-# mpl.use('TkAgg')
-# import matplotlib.pyplot as plt
 
 from wzk.mpl2.move_figure import *
 from wzk.mpl2.backend import plt
