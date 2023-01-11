@@ -1,7 +1,6 @@
 import os
 import platform
 
-from wzk.files import ICLOUD  # noqa
 
 PLATFORM_IS_LINUX = platform.system() == 'Linux'
 

@@ -19,7 +19,7 @@ __open_cmd_dict = {'Linux': 'xdg-open',
                    'Darwin': 'open',
                    'Windows': 'start'}
 
-ICLOUD = 'Library/Mobile Documents/com~apple~CloudDocs'
+# ICLOUD = 'Library/Mobile Documents/com~apple~CloudDocs'
 
 
 def get_pythonpath():
@@ -40,10 +40,18 @@ def rmdirs(directory: Union[str, list]):
             pass
 
 
-def rm_files_in_dir(directory: str):
-    file_list = os.listdir(directory)
+def rm(file):
+    try:
+        os.remove(file)
+    except FileNotFoundError:
+        pass
+
+
+def rm_files_in_dir(directory: str, file_list: list = None):
+    if file_list is None:
+        file_list = os.listdir(directory)
     for file in file_list:
-        os.remove(os.path.join(directory, file))
+        rm(os.path.join(directory, file))
 
 
 def mkdirs(directory: Union[str, list]):
@@ -188,7 +196,7 @@ def combine_npy_files(directory: str,
 
     if delete_singles:
         for file in file_list:
-            os.remove(file)
+            rm(file)
     return arr
 
 
@@ -351,3 +359,51 @@ def write_msgpack(file, nested_list):
     arr_bin = msgpack.packb(nested_list, use_bin_type=True)
     with open(file, 'wb') as f:
         f.write(arr_bin)
+
+
+def rename_directories_inbetween(directory, inbetweens, new_inbetweens=''):
+    for directory_i, directory_list, file_list in os.walk(directory):
+        for f in file_list:
+            old = f"{directory_i}/{f}"
+            new = old.replace(inbetweens, new_inbetweens)
+            mv(old, new)
+
+
+def rm_empty_folders(directory):
+    for d, _, _ in os.walk(directory, topdown=False):
+        if len(os.listdir(d)) == 0:
+            print(d)
+            os.rmdir(d)
+
+
+def get_sub_directories(directory):
+    directory = os.path.normpath(directory)
+    subs = next(os.walk(directory))[1]
+    subs = [f"{directory}/{s}" for s in subs]
+    return subs
+
+
+def helper__get_sub_directory_list(directory):
+    if isinstance(directory, str):
+        directory_list = get_sub_directories(directory=directory)
+    else:
+        directory_list = os.listdir(directory)
+    return directory_list
+
+
+def mkdir_for_each(directory, new_sub_directory):
+    new_sub_directory = os.path.normpath(new_sub_directory)
+    directory_list = helper__get_sub_directory_list(directory=directory)
+
+    directory_list = [f"{os.path.normpath(d)}/{new_sub_directory}" for d in directory_list]
+    mkdirs(directory_list)
+
+
+def rm_files_for_each(directory, file_list):
+    directory_list = helper__get_sub_directory_list(directory=directory)
+    for d in directory_list:
+        rm_files_in_dir(directory=d, file_list=file_list)
+
+
+# TODO order that file
+#  test_all that stuff
