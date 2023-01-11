@@ -115,6 +115,7 @@ def add_multiple_slider_widgets(pl, ranges, names, grid, idx,
 
     if x0 is None:
         x0 = ranges[:, 0] + (ranges[:, 1] - ranges[:, 0]) / 2
+    x0 = np.squeeze(x0)
 
     def cb_wrapper(ii):
         def cb(value):
