@@ -125,7 +125,7 @@ def gradient_descent(x, fun, grad, opt):
 
 
 def __x_wrapper(x):
-    x = x.copy()
+    x = np.array(x.copy())
     if x.ndim == 1:
         x = x[np.newaxis, :]
 
