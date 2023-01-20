@@ -59,7 +59,7 @@ def rotation_difference_cost(rot_a, rot_b):
 
 
 # Combined
-def frame_difference(f_a, f_b, verbose=0):
+def frame_difference(f_a, f_b, unit_trans="m", unit_rot="rad", verbose=0):
     loc = location_difference(loc_a=f_a[..., :-1, -1],
                               loc_b=f_b[..., :-1, -1])
 
@@ -69,6 +69,13 @@ def frame_difference(f_a, f_b, verbose=0):
     if verbose > 0:
         print(f"Max : {np.max(loc*1000):.3f}mm, {np.max(np.rad2deg(rot)):.3f}deg")
         print(f"Mean: {np.mean(loc*1000):.3f}mm, {np.mean(np.rad2deg(rot)):.3f}deg")
+
+    if unit_trans == "mm":
+        loc *= 1000
+
+    if unit_rot == "deg":
+        rot = np.rad2deg(rot)
+
     return loc, rot
 
 
