@@ -254,7 +254,7 @@ def plot_spheres(x, r,
         h = (h0, h1)
     else:
         for h0i, h0i_new in zip(h[0], h0):
-            h0i.overwrite(h0i_new)
+            h0i.copy_from(h0i_new)
 
     return h
 
@@ -287,7 +287,7 @@ def plot_coordinate_frames(f,
             h = (h0, h1)
         else:
             for i, h0i in enumerate(h[0]):
-                h0i.overwrite(h0[i])
+                h0i.copy_from(h0[i])
 
         return h
 
