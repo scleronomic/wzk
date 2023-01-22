@@ -117,6 +117,8 @@ def tuple_extract(t, default, mode="default"):
 def squeeze(s):
     if len(s) == 1:
         return s[0]
+    else:
+        return s
 
 
 def remove_nones(lst):
