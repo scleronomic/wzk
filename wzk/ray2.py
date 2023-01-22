@@ -47,9 +47,11 @@ def __get_address_password(stdout):
     pattern_adr = r"--address='\S*'"
     pattern_pwd = r"--redis-password='\S*'"
     address = squeeze(re.compile(pattern_adr).findall(stdout))
-    address = address[address.find("=")+1:]
+    print(address)
+    # address = address[address.find("=")+1:]
     password = squeeze(re.compile(pattern_pwd).findall(stdout))
-    password = password[password.find("=")+1:]
+    print(password)
+    # password = password[password.find("=")+1:]
 
     _address[0] = address
     _password[0] = password
