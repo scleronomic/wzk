@@ -23,7 +23,7 @@ def quiet_mode_on():
 
 
 def input_timed(prompt, seconds, clear=True):
-    if prompt is not None and prompt != '':
+    if prompt is not None and prompt != "":
         print(prompt)
 
     i, o, e = select.select([sys.stdin], [], [], seconds)
@@ -56,17 +56,17 @@ def input_clear_loop(prompt, condition, error_prompt):
         i += 1
 
 
-def pre_string_suf(s: str, prefix: str = '', suffix: str = '', delimiter: str = ' | ') -> str:
-    if s == '':
+def pre_string_suf(s: str, prefix: str = "", suffix: str = "", delimiter: str = " | ") -> str:
+    if s == "":
         s = prefix
-    elif prefix == '':
+    elif prefix == "":
         s = s
     else:
         s = f"{prefix}{delimiter}{s}"
 
-    if s == '':
+    if s == "":
         s = suffix
-    elif suffix == '':
+    elif suffix == "":
         s = s
     else:
         s = f"{s}{delimiter}{suffix}"
@@ -74,12 +74,12 @@ def pre_string_suf(s: str, prefix: str = '', suffix: str = '', delimiter: str = 
     return s
 
 
-def get_progress_bar(i, n, prefix='', suffix='', bar='█'):
-    bar = bar * i + '-' * (n - i)
+def get_progress_bar(i, n, prefix="", suffix="", bar="█"):
+    bar = bar * i + "-" * (n - i)
     return f"\r{prefix} |{bar}| {suffix}"
 
 
-def progress_bar(i, n, prefix='', suffix='', bar_length=None):
+def progress_bar(i, n, prefix="", suffix="", bar_length=None):
     bar_length_max = 100
     if bar_length is None:
         bar_length = n
@@ -96,19 +96,19 @@ def progress_bar(i, n, prefix='', suffix='', bar_length=None):
     sys.stdout.write(s)
 
     if i == n:
-        sys.stdout.write('\n')
+        sys.stdout.write("\n")
     sys.stdout.flush()
 
 
-def print_table(rows, columns, data, min_voxel_size=10, cell_format='.5f'):
+def print_table(rows, columns, data, min_voxel_size=10, cell_format=".5f"):
     max_voxel_size_c = max([len(c) for c in columns] + [min_voxel_size])
     max_voxel_size_r = max([len(r) for r in rows] + [min_voxel_size])
 
-    row_format = '{:>' + str(max_voxel_size_r) + '}'
-    header_format = row_format + ('{:>' + str(max_voxel_size_c) + '}') * len(columns)
-    data_format = row_format + ('{:>' + str(max_voxel_size_c) + cell_format + '}') * len(columns)
+    row_format = "{:>" + str(max_voxel_size_r) + "}"
+    header_format = row_format + ("{:>" + str(max_voxel_size_c) + "}") * len(columns)
+    data_format = row_format + ("{:>" + str(max_voxel_size_c) + cell_format + "}") * len(columns)
 
-    print(header_format.format('', *columns))
+    print(header_format.format("", *columns))
     for row_name, row_data in zip(rows, data):
         print(data_format.format(row_name, *row_data))
 
@@ -118,7 +118,7 @@ def print_dict(d, newline=True, message=None):
         print(message)
 
     for key in d:
-        print(key, ':')
+        print(key, ":")
         print(repr(d[key]))
 
         if newline:
@@ -141,11 +141,11 @@ def print_stats(*args, names=None, dec=4):
 
     cols = [key for key in s]
 
-    print_table(rows=names, columns=cols, data=stats, cell_format=f'.{dec}f')
+    print_table(rows=names, columns=cols, data=stats, cell_format=f".{dec}f")
     return np.array(stats)
 
 
-def print_stats_bool(b, name='', dec=4):
+def print_stats_bool(b, name="", dec=4):
     print(f"{name}: {np.sum(b)}/{np.size(b)} = {np.mean(b):.{dec}f}")
 
 
@@ -167,29 +167,29 @@ def print_correlation(bool_lists, names, dec=4):
 
 
 def print2(*args, verbose=None,
-           sep=' ', end='\n', file=None, flush=False):
+           sep=" ", end="\n", file=None, flush=False):
     v = verbose_level_wrapper(verbose=verbose)
 
     if v.verbose > 0:
         args = [str(a) for a in args]
-        t = '\t'*v.level
+        t = "\t"*v.level
         print(f"{t}{sep.join(args)}", sep=sep, end=end, file=file, flush=flush)
 
 
 def print_array_3d(array_3d,
                    verbose=None):
     l, k, n = array_3d.shape
-    s = [''] * k
+    s = [""] * k
     for ll in range(l):
         ss = repr(array_3d[ll])
-        ss = ss.replace('array', f'   {ll}:')
-        ss = ss.replace('(', ' ')
-        ss = ss.replace(')', '')
-        ss = ss.split('\n')
+        ss = ss.replace("array", f"   {ll}:")
+        ss = ss.replace("(", " ")
+        ss = ss.replace(")", "")
+        ss = ss.split("\n")
         for kk in range(k):
             s[kk] += ss[kk]
 
-    print2('\n'.join(s), verbose=verbose)
+    print2("\n".join(s), verbose=verbose)
 
 
 def clear_previous_line():
@@ -197,7 +197,7 @@ def clear_previous_line():
     sys.stdout.write("\033[K")  # clear line
 
 
-def color_text(s, color, background='w', weight=0):
+def color_text(s, color, background="w", weight=0):
     """you have to print normally (black / white) once to don't have any sight effects """
     color_dict = dict(black=0, k=0,
                       red=1, r=1,

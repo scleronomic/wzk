@@ -6,7 +6,7 @@ from wzk.geometry import projection_point_line
 
 class RelativeFancyArrow(patches.FancyArrow):
     def __init__(self, x, y, dx, dy, width=0.2, length_includes_head=True, head_width=0.3, head_length=0.4,
-                 shape='full', overhang=0, head_starts_at_zero=False, **kwargs):
+                 shape="full", overhang=0, head_starts_at_zero=False, **kwargs):
         length = np.hypot(dx, dy)
         super().__init__(x, y, dx, dy, width=width*length, length_includes_head=length_includes_head*length,
                          head_width=head_width*length, head_length=head_length*length,
@@ -16,7 +16,7 @@ class RelativeFancyArrow(patches.FancyArrow):
 class FancyArrowX2(patches.FancyArrow):
     def __init__(self, xy0, xy1, offset0=0.0, offset1=0.0,
                  width=0.2, head_width=0.3, head_length=0.4, overhang=0,
-                 shape='full',  length_includes_head=True, head_starts_at_zero=False, **kwargs):
+                 shape="full",  length_includes_head=True, head_starts_at_zero=False, **kwargs):
 
         xy0, xy1 = np.array(xy0), np.array(xy1)
         dxy = xy1 - xy0
@@ -33,11 +33,11 @@ class FancyArrowX2(patches.FancyArrow):
 
 
 class FancyBbox(patches.FancyBboxPatch):
-    def __init__(self, xy: np.ndarray = np.zeros(2), width=1., height=1., boxstyle='Round', pad=0.3, corner_size=None,
+    def __init__(self, xy: np.ndarray = np.zeros(2), width=1., height=1., boxstyle="Round", pad=0.3, corner_size=None,
                  **kwargs):
-        if boxstyle in ['Roundtooth', 'Sawtooth']:
+        if boxstyle in ["Roundtooth", "Sawtooth"]:
             bs = patches.BoxStyle(boxstyle, pad=pad, tooth_size=corner_size)
-        elif boxstyle in ['Round', 'Round4']:
+        elif boxstyle in ["Round", "Round4"]:
             bs = patches.BoxStyle(boxstyle, pad=pad, rounding_size=corner_size)
         else:
             bs = patches.BoxStyle(boxstyle, pad=pad)
@@ -88,8 +88,8 @@ class CurlyBrace(patches.PathPatch):
     def __init__(self, p, x0, x1,
                  curliness=1/np.e, **kwargs):
 
-        kwargs['edgecolor'] = kwargs.pop('color', 'black')
-        kwargs['facecolor'] = 'none'
+        kwargs["edgecolor"] = kwargs.pop("color", "black")
+        kwargs["facecolor"] = "none"
 
         p, x0, x1, = np.atleast_1d(p, x0, x1)
 

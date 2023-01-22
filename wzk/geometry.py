@@ -570,7 +570,7 @@ def get_points_on_multicircles(x, r, n=10, endpoint1=False, endpoint2=True):
     return points, hull
 
 
-def get_points_on_sphere(x=None, r=None, n=None, mode='fibonacci', squeeze=True):
+def get_points_on_sphere(x=None, r=None, n=None, mode="fibonacci", squeeze=True):
 
     if x is None:
         x = np.zeros((1, 3))
@@ -584,17 +584,17 @@ def get_points_on_sphere(x=None, r=None, n=None, mode='fibonacci', squeeze=True)
     x = np.atleast_2d(x)
     r = np.atleast_1d(r)
 
-    if mode == 'fibonacci':
+    if mode == "fibonacci":
         assert isinstance(n, int)
         x = x[:, np.newaxis, :] + r[..., np.newaxis, np.newaxis]*fibonacci_sphere(n=n)[np.newaxis, :, :]
-    elif mode == 'parametric':
+    elif mode == "parametric":
         if len(n) == 2:
             n_phi, n_theta = n
         else:
             n_phi, n_theta = int(np.ceil(np.sqrt(n)))
         phi = np.linspace(0, 2*np.pi, num=n_phi, endpoint=False)
         theta = np.linspace(0, np.pi, num=n_theta, endpoint=False)
-        phi, theta = np.meshgrid(phi, theta, indexing='ij')
+        phi, theta = np.meshgrid(phi, theta, indexing="ij")
         xx = np.sin(theta) * np.cos(phi)
         yy = np.sin(theta) * np.sin(phi)
         zz = np.cos(theta)
@@ -745,7 +745,7 @@ def discretize_triangle(x=None,
 
     *shape, n_dim = a.shape
 
-    u, v = np.meshgrid(*[np.linspace(0, 1, n)]*2, indexing='ij')
+    u, v = np.meshgrid(*[np.linspace(0, 1, n)]*2, indexing="ij")
     u, v = u[:, :, np.newaxis], v[:, :, np.newaxis]
     a, b, c = a[..., np.newaxis, np.newaxis, :], b[..., np.newaxis, np.newaxis, :], c[..., np.newaxis, np.newaxis, :]
 
@@ -801,8 +801,8 @@ def test_discretize_triangle():
 
     from wzk.mpl2 import new_fig
     fig, ax = new_fig(aspect=1)
-    ax.plot(*x0.T, color='blue', marker='o')
-    ax.plot(*x2.T, color='red', marker='x')
+    ax.plot(*x0.T, color="blue", marker="o")
+    ax.plot(*x2.T, color="red", marker="x")
 
 
 def test_string_of_pearls2surface():
@@ -822,12 +822,12 @@ def test_string_of_pearls2surface():
     p = string_of_pearls2surface(x, r)
     #
     fig, ax = new_fig(aspect=1)
-    ax.plot(*x.T, marker='o', color='k')
-    plot_circles(x=x, r=r, ax=ax, alpha=0.1, edgecolor='k', facecolor='none')
-    ax.plot(*p.T, color='r')
+    ax.plot(*x.T, marker="o", color="k")
+    plot_circles(x=x, r=r, ax=ax, alpha=0.1, edgecolor="k", facecolor="none")
+    ax.plot(*p.T, color="r")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
     # test_discretize_triangle()
 

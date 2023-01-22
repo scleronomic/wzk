@@ -84,10 +84,10 @@ def kofn(n, k, fitness_fun,
     if verbose > 0:
         from wzk import new_fig
         fig, ax = new_fig()
-        ax.plot(fitness_avg, c='r', label='average')
-        ax.plot(fitness_best, c='b', label='best')
-        ax.set_xlabel('Generations')
-        ax.set_ylabel('Fitness')
+        ax.plot(fitness_avg, c="r", label="average")
+        ax.plot(fitness_best, c="b", label="best")
+        ax.set_xlabel("Generations")
+        ax.set_ylabel("Fitness")
         ax.legend()
 
     return hall_of_fame[np.argmin(fitness_best)], hall_of_all

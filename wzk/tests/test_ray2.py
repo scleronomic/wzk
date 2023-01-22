@@ -34,7 +34,7 @@ def speed():
         for _ in range(n):
             futures.append(test.remote())
         _ = ray.get(futures)
-        tt = toc('ray')
+        tt = toc("ray")
         return tt
 
     # def compare_times(tt):
@@ -55,4 +55,4 @@ def speed():
 
     tic()
     mp_wrapper(n, fun=test0, n_processes=n_cpu)
-    toc('mp')
+    toc("mp")

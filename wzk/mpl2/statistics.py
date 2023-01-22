@@ -11,8 +11,8 @@ def plot_mean_var(mean, log_var, mean_limit=None, var_limit=None, **kwargs):
 
     n_random_var = mean.shape[-1]
 
-    fig, axes_mean = new_fig(n_cols=1, n_rows=n_random_var, share_x='all')
-    fig, axes_var = new_fig(n_cols=1, n_rows=n_random_var, share_x='all')
+    fig, axes_mean = new_fig(n_cols=1, n_rows=n_random_var, share_x="all")
+    fig, axes_var = new_fig(n_cols=1, n_rows=n_random_var, share_x="all")
     if n_random_var == 1:
         axes_mean.hist(mean, **kwargs)
         axes_var.hist(log_var, **kwargs)

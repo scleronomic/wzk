@@ -1,30 +1,30 @@
 import numpy as np  # noqa
 
 from wzk import np2, multiprocessing2, object2
-from wzk.opt.optimizer import *
+from wzk.opt.optimizer import Naive
 
 
 class OPTimizer(object2.CopyableObject):
-    __slots__ = ('type',                           # str                 | type of the optimizer: gd, sqp, ...
-                 'n_steps',                        # int                 | Number of iterations
-                 'stepsize',                       # float               |
-                 'optimizer',                      # Optimizer           | Adam, RMSProp, ...
-                 'clip',                           # float[n_steps]      |
-                 'clip_mode',                      # str                 | 'jump', 'clip', 'ignore'
-                 'callback',                       # fun()               |
-                 'limits',                         # fun()               |
-                 'limits_mode',                    # str                 |
-                 'n_processes',                    # int                 |
-                 'use_loop_instead_of_processes',  # bool                |
-                 'hesse_inv',                      # float[n_var][n_var] |
-                 'hesse_weighting',                # float[n_steps]      |
-                 'active_dims',                    # bool[n_var]         |
-                 'staircase',                      # OPTStaircase        |
-                 'return_x_list',                  # bool                |  is this a suitable parameter? not really
+    __slots__ = ("type",                           # str                 | type of the optimizer: gd, sqp, ...
+                 "n_steps",                        # int                 | Number of iterations
+                 "stepsize",                       # float               |
+                 "optimizer",                      # Optimizer           | Adam, RMSProp, ...
+                 "clip",                           # float[n_steps]      |
+                 "clip_mode",                      # str                 | 'jump', 'clip', 'ignore'
+                 "callback",                       # fun()               |
+                 "limits",                         # fun()               |
+                 "limits_mode",                    # str                 |
+                 "n_processes",                    # int                 |
+                 "use_loop_instead_of_processes",  # bool                |
+                 "hesse_inv",                      # float[n_var][n_var] |
+                 "hesse_weighting",                # float[n_steps]      |
+                 "active_dims",                    # bool[n_var]         |
+                 "staircase",                      # OPTStaircase        |
+                 "return_x_list",                  # bool                |  is this a suitable parameter? not really
                  )
 
     def __init__(self, n_steps=100, stepsize=1, optimizer=Naive(), clip=0.1, n_processes=1,
-                 clip_mode='value', limits_mode='clip'):
+                 clip_mode="value", limits_mode="clip"):
         self.n_steps = n_steps
         self.stepsize = stepsize
         self.clip = clip
@@ -50,11 +50,11 @@ class OPTimizer(object2.CopyableObject):
 
 
 class OPTStaircase(object):
-    __slots__ = ('n_stairs',        # int
-                 'n_var',           # int[n_stairs]
-                 'n_steps',         # int[n_stairs]
-                 'clip',            # float[n_stairs]
-                 'hesse_inv_dict',  # dict[n_stairs]
+    __slots__ = ("n_stairs",        # int
+                 "n_var",           # int[n_stairs]
+                 "n_steps",         # int[n_stairs]
+                 "clip",            # float[n_stairs]
+                 "hesse_inv_dict",  # dict[n_stairs]
                  )
 
     def __init__(self, n_stairs=-1):

@@ -7,7 +7,7 @@ from wzk.np2 import flatten_without_last
 
 # Annotations
 def annotate_arrow(ax, xy0, xy1, offset=0.,
-                   xycoords='axes fraction', color='k', arrowstyle='->', zorder=None,
+                   xycoords="axes fraction", color="k", arrowstyle="->", zorder=None,
                    squeeze=True):
 
     xy0 = flatten_without_last(xy0)
@@ -21,8 +21,8 @@ def annotate_arrow(ax, xy0, xy1, offset=0.,
                       color=color)
     handles = []
     for a, b in zip(xy0, xy1):
-        handles.append(ax.annotate('', xytext=a, xy=b, xycoords=xycoords, arrowprops=arrowprops,
-                       verticalalignment='center', horizontalalignment='center', zorder=zorder))
+        handles.append(ax.annotate("", xytext=a, xy=b, xycoords=xycoords, arrowprops=arrowprops,
+                       verticalalignment="center", horizontalalignment="center", zorder=zorder))
 
     if squeeze and len(handles) == 1:
         handles = handles[0]
@@ -40,9 +40,9 @@ def make_legend_arrow_rl(legend, orig_handle, xdescent, ydescent, width, height,
 
 def make_legend_arrow_wrapper(theta, label2theta_dict=None):
     if isinstance(theta, str):
-        if theta == 'lr':
+        if theta == "lr":
             return HandlerPatch(patch_func=make_legend_arrow_lr)
-        elif theta == 'rl':
+        elif theta == "rl":
             return HandlerPatch(patch_func=make_legend_arrow_rl)
         else:
             raise ValueError
@@ -67,7 +67,7 @@ def align_legend(fig, l_str, w=80):
     for i, s in enumerate(l_str[0]):
         t = fig.text(0.1, 0.1, s, fontsize=8)
         bb = t.get_window_extent(renderer=r)
-        l_al.append(s + r'\hspace{' + str(w - bb.fig_width_inch) + 'pt} | ' + l_str[1][i])
+        l_al.append(s + r"\hspace{" + str(w - bb.fig_width_inch) + "pt} | " + l_str[1][i])
         t.remove()
 
     fig.axes[0].legend(l_al)

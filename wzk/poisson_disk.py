@@ -1,6 +1,5 @@
 import numpy as np
-from wzk.np2 import grid_x2i
-from wzk.mpl2 import new_fig, plt, imshow, grid_lines
+from wzk import mpl2, grid
 
 
 def ccw(a, b, c):
@@ -19,7 +18,7 @@ n = int(np.ceil(np.sqrt(dd)/r))
 
 np.random.random()
 
-grid = np.full((n,)*dd, -1)
+g = np.full((n,)*dd, -1)
 limits = np.array([[-1.0, +1.0],
                    [-1.0, +1.0]])
 
@@ -28,11 +27,11 @@ limits = np.array([[-1.0, +1.0],
 
 
 def aaa(t, d):
-    fig, ax = new_fig(aspect=1)
+    fig, ax = mpl2.new_fig(aspect=1)
     ax.set_axis_off()
     ax.set_xlim(-1, +1)
     ax.set_ylim(-1, +1)
-    grid_lines(ax=ax, start=limits[:, 0], step=r/np.sqrt(d), limits=limits)
+    mpl2.grid_lines(ax=ax, start=limits[:, 0], step=r/np.sqrt(d), limits=limits)
 
     x0 = np.zeros(d)
     x = x0[np.newaxis, :].copy()
@@ -44,8 +43,8 @@ def aaa(t, d):
     #               [+0.2, -0.5],
     #               [+0.4, -0.5],
     #               [+0.6, -0.5]])
-    i = grid_x2i(x, limits=limits, shape=grid.shape)
-    grid[i[:, 0], i[:, 1]] = np.arange(len(x))
+    i = grid.grid_x2i(x, limits=limits, shape=g.shape)
+    g[i[:, 0], i[:, 1]] = np.arange(len(x))
     h = None
     active = [True] * len(x)
     while np.any(active):
@@ -68,20 +67,20 @@ def aaa(t, d):
             if np.linalg.norm(x1-x0) > 1:
                 continue
 
-            i1 = grid_x2i(x1, limits=limits, shape=grid.shape)
+            i1 = grid.grid_x2i(x1, limits=limits, shape=g.shape)
             # if all(np.linalg.norm(x1 - x, axis=-1) >= r):
-            if grid[i1[0], i1[1]] == -1:
-                grid[i1[0], i1[1]] = len(x) + 1
+            if g[i1[0], i1[1]] == -1:
+                g[i1[0], i1[1]] = len(x) + 1
                 x = np.concatenate([x, x1[np.newaxis, :]])
                 active += [True]
                 # ax.plot(*x1, color='black', marker='o', markersize=1)
-                ax.plot((x[i, 0], x1[0]), (x[i, 1], x1[1]), color='black', lw=0.5)
-                h = imshow(ax=ax, h=h, img=grid, limits=limits, cmap='black', alpha=0.1, mask=grid != -1)
-                plt.pause(0.001)
+                ax.plot((x[i, 0], x1[0]), (x[i, 1], x1[1]), color="black", lw=0.5)
+                h = mpl2.imshow(ax=ax, h=h, img=g, limits=limits, cmap="black", alpha=0.1, mask=g != -1)
+                mpl2.plt.pause(0.001)
                 active[i] = True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     aaa(np.pi/10, d=dd)
 
 # for tt in [np.pi/15, np.pi/20, np.pi/25]:

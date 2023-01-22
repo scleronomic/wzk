@@ -73,30 +73,30 @@ def move_fig(fig, position=None, monitor=-1):
     __move_fig(fig, width=fig_width, height=fig_height, offset_x=offset_x, offset_y=offset_y)
 
 
-def __position_string_wrapper(position_str='top right'):
+def __position_string_wrapper(position_str="top right"):
     """
     Convert the string into the format n_rows, n_cols, index
     """
-    if position_str == 'full':
+    if position_str == "full":
         return 1, 1, 1
 
-    elif position_str == 'top':
+    elif position_str == "top":
         return 2, 1, 1
-    elif position_str == 'bottom':
+    elif position_str == "bottom":
         return 2, 1, 2
 
-    elif position_str == 'left':
+    elif position_str == "left":
         return 1, 2, 1
-    elif position_str == 'right':
+    elif position_str == "right":
         return 2, 2, 2
 
-    elif position_str == 'top left':
+    elif position_str == "top left":
         return 2, 2, 1
-    elif position_str == 'top right':
+    elif position_str == "top right":
         return 2, 2, 2
-    elif position_str == 'bottom left':
+    elif position_str == "bottom left":
         return 2, 2, 3
-    elif position_str == 'bottom right':
+    elif position_str == "bottom right":
         return 2, 2, 4
     else:
         raise NotImplementedError("Unknown position '{}', "
@@ -112,8 +112,8 @@ def __move_fig(fig, width=None, height=None, offset_x=None, offset_y=None):
 
     # Get the current position of the figure 'fig_width_inch'x'height'+'offset_x'+'offset_y'
     current_geometry = fig.canvas.manager.window.wm_geometry()
-    c_width, current_geometry = current_geometry.split('x')
-    c_height, c_offset_x, c_offset_y = current_geometry.split('+')
+    c_width, current_geometry = current_geometry.split("x")
+    c_height, c_offset_x, c_offset_y = current_geometry.split("+")
 
     # Adjust the geometry if a new value is given
     if width is None:

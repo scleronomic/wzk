@@ -8,9 +8,9 @@ from io import StringIO
 from wzk.subprocess2 import call2
 from wzk.ltd import atleast_list
 
-GCP_PROJECT = os.environ['GCP_PROJECT']
-GCP_ACCOUNT_NR = os.environ['GCP_ACCOUNT_NR']
-GCP_ZONE = 'us-central1-a'
+GCP_PROJECT = os.environ["GCP_PROJECT"]
+GCP_ACCOUNT_NR = os.environ["GCP_ACCOUNT_NR"]
+GCP_ZONE = "us-central1-a"
 __GCP_SCOPES = "https://www.googleapis.com/auth/devstorage.read_only," \
                "https://www.googleapis.com/auth/logging.write," \
                "https://www.googleapis.com/auth/monitoring.write," \
@@ -18,24 +18,24 @@ __GCP_SCOPES = "https://www.googleapis.com/auth/devstorage.read_only," \
                "https://www.googleapis.com/auth/service.management.readonly," \
                "https://www.googleapis.com/auth/trace.append"
 
-GCP_USER = os.environ['GCP_USER']
-GCP_USER_SHORT = os.environ['GCP_USER_SHORT']
+GCP_USER = os.environ["GCP_USER"]
+GCP_USER_SHORT = os.environ["GCP_USER_SHORT"]
 
 GCP_USER_LABEL = f"user={os.environ['GCP_USER_LABEL']}"
 
 
 def add_old_disks_flag(disks):
     if disks is None:
-        return ''
+        return ""
     disks = atleast_list(disks, convert=False)
     cmd = [f"--disk=boot=no,device-name={d['name']},name={d['name']},mode=rw" for d in disks]
-    cmd = ' '.join(cmd)
+    cmd = " ".join(cmd)
     return cmd
 
 
 def add_new_disks_flag(disks):
     if disks is None:
-        return ''
+        return ""
     disks = atleast_list(disks, convert=False)
     cmd = [f"--create-disk=boot={d['boot']}," 
            f"auto-delete={d['autodelete']},"
@@ -44,18 +44,18 @@ def add_new_disks_flag(disks):
            f"source-snapshot=projects/{GCP_PROJECT}/global/snapshots/{d['snapshot']},"
            f"type=projects/{GCP_PROJECT}/zones/{GCP_ZONE}/diskTypes/pd-balanced"
            for d in disks]
-    cmd = ' '.join(cmd)
+    cmd = " ".join(cmd)
     return cmd
 
 
 def add_local_disks_flag(disks):
     if disks is None:
-        return ''
-    interface = disks['interface']  # 'SCSI' or 'NVME'
-    n = disks['n']  # 8
+        return ""
+    interface = disks["interface"]  # 'SCSI' or 'NVME'
+    n = disks["n"]  # 8
 
     cmd = f"--local-ssd=interface={interface}"
-    cmd = ' '.join([cmd]*n)
+    cmd = " ".join([cmd]*n)
     return cmd
 
 
@@ -67,8 +67,8 @@ def get_disks():
 
 
 def add_startup_script_flag(startup_script):
-    if startup_script is None or startup_script == '':
-        return ''
+    if startup_script is None or startup_script == "":
+        return ""
     else:
         return f',startup-script="{startup_script}"'
 
@@ -107,7 +107,7 @@ def create_disk_cmd(disk):
 
 def __resource2name(resource):
     if isinstance(resource, dict):
-        resource = resource['name']
+        resource = resource["name"]
     return resource
 
 
@@ -148,7 +148,7 @@ def mount_disk(sdx, directory):
 
 
 def lsblk():
-    s = call2('lsblk')
+    s = call2("lsblk")
     blk = pd.read_table(StringIO(s), delim_whitespace=True)  # noqa
     return blk
 
@@ -166,7 +166,7 @@ def upload2bucket(disk, file, bucket, n, n0=0):
     instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
 
-    directory = f'/home/{GCP_USER}/sdb'
+    directory = f"/home/{GCP_USER}/sdb"
     for i in range(n0, n+n0):
         disk_i = f"{disk}-{i}"
         file_i = f"{bucket}/{file_name}_{i}{file_ext}"
@@ -193,15 +193,15 @@ def __delete_xyz(_type, names):
 
 
 def delete_instances(instances):
-    __delete_xyz(_type='instance', names=instances)
+    __delete_xyz(_type="instance", names=instances)
 
 
 def delete_disks(disks):
-    __delete_xyz(_type='disk', names=disks)
+    __delete_xyz(_type="disk", names=disks)
 
 
 def delete_snapshots(snapshots):
-    __delete_xyz(_type='snapshots', names=snapshots)
+    __delete_xyz(_type="snapshots", names=snapshots)
 
 
 def connect2(name):
@@ -210,7 +210,7 @@ def connect2(name):
 
 
 def attach_mount(disk):
-    directory = f'/home/{GCP_USER}/sdb'
+    directory = f"/home/{GCP_USER}/sdb"
 
     instance = socket.gethostname()
     sdx = attach_disk(instance=instance, disk=disk)
@@ -223,10 +223,10 @@ def umount_detach(sdx, disk):
     detach_disk(instance=instance, disk=disk)
 
 
-if __name__ == '__main__':
-    fire.Fire({'connect2': connect2,
-               'attach_mount': attach_mount,
-               'umount_detach': umount_detach})
+if __name__ == "__main__":
+    fire.Fire({"connect2": connect2,
+               "attach_mount": attach_mount,
+               "umount_detach": umount_detach})
 
 # gcloud compute instances create instance-2
 # --project=neon-polymer-214621

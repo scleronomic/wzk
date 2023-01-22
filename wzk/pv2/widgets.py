@@ -7,7 +7,7 @@ from wzk.grid import create_grid
 
 
 class RHSWidget:
-    def __init__(self, pl, origin=None, xyz=None, scale=1.0, color='k',
+    def __init__(self, pl, origin=None, xyz=None, scale=1.0, color="k",
                  callback=None):
 
         if origin is None:
@@ -23,9 +23,9 @@ class RHSWidget:
                                     normal_rotation=True,
                                     outline_translation=False, origin_translation=False,
                                     test_callback=False, implicit=True, factor=1)
-        self.wx = self.pl.add_plane_widget(self.update_x, normal='x', color='r', **plane_widget_options)
-        self.wy = self.pl.add_plane_widget(self.update_y, normal='y', color='g', **plane_widget_options)
-        self.wz = self.pl.add_plane_widget(self.update_z, normal='z', color='b', **plane_widget_options)
+        self.wx = self.pl.add_plane_widget(self.update_x, normal="x", color="r", **plane_widget_options)
+        self.wy = self.pl.add_plane_widget(self.update_y, normal="y", color="g", **plane_widget_options)
+        self.wz = self.pl.add_plane_widget(self.update_z, normal="z", color="b", **plane_widget_options)
         self.wo = self.pl.add_sphere_widget(self.update_o, center=origin, radius=scale * 0.1, color=color,
                                             test_callback=False)
         self.set_xyz(xyz=xyz)
@@ -80,7 +80,7 @@ class RHSWidget:
         return self.order
 
     def update_xyz(self, i):
-        xyz = geometry.make_rhs(self.get_xyz(), order=tuple(self.update_order(i=i))).T  # not sure if this is the best way
+        xyz = geometry.make_rhs(self.get_xyz(), order=tuple(self.update_order(i=i))).T  # not sure if this is smart
         self.set_xyz(xyz)
 
         self.callback()
@@ -102,13 +102,13 @@ class RHSWidget:
 
 
 def add_rhs_widget(pl, origin, xyz=None,
-                   scale=1.0, color='k', callback=None):
+                   scale=1.0, color="k", callback=None):
     return RHSWidget(pl=pl, origin=origin, xyz=xyz, scale=scale, color=color, callback=callback)
 
 
 def add_multiple_slider_widgets(pl, ranges, names, grid, idx,
                                 callback=None, x0=None,
-                                style='modern', title_height=0.02):
+                                style="modern", title_height=0.02):
 
     # style_dict = pv.rcParams['slider_style'][style]
     # width = max(style_dict['tube_width'], style_dict['slider_width'])  # what about cap_width ?
@@ -163,10 +163,10 @@ def add_key_slider_widget(pl, slider, callback, step=1.):
     def on_up():
         __on_key(s=+step*100)
 
-    pl.add_key_event(key='Left', callback=on_left)
-    pl.add_key_event(key='Right', callback=on_right)
-    pl.add_key_event(key='Down', callback=on_down)
-    pl.add_key_event(key='Up', callback=on_up)
+    pl.add_key_event(key="Left", callback=on_left)
+    pl.add_key_event(key="Right", callback=on_right)
+    pl.add_key_event(key="Down", callback=on_down)
+    pl.add_key_event(key="Up", callback=on_up)
 
 
 class MultipleSpheresWidget:
@@ -183,7 +183,7 @@ class MultipleSpheresWidget:
         limits[:, 1] = 0.20
 
         grid = create_grid(ll=(0.05, 0.05), ur=(0.95, 0.22), n=(n, 1), pad=(-0.015, 0.05))
-        names = [f'{i}' for i in range(n)]
+        names = [f"{i}" for i in range(n)]
         idx = np.zeros((n, 2), dtype=int)
         idx[:n, 0] = np.arange(n)
 
@@ -207,16 +207,16 @@ class MultipleSpheresWidget:
         self.update()
 
     def update(self):
-        print('x', repr(self.x))
-        print('r', repr(self.r))
+        print("x", repr(self.x))
+        print("r", repr(self.r))
         self.callback(self.x, self.r)
 
 
 def add_ruler_widget(pl):
 
     h_center = pv.PolyData(np.random.random((3, 3)))
-    h_center["My Labels"] = np.array(['a', 'center', 'b'])
-    pl.add_mesh(h_center, color='r', point_size=10)
+    h_center["My Labels"] = np.array(["a", "center", "b"])
+    pl.add_mesh(h_center, color="r", point_size=10)
     # h_labels = pl.add_point_labels(h_center, "My Labels", point_size=20, font_size=36)
 
     def update(pointa, pointb):
@@ -237,7 +237,7 @@ def add_ruler_widget(pl):
     return h_ruler
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
     # import pyvista as pv
     # pl = pv.Plotter()

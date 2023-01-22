@@ -14,15 +14,15 @@ def limits2voxel_size(shape, limits, unify=True):
     return voxel_size
 
 
-def __mode2offset(voxel_size, mode='c'):
+def __mode2offset(voxel_size, mode="c"):
     """Modes
         'c': center
         'b': boundary
 
     """
-    if mode == 'c':
+    if mode == "c":
         return voxel_size / 2
-    elif mode == 'b':
+    elif mode == "b":
         return 0
     else:
         raise NotImplementedError(f"Unknown mode: '{mode}'")
@@ -43,7 +43,7 @@ def grid_x2i(x, limits, shape):
     return np.asarray((x - lower_left) / voxel_size, dtype=int)
 
 
-def grid_i2x(i, limits, shape, mode='c'):
+def grid_i2x(i, limits, shape, mode="c"):
     """
     Get the coordinates of the grid at the index "i" in a grid with symmetric cells.
     borders: 0 | 2 | 4 | 6 | 8 | 10

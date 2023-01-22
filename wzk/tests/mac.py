@@ -25,5 +25,5 @@ def visual_bell(n=3):
     change_brightness(+n)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     visual_bell(n=5)

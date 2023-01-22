@@ -43,15 +43,15 @@ class DummyArray:
         return self.arr
 
 
-def initialize_array(shape, mode='zeros', dtype=None, order='c'):
+def initialize_array(shape, mode="zeros", dtype=None, order="c"):
 
-    if mode == 'zeros':
+    if mode == "zeros":
         return np.zeros(shape, dtype=dtype, order=order)
-    elif mode == 'ones':
+    elif mode == "ones":
         return np.ones(shape, dtype=dtype, order=order)
-    elif mode == 'empty':
+    elif mode == "empty":
         return np.empty(shape, dtype=dtype, order=order)
-    elif mode == 'random':
+    elif mode == "random":
         return np.random.random(shape).astype(dtype=dtype, order=order)
     else:
         raise ValueError(f"Unknown initialization method {mode}")
@@ -217,12 +217,12 @@ def repeat2new_shape(img, new_shape):
     return img
 
 
-def change_shape(arr, mode='even'):
+def change_shape(arr, mode="even"):
     s = np.array(arr.shape)
 
-    if mode == 'even':
+    if mode == "even":
         s_new = (s + s % 2)
-    elif mode == 'odd':
+    elif mode == "odd":
         s_new = (s // 2) * 2 + 1
     else:
         raise ValueError(f"Unknown mode {mode}")
@@ -290,16 +290,16 @@ def delete_args(*args, obj, axis=None):
     return tuple(np.delete(a, obj=obj, axis=axis) for a in args)
 
 
-def __fill_index_with(idx, axis, shape, mode='slice'):
+def __fill_index_with(idx, axis, shape, mode="slice"):
     """
     orange <-> orth-range
     sorry but 'orange', 'slice' was just to delicious
     """
     axis = axis_wrapper(axis=axis, n_dim=len(shape))
-    if mode == 'slice':
+    if mode == "slice":
         idx_with_ = [slice(None) for _ in range(len(shape)-len(axis))]
 
-    elif mode == 'orange':
+    elif mode == "orange":
         idx_with_ = np.ogrid[[range(s) for i, s in enumerate(shape) if i not in axis]]
     
     elif mode is None:
@@ -314,12 +314,12 @@ def __fill_index_with(idx, axis, shape, mode='slice'):
     return tuple(idx_with_)
 
 
-def insert(a, val, idx, axis, mode='slice'):
+def insert(a, val, idx, axis, mode="slice"):
     idx = __fill_index_with(idx=idx, axis=axis, shape=a.shape, mode=mode)
     a[idx] = val
 
 
-def extract(a, idx, axis, mode='slice'):
+def extract(a, idx, axis, mode="slice"):
     idx = __fill_index_with(idx=idx, axis=axis, shape=a.shape, mode=mode)
     return a[idx]
 
@@ -516,7 +516,7 @@ def get_interval_indices(bool_array, expand=False):
     return interval_list
 
 
-def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
+def get_cropping_indices(pos, shape_small, shape_big, mode="lower_left"):
     """
     Adjust the boundaries to fit small array in a larger image.
     pos:  idx where the small image should be set in the bigger picture, option A
@@ -531,18 +531,18 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
 
     shape_small, shape_big = args2arrays(shape_small, shape_big)
 
-    if mode == 'center':
+    if mode == "center":
         assert np.all(np.array(shape_small) % 2 == 1), shape_small
         shape_small2 = (np.array(shape_small) - 1) // 2
 
         ll_big = pos - shape_small2
         ur_big = pos + shape_small2 + 1
 
-    elif mode == 'lower_left':
+    elif mode == "lower_left":
         ll_big = pos
         ur_big = pos + shape_small
 
-    elif mode == 'upper_right':
+    elif mode == "upper_right":
         ll_big = pos - shape_small
         ur_big = pos
 
@@ -562,7 +562,7 @@ def get_cropping_indices(pos, shape_small, shape_big, mode='lower_left'):
     return ll_big, ur_big, ll_small, ur_small
 
 
-def add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
+def add_small2big(idx, small, big, mode_crop="center", mode_add="add"):
     """
     Insert a small picture into the complete picture at the position 'idx'
     Assumption: all dimension of the small_img are odd, and idx indicates the center of the image,
@@ -582,16 +582,16 @@ def add_small2big(idx, small, big, mode_crop='center', mode_add='add'):
         for ll_b, ur_b, ll_s, ur_s in zip(ll_big, ur_big, ll_small, ur_small):
 
             try:
-                if mode_add == 'add':
+                if mode_add == "add":
                     big[slicen(ll_b, ur_b)] += small[slicen(ll_s, ur_s)]
-                elif mode_add == 'replace':
+                elif mode_add == "replace":
                     big[slicen(ll_b, ur_b)] = small[slicen(ll_s, ur_s)]
             except ValueError:
-                print('idx', idx)
-                print('big', ll_b, ur_b)  # TODO sometimes this fails, check
-                print('big', big[slicen(ll_b, ur_b)].shape)
-                print('small', ll_s, ur_s)
-                print('small', small[slicen(ll_s, ur_s)].shape)
+                print("idx", idx)
+                print("big", ll_b, ur_b)  # TODO sometimes this fails, check
+                print("big", big[slicen(ll_b, ur_b)].shape)
+                print("small", ll_s, ur_s)
+                print("small", small[slicen(ll_s, ur_s)].shape)
 
 
 def get_exclusion_mask(a, exclude_values):
@@ -673,7 +673,7 @@ def tile_offset(a, reps, offsets=None):
     return b
 
 
-def construct_array(shape, val, idx, init_mode='zeros', dtype=None,
+def construct_array(shape, val, idx, init_mode="zeros", dtype=None,
                     axis=None, insert_mode=None):
     a = initialize_array(shape=shape, mode=init_mode, dtype=dtype)
     insert(a=a, val=val, idx=idx, axis=axis, mode=insert_mode)
@@ -870,14 +870,14 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
 
 
 def get_stats(x, axis=None, return_array=False):
-    stats = {'mean': np.mean(x, axis=axis),
-             'std':  np.std(x, axis=axis),
-             'median': np.median(x, axis=axis),
-             'min': np.min(x, axis=axis),
-             'max': np.max(x, axis=axis)}
+    stats = {"mean": np.mean(x, axis=axis),
+             "std":  np.std(x, axis=axis),
+             "median": np.median(x, axis=axis),
+             "min": np.min(x, axis=axis),
+             "max": np.max(x, axis=axis)}
 
     if return_array:
-        return np.array([stats['mean'], stats['std'], stats['median'], stats['min'], stats['max']])
+        return np.array([stats["mean"], stats["std"], stats["median"], stats["min"], stats["max"]])
 
     return stats
 
@@ -916,11 +916,11 @@ def find_consecutives(x, n):
     if n == 1:
         return np.arange(len(x))
     assert n > 1
-    return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n-1), mode='valid') == 0)[0]
+    return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n-1), mode="valid") == 0)[0]
 
 
 def find_largest_consecutives(x):
-    i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2-1), mode='valid') == 0)[0]
+    i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2-1), mode="valid") == 0)[0]
     i2 -= np.arange(len(i2))
     _, c2 = np.unique(i2, return_counts=True)
     if c2.size == 0:
@@ -947,17 +947,17 @@ def round2(x,
 
 def clip2(x, clip, mode, axis=-1):
     if mode:
-        if mode == 'value':
+        if mode == "value":
             return np.clip(x, a_min=-clip, a_max=+clip)
 
-        elif mode == 'norm':
+        elif mode == "norm":
             x = x.copy()
             n = np.linalg.norm(x, axis=axis, keepdims=True)
             b = n > clip
             x[b] = x[b] * (clip / n[b])
             return x
 
-        elif mode == 'norm-force':
+        elif mode == "norm-force":
             n = np.linalg.norm(x, axis=axis, keepdims=True)
             return x * (clip / n)
 
@@ -1015,9 +1015,9 @@ def slice2range(s):
 
 
 def __slice_or_range2tuple(sor, type2):
-    if type2 == 'slice':
+    if type2 == "slice":
         default1, default2, default3 = None, None, None
-    elif type2 == 'range':
+    elif type2 == "range":
         default1, default2, default3 = 0, 1, 1
     else:
         raise ValueError(f"Unknown {type2}")
@@ -1039,17 +1039,17 @@ def __slice_or_range2tuple(sor, type2):
         elif len(sor) == 3:
             return sor
         else:
-            raise ValueError('tuple must be have length={1, 2, 3}')
+            raise ValueError("tuple must be have length={1, 2, 3}")
     else:
-        raise TypeError('r must be {slice, range, int, tuple}')
+        raise TypeError("r must be {slice, range, int, tuple}")
 
 
 def slice2tuple(s):
-    return __slice_or_range2tuple(s, 'slice')
+    return __slice_or_range2tuple(s, "slice")
 
 
 def range2tuple(r):
-    return __slice_or_range2tuple(r, 'range')
+    return __slice_or_range2tuple(r, "range")
 
 
 def slice_add(a, b):

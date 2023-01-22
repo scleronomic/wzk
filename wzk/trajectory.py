@@ -32,25 +32,25 @@ def inner2full(inner, start=None, end=None):
     return inner
 
 
-def full2start_end(x, mode=''):
-    if mode == '1':
+def full2start_end(x, mode=""):
+    if mode == "1":
         return x[..., [0, -1], :].copy()
-    if mode == '20':
+    if mode == "20":
         return x[..., 0, :].copy(), x[..., -1, :].copy()
-    elif mode == '21':
+    elif mode == "21":
         return x[..., :1, :].copy(), x[..., -1:, :].copy()
     else:
         raise NotImplementedError
 
 
 def path_mode(x, mode=None):
-    if mode is None or mode == 'full':
+    if mode is None or mode == "full":
         return x
-    elif mode == 'inner':
+    elif mode == "inner":
         return x[..., 1:-1, :]
-    elif mode == 'wo_start':
+    elif mode == "wo_start":
         return x[..., 1:, :]
-    elif mode == 'wo_end':
+    elif mode == "wo_end":
         return x[..., :-1, :]
     else:
         raise ValueError
@@ -309,8 +309,8 @@ def combine_d_substeps__dx(d_dxs, n):
         n_samples, n_wp_ss, n_dof = d_dxs.shape
         d_dxs = d_dxs.reshape(n_samples, n_wp_ss//n, n, n_dof)
         ss_jac = d_substeps__dx(n=n, order=1)[np.newaxis, np.newaxis, ..., np.newaxis]
-        d_dx = np.einsum('ijkl, ijkl -> ijl', d_dxs, ss_jac[:, :, 0, :, :])
-        d_dx[:, :-1, :] += np.einsum('ijkl, ijkl -> ijl', d_dxs[:, 1:, :, :], ss_jac[:, :, 1, :, :])
+        d_dx = np.einsum("ijkl, ijkl -> ijl", d_dxs, ss_jac[:, :, 0, :, :])
+        d_dx[:, :-1, :] += np.einsum("ijkl, ijkl -> ijl", d_dxs[:, 1:, :, :], ss_jac[:, :, 1, :, :])
         return d_dx
     else:
         raise ValueError(f"{d_dxs.ndim}")

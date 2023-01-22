@@ -6,7 +6,7 @@ from wzk import change_tuple_order
 
 # Error under Python3.8 /MacOs -> AttributeError: Can't pickle local object 'mp_wrapper.<locals>.__fun_wrapper'
 # https://stackoverflow.com/questions/60518386/error-with-module-multiprocessing-under-python3-8
-multiprocessing.set_start_method('fork', force=True)
+multiprocessing.set_start_method("fork", force=True)
 
 
 def n_processes_wrapper(n_processes, n_samples):

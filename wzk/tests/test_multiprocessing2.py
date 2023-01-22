@@ -1,9 +1,9 @@
 import time
 from unittest import TestCase
 
+import numpy as np
 from wzk.time2 import tic, toc
-from wzk.multiprocessing2 import *
-from wzk.ltd import list_allclose
+from wzk import multiprocessing2, ltd
 
 
 class Test(TestCase):
@@ -32,38 +32,38 @@ class Test(TestCase):
         b = np.ones((1000, 3)) * 2
         c = np.ones((1000, 3)) * 3
 
-        res1 = mp_wrapper(999, fun=fun__int_in, n_processes=n_processes)
-        res1b = mp_wrapper(999, fun=fun__int_in, n_processes=n_processes, use_loop=True)
+        res1 = multiprocessing2.mp_wrapper(999, fun=fun__int_in, n_processes=n_processes)
+        res1b = multiprocessing2.mp_wrapper(999, fun=fun__int_in, n_processes=n_processes, use_loop=True)
         self.assertTrue(np.allclose(res1, np.zeros((999, 3))))
-        self.assertTrue(list_allclose(res1, res1b))
+        self.assertTrue(ltd.list_allclose(res1, res1b))
 
-        res2 = mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes)
-        res2b = mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes, use_loop=True)
+        res2 = multiprocessing2.mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes)
+        res2b = multiprocessing2.mp_wrapper(a, fun=fun__arr_in, n_processes=n_processes, use_loop=True)
         self.assertTrue(np.allclose(res2, z))
-        self.assertTrue(list_allclose(res2, res2b))
+        self.assertTrue(ltd.list_allclose(res2, res2b))
 
-        res3 = mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes)
-        res3b = mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes, use_loop=True)
+        res3 = multiprocessing2.mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes)
+        res3b = multiprocessing2.mp_wrapper(a, b, c, fun=fun__multiple_arr_in, n_processes=n_processes, use_loop=True)
         self.assertTrue(np.allclose(res3, a+b+c))
-        self.assertTrue(list_allclose(res3, res3b))
+        self.assertTrue(ltd.list_allclose(res3, res3b))
 
-        res4 = mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes)
-        res4b = mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes, use_loop=True)
+        res4 = multiprocessing2.mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes)
+        res4b = multiprocessing2.mp_wrapper(989, fun=fun__multiple_arr_out, n_processes=n_processes, use_loop=True)
         for i in range(1, 5):
             self.assertTrue(np.allclose(res4[i-1], np.full((989, i), i)))
-        self.assertTrue(all(list_allclose(res4, res4b)))
+        self.assertTrue(all(ltd.list_allclose(res4, res4b)))
 
-        res5 = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes)
-        res5b = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, use_loop=True)
+        res5 = multiprocessing2.mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes)
+        res5b = multiprocessing2.mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, use_loop=True)
         for i in range(1, 3):
             self.assertTrue(np.allclose(res5[i-1], np.full((1007, i), i)))
-        self.assertTrue(all(list_allclose(res5, res5b)))
+        self.assertTrue(all(ltd.list_allclose(res5, res5b)))
 
-        res6 = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, max_chunk_size=10)
-        res6b = mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, use_loop=True)
+        res6 = multiprocessing2.mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, max_chunk_size=10)
+        res6b = multiprocessing2.mp_wrapper(1007, fun=fun__multiple_out, n_processes=n_processes, use_loop=True)
         for i in range(1, 3):
             self.assertTrue(np.allclose(res6[i-1], np.full((1007, i), i)))
-        self.assertTrue(all(list_allclose(res6[:2], res6b[:2])))
+        self.assertTrue(all(ltd.list_allclose(res6[:2], res6b[:2])))
 
     def test_time(self):
 
@@ -73,11 +73,11 @@ class Test(TestCase):
 
         n_processes = 100
         tic()
-        _ = mp_wrapper(fun=fun_time, n_processes=n_processes)
+        _ = multiprocessing2.mp_wrapper(fun=fun_time, n_processes=n_processes)
         toc()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
     test = Test()
     test.test_time()

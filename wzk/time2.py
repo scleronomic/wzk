@@ -4,7 +4,7 @@ from wzk.printing import print2, verbose_level_wrapper
 
 
 def get_timestamp(t=None, year=True, month=True, day=True, hour=True, minute=True, second=True, millisecond=False,
-                  date_separator='-', date_time_separator='_', time_separator=':'):
+                  date_separator="-", date_time_separator="_", time_separator=":"):
     """
     Crete a datetime string including year, month, day; hour, minute, second, millisecond.
     With options for each of the elements if it should be included and how the symbol separating
@@ -26,14 +26,14 @@ def get_timestamp(t=None, year=True, month=True, day=True, hour=True, minute=Tru
 
     # Clean the datetime string and split it into separate elements
     stamp_list = str(t)
-    stamp_list = stamp_list.replace('-', 'x')
-    stamp_list = stamp_list.replace(':', 'x')
-    stamp_list = stamp_list.replace(' ', 'x')
-    stamp_list = stamp_list.replace('.', 'x')
-    stamp_list = stamp_list.split('x')
+    stamp_list = stamp_list.replace("-", "x")
+    stamp_list = stamp_list.replace(":", "x")
+    stamp_list = stamp_list.replace(" ", "x")
+    stamp_list = stamp_list.replace(".", "x")
+    stamp_list = stamp_list.split("x")
 
     # Loop over the elements of the datetime string and concatenate them with the corresponding symbols
-    stamp_str = ''
+    stamp_str = ""
     for i in range(len(stamp_list)):
         if bool_list[i]:
             stamp_str += stamp_list[i]
@@ -66,8 +66,8 @@ def toc(text: str = None, decimals: int = 6, verbose=None) -> float:
     elapsed = time() - start
 
     if text is None:
-        text = 'Elapsed time'
-    elif text == '':
+        text = "Elapsed time"
+    elif text == "":
         return elapsed
 
     print2(f"{text}: {elapsed:.{decimals + 1}}s", verbose=verbose)
@@ -77,12 +77,12 @@ def toc(text: str = None, decimals: int = 6, verbose=None) -> float:
 class tictoc:
     def __init__(self, text: str = None, decimals: int = 6, verbose=None):
         self.verbose = verbose_level_wrapper(verbose)
-        self.text = '' if text is None else text
+        self.text = "" if text is None else text
         self.decimals = decimals
 
     def __enter__(self):
         tic()
-        print2(self.text+'...', verbose=self.verbose)
+        print2(self.text+"...", verbose=self.verbose)
 
     def __exit__(self, *args):
         toc(text=None, decimals=self.decimals, verbose=self.verbose.add_level(1))

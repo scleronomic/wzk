@@ -49,7 +49,7 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1, 2, 0) % 1
 
     # Gradients
-    angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1)).T  # .T only to make it comparable with matlab, remove at some point
+    angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
     gradients = np.dstack((np.cos(angles), np.sin(angles)))
     if tileable[0]:
         gradients[-1, :] = gradients[0, :]
@@ -197,7 +197,7 @@ def fractal_noise(shape, res, octaves=1, persistence=0.5, lacunarity=2,
     return noise
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     np.random.seed(0)
     img = perlin_noise_2d(shape=(16, 16), res=(4, 4))
     from wzk import mpl2

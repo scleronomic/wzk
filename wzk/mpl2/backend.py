@@ -8,24 +8,24 @@ headless = False
 
 def __turn_on_headless():
     print("Matplotlib - Backend: 'headless' mode detected -> use 'Agg'")
-    mpl.use('Agg')
+    mpl.use("Agg")
     return True
 
 
-if platform.system() == 'Linux':
+if platform.system() == "Linux":
     try:
-        display = os.environ['DISPLAY']
+        display = os.environ["DISPLAY"]
 
-        if 'localhost' in display:
+        if "localhost" in display:
             headless = __turn_on_headless()
         else:
-            mpl.use('TkAgg')
+            mpl.use("TkAgg")
 
     except KeyError:
         headless = __turn_on_headless()
 
-elif platform.system() == 'Darwin':
+elif platform.system() == "Darwin":
     # mpl.use('TkAgg')  # Alternative for Mac: 'Qt5Agg', interplay with Pyvista often a bit tricky otherwise
-    mpl.use('macosx')  # Alternative for Mac: 'Qt5Agg', interplay with Pyvista often a bit tricky otherwise
+    mpl.use("macosx")  # Alternative for Mac: 'Qt5Agg', interplay with Pyvista often a bit tricky otherwise
 
 import matplotlib.pyplot as plt  # noqa

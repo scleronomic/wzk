@@ -13,7 +13,7 @@ import requests
 
 
 # #############################################################################
-OAUTH2 = os.environ.get('GCP_OAUTH2')
+OAUTH2 = os.environ.get("GCP_OAUTH2")
 
 
 def get_monthly_usage(*, billing_account,

@@ -1,8 +1,7 @@
 import unittest
-
-from wzk.testing import compare_arrays
-from wzk.geometry import *
 from itertools import combinations
+import numpy as np
+from wzk import geometry, testing
 
 
 class Test(unittest.TestCase):
@@ -12,19 +11,19 @@ class Test(unittest.TestCase):
         a /= np.linalg.norm(a)
         b /= np.linalg.norm(b)
 
-        r_ab = rotation_between_vectors(a=a, b=b)
-        r_ba = rotation_between_vectors(a=b, b=a)
+        r_ab = geometry.rotation_between_vectors(a=a, b=b)
+        r_ba = geometry.rotation_between_vectors(a=b, b=a)
 
         b1 = (r_ab @ a[:, np.newaxis])[:, 0]
         a1 = (r_ba @ b[:, np.newaxis])[:, 0]
 
-        self.assertTrue(compare_arrays(a, a1))
-        self.assertTrue(compare_arrays(b, b1))
-        self.assertTrue(compare_arrays(r_ab, r_ba.T))
+        self.assertTrue(testing.compare_arrays(a, a1))
+        self.assertTrue(testing.compare_arrays(b, b1))
+        self.assertTrue(testing.compare_arrays(r_ab, r_ba.T))
 
     def test_get_orthonormal(self):
         a = np.random.random(3)
-        b = get_orthonormal(a)
+        b = geometry.get_orthonormal(a)
         self.assertTrue(np.allclose(np.dot(a, b), 0))
 
     def speed_mink(self):
@@ -41,12 +40,12 @@ class Test(unittest.TestCase):
 
         tic()
         for i in range(100):
-            _ = line_line_pairs(lines=lines, pairs=pairs)
-        toc('mink')
+            _ = geometry.line_line_pairs(lines=lines, pairs=pairs)
+        toc("mink")
 
         tic()
         for i in range(100):
-            _ = line_line_pairs(lines=lines, pairs=pairs)
-        toc('d1234')
+            _ = geometry.line_line_pairs(lines=lines, pairs=pairs)
+        toc("d1234")
 
         self.assertTrue(True)

@@ -70,15 +70,15 @@ def limits4axes(limits, n_dim):
 def limits2extent(limits, origin, axis_order):
     mins, maxs = limits4axes(limits=limits, n_dim=2)
     # extent: (left, right, bottom, top)
-    if origin == 'upper':
-        if axis_order == 'ij->yx':
+    if origin == "upper":
+        if axis_order == "ij->yx":
             extent = [mins[1], maxs[1], maxs[0], mins[0]]
 
         else:  # axis_order == 'ij->xy':
             extent = [mins[0], maxs[0], maxs[1], mins[1]]
     else:  # origin == 'lower'
 
-        if axis_order == 'ij->yx':
+        if axis_order == "ij->yx":
             extent = [mins[1], maxs[1], mins[0], maxs[0]]
         else:  # axis_order == 'ij->xy':
             extent = [mins[0], maxs[0], mins[1], maxs[1]]
@@ -115,7 +115,7 @@ def set_labels(ax, labels, **kwargs):
 
 
 # Sizes
-def size_units2points(size, ax, reference='y'):
+def size_units2points(size, ax, reference="y"):
     """
     Convert a shape in Measurements units to shape in points.
     For linewidth of markersize
@@ -139,10 +139,10 @@ def size_units2points(size, ax, reference='y'):
     """
 
     fig = ax.get_figure()
-    if reference == 'x':
+    if reference == "x":
         length = fig.bbox_inches.fig_width_inch * ax.get_position().fig_width_inch
         value_range = np.diff(ax.get_xlim())
-    elif reference == 'y':
+    elif reference == "y":
         length = fig.bbox_inches.height * ax.get_position().height
         value_range = np.diff(ax.get_ylim())
     else:
@@ -153,26 +153,26 @@ def size_units2points(size, ax, reference='y'):
     return size * (length / value_range)
 
 
-def size_units2points_listener(ax, h, size, reference='y', mode='ms'):
+def size_units2points_listener(ax, h, size, reference="y", mode="ms"):
     if mode is None:
-        mode = 'ms'
-    elif mode == 'both':
-        mode = ['ms', 'lw']
+        mode = "ms"
+    elif mode == "both":
+        mode = ["ms", "lw"]
 
     h, mode = ltd.atleast_list(h, mode)
 
     def on_change(*args):  # noqa
         size_new = size_units2points(ax=ax, size=size, reference=reference)
         for hh in h:
-            if 'ms' in mode or 'markersize' in mode:
+            if "ms" in mode or "markersize" in mode:
                 hh.set_markersize(size_new)
 
-            if 'lw' in mode or 'linewidth' in mode:
+            if "lw" in mode or "linewidth" in mode:
                 hh.set_linewidth(size_new)
 
-    ax.callbacks.connect('xlim_changed', on_change)
-    ax.callbacks.connect('ylim_changed', on_change)
-    ax.get_figure().canvas.mpl_connect('resize_event', on_change)
+    ax.callbacks.connect("xlim_changed", on_change)
+    ax.callbacks.connect("ylim_changed", on_change)
+    ax.get_figure().canvas.mpl_connect("resize_event", on_change)
 
 
 def get_aspect_ratio(ax=None):

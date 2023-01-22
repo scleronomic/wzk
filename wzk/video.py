@@ -13,8 +13,8 @@ def stack_videos(videos=None, file=None):
     if isinstance(videos, str):
         videos = dir_dir2file_array(videos)
 
-    _format = 'mp4'
-    kwargs = ''
+    _format = "mp4"
+    kwargs = ""
 
     s = np.shape(videos)
 
@@ -24,24 +24,24 @@ def stack_videos(videos=None, file=None):
     uuid_list = [f"{uuid4()}.{_format}" for _ in range(s[0])]
 
     for i, in_i in enumerate(videos):
-        in_i_str = ' -i '.join(in_i)
-        stack_str = ''.join([f'[{j}:v]' for j in range(s[1])])
+        in_i_str = " -i ".join(in_i)
+        stack_str = "".join([f"[{j}:v]" for j in range(s[1])])
 
-        os.system(f'ffmpeg -i {in_i_str} '
-                  f'{kwargs} '
+        os.system(f"ffmpeg -i {in_i_str} "
+                  f"{kwargs} "
                   f'-filter_complex "{stack_str}"hstack=inputs={s[1]}[v] -map "[v]" '
-                  f'{uuid_list[i]}')
+                  f"{uuid_list[i]}")
 
-    in_i_str = ' -i '.join(uuid_list)
-    stack_str = ''.join([f'[{j}:v]' for j in range(s[0])])
-    os.system(f'ffmpeg -i {in_i_str} '
-              f'{kwargs} '
+    in_i_str = " -i ".join(uuid_list)
+    stack_str = "".join([f"[{j}:v]" for j in range(s[0])])
+    os.system(f"ffmpeg -i {in_i_str} "
+              f"{kwargs} "
               f'-filter_complex "{stack_str}"vstack=inputs={s[0]}[v] -map "[v]" '
-              f'{file}')
+              f"{file}")
 
     for u in uuid_list:
         os.remove(u)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fire.Fire(stack_videos)

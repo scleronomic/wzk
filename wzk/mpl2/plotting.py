@@ -14,7 +14,7 @@ from wzk import math2, np2, ltd
 
 def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
            cmap=None,
-           limits: np.ndarray = None, origin: str = 'lower', axis_order: str = 'ij->yx',
+           limits: np.ndarray = None, origin: str = "lower", axis_order: str = "ij->yx",
            mask: np.ndarray = None, vmin: float = None, vmax: float = None, **kwargs):
     """
 
@@ -46,8 +46,8 @@ def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
     """
 
     assert img.ndim == 2
-    assert origin in ('lower', 'upper')
-    assert axis_order in ('ij->yx', 'ij->xy')
+    assert origin in ("lower", "upper")
+    assert axis_order in ("ij->yx", "ij->xy")
     if limits is None:
         limits = img.shape
 
@@ -61,15 +61,15 @@ def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
     extent = limits2extent(limits=limits, origin=origin, axis_order=axis_order)
 
     img = arr2rgba(img=img, cmap=cmap, vmin=vmin, vmax=vmax, mask=mask, axis_order=axis_order)
-    if 'label' in kwargs:
+    if "label" in kwargs:
         kwargs2 = kwargs.copy()
-        kwargs2['color'] = cmap
+        kwargs2["color"] = cmap
         rectangle_legend(ax=ax, xy=limits[:, 0]-1, **kwargs2)
 
     return ax.imshow(img, extent=extent, origin=origin, **kwargs)
 
 
-def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect='auto', **kwargs):
+def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect="auto", **kwargs):
     n = x.shape[-1]
 
     n_comb = math2.binomial(n, 2)
@@ -226,34 +226,34 @@ def quiver(xy, uv,
 
     if h is None:
         h = ax.quiver(xy[..., 0].ravel(), xy[..., 1].ravel(), uv[..., 0].ravel(), uv[..., 1].ravel(),
-                      angles='xy', scale=1, units='xy', scale_units='xy',
+                      angles="xy", scale=1, units="xy", scale_units="xy",
                       **kwargs)
     else:
         h.set_offsets(xy)
         h.set_UVC(*uv.T)
-        if 'color' in kwargs:
-            h.set_color(kwargs['color'])
-        if 'alpha' in kwargs:
-            h.set_alpha(kwargs['alpha'])
+        if "color" in kwargs:
+            h.set_color(kwargs["color"])
+        if "alpha" in kwargs:
+            h.set_alpha(kwargs["alpha"])
     return h
 
 
 # Grid
 def grid_lines(ax, start, step, limits, **kwargs):
     mins, maxs = limits4axes(limits=limits, n_dim=2)
-    start = ltd.tuple_extract(t=start, default=(0, 0), mode='repeat')
-    step = ltd.tuple_extract(t=step, default=(0, 0), mode='repeat')
+    start = ltd.tuple_extract(t=start, default=(0, 0), mode="repeat")
+    step = ltd.tuple_extract(t=step, default=(0, 0), mode="repeat")
 
     ax.hlines(y=np.arange(start=start[0], stop=maxs[1], step=step[0]), xmin=mins[0], xmax=maxs[0], **kwargs)
     ax.vlines(x=np.arange(start=start[1], stop=maxs[0], step=step[1]), ymin=mins[1], ymax=maxs[1], **kwargs)
 
 
-def grid_lines_data(ax, x, limits: str = 'ax', **kwargs):
-    if limits == 'ax':
+def grid_lines_data(ax, x, limits: str = "ax", **kwargs):
+    if limits == "ax":
         limits = np.array([ax.get_xlim(), ax.get_ylim()])
         ax.set_xlim(ax.get_xlim())
         ax.set_ylim(ax.get_ylim())
-    elif limits == 'data':
+    elif limits == "data":
         limits = np.array([[x[:, 0].min(), x[:, 0].max()],
                            [x[:, 1].min(), x[:, 1].max()]])
     else:
@@ -297,7 +297,7 @@ def hist_vlines(x, name, bins=100,
         _range = (np.percentile(x, lower_perc), np.percentile(x, upper_perc))
     else:
         _range = None
-    fig, ax = new_fig(title=f'Histogram: {name}')
+    fig, ax = new_fig(title=f"Histogram: {name}")
     hist = ax.hist(x, bins=bins, range=_range)
 
     perc_i = []
@@ -322,7 +322,7 @@ def hist_vlines(x, name, bins=100,
 def correlation_plot(a, b, name_a, name_b,
                      regression_line=True,
                      lower_perc=0, upper_perc=100,
-                     labels=None, colors=None, markers='o', markersizes=None, alphas=None, zorders=None,
+                     labels=None, colors=None, markers="o", markersizes=None, alphas=None, zorders=None,
                      ax=None, verbose=1, **kwargs):
 
     if ax is None:
@@ -357,9 +357,9 @@ def correlation_plot(a, b, name_a, name_b,
 
         if regression_line and i+1 == len(a):
             la = None if la is None else la.format(r)
-            ax.plot(aa, bb, color=co, label=la, ls='-', marker=ms, alpha=al, zorder=zo)
+            ax.plot(aa, bb, color=co, label=la, ls="-", marker=ms, alpha=al, zorder=zo)
         else:
-            ax.plot(aa, bb, ls='', marker=ma, color=co, label=la, markersize=ms, alpha=al, zorder=zo, **kwargs)
+            ax.plot(aa, bb, ls="", marker=ma, color=co, label=la, markersize=ms, alpha=al, zorder=zo, **kwargs)
 
     set_ax_limits(ax=ax, limits=limits)
 
@@ -413,5 +413,5 @@ def test_plot_colored_segments():
     fig, ax = new_fig()
     y = np.random.random(20)
     b = np.array(y[1:] > y[:-1])
-    c = ['red' if bb else 'blue' for bb in b]
+    c = ["red" if bb else "blue" for bb in b]
     plot_colored_segments(ax=ax, x=np.arange(len(y)), y=y, c=c, a=0.3)

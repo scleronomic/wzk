@@ -18,7 +18,7 @@ def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):
 
     axes.flatten()[-1].set_xlim([-1, n_wp])
     axes.flatten()[-1].set_xticks(np.arange(n_wp))
-    axes.flatten()[-1].set_xticklabels([str(i) if i % 2 == 0 else '' for i in range(n_wp)])
+    axes.flatten()[-1].set_xticklabels([str(i) if i % 2 == 0 else "" for i in range(n_wp)])
 
     for ax, limits_i in zip(axes.flatten(), limits):
         limits_i_larger = np2.add_safety_limits(limits=limits_i, factor=0.05)

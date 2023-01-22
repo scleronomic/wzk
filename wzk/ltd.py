@@ -33,7 +33,7 @@ class AttrDict(dict):
             if not isinstance(data, dict):
                 return data
             else:
-                return AttrDict({key: from_nested_dict(data[key]) for key in data})
+                return AttrDict({key_: from_nested_dict(data[key_]) for key_ in data})
 
         super(AttrDict, self).__init__(*args, **kwargs)
         self.__dict__ = self
@@ -85,7 +85,7 @@ def tolist(a):
         return a
 
 
-def tuple_extract(t, default, mode='default'):
+def tuple_extract(t, default, mode="default"):
     """
     default: tuple
 
@@ -103,10 +103,10 @@ def tuple_extract(t, default, mode='default'):
     if length == length_default:
         return t
 
-    if mode == 'default':
+    if mode == "default":
         return t + default[length:]
 
-    elif mode == 'repeat':
+    elif mode == "repeat":
         assert length == 1, "mode 'repeat' expects length(t) == 1"
         return t * length_default
 
@@ -308,12 +308,12 @@ def list_allclose(a, b):
 
 # json
 def write_dict2json(file, d, **kwargs):
-    with open(file=file, mode='w') as f:
+    with open(file=file, mode="w") as f:
         f.write(json.dumps(d, **kwargs))
 
 
 def read_json2dict(file):
-    with open(file=file, mode='r') as f:
+    with open(file=file, mode="r") as f:
         d = json.load(f)
     return d
 

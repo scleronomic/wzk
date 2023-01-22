@@ -1,13 +1,14 @@
 from unittest import TestCase
 
-from wzk.mpl2 import new_fig
-from wzk.tsp import *
+import numpy as np
+
+from wzk import tsp, mpl2
 
 
-def test_solve_tsp(mode='random'):
-    if mode == 'random':
+def test_solve_tsp(mode="random"):
+    if mode == "random":
         points = np.random.random((100, 2))
-    elif mode == 'circuit':
+    elif mode == "circuit":
         points = np.array([
             (288, 149), (288, 129), (270, 133), (256, 141), (256, 157), (246, 157),
             (236, 169), (228, 169), (228, 161), (220, 169), (212, 169), (204, 169),
@@ -59,20 +60,20 @@ def test_solve_tsp(mode='random'):
     else:
         raise NotImplementedError
 
-    _ = solve_tsp(points=points, time_limit=1, verbose=1)
+    _ = tsp.solve_tsp(points=points, time_limit=1, verbose=1)
     # plot_solution_2d(points=points, route=route)
 
 
-def plot_solution_2d(points, route, title='Traveling Salesman Problem'):
+def plot_solution_2d(points, route, title="Traveling Salesman Problem"):
     points = np.array(points)
     points_ordered = points[route]
-    fig, ax = new_fig(title=title)
-    ax.plot(*points.T, ls='', marker='o', color='k')
-    ax.plot(*points_ordered[[0, -1]].T, ls='', marker='o', color='r', alpha=0.8)
-    ax.plot(*points_ordered.T, ls='-', color='b', alpha=0.8)
+    fig, ax = mpl2.new_fig(title=title)
+    ax.plot(*points.T, ls="", marker="o", color="k")
+    ax.plot(*points_ordered[[0, -1]].T, ls="", marker="o", color="r", alpha=0.8)
+    ax.plot(*points_ordered.T, ls="-", color="b", alpha=0.8)
 
 
 class Test(TestCase):
     def test_solve_tsp(self):
-        _ = test_solve_tsp(mode='random')
-        _ = test_solve_tsp(mode='circuit')
+        _ = test_solve_tsp(mode="random")
+        _ = test_solve_tsp(mode="circuit")

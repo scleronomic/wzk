@@ -21,9 +21,9 @@ def make_even(x, rounding=+1):
 
 
 def make_even_odd(x, mode, rounding=+1):
-    if mode.lower() == 'even' or mode.lower() == 'e':
+    if mode.lower() == "even" or mode.lower() == "e":
         return make_even(x=x, rounding=rounding)
-    elif mode.lower() == 'odd' or mode.lower() == 'o':
+    elif mode.lower() == "odd" or mode.lower() == "o":
         return make_odd(x=x, rounding=rounding)
     else:
         raise ValueError
@@ -380,7 +380,7 @@ def bisection(f, a, b, tol, verbose=0, __depth=0):
 
 
 # Derivative
-def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode='central',
+def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode="central",
                        diff=None,
                        **kwargs_fun):
     """
@@ -409,14 +409,14 @@ def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode='central',
     for idx in product(*(range(s) for s in var_shape)):
         update_eps_mat(_idx=idx)
 
-        if mode == 'central':
+        if mode == "central":
             derv[(Ellipsis,) + idx] = diff(fun(x + eps_mat, **kwargs_fun),
                                            fun(x - eps_mat, **kwargs_fun)) / (2 * eps)
 
-        elif mode == 'forward':
+        elif mode == "forward":
             derv[(Ellipsis, ) + idx] = diff(fun(x + eps_mat, **kwargs_fun), f_x) / eps
 
-        elif mode == 'backward':
+        elif mode == "backward":
             derv[(Ellipsis, ) + idx] = diff(f_x, fun(x - eps_mat, **kwargs_fun)) / eps
 
     return derv
@@ -433,7 +433,7 @@ def magic(n):
     n = int(n)
 
     if n < 1:
-        raise ValueError('Size must be at least 1')
+        raise ValueError("Size must be at least 1")
     if n == 1:
         return np.array([[1]])
     elif n == 2:
@@ -459,7 +459,7 @@ def magic(n):
 
 
 # Clustering
-def k_farthest_neighbors(x, k, weighting=None, mode='inverse'):
+def k_farthest_neighbors(x, k, weighting=None, mode="inverse"):
     n = len(x)
 
     m_dist = x[np.newaxis, :, :] - x[:, np.newaxis, :]
@@ -473,11 +473,11 @@ def k_farthest_neighbors(x, k, weighting=None, mode='inverse'):
     for i in range(k-1):
         m_dist_cur = m_dist[idx]
 
-        if mode == 'inverse_sum':
+        if mode == "inverse_sum":
             m_dist_cur[np.arange(i+1), idx] = 1
             obj = -np.sum(1/m_dist_cur, axis=0)
 
-        elif mode == 'sum':
+        elif mode == "sum":
             obj = np.sum(m_dist_cur, axis=0)
 
         else:
@@ -511,8 +511,8 @@ def vis_k_farthest_neighbors():
 
     from wzk import new_fig
     fig, ax = new_fig(aspect=1)
-    ax.plot(*x.T, ls='', marker='o', color='b', markersize=5, alpha=0.5)
-    ax.plot(*x[idx, :].T, ls='', marker='x', color='r', markersize=10)
+    ax.plot(*x.T, ls="", marker="o", color="b", markersize=5, alpha=0.5)
+    ax.plot(*x[idx, :].T, ls="", marker="x", color="r", markersize=10)
 
 
 # Combinatorics
@@ -549,7 +549,7 @@ def test_dxnorm_dx():
     # vis_k_farthest_neighbors()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_dxnorm_dx()
 
 

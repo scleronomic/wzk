@@ -57,7 +57,7 @@ def closest_grid_boundary(*, x, half_side, limits, shape, idx=None):
     rel_idx = __closest_boundary_rel_idx(half_side=half_side)
 
     idx = idx[:, np.newaxis, :] + rel_idx[np.newaxis, :, np.newaxis]
-    x_closest = grid.grid_i2x(i=idx, limits=limits, shape=shape, mode='b')
+    x_closest = grid.grid_i2x(i=idx, limits=limits, shape=shape, mode="b")
 
     x_closest[:, half_side, :] = x
 
@@ -95,7 +95,7 @@ def get_max_occupied_cells(length, voxel_size):
 def get_outer_edge(img):
     n_dim = np.ndim(img)
     kernel = np.ones((3,)*n_dim)
-    edge_img = convolve(img, kernel, mode='same', method='direct') > 0
+    edge_img = convolve(img, kernel, mode="same", method="direct") > 0
     return np.logical_xor(edge_img, img)
 
 
@@ -114,7 +114,7 @@ def get_sphere_stencil(r: float, voxel_size: float, n_dim: int = 2) -> (np.ndarr
 
     img = np.zeros((len(x_center),) + (2 * half_side + 1,) * n_dim, dtype=bool)
     for i in range(len(x_center)):
-        x_closest_i = np.array(np.meshgrid(*x_closest[i].T, indexing='ij')).T
+        x_closest_i = np.array(np.meshgrid(*x_closest[i].T, indexing="ij")).T
         img[i, ...] = __compare_dist_against_radius(x_a=x_center[i], x_b=x_closest_i, r=r)
 
     inner = img.sum(axis=0) == img.shape[0]
@@ -141,7 +141,7 @@ def create_stencil_dict(voxel_size, n_dim):
     stencil_dict = dict()
     n = int(5*(1//voxel_size))
     for i, r in enumerate(np.linspace(voxel_size/10, 2, num=n)):
-        printing.progress_bar(i=i, n=n, prefix='create_stencil_dict')
+        printing.progress_bar(i=i, n=n, prefix="create_stencil_dict")
         d = int((r // voxel_size) * 2 + 3)
         if d not in stencil_dict.keys():
             stencil = np.logical_or(*get_sphere_stencil(r=r, voxel_size=voxel_size, n_dim=n_dim))
@@ -254,7 +254,7 @@ def test_get_sphere_stencil():
     n_dim = 3
     inner, outer = get_sphere_stencil(r=r, voxel_size=voxel_size, n_dim=n_dim)
     fig, ax = new_fig()
-    ax.imshow(inner.sum(axis=-1), cmap='gray_r')
+    ax.imshow(inner.sum(axis=-1), cmap="gray_r")
 
 
 def test_mesh2bimg():
@@ -266,7 +266,7 @@ def test_mesh2bimg():
     from wzk.mpl2 import new_fig, imshow
 
     fig, ax = new_fig()
-    ax.plot(*p.T, ls='', marker='o')
+    ax.plot(*p.T, ls="", marker="o")
     imshow(ax=ax, img=img, mask=~img, limits=limits)
 
 
@@ -287,7 +287,7 @@ def test_spheres2bimg():
     pl.show()
     
     
-if __name__ == '__main__':
+if __name__ == "__main__":
     test_spheres2bimg()
     # test_get_sphere_stencil()
     # test_mesh2bimg()

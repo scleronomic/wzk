@@ -1,6 +1,10 @@
 from unittest import TestCase
 
-from wzk.mpl2.DraggableConfigurationSpace import *
+import numpy as np
+
+from wzk.mpl2.DraggableConfigurationSpace import DraggableConfigSpace
+
+
 verbose = 1
 
 
@@ -10,7 +14,7 @@ class Test(TestCase):
         x = np.random.random((20, 3))
         limits = np.zeros((x.shape[-1], 2))
         limits[:, 1] = 1
-        dcs = DraggableConfigSpace(x=x, limits=limits, circle_ratio=1 / 4, color='k')
+        dcs = DraggableConfigSpace(x=x, limits=limits, circle_ratio=1 / 4, color="k")
 
         print(dcs.get_x().shape)
 
@@ -18,6 +22,6 @@ class Test(TestCase):
         dcs.set_x(x=np.ones((20, 3)))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     test = Test()
     test.test_DraggableConfigSpace()

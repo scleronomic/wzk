@@ -3,7 +3,7 @@ from wzk.math2 import modulo
 
 
 # Widgets
-def create_button(fig, axes, listener_fun, name='button'):
+def create_button(fig, axes, listener_fun, name="button"):
     b_ax = fig.axes(axes)
     b = widgets.Button(b_ax, name)
     b.on_clicked(listener_fun)
@@ -11,7 +11,7 @@ def create_button(fig, axes, listener_fun, name='button'):
 
 
 def create_key_slider(*, ax, callback,
-                      label='', valfmt=None, valmin=0, valmax=10, valinit=0, valstep=1,
+                      label="", valfmt=None, valmin=0, valmax=10, valinit=0, valstep=1,
                       fast_step=10):
 
     slider = widgets.Slider(ax=ax,
@@ -20,18 +20,18 @@ def create_key_slider(*, ax, callback,
 
     def cb_key(event):
         val = slider.val
-        if event.key == 'right':
+        if event.key == "right":
             slider.set_val(modulo(val+valstep, low=valmin, high=valmax+1))
 
-        if event.key == 'left':
+        if event.key == "left":
             slider.set_val(modulo(val-valstep, low=valmin, high=valmax+1))
 
-        if event.key == 'up':
+        if event.key == "up":
             slider.set_val(modulo(val+fast_step*valstep, low=valmin, high=valmax+1))
 
-        if event.key == 'down':
+        if event.key == "down":
             slider.set_val(modulo(val-fast_step*valstep, low=valmin, high=valmax+1))
 
     slider.on_changed(callback)
-    keyboard = ax.get_figure().canvas.mpl_connect('key_press_event', cb_key)
+    keyboard = ax.get_figure().canvas.mpl_connect("key_press_event", cb_key)
     return slider, keyboard

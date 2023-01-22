@@ -27,18 +27,18 @@ __default_nodes = []
 # __default_nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
 #
 
-_address = ['auto']
-_password = ['']
+_address = ["auto"]
+_password = [""]
 
 
 def __start_head(head, perc, verbose=0):
     # start_head_cmd = f'ray start --head --port=6379 --num-cpus='
-    start_head_cmd = f'ray start --head --port=6378 --num-cpus='
+    start_head_cmd = "ray start --head --port=6378 --num-cpus="
     n_cpu = int(max(1, get_n_cpu(head) * perc))
     stdout = ssh_call2(host=head, cmd=start_head_cmd+str(n_cpu))
     head = socket.gethostname() if head is None else head
     if verbose > 0:
-        print(head, ':', stdout)
+        print(head, ":", stdout)
 
     return head, stdout, n_cpu
 
@@ -47,9 +47,9 @@ def __get_address_password(stdout):
     pattern_adr = r"--address='\S*'"
     pattern_pwd = r"--redis-password='\S*'"
     address = squeeze(re.compile(pattern_adr).findall(stdout))
-    address = address[address.find('=')+1:]
+    address = address[address.find("=")+1:]
     password = squeeze(re.compile(pattern_pwd).findall(stdout))
-    password = password[password.find('=')+1:]
+    password = password[password.find("=")+1:]
 
     _address[0] = address
     _password[0] = password
@@ -63,7 +63,7 @@ def __start_nodes(nodes, address, password, perc, verbose=0):
         start_node_cmd = f"ray start --address='{address}' --redis-password='{password}' --num-cpus={n_cpu_i}"
         stdout = ssh_call2(host=node, cmd=start_node_cmd)
         if verbose > 1:
-            print(node, ':', stdout)
+            print(node, ":", stdout)
 
         n_cpu += n_cpu_i
 
@@ -83,9 +83,9 @@ def start_ray_cluster(head=None, nodes=None, perc=80, verbose=2):
     n_cpu += __start_nodes(nodes=nodes, address=address, password=password, perc=perc, verbose=verbose-2)
 
     if verbose > 0:
-        print('Started Ray-Cluster')
-        print('Nodes: ', *nodes)
-        print('Total Number of CPUs: ', n_cpu)
+        print("Started Ray-Cluster")
+        print("Nodes: ", *nodes)
+        print("Total Number of CPUs: ", n_cpu)
 
     return n_cpu
 
@@ -95,19 +95,19 @@ def stop_ray_cluster(nodes=None, verbose=1):
         nodes = __default_nodes
 
     if verbose > 0:
-        print('Stop Ray-Cluster')
-        print('Nodes: ', *nodes)
+        print("Stop Ray-Cluster")
+        print("Nodes: ", *nodes)
 
     for node in atleast_list(nodes):
-        stdout = ssh_call2(host=node, cmd='ray stop --force')
+        stdout = ssh_call2(host=node, cmd="ray stop --force")
         if verbose > 1:
-            print(node, ':', stdout)
+            print(node, ":", stdout)
 
 
-def ray_main(mode='start', nodes=None, head=None, perc=80, verbose=2):
-    if mode == 'start':
+def ray_main(mode="start", nodes=None, head=None, perc=80, verbose=2):
+    if mode == "start":
         start_ray_cluster(head=head, nodes=nodes, perc=perc, verbose=verbose)
-    elif mode == 'stop':
+    elif mode == "stop":
         stop_ray_cluster(nodes=nodes, verbose=verbose)
     else:
         raise ValueError
@@ -118,7 +118,7 @@ def init(perc=100):
         ray.init(address=_address[0], log_to_driver=False, ignore_reinit_error=True)
     except ConnectionError:
         start_ray_cluster(perc=perc, verbose=1)
-        ray.init(address='auto', log_to_driver=False, ignore_reinit_error=True)
+        ray.init(address="auto", log_to_driver=False, ignore_reinit_error=True)
         # ray.init(address=f"ray://{_address[0]}", log_to_driver=False, ignore_reinit_error=True)
 
 
@@ -129,5 +129,5 @@ def ray_wrapper(fun, n, **kwargs):
     return ray.get(futures)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     fire.Fire(ray_main)

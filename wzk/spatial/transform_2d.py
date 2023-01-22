@@ -52,7 +52,7 @@ def dframe_dtheta(theta):
     theta, shape = __theta_wrapper(theta)
     sin, cos = np.sin(theta), np.cos(theta)
 
-    j = initialize_frames(shape=shape, n_dim=2, mode='zero')
+    j = initialize_frames(shape=shape, n_dim=2, mode="zero")
     fill_frames_2d_sc(f=j, sin=cos, cos=-sin)
     return j
 

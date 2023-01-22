@@ -34,8 +34,8 @@ def test_random():
     ax.set_aspect(1)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
-    ax.plot(*x.T, color='black', marker='o', markersize=3)
-    ax.plot(*p.T, color='blue', marker='o')
+    ax.plot(*x.T, color="black", marker="o", markersize=3)
+    ax.plot(*p.T, color="blue", marker="o")
 
 
 def test_random_jac():
@@ -54,8 +54,8 @@ def test_random_jac():
     ax.set_aspect(1)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
-    hx = ax.plot(*x.T, color='black', marker='o', markersize=3)[0]
-    hp = ax.plot(*p.T, color='blue', marker='o')[0]
+    hx = ax.plot(*x.T, color="black", marker="o", markersize=3)[0]
+    hp = ax.plot(*p.T, color="blue", marker="o")[0]
 
     dx_dp = nurbs.evaluate_jac(u)[..., 1:-1, :]  # does not depend on p
     for i in range(100):
@@ -80,12 +80,12 @@ def test_unit_circle():
     u = np.linspace(0, 1, 90)
     x = nurbs.evaluate(u=u)
     j = nurbs.evaluate_jac(u=u)
-    print('x', x)
-    print('j', j)
+    print("x", x)
+    print("j", j)
     fig, ax = plt.subplots()
     ax.set_aspect(1)
-    ax.plot(*x.T, color='black', marker='o')
-    ax.plot(*p.T, color='blue', marker='o', markersize=3)
+    ax.plot(*x.T, color="black", marker="o")
+    ax.plot(*p.T, color="blue", marker="o", markersize=3)
 
 
 def test_gui():
@@ -96,10 +96,10 @@ def test_gui():
     fig, ax = new_fig(aspect=1)
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
-    dcl = DraggableCircleList(ax=ax, xy=p, radius=0.02, color='r')
+    dcl = DraggableCircleList(ax=ax, xy=p, radius=0.02, color="r")
     nurbs = NURBS(p=p, degree=3)
     x = nurbs.evaluate(u)
-    h = ax.plot(*x.T, color='k', marker='o', lw=3)[0]
+    h = ax.plot(*x.T, color="k", marker="o", lw=3)[0]
 
     def update(*args):  # noqa
         nurbs.p = dcl.get_xy()
@@ -110,7 +110,7 @@ def test_gui():
     dcl.set_callback_drag(update)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass
     # pass
     # test_random_jac()

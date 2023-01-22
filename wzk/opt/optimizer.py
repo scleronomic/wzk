@@ -7,7 +7,7 @@ def _rms(x, eps):
 
 class Optimizer:
     # Most methods come from: https://ruder.io/optimizing-gradient-descent/index.html#adam
-    name = ''
+    name = ""
     axis = -1
 
     def update(self, x, v):
@@ -15,7 +15,7 @@ class Optimizer:
 
 
 class Naive(Optimizer):
-    name = 'Naive'
+    name = "Naive"
 
     def __init__(self, ss=0.001):
         self.ss = ss
@@ -27,7 +27,7 @@ class Naive(Optimizer):
 # TODO Annealing
 
 class Momentum(Optimizer):
-    name = 'Momentum'
+    name = "Momentum"
 
     def __init__(self, ss=0.001, lmbda=0.9):
         self.ss = ss
@@ -44,7 +44,7 @@ class NAG(Momentum):
     Nesterov Accelerated Gradient
     Modified version which does not need a different location of evaluation.
     """
-    name = 'NAG'
+    name = "NAG"
 
     def update(self, x, v):
         self.m = self.lmbda * self.m + self.ss * v
@@ -52,7 +52,7 @@ class NAG(Momentum):
 
 
 class Adagrad(Optimizer):
-    name = 'Adagrad'
+    name = "Adagrad"
 
     def __init__(self, ss=0.001, eps=1e-8):
         self.ss = ss
@@ -67,7 +67,7 @@ class Adagrad(Optimizer):
 
 
 class Adadelta(Optimizer):
-    name = 'Adadelta'
+    name = "Adadelta"
 
     def __init__(self,  lmbda=0.9, eps=1e-8):
         self.lmbda = lmbda
@@ -84,7 +84,7 @@ class Adadelta(Optimizer):
 
 
 class RMSprop(Optimizer):
-    name = 'RMSprop'
+    name = "RMSprop"
 
     def __init__(self, ss=0.001, lmbda=0.9, eps=1e-8):
         self.ss = ss
@@ -100,7 +100,7 @@ class RMSprop(Optimizer):
 
 
 class Adam(Optimizer):
-    name = 'Adam'
+    name = "Adam"
 
     def __init__(self, ss=0.001, beta1=0.9, beta2=0.999, eps=1e-8):
         self.ss = ss
@@ -128,7 +128,7 @@ class Adam(Optimizer):
 
 
 class AdaMax(Adam):
-    name = 'AdaMax'
+    name = "AdaMax"
 
     def update(self, x, v):
         self.m = self.beta1 * self.m + (1-self.beta1) * v
@@ -148,7 +148,7 @@ class AdaMax(Adam):
 
 class Nadam(Adam):
     """Nesterov-accelerated Adaptive Moment Estimation"""
-    name = 'Nadam'
+    name = "Nadam"
 
     def update(self, x, v):
         mt, vt = self._adam(v=v)
@@ -168,7 +168,7 @@ class AMSGrad(Adam):
 
 
 class AdaptiveStep(Optimizer):
-    name = 'AdaptiveStep'
+    name = "AdaptiveStep"
 
     def __init__(self, ss=0.001):
         self.ss = ss

@@ -63,7 +63,7 @@ def draw_rays(xy, radius0, radius1, theta0=0., theta1=None, n=1, ax=None, **kwar
 
 
 def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None, scale=1.0,
-                           color='k', mode='quiver', marker=None,
+                           color="k", mode="quiver", marker=None,
                            h=None, **kwargs):
     """
     Assume matrix is a homogeneous matrix
@@ -110,17 +110,17 @@ def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None, scale=1.0,
         return h
 
     h = []
-    if mode == 'quiver' or n_dim == 3:
+    if mode == "quiver" or n_dim == 3:
         for i in range(n_dim):
             # h.append(ax.quiver(*x, *dcm[:, i], color=color[i], **kwargs))
             h.append(plotting.quiver(ax=ax,  xy=x, uv=dcm[:, i], color=color[i], **kwargs))
 
-    elif mode == 'fancy':
+    elif mode == "fancy":
         for i in range(n_dim):
             h.append(patches.FancyArrow(x[0], x[1], dcm[0, i], dcm[1, i], color=color[i], **kwargs))
             ax.add_patch(h[-1])
 
-    elif mode == 'relative_fancy':
+    elif mode == "relative_fancy":
         for i in range(n_dim):
             h.append(Patches2.RelativeFancyArrow(x[0], x[1], dcm[0, i], dcm[1, i], color=color[i],  **kwargs))
             ax.add_patch(h[-1])
@@ -128,7 +128,7 @@ def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None, scale=1.0,
         raise ValueError
 
     if marker is not None:
-        markersize = axes.size_units2points(size=2*kwargs['fig_width_inch']*np.linalg.norm(dcm, axis=0).mean(), ax=ax)
+        markersize = axes.size_units2points(size=2*kwargs["fig_width_inch"]*np.linalg.norm(dcm, axis=0).mean(), ax=ax)
         ax.plot(*x, marker=marker, markersize=markersize, color=color[-1], alpha=0.5)
 
     return h
@@ -136,7 +136,7 @@ def plot_coordinate_frames(ax=None, x=None, dcm=None, f=None, scale=1.0,
 
 # Combination of the building blocks
 def eye_pov(xy, angle, radius, arc, n_rays=3,
-            ax=None, solid_capstyle='round', **kwargs):
+            ax=None, solid_capstyle="round", **kwargs):
 
     if ax is None:
         ax = plt.gca()

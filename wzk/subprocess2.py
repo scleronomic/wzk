@@ -6,7 +6,7 @@ from wzk.strings import uuid4
 
 
 def __read_and_delete(temp):
-    with open(temp, 'r') as f:
+    with open(temp, "r") as f:
         stdout = f.read()
 
     os.remove(temp)
@@ -14,13 +14,13 @@ def __read_and_delete(temp):
 
 
 def __run(temp, cmd, check):
-    with open(temp, 'w') as f:
+    with open(temp, "w") as f:
         _ = subprocess.run([cmd], stdout=f, shell=True, check=check)
 
 
 def __run_ssh(temp, cmd, check, host):
-    with open(temp, 'w') as f:
-        _ = subprocess.run(['ssh', host, cmd], stdout=f, shell=False, check=check)
+    with open(temp, "w") as f:
+        _ = subprocess.run(["ssh", host, cmd], stdout=f, shell=False, check=check)
 
 
 def call2(cmd, check=False):
@@ -33,7 +33,7 @@ def call2(cmd, check=False):
 def ssh_call2(host, cmd, check=False):
     temp = f"{os.path.dirname(__file__)}/{uuid4()}.txt"
 
-    if host is None or host == '':
+    if host is None or host == "":
         __run(temp=temp, cmd=cmd, check=check)
     else:
         __run_ssh(temp=temp, cmd=cmd, check=check, host=host)
@@ -61,7 +61,7 @@ def popen_list(cmd_list, _sleep=None):
 def test_popen_list():
     from wzk.time2 import tictoc
     with tictoc():
-        popen_list(cmd_list=['sleep 1', 'sleep 2', 'sleep 3', 'ls'])
+        popen_list(cmd_list=["sleep 1", "sleep 2", "sleep 3", "ls"])
 
 
 # test_popen_list()

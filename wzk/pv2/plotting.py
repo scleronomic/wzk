@@ -11,21 +11,21 @@ from wzk import np2, bimage, spatial, geometry, grid
 
 from typing import Union
 
-pv.set_plot_theme('document')
+pv.set_plot_theme("document")
 
 Plotter = pv.Plotter
 PolyData = pv.PolyData
 
 headless = False
-if platform == 'linux':
+if platform == "linux":
     try:
-        display = os.environ['DISPLAY']
+        display = os.environ["DISPLAY"]
     except KeyError:
         headless = True
 
 
 def camera_motion(cp=None, pos=None, focal=None, viewup=None,
-                  mode='circle_xy', radius=None, n=100):
+                  mode="circle_xy", radius=None, n=100):
     pass
     if viewup is None:
         if cp is None:
@@ -45,7 +45,7 @@ def camera_motion(cp=None, pos=None, focal=None, viewup=None,
 
     cp = np.array([pos + focal, focal, viewup])
 
-    if mode == 'circle_xy':
+    if mode == "circle_xy":
         if radius is None:
             r_xy = np.sqrt(pos[0]**2 + pos[1]**2)
         else:
@@ -63,20 +63,20 @@ def camera_motion(cp=None, pos=None, focal=None, viewup=None,
 
 def plotter_wrapper(pl: Union[pv.Plotter, dict],
                     window_size: tuple = (2048, 1536), camera_position=None,
-                    lighting: str = 'three lights', off_screen: bool = False,
+                    lighting: str = "three lights", off_screen: bool = False,
                     gif=False):
 
     if isinstance(pl, dict):
-        camera_position = pl.pop('camera_position', None)
-        window_size = pl.pop('window_size', window_size)
-        lighting = pl.pop('lighting', lighting)
-        off_screen = pl.pop('off_screen', off_screen)
-        gif = pl.pop('gif', gif)
+        camera_position = pl.pop("camera_position", None)
+        window_size = pl.pop("window_size", window_size)
+        lighting = pl.pop("lighting", lighting)
+        off_screen = pl.pop("off_screen", off_screen)
+        gif = pl.pop("gif", gif)
         off_screen = headless and off_screen
 
         if off_screen:
             print(platform)
-            if platform == 'linux':
+            if platform == "linux":
                 pv.start_xvfb()  # start_xvfb only supported on linux
 
     if not isinstance(pl, pv.Plotter):
@@ -88,7 +88,7 @@ def plotter_wrapper(pl: Union[pv.Plotter, dict],
     if gif:
         pass
         assert isinstance(gif, str)
-        if not gif.endswith('.gif'):
+        if not gif.endswith(".gif"):
             gif = f"{gif}.gif"
         pl.open_gif(gif)  # noqa
 
@@ -179,14 +179,14 @@ def plot_faces(x, faces,
     return plot_poly(x=x, faces=faces, pl=pl, h=h, **kwargs)
 
 
-def plot_cube(limits, pl=None, mode='faces', **kwargs):
+def plot_cube(limits, pl=None, mode="faces", **kwargs):
     if limits is None:
         return
     v, e, f = geometry.cube(limits=limits)
 
-    if mode == 'faces':
+    if mode == "faces":
         return plot_faces(x=v, faces=f, pl=pl, **kwargs)
-    elif mode == 'lines':
+    elif mode == "lines":
         return plot_lines(x=v, lines=e, pl=pl, **kwargs)
     else:
         raise ValueError
@@ -204,17 +204,17 @@ def set_color(h, color):
 
 
 def plot_bimg(img, limits,
-              mode='mesh',
+              mode="mesh",
               pl=None, h=None,
               **kwargs):
 
     if img is None:
         return
 
-    if mode == 'voxel':
+    if mode == "voxel":
         if h is None:
             x, y, z = np.meshgrid(*(np.linspace(limits[i, 0], limits[i, 1], img.shape[i] + 1) for i in range(3)),
-                                  indexing='xy')
+                                  indexing="xy")
             h0 = pv.StructuredGrid(x, y, z)
             hidden_cells = ~img.transpose(2, 0, 1).ravel().astype(bool)
             print(hidden_cells.sum())
@@ -224,7 +224,7 @@ def plot_bimg(img, limits,
         else:
             h[0].hide_cells(~img.ravel())
 
-    elif mode == 'mesh':
+    elif mode == "mesh":
         verts, faces = bimage.bimg2surf(img=img, level=None, limits=limits)
         verts += grid.limits2voxel_size(shape=img.shape, limits=limits) / 2  # shift half a cell size
         faces = faces2pyvista(faces)

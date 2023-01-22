@@ -15,7 +15,7 @@ from wzk.spatial.transform_2d import theta2dcm
 
 
 # vectorized versions of scipy's Rotation.from_x().to_y()
-def euler2dcm(euler, seq='ZXZ'):
+def euler2dcm(euler, seq="ZXZ"):
     """ZXZ = roll pitch yaw"""
     return Rotation.from_euler(seq, angles=euler.reshape((-1, 3)),
                                ).as_matrix().reshape(euler.shape[:-1] + (3, 3))
@@ -31,7 +31,7 @@ def rotvec2dcm(rotvec):
                                 ).as_matrix().reshape(rotvec.shape[:-1] + (3, 3))
 
 
-def dcm2euler(dcm, seq='ZXZ'):
+def dcm2euler(dcm, seq="ZXZ"):
     return Rotation.from_matrix(dcm.reshape((-1, 3, 3))
                                 ).as_euler(seq=seq).reshape(dcm.shape[:-2] + (3,))
 
@@ -55,7 +55,7 @@ def frame2quat(f):
     return dcm2quaternions(f[..., :3, :3])
 
 
-def frame2euler(f, seq='ZXZ'):
+def frame2euler(f, seq="ZXZ"):
     return dcm2euler(f[..., :3, :3], seq=seq)
 
 
@@ -80,7 +80,7 @@ def frame2trans_quat(f):
     return frame2trans(f), frame2quat(f=f)
 
 
-def frame2trans_euler(f, seq='ZXZ'):
+def frame2trans_euler(f, seq="ZXZ"):
     return frame2trans(f), frame2euler(f=f, seq=seq)
 
 
@@ -107,7 +107,7 @@ def trans_rotvec2frame(trans=None, rotvec=None):
     return f
 
 
-def trans_euler2frame(trans=None, euler=None, seq='ZXZ'):
+def trans_euler2frame(trans=None, euler=None, seq="ZXZ"):
     s = __shape_wrapper(trans, euler)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
@@ -176,7 +176,7 @@ def sample_dcm(shape=None):
     return quaternions2dcm(quat=quat)
 
 
-def sample_dcm_noise(shape=None, scale=0.01, mode='normal', n_dim=3):
+def sample_dcm_noise(shape=None, scale=0.01, mode="normal", n_dim=3):
     """
     samples rotation dcm with the absolute value of the rotation relates to 'scale' in rad
     """
@@ -219,7 +219,7 @@ def sample_frames(x_low=np.zeros(3), x_high=np.ones(3), shape=None):
                             quat=sample_quaternions(shape=shape))
 
 
-def apply_noise(f, trans, rot, mode='normal'):
+def apply_noise(f, trans, rot, mode="normal"):
     n_dim = f.shape[-1] - 1
     s = tuple(np.array(np.shape(f))[:-2])
 
@@ -229,15 +229,15 @@ def apply_noise(f, trans, rot, mode='normal'):
     return f2
 
 
-def sample_around_f(f, trans, rot, mode='normal', shape=None):
+def sample_around_f(f, trans, rot, mode="normal", shape=None):
     shape = np2.shape_wrapper(shape)
     f0 = np.zeros(shape+f.shape)
     f0[:] = f.copy()
     return apply_noise(f=f0, trans=trans, rot=rot, mode=mode)
 
 
-def sample_frame_noise(trans, rot, shape=None, mode='normal'):
-    f = initialize_frames(shape=shape, n_dim=3, mode='eye')
+def sample_frame_noise(trans, rot, shape=None, mode="normal"):
+    f = initialize_frames(shape=shape, n_dim=3, mode="eye")
     return apply_noise(f=f, trans=trans, rot=rot, mode=mode)
 
 
@@ -299,7 +299,7 @@ def offset_frame(f, i=None, vm=None,
         d = f[..., :-1, :-1] @ vm
 
     else:
-        raise RuntimeError('i and vm can not both be None')
+        raise RuntimeError("i and vm can not both be None")
 
     d = d * offset / np.linalg.norm(d, axis=-1, keepdims=True)
     f[..., :3, -1] -= d

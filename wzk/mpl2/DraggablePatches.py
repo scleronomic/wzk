@@ -11,12 +11,12 @@ from wzk.spatial.transform_2d import v2dcm
 
 
 class DummyPatch:
-    __slots__ = ('figure',
-                 'axes',
-                 'set_animated',
-                 'contains',
-                 'set_visible',
-                 'get_visible')
+    __slots__ = ("figure",
+                 "axes",
+                 "set_animated",
+                 "contains",
+                 "set_visible",
+                 "get_visible")
 
 
 class DraggablePatch(DummyPatch):
@@ -28,7 +28,8 @@ class DraggablePatch(DummyPatch):
         ax.add_patch(self)
 
         self.vary_xy = np.array(vary_xy)
-        self.callback_drag = [callback] if isinstance(callback, Callable) else callback  # Patches already have an attribute callback, add_callback()
+        # Patches already have an attribute callback, add_callback()
+        self.callback_drag = [callback] if isinstance(callback, Callable) else callback
         self.limits = limits
 
         self.wsad = wsad
@@ -75,11 +76,11 @@ class DraggablePatch(DummyPatch):
         self.set_xy_drag(xy=self.apply_limits(self.get_xy_drag()))
 
     def connect(self):
-        self.cid_press = self.figure.canvas.mpl_connect('button_press_event', self.on_press)
-        self.cid_release = self.figure.canvas.mpl_connect('button_release_event', self.on_release)
-        self.cid_motion = self.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
+        self.cid_press = self.figure.canvas.mpl_connect("button_press_event", self.on_press)
+        self.cid_release = self.figure.canvas.mpl_connect("button_release_event", self.on_release)
+        self.cid_motion = self.figure.canvas.mpl_connect("motion_notify_event", self.on_motion)
         if self.wsad:
-            self.cid_key = self.figure.canvas.mpl_connect('key_press_event', self.on_key)
+            self.cid_key = self.figure.canvas.mpl_connect("key_press_event", self.on_key)
 
     def disconnect(self):
         self.figure.canvas.mpl_disconnect(self.cid_press)
@@ -159,17 +160,17 @@ class DraggablePatch(DummyPatch):
 
     def on_key(self, event):
         xy = self.get_xy_drag()
-        if event.key == 'left':
+        if event.key == "left":
             xy = [xy[0] - self.__wsad_step, xy[1]]
-        elif event.key == 'right':
+        elif event.key == "right":
             xy = [xy[0] + self.__wsad_step, xy[1]]
-        elif event.key == 'up':
+        elif event.key == "up":
             xy = [xy[0], xy[1] + self.__wsad_step]
-        elif event.key == 'down':
+        elif event.key == "down":
             xy = [xy[0], xy[1] - self.__wsad_step]
-        elif event.key == 'a':
+        elif event.key == "a":
             self.__wsad_step *= 0.5
-        elif event.key == 'd':
+        elif event.key == "d":
             self.__wsad_step *= 2
 
         self.set_xy_drag(xy=self.apply_limits(xy=xy))
@@ -315,20 +316,20 @@ class DraggablePatchList:
         callback_cur = self.get_callback(idx=idx)
         callback = self.__value_wrapper(v=callback, v_cur=callback_cur, n=n)
 
-        if mode == 'set':
+        if mode == "set":
             for ii, cc in zip(idx, callback):
                 self.dp_list[ii].set_callback_drag(callback=cc)
-        elif mode == 'add':
+        elif mode == "add":
             for ii, cc in zip(idx, callback):
                 self.dp_list[ii].add_callback_drag(cc)
         else:
             raise ValueError(f"Unknown mode: {mode}")
 
     def set_callback_drag(self, callback, idx=-1):
-        self.__set_or_add_callback_drag(callback=callback, idx=idx, mode='set')
+        self.__set_or_add_callback_drag(callback=callback, idx=idx, mode="set")
 
     def add_callback_drag(self, callback, idx=-1):
-        self.__set_or_add_callback_drag(callback=callback, idx=idx, mode='add')
+        self.__set_or_add_callback_drag(callback=callback, idx=idx, mode="add")
 
     def toggle_visibility(self, value=None):
         v = [dp.toggle_visibility(value=value) for dp in self.dp_list]
@@ -393,7 +394,7 @@ class DraggableFrame(DraggableCircleList):
                          **kwargs)
 
         self.h = plot_coordinate_frames(ax=ax, x=xy, dcm=self.__v2dcm(self.v),
-                                        mode='quiver', zorder=10, **kwargs)
+                                        mode="quiver", zorder=10, **kwargs)
         super().add_callback_drag(self.update_x, idx=0)
         super().add_callback_drag(self.update_v, idx=1)
 

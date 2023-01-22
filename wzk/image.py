@@ -53,7 +53,7 @@ def image_array_shape(shape, n_samples=None, n_dim=None, n_channels=None):
 
 
 def initialize_image_array(shape: tuple, n_dim: int = None, n_samples: int = None, n_channels: int = None,
-                           dtype=None, initialization: str = 'zeros') -> np.ndarray:
+                           dtype=None, initialization: str = "zeros") -> np.ndarray:
     shape = image_array_shape(shape=shape, n_dim=n_dim, n_samples=n_samples, n_channels=n_channels)
     return np2.initialize_array(shape=shape, mode=initialization, dtype=dtype)
 
@@ -127,8 +127,8 @@ def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder
     assert img_arr.ndim == 4
     n_rows, n_cols, n_x, n_y = img_arr.shape
 
-    bv_i, bh_i = ltd.tuple_extract(inner_border, default=(0, 0), mode='repeat')
-    bv_o, bh_o = ltd.tuple_extract(outer_border, default=(0, 0), mode='repeat')
+    bv_i, bh_i = ltd.tuple_extract(inner_border, default=(0, 0), mode="repeat")
+    bv_o, bh_o = ltd.tuple_extract(outer_border, default=(0, 0), mode="repeat")
 
     img = np.full(shape=(n_x * n_rows + bv_i * (n_rows - 1) + 2*bv_o,
                          n_y * n_cols + bh_i * (n_cols - 1) + 2*bh_o), fill_value=fill_boarder, dtype=dtype)
@@ -141,7 +141,7 @@ def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder
     return img
 
 
-def pooling(mat, kernel, method='max', pad=False):
+def pooling(mat, kernel, method="max", pad=False):
     """
     Non-overlapping pooling on 2D or 3D Measurements.
     <mat>: ndarray, input array to pool.
@@ -175,7 +175,7 @@ def pooling(mat, kernel, method='max', pad=False):
 
     new_shape = (ny, ky, nx, kx) + mat.shape[2:]
 
-    if method == 'max':
+    if method == "max":
         result = np.nanmax(mat_pad.reshape(new_shape), axis=(1, 3))
     else:
         result = np.nanmean(mat_pad.reshape(new_shape), axis=(1, 3))
@@ -300,7 +300,7 @@ def tile_2d(*, pattern, v_in_row, v_to_next_row, offset=(0, 0),
     for ii, i in enumerate(range(0, nodes.shape[0], v_to_next_row[0])):
         nodes[i, range((ii*v_to_next_row[1]) % v_in_row, nodes.shape[1], v_in_row)] = 1
 
-    img = convolve2d(nodes, pattern, mode='full')
+    img = convolve2d(nodes, pattern, mode="full")
 
     ll = (v_to_next_row[0] + offset[0],
           v_to_next_row[1] + offset[1])

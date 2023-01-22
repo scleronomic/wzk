@@ -1,6 +1,7 @@
 from unittest import TestCase
 
-from wzk.math2 import *
+import numpy as np
+from wzk import math2
 
 
 class Test(TestCase):
@@ -12,13 +13,13 @@ class Test(TestCase):
                         [0.25, 0.3, 0.35, 0.4, 0.45],
                         [0.5, 0.55, 0.6, 0.65, 0.7],
                         [0.75, 0.8, 0.85, 0.9, 1.]])
-        res = normalize_01(x)
+        res = math2.normalize_01(x)
         self.assertTrue(np.allclose(sol, res))
 
         x = np.arange(40).reshape((2, 4, 5))
         x[0, -1, -1] = 20
         x[1, -1, -1] = 40
-        res = normalize_01(x, axis=(-2, -1))
+        res = math2.normalize_01(x, axis=(-2, -1))
         self.assertTrue(np.allclose(sol, res[0]))
         self.assertTrue(np.allclose(sol, res[1]))
 
@@ -43,23 +44,23 @@ class Test(TestCase):
                [2, 43], [3, 29], [2, 4, 8, 11, 22, 44], [], [2, 3, 6, 9, 18, 5, 10, 15, 30, 45],
                [7, 13], [2, 4, 23, 46], [3, 31], [2, 47], [5, 19],
                [2, 4, 8, 16, 32, 3, 6, 12, 24, 48], [], [2, 7, 14, 49], [3, 9, 11, 33], [2, 4, 5, 10, 20, 25, 50]]
-        res = [divisors(i) for i in range(101)]
+        res = [math2.divisors(i) for i in range(101)]
         self.assertEqual(sol, res)
 
     def test_mean_divisor_pair(self):
-        self.assertEqual((1, 1), get_mean_divisor_pair(1))
-        self.assertEqual((1, 2), get_mean_divisor_pair(2))
-        self.assertEqual((2, 5), get_mean_divisor_pair(10))
-        self.assertEqual((3, 4), get_mean_divisor_pair(12))
-        self.assertEqual((4, 6), get_mean_divisor_pair(24))
-        self.assertEqual((9, 9), get_mean_divisor_pair(81))
-        self.assertEqual((9, 11), get_mean_divisor_pair(99))
+        self.assertEqual((1, 1), math2.get_mean_divisor_pair(1))
+        self.assertEqual((1, 2), math2.get_mean_divisor_pair(2))
+        self.assertEqual((2, 5), math2.get_mean_divisor_pair(10))
+        self.assertEqual((3, 4), math2.get_mean_divisor_pair(12))
+        self.assertEqual((4, 6), math2.get_mean_divisor_pair(24))
+        self.assertEqual((9, 9), math2.get_mean_divisor_pair(81))
+        self.assertEqual((9, 11), math2.get_mean_divisor_pair(99))
 
     def test_discretize(self):
         sol = np.array([0., 0.17, 0.17, 0.34, 0.34, 0.51, 0.68, 0.68, 0.85, 1.02,
                         1.02, 1.19, 1.19, 1.36, 1.53, 1.53, 1.70, 1.87, 1.87, 2.04])
 
-        res = discretize(x=np.linspace(0, 2, num=20), step=0.17)
+        res = math2.discretize(x=np.linspace(0, 2, num=20), step=0.17)
         self.assertTrue(np.allclose(sol, res))
 
     def test_d_linalg_norm__d_x(self):
@@ -76,9 +77,9 @@ class Test(TestCase):
             q = (q * np.arange(1, q.shape[-1] + 1)).sum(axis=-1)
             return q
 
-        jac_num = numeric_derivative(fun=linalg_norm, x=x, axis=-1)
-        jac_num2 = numeric_derivative(fun=ln2, x=x, axis=-1)
-        jac = dxnorm_dx(x)
+        jac_num = math2.numeric_derivative(fun=linalg_norm, x=x, axis=-1)
+        jac_num2 = math2.numeric_derivative(fun=ln2, x=x, axis=-1)
+        jac = math2.dxnorm_dx(x)
 
         jac2 = (jac @ np.arange(1, x.shape[-1] + 1)[:, np.newaxis])[..., 0]
 
@@ -94,8 +95,6 @@ class Test(TestCase):
 
         a = np.random.random((100, 10, 1))
         grad_analytic = x54321_derv(x=a)
-        grad_numeric = numeric_derivative(fun=x54321, x=a, axis=-1)
+        grad_numeric = math2.numeric_derivative(fun=x54321, x=a, axis=-1)
 
         self.assertTrue(np.allclose(grad_analytic, grad_numeric))
-
-

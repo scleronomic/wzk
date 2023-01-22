@@ -11,8 +11,8 @@ from wzk.mpl2.move_figure import move_fig
 from wzk import files, ltd, math2, printing, strings
 
 import matplotlib as mpl
-from matplotlib import axes
-from matplotlib import figure
+from matplotlib import axes  # noqa
+from matplotlib import figure  # noqa
 
 shape_1c_ieee = [3 + 1 / 2, (3 + 1 / 2) / math2.golden_ratio]
 shape_2c_ieee = [7 + 1 / 16, (7 + 1 / 16) / math2.golden_ratio]
@@ -37,9 +37,9 @@ def ax_wrapper(ax: Union[dict, mpl.axes.Axes]):
 def figsize_wrapper(width, height=None, height_ratio=1/math2.golden_ratio):
     # https://www.ieee.org/content/dam/ieee-org/ieee/web/org/pubs/eic-guide.pdf
     if isinstance(width, str):
-        if width.lower() == 'ieee1c':
+        if width.lower() == "ieee1c":
             width = shape_1c_ieee[0]
-        elif width.lower() == 'ieee2c':
+        elif width.lower() == "ieee2c":
             width = shape_2c_ieee[0]
         else:
             raise ValueError
@@ -57,8 +57,8 @@ def figsize_wrapper(width, height=None, height_ratio=1/math2.golden_ratio):
 def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / math2.golden_ratio,
             n_dim=2,
             n_rows=1, n_cols=1,
-            share_x='none', share_y='none',  # : bool or {'none', 'all', 'row', 'col'},
-            aspect='auto', limits=None,
+            share_x="none", share_y="none",  # : bool or {'none', 'all', 'row', 'col'},
+            aspect="auto", limits=None,
             title=None,
             position=None, monitor=-1,
             **kwargs):
@@ -79,7 +79,7 @@ def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / math2.golden_ratio,
 
     else:
         import mpl_toolkits.mplot3d.art3d as art3d  # noqa
-        ax = plt.axes(projection='3d')
+        ax = plt.axes(projection="3d")
         set_ax_limits(ax=ax, limits=limits)
 
     if title is not None:
@@ -90,7 +90,7 @@ def new_fig(width=shape_2c_ieee[0], height=None, h_ratio=1 / math2.golden_ratio,
 
 
 def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str, tuple] = None,
-             dpi: int = 300, bbox: Optional[str] = 'tight', pad: float = 0.1,
+             dpi: int = 300, bbox: Optional[str] = "tight", pad: float = 0.1,
              save: bool = True, replace: bool = True, view: bool = False, copy2cb: bool = False,
              verbose: int = 1, **kwargs):
     """
@@ -109,11 +109,11 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
         file = get_fig_suptitle(fig=fig)
 
     dir_name = os.path.dirname(file)
-    if dir_name != '':
+    if dir_name != "":
         files.mkdirs(directory=dir_name)
 
     file, ext = os.path.splitext(file)
-    if ext == '':
+    if ext == "":
         ext = tuple()
     else:
         ext = tuple([ext[1:]])
@@ -126,14 +126,14 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
 
     formats = list(formats)
     for f in formats:
-        file_f = f'{file}.{f}'
+        file_f = f"{file}.{f}"
 
         if replace or not os.path.isfile(path=file_f):
             fig.savefig(file_f, format=f, bbox_inches=bbox, pad_inches=pad,  dpi=dpi, **kwargs)
             if verbose >= 1:
-                print(f'{file_f} saved')
+                print(f"{file_f} saved")
         else:
-            print(f'{file_f} already exists')
+            print(f"{file_f} already exists")
 
     if view:
         files.start_open(file=f"{file}.{formats[0]}")
@@ -145,10 +145,10 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
 def save_ani(file: str, fig: mpl.figure.Figure, ani,
              n: int, fps: int = 30, dpi: int = 300, bbox: str = None,):
     dir_temp = os.path.split(file)[0]
-    if dir_temp == '':
+    if dir_temp == "":
         dir_temp = os.getcwd()
-        file = dir_temp + '/' + file
-    dir_temp += '/' + strings.uuid4()
+        file = dir_temp + "/" + file
+    dir_temp += "/" + strings.uuid4()
 
     if isinstance(n, int):
         n = np.arange(n)
@@ -156,17 +156,17 @@ def save_ani(file: str, fig: mpl.figure.Figure, ani,
     for nn in n:
         printing.progress_bar(i=nn, n=n[-1] + 1)
         ani(nn)
-        save_fig(file="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats=('png', ), dpi=dpi, bbox=bbox,
+        save_fig(file="{}/frame{:0>6}".format(dir_temp, nn), fig=fig, formats=("png", ), dpi=dpi, bbox=bbox,
                  verbose=0)
 
-    os.system(f'ffmpeg -r {fps} -i {dir_temp}/'
+    os.system(f"ffmpeg -r {fps} -i {dir_temp}/"
               f'frame%06d.png -pix_fmt yuv420p -vf "pad=ceil(iw/2)*2:ceil(ih/2)*2:color=white" {file}.mp4')
     shutil.rmtree(dir_temp)
 
 
 def save_all(directory: str = None, close: bool = False, **kwargs):
     if directory is None:
-        directory = input('Directory to which the figures should be saved:')
+        directory = input("Directory to which the figures should be saved:")
 
     fig_nums = plt.get_fignums()
     for n in fig_nums:
@@ -184,11 +184,11 @@ def get_fig_suptitle(fig: mpl.figure.Figure):
     try:
         return fig._suptitle._text
     except AttributeError:
-        return ''
+        return ""
 
 
 def close_all():
-    plt.close('all')
+    plt.close("all")
 
 
 def subplot_grid(n: int, squeeze: bool = False, **kwargs):
@@ -207,6 +207,6 @@ def subplot_grid(n: int, squeeze: bool = False, **kwargs):
 def test_pdf2latex():
     fig, ax = new_fig(scale=0.5)
     ax.plot(np.random.random(20))
-    ax.set_xlabel('Magnetization')
-    save_fig(file='/Users/jote/Documents/Vorlagen/LaTeX Vorlagen/IEEE-open-journal-template/aaa', fig=fig,
-             formats=('pdf',))
+    ax.set_xlabel("Magnetization")
+    save_fig(file="/Users/jote/Documents/Vorlagen/LaTeX Vorlagen/IEEE-open-journal-template/aaa", fig=fig,
+             formats=("pdf",))

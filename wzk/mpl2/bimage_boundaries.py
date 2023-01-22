@@ -224,7 +224,7 @@ def combine_faces(face_vtx, verbose=0):
         planes[i] = __get_plane(face_vtx[i, ...])
 
     if verbose >= 1:
-        print('Initial number of faces: ', n_faces)
+        print("Initial number of faces: ", n_faces)
 
     while True:
         combine_count = 0
@@ -272,7 +272,7 @@ def combine_faces(face_vtx, verbose=0):
             break
 
     if verbose >= 1:
-        print('Final number of faces: ', n_faces)
+        print("Final number of faces: ", n_faces)
 
     return face_vtx
 

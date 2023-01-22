@@ -4,7 +4,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from pandas.io import sql
+from pandas.io import sql  # noqa
 
 import sqlite3
 
@@ -13,13 +13,13 @@ from wzk.ltd import change_tuple_order, atleast_list
 from wzk.dtypes import str2np
 from wzk.strings import uuid4
 
-_CMP = '_cmp'
+_CMP = "_cmp"
 
-TYPE_TEXT = 'TEXT'
-TYPE_NUMERIC = 'NUMERIC'
-TYPE_INTEGER = 'INTEGER'
-TYPE_REAL = 'REAL'
-TYPE_BLOB = 'BLOB'
+TYPE_TEXT = "TEXT"
+TYPE_NUMERIC = "NUMERIC"
+TYPE_INTEGER = "INTEGER"
+TYPE_REAL = "REAL"
+TYPE_BLOB = "BLOB"
 
 
 def rows2sql(rows: object, dtype: object = str, values=None) -> object:
@@ -39,7 +39,7 @@ def rows2sql(rows: object, dtype: object = str, values=None) -> object:
     rows = np.array(rows, dtype=int).reshape(-1) + 1  # Attention! Unlike in Python, SQL indices start at 1
 
     if dtype == str:
-        return ', '.join(map(str, rows))
+        return ", ".join(map(str, rows))
 
     elif dtype == list:
         return rows.tolist()
@@ -50,12 +50,12 @@ def rows2sql(rows: object, dtype: object = str, values=None) -> object:
 
 def columns2sql(columns: object, dtype: object):
     if columns is None:
-        return '*'
+        return "*"
     if isinstance(columns, str):
         columns = [columns]
 
     if dtype == str:
-        return ', '.join(map(str, columns))
+        return ", ".join(map(str, columns))
     elif dtype == list:
         return columns
     else:
@@ -64,12 +64,12 @@ def columns2sql(columns: object, dtype: object):
 
 def order2sql(order_by, dtype=str):
     if order_by is None:
-        order_by_str = ''
+        order_by_str = ""
 
     else:
         if isinstance(order_by, (str, list)):
             columns = atleast_list(order_by, convert=False)
-            asc_desc = ['ASC'] * len(columns)
+            asc_desc = ["ASC"] * len(columns)
 
         elif isinstance(order_by, dict):
             columns = order_by.keys
@@ -80,9 +80,9 @@ def order2sql(order_by, dtype=str):
 
         assert len(asc_desc) == len(columns)
         for ad in asc_desc:
-            assert ad == 'ASC' or ad == 'DESC'
+            assert ad == "ASC" or ad == "DESC"
             
-        order_by_str = ', '.join([f"{c} {ad}" for c, ad in zip(columns, asc_desc)])
+        order_by_str = ", ".join([f"{c} {ad}" for c, ad in zip(columns, asc_desc)])
         order_by_str = f" ORDER BY {order_by_str}"
 
     if dtype == str:
@@ -127,7 +127,7 @@ def __commit(con):
         pass
 
 
-def execute(file, query, isolation_level='DEFERRED', lock=None):
+def execute(file, query, isolation_level="DEFERRED", lock=None):
     with open_db_connection(file=file, close=True, isolation_level=isolation_level, lock=lock) as con:
         # con.execute("PRAGMA max_page_count = 200000")
         # con.execute("PRAGMA page_size = 65536")
@@ -150,15 +150,15 @@ def executescript(file, query, lock=None):
 def set_journal_mode_wal(file):
     # https://www.sqlite.org/pragma.html#pragma_journal_mode
     # speed up through smarter journal mode https://sqlite.org/wal.html
-    execute(file=file, query='PRAGMA journal_mode=WAL')
+    execute(file=file, query="PRAGMA journal_mode=WAL")
 
 
 def set_journal_mode_memory(file):
-    execute(file=file, query='PRAGMA journal_mode=MEMORY')
+    execute(file=file, query="PRAGMA journal_mode=MEMORY")
 
 
 def set_page_size(file, page_size=4096):
-    execute(file=file, query=f'PRAGMA page_size={page_size}')
+    execute(file=file, query=f"PRAGMA page_size={page_size}")
 
 
 def vacuum(file):
@@ -168,14 +168,14 @@ def vacuum(file):
     # temp_store_directory is deprecated, but hte alternatives did not work
     print(f"vacuum {file}")
     execute(file=file, query=f"PRAGMA temp_store_directory = '{os.path.dirname(file)}'")
-    execute(file=file, query='VACUUM')
+    execute(file=file, query="VACUUM")
 
 
 def get_tables(file: str) -> list:
     with open_db_connection(file=file, close=True) as con:
         t = pd.read_sql_query(sql="SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%'",
                               con=con)
-    return t['name'].values
+    return t["name"].values
 
 
 def get_columns(file, table, mode: object = None):
@@ -186,10 +186,10 @@ def get_columns(file, table, mode: object = None):
         return c
 
     res = []
-    if 'name' in mode:
+    if "name" in mode:
         res.append(c.name.values)
 
-    if 'type' in mode:
+    if "type" in mode:
         res.append(c.type.values)
 
     if len(res) == 1:
@@ -227,7 +227,7 @@ def get_n_rows(file, table):
 
 
 def get_n_samples(file, i_worlds=-1):
-    i_worlds_all = get_values_sql(file=file, columns='i_world', values_only=True, table='paths')
+    i_worlds_all = get_values_sql(file=file, columns="i_world", values_only=True, table="paths")
     unique, counts = np.unique(i_worlds_all, return_counts=True)
     if i_worlds == -1:
         return counts
@@ -237,7 +237,7 @@ def get_n_samples(file, i_worlds=-1):
 
 def integrity_check(file):
     with open_db_connection(file=file, close=True, lock=None) as con:
-        c = pd.read_sql_query(con=con, sql=f"pragma integrity_check")
+        c = pd.read_sql_query(con=con, sql="pragma integrity_check")
     print(f"integrity_check file:'{file}' -> {c}")
     return c.values[0][0]
 
@@ -315,7 +315,7 @@ def delete_rows(file: str, table: str, rows, lock=None):
 
         rows = np.array_split(rows, max(2, int(np.ceil(len(rows)//batch_size))))
         for r in rows:
-            r = ', '.join(map(str, r.tolist()))
+            r = ", ".join(map(str, r.tolist()))
             execute(file=file, lock=lock, query=f"DELETE FROM {table} WHERE ROWID in ({r})")
 
     vacuum(file)
@@ -333,7 +333,7 @@ def add_column(file, table, column, dtype, lock=None):
 
 
 def copy_column(file, table, column_src, column_dst, dtype, lock=None):
-    column_list = get_columns(file, table, mode='name')
+    column_list = get_columns(file, table, mode="name")
     assert column_src in column_list
     if column_dst not in column_list:
         add_column(file=file, table=table, column=column_dst, dtype=dtype, lock=lock)
@@ -351,8 +351,8 @@ def copy_table(file, table_src, table_dst, columns=None, dtypes=None, order_by=N
     dtypes = columns2sql(dtypes, dtype=list)
     assert len(columns) == len(dtypes)
 
-    columns_dtype_str = ', '.join([f"{c} {d}" for c, d in zip(columns, dtypes)])
-    columns_cast_dtype_str = ', '.join([f"CAST({c} AS {d})" for c, d in zip(columns, dtypes)])
+    columns_dtype_str = ", ".join([f"{c} {d}" for c, d in zip(columns, dtypes)])
+    columns_cast_dtype_str = ", ".join([f"CAST({c} AS {d})" for c, d in zip(columns, dtypes)])
     order_by_str = order2sql(order_by=order_by, dtype=str)
     
     execute(file=file, query=f"CREATE TABLE {table_dst}({columns_dtype_str})")
@@ -372,7 +372,7 @@ def alter_table(file, table, columns, dtypes, order_by=None):
 
 
 def squeeze_table(file, table, verbose=1):
-    columns = get_columns(file=file, table=table, mode='name')
+    columns = get_columns(file=file, table=table, mode="name")
 
     for c in zip(columns):
         v0 = get_values_sql(file=file, table=table, columns=c, rows=0, values_only=True)
@@ -421,7 +421,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
                 raise pd.io.sql.DatabaseError
 
     value_list = []
-    if np.any(columns == '*'):
+    if np.any(columns == "*"):
         columns = df.columns.values
 
     if values_only:
@@ -460,8 +460,8 @@ def set_values_sql(file, table,
     columns = columns2sql(columns, dtype=list)
     values = tuple(values2bytes(value=v, column=c) for v, c in zip(values, columns))
 
-    columns = '=?, '.join(map(str, columns))
-    columns += '=?'
+    columns = "=?, ".join(map(str, columns))
+    columns += "=?"
 
     values_rows_sql = change_tuple_order(values + (rows,))
     values_rows_sql = list(values_rows_sql)
@@ -470,7 +470,7 @@ def set_values_sql(file, table,
     executemany(file=file, query=query, args=values_rows_sql, lock=lock)
 
 
-def df2sql(df, file, table, dtype=None, if_exists='fail'):
+def df2sql(df, file, table, dtype=None, if_exists="fail"):
     """
     From DataFrame.to_sql():
         if_exists : {'fail', 'replace', 'append'}, default 'fail'
@@ -479,14 +479,14 @@ def df2sql(df, file, table, dtype=None, if_exists='fail'):
                    - append: If table exists, insert Measurements. Create if does not exist.
     """
     if df is None:
-        print('No DataFrame was provided...')
+        print("No DataFrame was provided...")
         return
 
     elif len(df) == 0:
-        print('DataFrame is empty...')
+        print("DataFrame is empty...")
         return
 
-    data = df.to_dict(orient='list')
+    data = df.to_dict(orient="list")
     data = values2bytes_dict(data=data)
     df = pd.DataFrame(data=data)
     with open_db_connection(file=file, close=True, lock=None) as con:

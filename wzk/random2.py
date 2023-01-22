@@ -37,16 +37,16 @@ def random_uniform_ndim(low, high, shape=None):
     return np.random.uniform(low=low, high=high, size=np2.shape_wrapper(shape) + (n_dim,))
 
 
-def noise(shape, scale, mode='normal'):
+def noise(shape, scale, mode="normal"):
     shape = np2.shape_wrapper(shape)
 
-    if mode == 'constant':  # could argue that this is no noise
+    if mode == "constant":  # could argue that this is no noise
         return np.full(shape=shape, fill_value=+scale)
-    if mode == 'plusminus':
+    if mode == "plusminus":
         return np.where(np.random.random(shape) < 0.5, -scale, +scale)
-    if mode == 'uniform':
+    if mode == "uniform":
         return np.random.uniform(low=-scale, high=+scale, size=shape)
-    elif mode == 'normal':
+    elif mode == "normal":
         return np.random.normal(loc=0, scale=scale, size=shape)
     else:
         raise ValueError(f"Unknown mode '{mode}'")
