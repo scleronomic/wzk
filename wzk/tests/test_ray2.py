@@ -1,8 +1,7 @@
 import numpy as np
 import time
 from wzk.ray2 import ray, init
-from wzk import tic, toc
-from wzk.multiprocessing2 import mp_wrapper
+from wzk import tic, toc, mp2
 
 
 def speed():
@@ -54,5 +53,5 @@ def speed():
     toc()
 
     tic()
-    mp_wrapper(n, fun=test0, n_processes=n_cpu)
+    mp2.mp_wrapper(n, fun=test0, n_processes=n_cpu)
     toc("mp")

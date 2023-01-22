@@ -13,14 +13,12 @@ from .ltd import *
 from .functions import *
 from .geometry import *
 from .index import *
-from .image import *
 from .math2 import *
-from .multiprocessing2 import *
 from .np2 import *
 from .object2 import *
-from .printing import print2, print_dict, print_stats, print_table
+from .printing import print2, print_dict, print_stats, print_table, check_verbosity, print_array_3d  # noqa
 from .strings import *
-from .time2 import tic, toc, tictoc
+from .time2 import tic, toc, tictoc, get_timestamp  # noqa
 
 # modules which require additional repositories
 # from .pyOpt2 import *

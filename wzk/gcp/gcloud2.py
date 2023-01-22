@@ -8,20 +8,20 @@ from io import StringIO
 from wzk.subprocess2 import call2
 from wzk.ltd import atleast_list
 
-GCP_PROJECT = os.environ["GCP_PROJECT"]
-GCP_ACCOUNT_NR = os.environ["GCP_ACCOUNT_NR"]
-GCP_ZONE = "us-central1-a"
-__GCP_SCOPES = "https://www.googleapis.com/auth/devstorage.read_only," \
-               "https://www.googleapis.com/auth/logging.write," \
-               "https://www.googleapis.com/auth/monitoring.write," \
-               "https://www.googleapis.com/auth/servicecontrol," \
-               "https://www.googleapis.com/auth/service.management.readonly," \
-               "https://www.googleapis.com/auth/trace.append"
+PROJECT = os.environ["GCP_PROJECT"]
+ACCOUNT_NR = os.environ["GCP_ACCOUNT_NR"]
+ZONE = "us-central1-a"
+__SCOPES = "https://www.googleapis.com/auth/devstorage.read_only," \
+           "https://www.googleapis.com/auth/logging.write," \
+           "https://www.googleapis.com/auth/monitoring.write," \
+           "https://www.googleapis.com/auth/servicecontrol," \
+           "https://www.googleapis.com/auth/service.management.readonly," \
+           "https://www.googleapis.com/auth/trace.append"
 
-GCP_USER = os.environ["GCP_USER"]
-GCP_USER_SHORT = os.environ["GCP_USER_SHORT"]
+USER = os.environ["GCP_USER"]
+USER_SHORT = os.environ["GCP_USER_SHORT"]
 
-GCP_USER_LABEL = f"user={os.environ['GCP_USER_LABEL']}"
+USER_LABEL = f"user={os.environ['GCP_USER_LABEL']}"
 
 
 def add_old_disks_flag(disks):
@@ -41,8 +41,8 @@ def add_new_disks_flag(disks):
            f"auto-delete={d['autodelete']},"
            f"device-name={d['name']},"
            f"mode=rw,size={d['size']},"
-           f"source-snapshot=projects/{GCP_PROJECT}/global/snapshots/{d['snapshot']},"
-           f"type=projects/{GCP_PROJECT}/zones/{GCP_ZONE}/diskTypes/pd-balanced"
+           f"source-snapshot=projects/{PROJECT}/global/snapshots/{d['snapshot']},"
+           f"type=projects/{PROJECT}/zones/{ZONE}/diskTypes/pd-balanced"
            for d in disks]
     cmd = " ".join(cmd)
     return cmd
@@ -79,11 +79,11 @@ def create_instance_cmd(config):
           f"{add_new_disks_flag(config['disks_new'])} " \
           f"{add_old_disks_flag(config['disks_old'])} " \
           f"{add_local_disks_flag(config['disks_local'])} " \
-          f"--zone={GCP_ZONE} " \
-          f"--project={GCP_PROJECT} " \
-          f"--scopes={__GCP_SCOPES} " \
+          f"--zone={ZONE} " \
+          f"--project={PROJECT} " \
+          f"--scopes={__SCOPES} " \
           f"--labels={config['labels']} " \
-          f"--service-account={GCP_ACCOUNT_NR}-compute@developer.gserviceaccount.com " \
+          f"--service-account={ACCOUNT_NR}-compute@developer.gserviceaccount.com " \
           f"--metadata enable-oslogin=TRUE" \
           f"{add_startup_script_flag(config['startup_script'])} " \
           f"" \
@@ -99,8 +99,8 @@ def create_disk_cmd(disk):
     cmd = f"gcloud beta compute disks create {disk['name']} " \
           f"--size={disk['size']}GB " \
           f"--labels={disk['labels']} " \
-          f"--project={GCP_PROJECT}  " \
-          f"--zone={GCP_ZONE} " \
+          f"--project={PROJECT}  " \
+          f"--zone={ZONE} " \
           f"--type=pd-balanced"
     return cmd
 
@@ -114,7 +114,7 @@ def __resource2name(resource):
 def attach_disk_cmd(instance, disk):
     instance = __resource2name(instance)
     disk = __resource2name(disk)
-    cmd = f'gcloud compute instances attach-disk {instance} --disk {disk} --zone "{GCP_ZONE}"'
+    cmd = f'gcloud compute instances attach-disk {instance} --disk {disk} --zone "{ZONE}"'
     return cmd
 
 
@@ -130,7 +130,7 @@ def attach_disk(instance, disk):
 def detach_disk_cmd(instance, disk):
     instance = __resource2name(instance)
     disk = __resource2name(disk)
-    cmd = f'gcloud compute instances detach-disk {instance} --disk {disk} --zone "{GCP_ZONE}"'
+    cmd = f'gcloud compute instances detach-disk {instance} --disk {disk} --zone "{ZONE}"'
     return cmd
 
 
@@ -166,7 +166,7 @@ def upload2bucket(disk, file, bucket, n, n0=0):
     instance = socket.gethostname()
     file_name, file_ext = os.path.splitext(os.path.split(file)[1])
 
-    directory = f"/home/{GCP_USER}/sdb"
+    directory = f"/home/{USER}/sdb"
     for i in range(n0, n+n0):
         disk_i = f"{disk}-{i}"
         file_i = f"{bucket}/{file_name}_{i}{file_ext}"
@@ -179,7 +179,7 @@ def upload2bucket(disk, file, bucket, n, n0=0):
 
 
 def connect_cmd(instance):
-    return f'gcloud beta compute ssh --project "{GCP_PROJECT}" --zone "{GCP_ZONE}" {GCP_USER}@"{instance}"'
+    return f'gcloud beta compute ssh --project "{PROJECT}" --zone "{ZONE}" {USER}@"{instance}"'
 
 
 def gsutil_cp(src, dst):
@@ -210,7 +210,7 @@ def connect2(name):
 
 
 def attach_mount(disk):
-    directory = f"/home/{GCP_USER}/sdb"
+    directory = f"/home/{USER}/sdb"
 
     instance = socket.gethostname()
     sdx = attach_disk(instance=instance, disk=disk)

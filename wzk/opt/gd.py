@@ -1,6 +1,6 @@
 import numpy as np  # noqa
 
-from wzk import np2, multiprocessing2, object2
+from wzk import np2, mp2, object2
 from wzk.opt.optimizer import Naive
 
 
@@ -67,7 +67,7 @@ def gradient_descent_mp(x, fun, grad, opt):
     def gd_wrapper(xx):
         return gradient_descent(x=xx, fun=fun, grad=grad, opt=opt)
 
-    return multiprocessing2.mp_wrapper(x, fun=gd_wrapper, n_processes=opt.n_processes)
+    return mp2.mp_wrapper(x, fun=gd_wrapper, n_processes=opt.n_processes)
 
 
 def gradient_descent(x, fun, grad, opt):
