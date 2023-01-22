@@ -1,4 +1,4 @@
-import __multiprocessing2   # must be imported before multiprocessing / numpy
+from . import __multiprocessing2   # must be imported before multiprocessing / numpy
 
 try:  # must be imported before skimage / did not find out why yet
     from pyOpt.pySLSQP.pySLSQP import SLSQP as _
