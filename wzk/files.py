@@ -67,6 +67,12 @@ def start_open(file: str):
     subprocess.Popen([f"{open_cmd} {file}"], shell=True)
 
 
+def ln(src, dst, symbolic=True):
+    s = " -s" if symbolic else ""
+    subprocess.call(f"ln {s}{src} {dst}", shell=True)
+
+
+# IO
 def save_object2txt(obj, file: str):
     if file[-4:] != ".txt" and "." not in file:
         file += ".txt"

@@ -1,3 +1,12 @@
+"""
+bee nomenclature
+bee:   direct line between a and b
+dbee:  difference to the bee-line
+dbees: scaled difference to the bee-line
+
+
+"""
+
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
@@ -43,6 +52,10 @@ def full2start_end(x, mode=""):
         raise NotImplementedError
 
 
+def x2se(x):
+    return x[..., [0, -1], :]
+
+
 def path_mode(x, mode=None):
     if mode is None or mode == "full":
         return x
@@ -72,6 +85,8 @@ def full2flat(x):
     return x
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# Substeps
 def periodic_dof_wrapper(x,
                          is_periodic=None):
     if is_periodic is not None and any(is_periodic):
@@ -170,33 +185,6 @@ def get_substeps_adjusted(x, n,
     return x_n
 
 
-def x2bee(x, n_wp=None):
-    x_se = x[..., [0, -1], :]
-    if n_wp is None:
-        n_wp = x.shape[-2]
-
-    bee = get_substeps(x_se, n=n_wp-1, include_start=True)
-    return bee
-
-
-def x2beerel(x, n_wp=None, eps=1e-4):
-    bee = x2bee(x, n_wp=n_wp)
-    beerel = x - bee
-
-    d = np.linalg.norm(x[..., -1, :] - x[..., 0, :], axis=-1, keepdims=True)[..., np.newaxis] + eps
-    beerel = beerel / d
-    return beerel
-
-
-def beerel2x(beerel, se, eps=1e-4):
-    n_wp = beerel.shape[-2]
-    assert np.all(beerel[..., [0, -1], :] == 0)
-    bee = x2bee(x=se, n_wp=n_wp)
-    d = np.linalg.norm(se[..., -1, :] - se[..., 0, :], axis=-1, keepdims=True)[..., np.newaxis] + eps
-    x = bee + beerel * d
-    return x
-
-
 def get_path_adjusted(x, n=None, is_periodic=None, weighting=None, __m=5):
     n0 = x.shape[-2]
     if n is None:
@@ -244,10 +232,154 @@ def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
 
     return x_o
 
-#
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Bee
+def x2bee(x, n_wp=None):
+    x_se = x[..., [0, -1], :]
+    if n_wp is None:
+        n_wp = x.shape[-2]
+
+    bee = get_substeps(x_se, n=n_wp-1, include_start=True)
+    return bee
+
+
+def x2dbee(x, n_wp=None):
+    return x - x2bee(x=x, n_wp=n_wp)
+
+
+def x2sdbee(x, n_wp=None, eps=1e-4):
+    dbee = x2dbee(x, n_wp=n_wp)
+
+    s = np.linalg.norm(x[..., -1, :] - x[..., 0, :], axis=-1, keepdims=True)[..., np.newaxis] + eps
+    sdbee = dbee / s
+    return sdbee
+
+
+def dbee2x(dbee, se):
+    n_wp = dbee.shape[-2]
+    bee = x2bee(x=se, n_wp=n_wp)
+    x = bee + dbee
+    return x
+
+
+def sdbee2x(sdbee, se, eps=1e-4):
+    n_wp = sdbee.shape[-2]
+    assert np.all(sdbee[..., [0, -1], :] == 0)
+    bee = x2bee(x=se, n_wp=n_wp)
+    s = np.linalg.norm(se[..., -1, :] - se[..., 0, :], axis=-1, keepdims=True)[..., np.newaxis] + eps
+    x = bee + sdbee * s
+    return x
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# Splines
+def to_spline(x, n_c=4, start_end_mode=None):
+
+    n_wp, n_dof = x.shape[-2:]
+    xx = np.linspace(0, 1, n_wp)
+    if np.ndim(x) == 2:
+        c = np.zeros((n_c, n_dof))
+        for i_d in range(n_dof):
+            spl = UnivariateSpline(x=xx, y=x[:, i_d])
+            c[..., i_d] = spl.get_coeffs()
+
+    elif np.ndim(x) == 3:
+        n = x.shape[0]
+
+        c = np.zeros((n, n_c, n_dof))
+        for i_n in range(n):
+            for i_d in range(n_dof):
+                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
+                c[i_n, :, i_d] = spl.get_coeffs()
+
+    else:
+        raise ValueError
+
+    if start_end_mode is None:
+        pass
+    elif start_end_mode == "c->0":
+        c = c[..., 1:-1, :]
+    elif start_end_mode == "x->0":
+        pass
+    else:
+        raise ValueError(f"Unknown start_end_mode='{start_end_mode}'")
+
+    return c
+
+
+def set_spline_coeffs(spl, coeffs):
+    data = spl._data  # noqa
+    k, n = data[5], data[7]
+    data[9][:n - k - 1] = np.ravel(coeffs)
+    spl._data = data
+
+
+def from_spline(c, n_wp, start_end_mode=None):
+    xx = np.linspace(0, 1, n_wp)
+    spl = UnivariateSpline(x=xx, y=xx, )
+
+    if start_end_mode == "c->0":
+        z = np.zeros_like(c[..., :1, :])
+        c = np.concatenate((z, c, z), axis=-2)
+
+    n_c, n_dof = c.shape[-2:]
+
+    if np.ndim(c) == 2:
+        x = np.zeros((n_wp, n_dof))
+        for i_d in range(n_dof):
+            set_spline_coeffs(spl, coeffs=c[:, i_d])
+            x[:, i_d] = spl(xx)
+
+    elif np.ndim(c) == 3:
+        n = c.shape[0]
+
+        x = np.zeros((n, n_wp, n_dof))
+        for i_n in range(n):
+            for i_d in range(n_dof):
+                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
+                set_spline_coeffs(spl, coeffs=c[i_n, :, i_d])
+                x[i_n, :, i_d] = spl(xx)
+
+    else:
+        raise ValueError
+
+    if start_end_mode == "x->0":
+        x[..., [0, -1], :] = 0
+
+    return x
+
+
+def fromto_spline2(x, n_c=4, x_mode="beerel", start_end_mode=None):
+    n_wp = x.shape[-2]
+
+    if x_mode == "dbee":
+        dx = x2dbee(x=x)
+    elif x_mode == "sdbee":
+        dx = x2sdbee(x=x)
+    elif x_mode is None:
+        dx = x
+    else:
+        raise ValueError(f"Unknown x_mode='{x_mode}'")
+
+    c = to_spline(dx, n_c=n_c, start_end_mode=start_end_mode)
+    dx_spline = from_spline(c=c, n_wp=n_wp, start_end_mode=start_end_mode)
+
+    if x_mode == "dbee":
+        x_spline = dbee2x(dbee=dx_spline, se=x2se(x=x))
+    elif x_mode == "sdbee":
+        x_spline = sdbee2x(sdbee=dx_spline, se=x2se(x=x))
+    elif x_mode is None:
+        x_spline = dx_spline
+    else:
+        raise ValueError(f"Unknown x_mode='{x_mode}'")
+
+    x_spline = get_path_adjusted(x=x_spline)
+    return x_spline
+
+
+# ----------------------------------------------------------------------------------------------------------------------
 # DERIVATIVES
-
-
 def d_substeps__dx(n, order=0):
     """
     Get the dependence of substeps ' on the outer way points (x).
@@ -314,86 +446,3 @@ def combine_d_substeps__dx(d_dxs, n):
         return d_dx
     else:
         raise ValueError(f"{d_dxs.ndim}")
-
-
-def to_spline(x, n_c=4, start_end0=False):
-
-    n_wp, n_dof = x.shape[-2:]
-    xx = np.linspace(0, 1, n_wp)
-    if np.ndim(x) == 2:
-        c = np.zeros((n_c, n_dof))
-        for i_d in range(n_dof):
-            spl = UnivariateSpline(x=xx, y=x[:, i_d])
-            c[..., i_d] = spl.get_coeffs()
-
-    elif np.ndim(x) == 3:
-        n = x.shape[0]
-
-        c = np.zeros((n, n_c, n_dof))
-        for i_n in range(n):
-            for i_d in range(n_dof):
-                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
-                c[i_n, :, i_d] = spl.get_coeffs()
-
-    else:
-        raise ValueError
-
-    if start_end0:
-        c = c[..., 1:-1, :]
-
-    return c
-
-
-def set_spline_coeffs(spl, coeffs):
-    data = spl._data  # noqa
-    k, n = data[5], data[7]
-    data[9][:n - k - 1] = np.ravel(coeffs)
-    spl._data = data
-
-
-def from_spline(c, n_wp, start_end0=False):
-    xx = np.linspace(0, 1, n_wp)
-    spl = UnivariateSpline(x=xx, y=xx, )
-
-    if start_end0:
-        z = np.zeros_like(c[..., :1, :])
-        c = np.concatenate((z, c, z), axis=-2)
-
-    n_c, n_dof = c.shape[-2:]
-
-    if np.ndim(c) == 2:
-        x = np.zeros((n_wp, n_dof))
-        for i_d in range(n_dof):
-            set_spline_coeffs(spl, coeffs=c[:, i_d])
-            x[:, i_d] = spl(xx)
-
-    elif np.ndim(c) == 3:
-        n = c.shape[0]
-
-        x = np.zeros((n, n_wp, n_dof))
-        for i_n in range(n):
-            for i_d in range(n_dof):
-                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
-                set_spline_coeffs(spl, coeffs=c[i_n, :, i_d])
-                x[i_n, :, i_d] = spl(xx)
-
-    else:
-        raise ValueError
-
-    return x
-
-
-# TODO which way is the best? Start and end MUST match
-def fromto_spline(x, n_c=4, start_end0=False):
-    return from_spline(c=to_spline(x=x, n_c=n_c, start_end0=start_end0), n_wp=x.shape[-2])
-
-
-def fromto_spline2(x, n_c=4, start_end0=False):
-    n_wp = x.shape[-2]
-    x2 = get_steps_between(start=x[..., 0, :], end=x[..., -1, :], n=n_wp)
-    dx = x - x2
-    c = to_spline(dx, n_c=n_c, start_end0=start_end0)
-    dx_spline = from_spline(c=c, n_wp=n_wp)
-    x_spline = x2 + dx_spline
-    x_spline = get_path_adjusted(x=x_spline)
-    return x_spline
