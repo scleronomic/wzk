@@ -12,8 +12,6 @@ import numpy as np
 from wzk.printing import progress_bar
 from wzk.time2 import get_timestamp
 
-__pickle_extension_short = ".pkl"  # TODO  check for both and use more consistently
-__pickle_extension_long = ".pickle"
 
 __open_cmd_dict = {"Linux": "xdg-open",
                    "Darwin": "open",
@@ -29,6 +27,32 @@ def get_pythonpath():
         return []
 
 
+# ----------------------------------------------------------------------------------------------------------------------
+# shell commands
+def cp(src, dst):
+    subprocess.call(f"cp {src} {dst}", shell=True)
+
+
+def mv(src, dst):
+    if src == dst:
+        print(f"mv: src == dst | {src}")
+        return
+
+    subprocess.call(f"mv {src} {dst}", shell=True)
+
+
+def ln(src, dst, symbolic=True):
+    s = " -s" if symbolic else ""
+    subprocess.call(f"ln {s}{src} {dst}", shell=True)
+
+
+def rm(file):
+    try:
+        os.remove(file)
+    except FileNotFoundError:
+        pass
+
+
 def rmdirs(directory: Union[str, list]):
     if isinstance(directory, list):
         for d in directory:
@@ -40,18 +64,24 @@ def rmdirs(directory: Union[str, list]):
             pass
 
 
-def rm(file):
-    try:
-        os.remove(file)
-    except FileNotFoundError:
-        pass
-
-
 def rm_files_in_dir(directory: str, file_list: list = None):
     if file_list is None:
         file_list = os.listdir(directory)
     for file in file_list:
         rm(os.path.join(directory, file))
+
+
+def rm_empty_folders(directory):
+    for d, _, _ in os.walk(directory, topdown=False):
+        if len(os.listdir(d)) == 0:
+            print(d)
+            os.rmdir(d)
+
+
+def rm_files_for_each(directory, file_list):
+    directory_list = helper__get_sub_directory_list(directory=directory)
+    for d in directory_list:
+        rm_files_in_dir(directory=d, file_list=file_list)
 
 
 def mkdirs(directory: Union[str, list]):
@@ -62,37 +92,34 @@ def mkdirs(directory: Union[str, list]):
         os.makedirs(directory, exist_ok=True)
 
 
-def start_open(file: str):
-    open_cmd = __open_cmd_dict[platform.system()]
-    subprocess.Popen([f"{open_cmd} {file}"], shell=True)
+def mkdir_for_each(directory, new_sub_directory):
+    new_sub_directory = os.path.normpath(new_sub_directory)
+    directory_list = helper__get_sub_directory_list(directory=directory)
+
+    directory_list = [f"{os.path.normpath(d)}/{new_sub_directory}" for d in directory_list]
+    mkdirs(directory_list)
 
 
-def ln(src, dst, symbolic=True):
-    s = " -s" if symbolic else ""
-    subprocess.call(f"ln {s}{src} {dst}", shell=True)
+def __read_head_tail(file: str,
+                     n: int = 1,
+                     squeeze: bool = True,
+                     head_or_tail: str = "head"):
+    assert head_or_tail == "head" or head_or_tail == "tail"
+    s = os.popen(f"{head_or_tail} -n {n} {file}").read()
+    s = s.split("\n")[:-1]
+
+    if squeeze and len(s) == 1:
+        s = s[0]
+
+    return s
 
 
-# IO
-def save_object2txt(obj, file: str):
-    if file[-4:] != ".txt" and "." not in file:
-        file += ".txt"
-
-    with open(file, "w") as f:
-        f.write("".join(["%s: %s\n" % (k, v) for k, v in obj.__dict__.items()]))
+def read_head(file: str, n: int = 1, squeeze: bool = True):
+    return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail="head")
 
 
-def save_pickle(obj, file: str):
-    if file[-len(__pickle_extension_short):] != __pickle_extension_short:
-        file += __pickle_extension_short
-
-    with open(file, "wb") as f:
-        pickle.dump(obj, f)
-
-
-def load_pickle(file: str):
-    with open(file, "rb") as f:
-        res = pickle.load(f)
-    return res
+def read_tail(file: str, n: int = 1, squeeze: bool = True):
+    return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail="tail")
 
 
 def list_files(directory: str):
@@ -121,6 +148,13 @@ def ensure_file_extension(file: str, ext: str):
     return file
 
 
+def remove_extension(file: str, ext: str):
+    ext = ensure_extension_point(ext)
+    file = ensure_file_extension(file=file, ext=ext)
+    file = file.replace(ext, "")
+    return file
+
+
 def rel2abs_path(path: str, path_abs: str):
     # abs_dir = '/Hello/HowAre/You/'
     # path = 'Hello/HowAre/You/good.txt'
@@ -135,7 +169,45 @@ def rel2abs_path(path: str, path_abs: str):
         return os.path.normpath(path_abs + "/" + path)
 
 
-# .npz files, maybe own module
+# –---------------------------------------------------------------------------------------------------------------------
+# pickle
+def save_pickle(obj, file: str):
+    file = ensure_file_extension(file=file, ext="pickle")
+
+    with open(file, "wb") as f:
+        pickle.dump(obj, f)
+
+
+def load_pickle(file: str):
+    with open(file, "rb") as f:
+        res = pickle.load(f)
+    return res
+
+
+# msgpack
+def load_msgpack(file):
+    with open(file, "rb") as f:
+        b = f.read()
+    return msgpack.unpackb(b)
+
+
+def save_msgpack(file, nested_list):
+    arr_bin = msgpack.packb(nested_list, use_bin_type=True)
+    with open(file, "wb") as f:
+        f.write(arr_bin)
+
+
+# txt
+def save_object2txt(obj, file: str):
+    if file[-4:] != ".txt" and "." not in file:
+        file += ".txt"
+
+    with open(file, "w") as f:
+        f.write("".join(["%s: %s\n" % (k, v) for k, v in obj.__dict__.items()]))
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+# *.npy and *.npz files (maybe own module)
 def combine_npz_files(*, directory,
                       pattern=None, file_list=None,
                       save=True,
@@ -222,26 +294,9 @@ def clip_npz_file(n_samples: int,
     return new_dict
 
 
-def __read_head_tail(file: str,
-                     n: int = 1,
-                     squeeze: bool = True,
-                     head_or_tail: str = "head"):
-    assert head_or_tail == "head" or head_or_tail == "tail"
-    s = os.popen(f"{head_or_tail} -n {n} {file}").read()
-    s = s.split("\n")[:-1]
-
-    if squeeze and len(s) == 1:
-        s = s[0]
-
-    return s
-
-
-def read_head(file: str, n: int = 1, squeeze: bool = True):
-    return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail="head")
-
-
-def read_tail(file: str, n: int = 1, squeeze: bool = True):
-    return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail="tail")
+def start_open(file: str):
+    open_cmd = __open_cmd_dict[platform.system()]
+    subprocess.Popen([f"{open_cmd} {file}"], shell=True)
 
 
 def copy2clipboard(file: str):
@@ -254,19 +309,8 @@ def copy2clipboard(file: str):
                     'set the clipboard to POSIX file "{}"'.format(file)])
 
 
-def cp(src, dst):
-    subprocess.call(f"cp {src} {dst}", shell=True)
-
-
-def mv(src, dst):
-    if src == dst:
-        print(f"mv: src == dst | {src}")
-        return
-
-    subprocess.call(f"mv {src} {dst}", shell=True)
-
-
-# shutil.move("path/to/current/file.foo", "path/to/new/destination/for/file.foo")
+# ----------------------------------------------------------------------------------------------------------------------
+# Directory magic
 def split_files_into_dirs(file_list: list,
                           bool_fun,
                           dir_list: list,
@@ -308,17 +352,6 @@ def split_files_into_dirs(file_list: list,
         print("'dry' mode is activated by default, to apply the changes use mode='wet')")
 
 
-def test_split_files_into_dirs():
-
-    n, m = 20, 3
-    from wzk.strings import uuid4
-    file_list = [f"{i}{uuid4()}" for i in range(n) for _ in range(m)]
-    dirs = [f"new_{i}" for i in range(n)]
-
-    split_files_into_dirs(file_list=file_list, dir_list=dirs, mode="dry",
-                          bool_fun=lambda s, i: (s[:len(str(i))] == str(i)) and len(s) == 32 + len(str(i)))
-
-
 def dir_dir2file_array(directory: str = None,
                        combine_str: bool = True) -> list:
     """
@@ -355,31 +388,12 @@ def dir_dir2file_array(directory: str = None,
     return file_arr
 
 
-def read_msgpack(file):
-    with open(file, "rb") as f:
-        b = f.read()
-    return msgpack.unpackb(b)
-
-
-def write_msgpack(file, nested_list):
-    arr_bin = msgpack.packb(nested_list, use_bin_type=True)
-    with open(file, "wb") as f:
-        f.write(arr_bin)
-
-
 def rename_directories_inbetween(directory, inbetweens, new_inbetweens=""):
     for directory_i, directory_list, file_list in os.walk(directory):
         for f in file_list:
             old = f"{directory_i}/{f}"
             new = old.replace(inbetweens, new_inbetweens)
             mv(old, new)
-
-
-def rm_empty_folders(directory):
-    for d, _, _ in os.walk(directory, topdown=False):
-        if len(os.listdir(d)) == 0:
-            print(d)
-            os.rmdir(d)
 
 
 def get_sub_directories(directory):
@@ -395,21 +409,3 @@ def helper__get_sub_directory_list(directory):
     else:
         directory_list = os.listdir(directory)
     return directory_list
-
-
-def mkdir_for_each(directory, new_sub_directory):
-    new_sub_directory = os.path.normpath(new_sub_directory)
-    directory_list = helper__get_sub_directory_list(directory=directory)
-
-    directory_list = [f"{os.path.normpath(d)}/{new_sub_directory}" for d in directory_list]
-    mkdirs(directory_list)
-
-
-def rm_files_for_each(directory, file_list):
-    directory_list = helper__get_sub_directory_list(directory=directory)
-    for d in directory_list:
-        rm_files_in_dir(directory=d, file_list=file_list)
-
-
-# TODO order that file
-#  test_all that stuff
