@@ -306,23 +306,26 @@ def offset_frame(f, i=None, vm=None,
     return f
 
 
-def frame_logarithm(f):
+def frame_logarithm(f0, f1):
     # https://github.com/CarletonABL/QuIK/blob/main/C%2B%2B/QuIK/IK/hgtDiff.cpp
 
-    log = np.zeros(f.shape[:-2] + (6,))
-    x, dcm = frame2trans_dcm(f)
-    log[..., :3] = x
-    e = log[..., 3:]
-    e[..., 0] = dcm[..., 2, 1] - dcm[..., 1, 2]
-    e[..., 1] = dcm[..., 0, 2] - dcm[..., 2, 0]
-    e[..., 2] = dcm[..., 1, 0] - dcm[..., 0, 1]
+    x0, dcm0 = frame2trans_dcm(f0)
+    x1, dcm1 = frame2trans_dcm(f1)
+    
+    dx = x0 - x1
+    ddcm = dcm0 @ np.swapaxes(dcm1, -2, -1) 
+    
+    e = np.zeros_like(dx)
+    e[..., 0] = ddcm[..., 2, 1] - ddcm[..., 1, 2]
+    e[..., 1] = ddcm[..., 0, 2] - ddcm[..., 2, 0]
+    e[..., 2] = ddcm[..., 1, 0] - ddcm[..., 0, 1]
 
-    t = np.trace(dcm, axis1=-2, axis2=-1)[..., np.newaxis]
+    t = np.trace(ddcm, axis1=-2, axis2=-1)[..., np.newaxis]
     en = np.linalg.norm(e, axis=-1, keepdims=True)
 
     e_true = np.arctan2(e, t - 1) * e/en
     e_small = (3/4 - t/12) * e
-    e_large = np.pi * (dcm.diagonal(axis1=-2, axis2=-1) + 1)
+    e_large = np.pi * (ddcm.diagonal(axis1=-2, axis2=-1) + 1)
 
     b1 = np.logical_or(t > -.99, en > 1e-10)[..., 0]
     b2 = en[..., 0] < 1e-3
@@ -333,7 +336,8 @@ def frame_logarithm(f):
     e[b_large] = e_large[b_large]
     e[b_small] = e_small[b_small]
     e[b_true] = e_true[b_true]
-
+    
+    log = np.concatenate([dx, e], axis=-1)
     return log
 
 

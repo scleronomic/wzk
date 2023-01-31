@@ -3,14 +3,13 @@ bee nomenclature
 bee:   direct line between a and b
 dbee:  difference to the bee-line
 dbees: scaled difference to the bee-line
-
-
 """
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
 from wzk.math2 import angle2minuspi_pluspi
+from wzk import printing
 
 
 def full2inner(x):
@@ -233,6 +232,21 @@ def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
     return x_o
 
 
+def remove_duplicates(q, eps=1e-5, verbose=0):
+
+    n_wp, n_dof = q.shape
+    b = np.ones(n_wp, dtype=bool)
+    
+    dq = q[1:] - q[:-1]
+    dqn = np.linalg.norm(dq, axis=-1)
+    b = np.concatenate([[True], dqn > eps], axis=0)
+    q = q[b]
+    
+    if verbose > 0:    
+        printing.print_stats_bool(b=b, name="keep only unique waypoints")
+        
+    return q
+    
 # ----------------------------------------------------------------------------------------------------------------------
 # Bee
 def x2bee(x, n_wp=None):

@@ -545,11 +545,45 @@ def test_dxnorm_dx():
     print(j[0])
 
 
-# if __name__ == '__main__':
-    # vis_k_farthest_neighbors()
+# ----------------------------------------------------------------------------------------------------------------------
+# Linear Algebra
+def solve_pinv(A, b):
+    A_inv = np.linalg.pinv(A)
+    x = A_inv @ b[..., np.newaxis]
+    x = x[..., 0]
+    return x
 
+
+def solve_lstsq(A, b, rcond=None):
+
+    if A.ndim == 2 and b.ndim == 1:
+        return np.linalg.lstsq(A, b, rcond=rcond)[0]
+
+    elif A.ndim == 3 and b.ndim == 2:
+        nn, nx, ny = A.shape
+        x = np.zeros((nn, ny))
+        for i in range(nn):
+            x[i] = np.linalg.lstsq(A[i], b[i], rcond=rcond)[0]
+        return x
+    else:
+        raise ValueError
+
+
+def solve_cho(A, b):
+    from scipy.linalg import cho_factor, cho_solve
+
+    if A.ndim == 2 and b.ndim == 1:
+        return cho_solve(cho_factor(A), b)
+    elif A.ndim == 3 and b.ndim == 2:
+        nn, nx, ny = A.shape
+        x = np.zeros((nn, ny))
+        for i in range(nn):
+            x[i] = cho_solve(cho_factor(A[i]), b[i])
+        return x
+    else:
+        raise ValueError
+    
 
 if __name__ == "__main__":
     test_dxnorm_dx()
-
-
+    # vis_k_farthest_neighbors()
