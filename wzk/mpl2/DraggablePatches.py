@@ -217,9 +217,9 @@ class DraggableEllipse(patches.Ellipse, DraggablePatch):
         If fig_width_inch or height are None,
         they are computed to form a circle for the aspect and Measurements ratio of the axis.
         """
-        if width == -1:
+        if width is None or width == -1:
             width = get_aspect_ratio(ax) / ax.get_data_ratio() * height
-        if height == -1:
+        if height is None or height == -1:
             height = ax.get_data_ratio() / get_aspect_ratio(ax) * width
 
         patches.Ellipse.__init__(self, xy=xy, width=width, height=height, angle=angle, **kwargs)

@@ -1,8 +1,7 @@
 import numpy as np
 from itertools import product
 
-from wzk.np2 import axis_wrapper, insert
-from wzk.ltd import atleast_tuple
+from wzk import np2, ltd
 
 # a/b = (a+b) / a -> a / b =
 golden_ratio = (np.sqrt(5.0) + 1) / 2
@@ -389,11 +388,11 @@ def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode="central",
     'axis' indicates the dimensions of the free variables.
     The result has the shape f(x).shape + x.shape[axis]
     """
-    axis = axis_wrapper(axis=axis, n_dim=np.ndim(x))
+    axis = np2.axis_wrapper(axis=axis, n_dim=np.ndim(x))
 
     f_x = fun(x, **kwargs_fun)
     fun_shape = np.shape(f_x)
-    var_shape = atleast_tuple(np.array(np.shape(x))[(axis,)])
+    var_shape = ltd.atleast_tuple(np.array(np.shape(x))[(axis,)])
     eps_mat = np.empty_like(x, dtype=float)
 
     derv = np.empty(fun_shape + var_shape)
@@ -404,7 +403,7 @@ def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode="central",
 
     def update_eps_mat(_idx):
         eps_mat[:] = 0
-        insert(eps_mat, val=eps, idx=_idx, axis=axis)
+        np2.insert(eps_mat, val=eps, idx=_idx, axis=axis)
 
     for idx in product(*(range(s) for s in var_shape)):
         update_eps_mat(_idx=idx)
@@ -547,10 +546,34 @@ def test_dxnorm_dx():
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Linear Algebra
-def solve_pinv(A, b):
-    A_inv = np.linalg.pinv(A)
-    x = A_inv @ b[..., np.newaxis]
-    x = x[..., 0]
+__RCOND = 1e-5
+
+
+def project2null(A, x, clip=None, clip_mode=None, __rcond=__RCOND):
+    """
+    Clipping happens before and after the projection step.
+    If the determinant of the projection is not larger than 1, the second clipping has no effect.
+    """
+    x = np2.clip2(x, clip=clip, mode=clip_mode)
+
+    AT = np.swapaxes(A, -2, -1)
+    A0 = np.eye(A.shape[-1]) - (AT @  np.linalg.pinv(AT, rcond=__rcond))
+    x0 = (A0 @ x[..., np.newaxis])[..., 0]
+
+    x0 = np2.clip2(x0, clip=clip, mode=clip_mode)  # this is only for safety, normally without effect
+    return x0
+
+
+def solve_pinv(A, b, __rcond=__RCOND):
+    try:
+        x = (np.linalg.pinv(A, rcond=__rcond) @ b[..., np.newaxis])[..., 0]
+
+    except np.linalg.LinAlgError:
+        x0 = np.zeros((b.shape[:-1],) + (A.shape[-2],))  # TODO check
+    x0 = np.zeros((b.shape[:-1],) + (A.shape[-2],))  # TODO check
+
+    assert x0.shape == x.shape
+    print("REMOVE Assertion")
     return x
 
 
