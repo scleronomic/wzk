@@ -323,7 +323,7 @@ def d_rosenbrock2d(xy, a=1, b=100):
     x, y = xy.T
     dx = -2*(a-x) - 4*b*(y-x**2)*x
     dy =          + 2*b*(y-x**2)  # noqa
-    return np.concatenate((dx[..., np.newaxis], dy[..., np.newaxis]), axis=-1)
+    return np.concatenate([dx[..., np.newaxis], dy[..., np.newaxis]], axis=-1)
 
 
 def bisection(f, a, b, tol, verbose=0, __depth=0):
@@ -451,8 +451,8 @@ def magic(n):
         m = np.block([[m, m+2*p*p], [m+3*p*p, m+p*p]])
         i = np.arange(p)
         k = (n-2)//4
-        j = np.concatenate((np.arange(k), np.arange(n-k+1, n)))
-        m[np.ix_(np.concatenate((i, i+p)), j)] = m[np.ix_(np.concatenate((i+p, i)), j)]
+        j = np.concatenate([np.arange(k), np.arange(n-k+1, n)])
+        m[np.ix_(np.concatenate([i, i+p]), j)] = m[np.ix_(np.concatenate([i+p, i]), j)]
         m[np.ix_([k, k+p], [0, k])] = m[np.ix_([k+p, k], [0, k])]
     return m
 
@@ -570,6 +570,8 @@ def solve_pinv(A, b, __rcond=__RCOND):
 
     except np.linalg.LinAlgError:
         x0 = np.zeros((b.shape[:-1],) + (A.shape[-2],))  # TODO check
+        return x0
+    
     x0 = np.zeros((b.shape[:-1],) + (A.shape[-2],))  # TODO check
 
     assert x0.shape == x.shape

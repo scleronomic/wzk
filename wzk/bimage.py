@@ -170,7 +170,7 @@ def mesh2bimg(p, shape, limits, f=None):
 
     voxel_size = grid.limits2voxel_size(shape=shape, limits=limits)
     if img.ndim == 2:
-        p2 = np.concatenate((p, p[:1]), axis=0)
+        p2 = np.concatenate([p, p[:1]], axis=0)
         p2 = trajectory.get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
         i2 = grid.grid_x2i(x=p2, limits=limits, shape=shape)
         img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),

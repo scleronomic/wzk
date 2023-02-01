@@ -234,7 +234,7 @@ def test_i2_natural():
 
 
 def cumsum_diff(x0, x_diff):
-    return np.cumsum(np.concatenate((x0[np.newaxis], x_diff)))
+    return np.cumsum(np.concatenate([x0[np.newaxis], x_diff]))
 
 
 def savgol_error():
@@ -363,14 +363,14 @@ def dummy2():
 
     # ax.plot(y_fine_diff_fine_smooth)
 
-    # y_fine_diff_fine_smooth_cs = np.cumsum(np.concatenate((y[:1],
+    # y_fine_diff_fine_smooth_cs = np.cumsum(np.concatenate([y[:1],
     #                                                        np.repeat(y_fine_diff_fine_smooth[0], 4),
-    #                                                        y_fine_diff_fine_smooth / 5 )))
-    # y_fine_diff_fine_cs = np.cumsum(np.concatenate((y[:1],
+    #                                                        y_fine_diff_fine_smooth / 5 ]))
+    # y_fine_diff_fine_cs = np.cumsum(np.concatenate([y[:1],
     #                                                 np.repeat(y_fine_diff_fine[0], n_fraction-1) / n_fraction,
     #                                                 y_fine_diff_fine / n_fraction)))
-    y_fine_diff_cs = np.cumsum(np.concatenate((y[:1], y_fine_diff)))
-    y_fine_diff2_cs = np.cumsum(np.concatenate((y[:1], y_fine_diff2)))
+    y_fine_diff_cs = np.cumsum(np.concatenate([y[:1], y_fine_diff]))
+    y_fine_diff2_cs = np.cumsum(np.concatenate([y[:1], y_fine_diff2]))
     # y_fine_diff_fine_smooth_cs = np.cumsum(y_fine_diff_fine_smooth / 5) + y[0]
     # y_fine_diff_fine_cs = np.cumsum(y_fine_diff_fine * 0.20181634712411706) + y[0]
 

@@ -80,7 +80,7 @@ def fun2n(fun, n,
         n_in = get_n_in2(n_in=n_in, n_out=len(x_new), n_total=n, n_current=len(x), max_factor=max_factor)
 
         x_new = fun(n_in)
-        x = np.concatenate((x, x_new), axis=0)
+        x = np.concatenate([x, x_new], axis=0)
 
         if verbose > 0:
             print(f"{i}: total:{n} | current:{len(x)} | new:{len(x_new)}/{n_in}")

@@ -66,8 +66,8 @@ def kofn(n, k, fitness_fun,
         offspring = np.sort(offspring, axis=1)
         offspring = np.unique(offspring, axis=0)
         if offspring.shape[0] < pop_size - n_keep_best:
-            offspring = np.concatenate((offspring,
-                                        random_subset(n=n, k=k, m=pop_size - n_keep_best - offspring.shape[0])),
+            offspring = np.concatenate([offspring,
+                                        random_subset(n=n, k=k, m=pop_size - n_keep_best - offspring.shape[0])],
                                        axis=0)
 
         fitness = fitness_fun(offspring)
@@ -112,7 +112,7 @@ def parents_tournament(fitness, tourney_size):
 
 def create_offspring(pop, parents1, parents2):
     pop_size, k = pop.shape
-    parents12 = np.concatenate((pop[parents1], pop[parents2]), axis=-1)
+    parents12 = np.concatenate([pop[parents1], pop[parents2]], axis=-1)
     offspring = np.array([np.random.choice(np.unique(parents12), k, replace=False) for _ in range(pop_size)])
     return offspring
 

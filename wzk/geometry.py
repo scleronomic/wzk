@@ -563,7 +563,7 @@ def get_points_on_multicircles(x, r, n=10, endpoint1=False, endpoint2=True):
     points = get_points_on_circle(x=x, r=r, n=n, endpoint=endpoint1)
     hull = ConvexHull(points.reshape(-1, 2))
     if endpoint2:
-        i = np.concatenate((hull.vertices, hull.vertices[:1]))
+        i = np.concatenate([hull.vertices, hull.vertices[:1]])
     else:
         i = hull.vertices
     hull = points.reshape(-1, 2)[i]
@@ -760,8 +760,8 @@ def string_of_pearls2surface(x, r):
     n_arc = 0.05
 
     # go back and forth over the line
-    x = np.concatenate((x, x[-2::-1], x[[1]]), axis=0)
-    r = np.concatenate((r, r[-2::-1], r[[1]]), axis=0)
+    x = np.concatenate([x, x[-2::-1], x[[1]]], axis=0)
+    r = np.concatenate([r, r[-2::-1], r[[1]]], axis=0)
 
     # calculate the steps
     dx = x[1:] - x[:-1]

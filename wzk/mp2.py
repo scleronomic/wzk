@@ -1,7 +1,6 @@
 from time import sleep
 import numpy as np
 import multiprocessing
-2
 from wzk import change_tuple_order
 
 # Error under Python3.8 /MacOs -> AttributeError: Can't pickle local object 'mp_wrapper.<locals>.__fun_wrapper'

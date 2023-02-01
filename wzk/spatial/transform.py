@@ -264,7 +264,7 @@ def rot_z(gamma):  # theta
 
 def get_frames_between(f0, f1, n):
 
-    x = trajectory.get_substeps(x=np.concatenate((f0[:-1, -1:], f1[:-1, -1:]), axis=1).T, n=n-1,)
+    x = trajectory.get_substeps(x=np.concatenate([f0[:-1, -1:], f1[:-1, -1:]], axis=1).T, n=n-1)
 
     dm = f0[:-1, :-1].T @ f1[:-1, :-1]
     rv = dcm2rotvec(dm)

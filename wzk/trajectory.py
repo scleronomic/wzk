@@ -31,11 +31,11 @@ def inner2full(inner, start=None, end=None):
 
     if start is not None:
         start = __repeat(start)
-        inner = np.concatenate((start, inner), axis=-2)
+        inner = np.concatenate([start, inner], axis=-2)
 
     if end is not None:
         end = __repeat(end)
-        inner = np.concatenate((inner, end), axis=-2)
+        inner = np.concatenate([inner, end], axis=-2)
 
     return inner
 
@@ -122,14 +122,14 @@ def get_substeps(x, n,
     x_ss = x_ss.reshape(shape + [(m-1) * n, d])
 
     if include_start:
-        x_ss = np.concatenate((x[..., :1, :], x_ss), axis=-2)
+        x_ss = np.concatenate([x[..., :1, :], x_ss], axis=-2)
 
     x_ss = periodic_dof_wrapper(x_ss, is_periodic=is_periodic)
     return x_ss
 
 
 def get_steps_between(start, end, n, is_periodic=None):
-    q = np.concatenate((start[..., np.newaxis, :], end[..., np.newaxis, :]), axis=-2)
+    q = np.concatenate([start[..., np.newaxis, :], end[..., np.newaxis, :]], axis=-2)
     q = get_substeps(q, n=n-1, is_periodic=is_periodic)
     return q
 
@@ -233,9 +233,7 @@ def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
 
 
 def remove_duplicates(q, eps=1e-5, verbose=0):
-
-    n_wp, n_dof = q.shape
-    b = np.ones(n_wp, dtype=bool)
+    assert q.ndim == 2
     
     dq = q[1:] - q[:-1]
     dqn = np.linalg.norm(dq, axis=-1)
@@ -246,7 +244,8 @@ def remove_duplicates(q, eps=1e-5, verbose=0):
         printing.print_stats_bool(b=b, name="keep only unique waypoints")
         
     return q
-    
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Bee
 def x2bee(x, n_wp=None):
@@ -335,7 +334,7 @@ def from_spline(c, n_wp, start_end_mode=None):
 
     if start_end_mode == "c->0":
         z = np.zeros_like(c[..., :1, :])
-        c = np.concatenate((z, c, z), axis=-2)
+        c = np.concatenate([z, c, z], axis=-2)
 
     n_c, n_dof = c.shape[-2:]
 
