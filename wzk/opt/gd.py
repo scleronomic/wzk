@@ -6,9 +6,10 @@ from wzk.opt.optimizer import Naive
 
 class OPTimizer(object2.CopyableObject):
     __slots__ = ("type",                           # str                 | type of the optimizer: gd, sqp, ...
+                 "type_root",                      # str                 | type of the root search algorithm
                  "n_steps",                        # int                 | Number of iterations
                  "stepsize",                       # float               |
-                 "optimizer",                      # Optimizer           | Adam, RMSProp, ...
+                 "optimizer",                      # Optimizer           | Adam, RMSProp, ...  
                  "clip",                           # float[n_steps]      |
                  "clip_mode",                      # str                 | 'jump', 'clip', 'ignore'
                  "callback",                       # fun()               |
@@ -25,30 +26,33 @@ class OPTimizer(object2.CopyableObject):
 
     def __init__(self, n_steps=100, stepsize=1, optimizer=Naive(), clip=0.1, n_processes=1,
                  clip_mode="value", limits_mode="clip"):
+        
+        self.type = None
+        self.type_root = "newton"
+        
         self.n_steps = n_steps
         self.stepsize = stepsize
+        
         self.clip = clip
         self.clip_mode = clip_mode
         self.limits_mode = limits_mode
+        self.limits = lambda x: x
+        
         self.optimizer = optimizer
-        self.active_dims = None
-
         self.n_processes = n_processes
+        self.active_dims = None
         self.use_loop_instead_of_processes = False
+        self.staircase = OPTStaircase(n_stairs=-1)
 
         self.callback = None
 
         self.hesse_inv = None
         self.hesse_weighting = 0
 
-        self.limits = lambda x: x
-
-        self.staircase = OPTStaircase(n_stairs=-1)
-
         # Logging
         self.return_x_list = False
 
-
+        
 class OPTStaircase(object):
     __slots__ = ("n_stairs",        # int
                  "n_var",           # int[n_stairs]

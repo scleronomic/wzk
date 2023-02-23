@@ -285,6 +285,26 @@ def sdbee2x(sdbee, se, eps=1e-4):
     return x
 
 
+def get_spline_coeffs(x, y, n=None, s=None):
+    if n is None:
+        spl = UnivariateSpline(x=x, y=y, s=s)
+        return spl.get_coeffs()
+
+    else:
+        s = len(x)
+        for i in range(100):
+            c = get_spline_coeffs(x=x, y=y, s=s)
+            if len(c) == n:
+                return c
+
+            if len(c) < n:
+                s *= 0.75
+            else:
+                s *= 1.5
+
+        raise ValueError
+
+
 # ----------------------------------------------------------------------------------------------------------------------
 # Splines
 def to_spline(x, n_c=4, start_end_mode=None):
@@ -294,8 +314,7 @@ def to_spline(x, n_c=4, start_end_mode=None):
     if np.ndim(x) == 2:
         c = np.zeros((n_c, n_dof))
         for i_d in range(n_dof):
-            spl = UnivariateSpline(x=xx, y=x[:, i_d])
-            c[..., i_d] = spl.get_coeffs()
+            c[..., i_d] = get_spline_coeffs(x=xx, y=x[:, i_d], n=n_c)
 
     elif np.ndim(x) == 3:
         n = x.shape[0]
@@ -303,9 +322,7 @@ def to_spline(x, n_c=4, start_end_mode=None):
         c = np.zeros((n, n_c, n_dof))
         for i_n in range(n):
             for i_d in range(n_dof):
-                spl = UnivariateSpline(x=xx, y=x[i_n, :, i_d])
-                c[i_n, :, i_d] = spl.get_coeffs()
-
+                c[i_n, ..., i_d] = get_spline_coeffs(x=xx, y=x[:, i_d], n=n_c)
     else:
         raise ValueError
 
@@ -363,7 +380,7 @@ def from_spline(c, n_wp, start_end_mode=None):
     return x
 
 
-def fromto_spline2(x, n_c=4, x_mode="beerel", start_end_mode=None):
+def fromto_spline2(x, n_c=4, x_mode="sdbee", start_end_mode="x->0"):
     n_wp = x.shape[-2]
 
     if x_mode == "dbee":
@@ -376,14 +393,14 @@ def fromto_spline2(x, n_c=4, x_mode="beerel", start_end_mode=None):
         raise ValueError(f"Unknown x_mode='{x_mode}'")
 
     c = to_spline(dx, n_c=n_c, start_end_mode=start_end_mode)
-    dx_spline = from_spline(c=c, n_wp=n_wp, start_end_mode=start_end_mode)
+    dx_new = from_spline(c=c, n_wp=n_wp, start_end_mode=start_end_mode)
 
     if x_mode == "dbee":
-        x_spline = dbee2x(dbee=dx_spline, se=x2se(x=x))
+        x_spline = dbee2x(dbee=dx_new, se=x2se(x=x))
     elif x_mode == "sdbee":
-        x_spline = sdbee2x(sdbee=dx_spline, se=x2se(x=x))
+        x_spline = sdbee2x(sdbee=dx_new, se=x2se(x=x))
     elif x_mode is None:
-        x_spline = dx_spline
+        x_spline = dx_new
     else:
         raise ValueError(f"Unknown x_mode='{x_mode}'")
 

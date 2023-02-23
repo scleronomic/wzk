@@ -69,12 +69,12 @@ def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
     return ax.imshow(img, extent=extent, origin=origin, **kwargs)
 
 
-def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect="auto", **kwargs):
+def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect=1, title=None, **kwargs):
     n = x.shape[-1]
 
     n_comb = math2.binomial(n, 2)
     if ax is None:
-        ax = subplot_grid(n=n_comb, squeeze=False, aspect=aspect)
+        ax = subplot_grid(n=n_comb, squeeze=False, aspect=aspect, title=title)
     else:
         ax = np.atleast_2d(ax)
 

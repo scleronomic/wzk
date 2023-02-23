@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
 
-from wzk import np2, random2, geometry, trajectory
+from wzk import ltd, np2, random2, geometry, trajectory
 from wzk.math2 import angle2minuspi_pluspi  # noqa
 from wzk.spatial.util import initialize_frames, fill_frames_trans
 from wzk.spatial.transform_2d import theta2dcm
@@ -47,6 +47,7 @@ def dcm2rotvec(dcm):
 
 
 # frame2rotation
+# ----------------------------------------------------------------------------------------------------------------------
 def frame2dcm(f):
     return f[..., :3, :3]
 
@@ -63,7 +64,14 @@ def frame2rotvec(f):
     return dcm2rotvec(f[..., :3, :3])
 
 
+def frame2rotz(f):
+    z_axis = f[..., :3, 2]
+    a = np.arctan2(z_axis[..., 1], z_axis[..., 0])
+    return a
+    
+
 # frame2trans_rot
+# ----------------------------------------------------------------------------------------------------------------------
 def frame2trans(f):
     return f[..., :-1, -1]
 
@@ -85,12 +93,71 @@ def frame2trans_euler(f, seq="ZXZ"):
 
 
 # 2frame
-def __shape_wrapper(a, b):
-    return a.shape if a is not None else b.shape
+# ----------------------------------------------------------------------------------------------------------------------
+def rotx2frame(alpha):
+    if isinstance(alpha, (np.ndarray, tuple, list)):
+        return np.array([rotx2frame(a) for a in alpha])
 
+    return np.array([[1, 0, 0, 0],
+                     [0, +np.cos(alpha), -np.sin(alpha), 0],
+                     [0, +np.sin(alpha), +np.cos(alpha), 0],
+                     [0, 0, 0, 1]])
+
+
+def roty2frame(beta):
+    if isinstance(beta, (np.ndarray, tuple, list)):
+        return np.array([roty2frame(b) for b in beta])
+
+    return np.array([[+np.cos(beta), 0, +np.sin(beta), 0],
+                     [0, 1, 0, 0],
+                     [-np.sin(beta), 0, +np.cos(beta), 0],
+                     [0, 0, 0, 1]])
+
+
+def rotz2frame(gamma):
+    if isinstance(gamma, (np.ndarray, tuple, list)):
+        return np.array([rotz2frame(g) for g in gamma])
+
+    return np.array([[+np.cos(gamma), -np.sin(gamma), 0, 0],
+                     [+np.sin(gamma), +np.cos(gamma), 0, 0],
+                     [0, 0, 1, 0],
+                     [0, 0, 0, 1]])
+
+
+def trans2frame(xyz=None, x=None, y=None, z=None):
+    if xyz is not None:
+        f = initialize_frames(shape=xyz.shape[:-1], n_dim=xyz.shape[-1], mode="eye")
+        f[..., :-1, -1] = xyz
+        return f
+
+    n = np2.max_size(*ltd.remove_nones([x, y, z]))
+    f = initialize_frames(shape=n, n_dim=3, mode="eye")
+    if x is not None:
+        f[..., 0, -1] = x
+    if y is not None:
+        f[..., 1, -1] = y
+    if z is not None:
+        f[..., 2, -1] = z
+
+    return f
+
+
+def trans_rot2frame(x, a, axis, squeeze=True):
+    """translation + rotation around one axis -> frame"""
+    x = np.atleast_2d(x)
+    n = len(x)
+
+    rv = np.zeros((n, 3))
+    rv[:, axis] = a
+    f = trans_rotvec2frame(trans=x, rotvec=rv)
+
+    if squeeze and n == 1:
+        f = np.squeeze(f)
+    return f
+    
 
 def trans_quat2frame(trans=None, quat=None):
-    s = __shape_wrapper(trans, quat)
+    s = np2.get_max_shape(trans, quat)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
     fill_frames_trans(f=f, trans=trans)
@@ -99,7 +166,7 @@ def trans_quat2frame(trans=None, quat=None):
 
 
 def trans_rotvec2frame(trans=None, rotvec=None):
-    s = __shape_wrapper(trans, rotvec)
+    s = np2.get_max_shape(trans, rotvec)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
     fill_frames_trans(f=f, trans=trans)
@@ -108,7 +175,7 @@ def trans_rotvec2frame(trans=None, rotvec=None):
 
 
 def trans_euler2frame(trans=None, euler=None, seq="ZXZ"):
-    s = __shape_wrapper(trans, euler)
+    s = np2.get_max_shape(trans, euler)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
     fill_frames_trans(f=f, trans=trans)
@@ -116,9 +183,29 @@ def trans_euler2frame(trans=None, euler=None, seq="ZXZ"):
     return f
 
 
+def vrotxyz2dcm(v_rotx, v_roty, v_rotz):
+    s = np2.get_max_shape(v_rotx, v_roty, v_rotz)
+    dcm = initialize_frames(shape=s[:-1], n_dim=2, mode="eye")
+
+    if v_rotx is not None:
+        dcm[..., :, 0] = v_rotx
+    if v_roty is not None:
+        dcm[..., :, 1] = v_roty
+    if v_rotz is not None:
+        dcm[..., :, 2] = v_rotz
+
+    return dcm
+
+
+def trans_vrotxyz2frame(trans, v_rotx, v_roty, v_rotz):
+    dcm = vrotxyz2dcm(v_rotx=v_rotx, v_roty=v_roty, v_rotz=v_rotz)
+    f = trans_dcm2frame(trans=trans, dcm=dcm)
+    return f
+
+
 def trans_dcm2frame(trans=None, dcm=None):
-    s = __shape_wrapper(trans, dcm)
-    if trans is None:
+    s = np2.get_max_shape(trans, dcm)
+    if dcm is not None:
         s = s[:-1]
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
@@ -128,30 +215,8 @@ def trans_dcm2frame(trans=None, dcm=None):
     return f
 
 
-def invert(f):
-    """
-    Create the inverse of an array of hm f
-    Assume n x n are the last two dimensions of the array
-    """
-
-    n_dim = f.shape[-1] - 1
-    t = f[..., :n_dim, -1]  # Translation
-
-    # Apply the inverse rotation on the translation
-    f_inv = f.copy()
-    f_inv[..., :n_dim, :n_dim] = np.swapaxes(f_inv[..., :n_dim, :n_dim], axis1=-1, axis2=-2)
-    f_inv[..., :n_dim, -1:] = -f_inv[..., :n_dim, :n_dim] @ t[..., np.newaxis]
-    return f_inv
-
-
-def apply_eye_wrapper(f, possible_eye):
-    if possible_eye is None or np.allclose(possible_eye, np.eye(possible_eye.shape[0])):
-        return f
-    else:
-        return possible_eye @ f
-
-
-# Sampling matrix and quaternions
+# Sampling 
+# ----------------------------------------------------------------------------------------------------------------------
 def sample_quaternions(shape=None):
     """
     Effective Sampling and Distance Metrics for 3D Rigid Body Path Planning, James J. Kuffner (2004)
@@ -241,27 +306,29 @@ def sample_frame_noise(trans, rot, shape=None, mode="normal"):
     return apply_noise(f=f, trans=trans, rot=rot, mode=mode)
 
 
-def rot_x(alpha):
-    return np.array([[1, 0, 0, 0],
-                     [0, +np.cos(alpha), -np.sin(alpha), 0],
-                     [0, +np.sin(alpha), +np.cos(alpha), 0],
-                     [0, 0, 0, 1]])
+def sample_frames_on_noisy_grid(x_grid, y_grid, z_grid,
+                                f0, noise_trans, noise_rot,
+                                n_samples):
+    f_list = []
+    n_total = len(x_grid) * len(y_grid) * len(z_grid)
+    n_per_cell = int(np.ceil(n_samples / n_total))
+
+    for x in x_grid:
+        for y in y_grid:
+            for z in z_grid:
+                for n_noise in range(n_per_cell):
+                    f = f0.copy()
+                    f[..., :3, -1] = [x, y, z]
+                    f = apply_noise(f, trans=noise_trans, rot=noise_rot)
+                    f_list.append(f)
+
+    f_list = np.array(f_list)
+    f_list = f_list[np.random.choice(n_total, n_samples, replace=False), :, :]
+    return f_list
 
 
-def rot_y(beta):
-    return np.array([[+np.cos(beta), 0, +np.sin(beta), 0],
-                     [0, 1, 0, 0],
-                     [-np.sin(beta), 0, +np.cos(beta), 0],
-                     [0, 0, 0, 1]])
-
-
-def rot_z(gamma):  # theta
-    return np.array([[+np.cos(gamma), -np.sin(gamma), 0, 0],
-                     [+np.sin(gamma), +np.cos(gamma), 0, 0],
-                     [0, 0, 1, 0],
-                     [0, 0, 0, 1]])
-
-
+# linalg
+# ----------------------------------------------------------------------------------------------------------------------
 def get_frames_between(f0, f1, n):
 
     x = trajectory.get_substeps(x=np.concatenate([f0[:-1, -1:], f1[:-1, -1:]], axis=1).T, n=n-1)
@@ -287,7 +354,7 @@ def offset_frame(f, i=None, vm=None,
                  offset=0.01):
     """
     offset: in [m]
-    i: is along which axis to offset
+    i: idx along which axis to offset
     """
     assert (i is None) ^ (vm is None)
 
@@ -306,53 +373,43 @@ def offset_frame(f, i=None, vm=None,
     return f
 
 
-def frame_logarithm(f0, f1):
-    # https://github.com/CarletonABL/QuIK/blob/main/C%2B%2B/QuIK/IK/hgtDiff.cpp
-
-    x0, dcm0 = frame2trans_dcm(f0)
-    x1, dcm1 = frame2trans_dcm(f1)
-    
-    dx = x0 - x1
-    ddcm = dcm0 @ np.swapaxes(dcm1, -2, -1) 
-    
-    e = np.zeros_like(dx)
-    e[..., 0] = ddcm[..., 2, 1] - ddcm[..., 1, 2]
-    e[..., 1] = ddcm[..., 0, 2] - ddcm[..., 2, 0]
-    e[..., 2] = ddcm[..., 1, 0] - ddcm[..., 0, 1]
-
-    t = np.trace(ddcm, axis1=-2, axis2=-1)[..., np.newaxis]
-    en = np.linalg.norm(e, axis=-1, keepdims=True)
-
-    e_true = np.arctan2(e, t - 1) * e/en
-    e_small = (3/4 - t/12) * e
-    e_large = np.pi * (ddcm.diagonal(axis1=-2, axis2=-1) + 1)
-
-    b1 = np.logical_or(t > -.99, en > 1e-10)[..., 0]
-    b2 = en[..., 0] < 1e-3
-    b_large = ~b1
-    b_small = np.logical_and(b1, b2)
-    b_true = np.logical_and(b1, ~b2)
-
-    e[b_large] = e_large[b_large]
-    e[b_small] = e_small[b_small]
-    e[b_true] = e_true[b_true]
-    
-    log = np.concatenate([dx, e], axis=-1)
-    return log
+def apply_eye_wrapper(f, possible_eye):
+    if possible_eye is None or np.allclose(possible_eye, np.eye(possible_eye.shape[0])):
+        return f
+    else:
+        return possible_eye @ f
 
 
-# +(j1 x j2) x d + j1 x (j2 x d) =
-# -d x (j1 x j2) + j1 x (j2 x d) =
-# -[(d.j2)j1) - (d.j1)j2] + (j1.d)j2 - (j1.j2)d
-# -(d.j2)j1) + (d.j1)j2 + (j1.d)j2 - (j1.j2)d
-# +2(d.j1)j2 -(d.j2)j1) - (j1.j2)d
-#
-# -(j1 x j2) x d + j1 x (j2 x d) =
-# +d x (j1 x j2) + j1 x (j2 x d) =
-#  (d.j2)j1) - (d.j1)j2 + (j1.d)j2 - (j1.j2)d
-# -(d.j2)j1) - (j1.j2)d
-#
-# linalg
+def invert(f):
+    """
+    Create the inverse of an array of hm f
+    Assume n x n are the last two dimensions of the array
+    """
+
+    n_dim = f.shape[-1] - 1
+    t = f[..., :n_dim, -1]  # Translation
+
+    # Apply the inverse rotation on the translation
+    f_inv = f.copy()
+    f_inv[..., :n_dim, :n_dim] = np.swapaxes(f_inv[..., :n_dim, :n_dim], axis1=-1, axis2=-2)
+    f_inv[..., :n_dim, -1:] = -f_inv[..., :n_dim, :n_dim] @ t[..., np.newaxis]
+    return f_inv
+
+
+def Ax(A, x):
+    if x.shape[-1] != A.shape[-1]:
+        x = np.concatenate([x, np.ones_like(x[..., :1])], axis=-1)
+
+    if A.ndim == 2 and x.ndim == 2:
+        A = A[np.newaxis, :, :]
+
+    if A.ndim == 3 and x.ndim == 1:
+        x = x[np.newaxis, :]
+
+    b = np.sum(A * x[..., np.newaxis, :], axis=-1)[:, :-1]
+    return b
+
+
 def AxBxC(a, b, c):
     """
     a x (b x c) = (a.c) b  - (a.b) c

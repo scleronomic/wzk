@@ -48,8 +48,8 @@ else:
 Humanoids20_ElasticCalibration = DIR_PAPER + "/20Humanoids_ElasticCalibration"
 Humanoids22_AutoCalibration = DIR_PAPER + "/22Humanoids_AutoCalibration"
 IROS22_OMPNet = DIR_PAPER + "/22IROS_OMPNet"
-ICRA23_IK = DIR_PAPER + "/23ICRA_IK"
-IROS23_Representation = "/23ROS_Representation"
+IROS23_IK = DIR_PAPER + "/23IROS_IK"
+IROS23_Representation = "/23IROS_Representation"
 TRO23_Planning = "/23TRO_Planning"
 
 # Projects

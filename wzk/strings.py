@@ -10,6 +10,7 @@ abc = ["a", "b", "c", "d", "e", "f", "g",
        "v", "w", "x", "y", "z"]
 ABC = [letter.upper() for letter in abc]
 
+NL = "\n"
 
 # https://en.wikipedia.org/wiki/Bracket
 __brackets_round = "(", ")"

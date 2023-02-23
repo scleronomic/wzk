@@ -2,7 +2,7 @@ line-length = 120
 
 # Never try to fix `F401` (unused imports).
 fix = true
-unfixable = ["F401"]
+unfixable = ["F401", "F841"]
 
 # Enable Pyflakes `E` and `F` codes by default.
 select = ["E", "F", "Q"]

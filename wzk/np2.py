@@ -1,8 +1,9 @@
 import numpy as np
 from scipy.sparse import csr_matrix
 from itertools import product
-
 from wzk import dtypes
+
+np.core.arrayprint._line_width = 80
 
 
 class DummyArray:
@@ -192,6 +193,12 @@ def shape_wrapper(shape=None) -> tuple:
         raise ValueError(f"Unknown 'shape': {shape}")
 
 
+def get_max_shape(*args):
+    shapes = [-1 if a is None else np.shape(a) for a in args]
+    sizes = [np.prod(shape) for shape in shapes]
+    return shapes[np.argmax(sizes)]
+
+
 def get_subshape(shape, axis):
     return tuple(np.array(shape)[np.array(axis)])
 
@@ -288,6 +295,20 @@ def allclose(a, b, rtol=1.e-5, atol=1.e-8, axis=None):
 
 def delete_args(*args, obj, axis=None):
     return tuple(np.delete(a, obj=obj, axis=axis) for a in args)
+
+
+def remove_outside_limits(x, limits, safety_factor=None, return_idx=False):
+    if safety_factor is not None:
+        limits = add_safety_limits(limits=limits, factor=safety_factor)
+
+    below_lower = np.sum(x < limits[:, 0], axis=-1) > 0
+    above_upper = np.sum(x > limits[:, 1], axis=-1) > 0
+    outside_limits = np.logical_or(below_lower, above_upper)
+    inside_limits = ~outside_limits
+    x = x[inside_limits]
+    if return_idx:
+        return x, inside_limits
+    return x
 
 
 def __fill_index_with(idx, axis, shape, mode="slice"):
@@ -680,6 +701,19 @@ def construct_array(shape, val, idx, init_mode="zeros", dtype=None,
     return a
 
 
+def get_limits(x, axis=-1):
+    axis = axis_wrapper(axis=axis, n_dim=x.ndim, invert=True)
+    limits = np.stack([x.min(axis=axis), x.max(axis=axis)], axis=1)
+    return limits
+
+
+def get_closest(x, y):
+    d = np.linalg.norm(x[:, np.newaxis, :] - y[np.newaxis, :, :], axis=-1)
+    i_x = np.argmin(d, axis=0)
+    i_y = np.argmin(d, axis=1)
+    return i_x, i_y
+
+
 # Block lists
 def block_view(a, shape, aslist=False, require_aligned_blocks=True):
     """
@@ -967,7 +1001,13 @@ def clip2(x, clip, mode, axis=-1):
 
 
 def load_dict(file: str) -> dict:
-    d = np.load(file, allow_pickle=True).item()
+    d = np.load(file, allow_pickle=True)
+    try:
+        d = d.item()
+    except AttributeError:
+        d = d["arr"]
+        d = d.item()
+
     assert isinstance(d, dict)
     return d
 

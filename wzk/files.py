@@ -8,6 +8,7 @@ import subprocess
 import msgpack
 
 import numpy as np
+from scipy.io import loadmat as load_mat, savemat as save_mat  # noqa: F401
 
 from wzk.printing import progress_bar
 from wzk.time2 import get_timestamp

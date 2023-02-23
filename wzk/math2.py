@@ -1,6 +1,8 @@
 import numpy as np
 from itertools import product
 
+from scipy.linalg import cho_factor, cho_solve
+
 from wzk import np2, ltd
 
 # a/b = (a+b) / a -> a / b =
@@ -458,9 +460,9 @@ def magic(n):
 
 
 # Clustering
-def k_farthest_neighbors(x, k, weighting=None, mode="inverse"):
+def k_farthest_neighbors(x, k, weighting=None, mode="inverse_sum"):
     n = len(x)
-
+    eps = 1e-6
     m_dist = x[np.newaxis, :, :] - x[:, np.newaxis, :]
     weighting = np.ones(x.shape[-1]) if weighting is None else weighting
     m_dist = ((m_dist * weighting)**2).sum(axis=-1)
@@ -474,7 +476,7 @@ def k_farthest_neighbors(x, k, weighting=None, mode="inverse"):
 
         if mode == "inverse_sum":
             m_dist_cur[np.arange(i+1), idx] = 1
-            obj = -np.sum(1/m_dist_cur, axis=0)
+            obj = -np.sum(1/(m_dist_cur+eps), axis=0)
 
         elif mode == "sum":
             obj = np.sum(m_dist_cur, axis=0)
@@ -555,10 +557,18 @@ def project2null(A, x, clip=None, clip_mode=None, __rcond=__RCOND):
     If the determinant of the projection is not larger than 1, the second clipping has no effect.
     """
     x = np2.clip2(x, clip=clip, mode=clip_mode)
-
+    
+    n, m = A.shape[-2:]
     AT = np.swapaxes(A, -2, -1)
+
     A0 = np.eye(A.shape[-1]) - (AT @  np.linalg.pinv(AT, rcond=__rcond))
     x0 = (A0 @ x[..., np.newaxis])[..., 0]
+
+    # same as:
+    # A_big = np.block([[np.eye(m), AT], [A, np.zeros((n, n))]])
+    # b_big = np.zeros(x.shape[:-1] + (n+m,))
+    # b_big[..., :m] = x
+    # x0_cho = solve_cho(A=A_big, b=b_big)
 
     x0 = np2.clip2(x0, clip=clip, mode=clip_mode)  # this is only for safety, normally without effect
     return x0
@@ -569,13 +579,10 @@ def solve_pinv(A, b, __rcond=__RCOND):
         x = (np.linalg.pinv(A, rcond=__rcond) @ b[..., np.newaxis])[..., 0]
 
     except np.linalg.LinAlgError:
-        x0 = np.zeros((b.shape[:-1],) + (A.shape[-2],))  # TODO check
+        print("solve_pinv: np.linalg.LinAlgError")
+        x0 = np.zeros(b.shape[:-1] + (A.shape[-2],))
         return x0
     
-    x0 = np.zeros((b.shape[:-1],) + (A.shape[-2],))  # TODO check
-
-    assert x0.shape == x.shape
-    print("REMOVE Assertion")
     return x
 
 
@@ -594,8 +601,20 @@ def solve_lstsq(A, b, rcond=None):
         raise ValueError
 
 
+def solve_halley_damped(h, j, e, damping):
+    x = solve_cho_damped(A=j, b=e, damping=damping)
+    hq = np.sum(h * -x[..., np.newaxis, np.newaxis, :], axis=-1)
+    j_hq = j + 0.5 * hq
+    x = solve_cho_damped(A=j_hq, b=e, damping=damping)
+    return x
+
+
+def solve_newton_damped(j, e, damping):
+    """Just a name alias for solve_cho_damped"""
+    return solve_cho_damped(A=j, b=e, damping=damping)
+    
+    
 def solve_cho(A, b):
-    from scipy.linalg import cho_factor, cho_solve
 
     if A.ndim == 2 and b.ndim == 1:
         return cho_solve(cho_factor(A), b)
@@ -606,9 +625,22 @@ def solve_cho(A, b):
             x[i] = cho_solve(cho_factor(A[i]), b[i])
         return x
     else:
-        raise ValueError
+        raise ValueError("solve_cho: A and b must be 2D or 3D")
+        
+        
+def solve_cho_damped(A, b, damping):
+    n, m = A.shape[-2:]
+    AT = np.swapaxes(A, -2, -1)
+    AAT = A @ AT
+
+    if damping > 0:
+        AAT[..., range(n), range(n)] += damping
+
+    x = AT @ solve_cho(AAT, b)[..., np.newaxis]
+    x = x[..., 0]
+    return x
     
 
 if __name__ == "__main__":
     test_dxnorm_dx()
-    # vis_k_farthest_neighbors()
+    vis_k_farthest_neighbors()

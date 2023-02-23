@@ -132,6 +132,7 @@ def plot_convex_hull(x=None, hull=None,
     return plot_faces(x=hull.points, faces=hull.simplices, pl=pl, h=h, **kwargs)
 
 
+
 def plot_poly(x, lines=None, faces=None,
               pl=None, h=None,
               **kwargs):
@@ -151,6 +152,12 @@ def plot_poly(x, lines=None, faces=None,
             h[0].faces = faces
 
     return h
+
+
+def plot_points(x, 
+                pl=None, h=None, 
+                **kwargs):
+    return plot_poly(x=x, pl=pl, h=h, **kwargs)
 
 
 def plot_lines(x, lines=None,
@@ -254,7 +261,7 @@ def plot_spheres(x, r,
         h = (h0, h1)
     else:
         for h0i, h0i_new in zip(h[0], h0):
-            h0i.copy_from(h0i_new)
+            h0i.copy_from(h0i_new)  # overwrite
 
     return h
 
@@ -287,7 +294,7 @@ def plot_coordinate_frames(f,
             h = (h0, h1)
         else:
             for i, h0i in enumerate(h[0]):
-                h0i.copy_from(h0[i])
+                h0i.copy_from(h0[i])  # overwrite
 
         return h
 

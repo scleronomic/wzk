@@ -82,6 +82,7 @@ def __get_centers(voxel_size, n_dim):
 
 
 # Helper
+# ----------------------------------------------------------------------------------------------------------------------
 def __compare_dist_against_radius(x_a, x_b, r):
     dist = x_a - x_b
     dist = (dist**2).sum(axis=-1)
@@ -218,6 +219,15 @@ def spheres2bimg(x, r, shape, limits,
     return img
 
 
+def add_boxes_img(img, box_list, limits):
+    for x in box_list:
+        x = geometry.cube(limits=x)[0]
+        img_x = mesh2bimg(p=x, limits=limits, shape=img.shape)
+        img[:] = np.logical_or(img, img_x)
+
+
+# Sampling 
+# ----------------------------------------------------------------------------------------------------------------------
 def sample_bimg_i(img, n, replace=True):
     i = np.array(np.nonzero(img)).T
     j = np.random.choice(a=np.arange(len(i)), size=n, replace=replace)

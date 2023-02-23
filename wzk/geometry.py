@@ -2,6 +2,7 @@ import numpy as np
 from scipy.spatial import ConvexHull
 
 from wzk.np2 import shape_wrapper
+from wzk import printing
 from wzk.cpp2py.min_sphere import min_sphere  # noqa
 
 
@@ -221,7 +222,7 @@ def __clip_ppp(o: np.ndarray,
         mua = np.cross(v, o) / n
         mub = -np.cross(u, o) / n
     else:
-        nn = (n*n).sum(axis=-1)
+        nn = (n*n).sum(axis=-1) + 1e-8  # assert you don't divide through zero
         mua = (+n * np.cross(v, o)).sum(axis=-1) / nn
         mub = (-n * np.cross(u, o)).sum(axis=-1) / nn
 
@@ -754,6 +755,29 @@ def discretize_triangle(x=None,
     x2 = x2[..., i[:, :, 0], :]
     return x2.reshape(shape + [i.sum(), n_dim])
 
+
+def get_x_intersections(x_a, x_b, threshold=0.001, verbose=0):
+    if len(x_a) * len(x_b) < 1000000:
+        dn_ab = np.linalg.norm(x_a[:, np.newaxis, :] - x_b[np.newaxis, :, :], axis=-1)
+
+        intersection = dn_ab < threshold
+        b_a = np.any(intersection, axis=1)
+        b_b = np.any(intersection, axis=0)
+        return b_a, b_b
+
+    else:
+        b_a = np.zeros(len(x_a), dtype=bool)
+        b_b = np.zeros(len(x_b), dtype=bool)
+        for i in range(len(x_a)):
+            if verbose > 0:
+                printing.progress_bar(i=i, n=len(x_a))
+            dn_ab = np.linalg.norm(x_a[i, :] - x_b[np.newaxis, :, :], axis=-1)
+            intersection = dn_ab < threshold
+            b_a[i] = np.any(intersection)
+            b_b = np.logical_or(b_b, intersection)
+
+        return b_a, b_b[0]
+    
 
 def string_of_pearls2surface(x, r):
     eps0 = 1e-6

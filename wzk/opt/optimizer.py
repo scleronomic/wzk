@@ -24,8 +24,6 @@ class Naive(Optimizer):
         return -self.ss * v
 
 
-# TODO Annealing
-
 class Momentum(Optimizer):
     name = "Momentum"
 

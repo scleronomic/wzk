@@ -3,6 +3,19 @@ import numpy as np
 from wzk.spatial.util import initialize_frames, fill_frames_trans
 
 
+def x2_to_3(xy, z, axis=2):
+    s = np.array(np.shape(xy))
+    s[-1] = 3
+    x = np.zeros(s)
+    
+    axis_xy = np.arange(3)
+    axis_xy = np.delete(axis_xy, axis)
+    
+    x[..., axis_xy] = xy
+    x[..., axis] = z
+    return x
+
+
 def theta2dcm(theta):
     theta, shape = __theta_wrapper(theta)
 
