@@ -323,13 +323,16 @@ def sample_frames_on_noisy_grid(x_grid, y_grid, z_grid,
                     f_list.append(f)
 
     f_list = np.array(f_list)
-    f_list = f_list[np.random.choice(n_total, n_samples, replace=False), :, :]
+    f_list = f_list[np.random.choice(n_total*n_per_cell, n_samples, replace=False), :, :]
     return f_list
 
 
 # linalg
 # ----------------------------------------------------------------------------------------------------------------------
 def get_frames_between(f0, f1, n):
+
+    if np.ndim(f0) == 3 and np.ndim(f1) == 3:
+        return np.array([get_frames_between(f0=f0_i, f1=f1_i, n=n) for (f0_i, f1_i) in zip(f0, f1)])
 
     x = trajectory.get_substeps(x=np.concatenate([f0[:-1, -1:], f1[:-1, -1:]], axis=1).T, n=n-1)
 

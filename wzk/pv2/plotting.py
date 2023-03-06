@@ -132,7 +132,6 @@ def plot_convex_hull(x=None, hull=None,
     return plot_faces(x=hull.points, faces=hull.simplices, pl=pl, h=h, **kwargs)
 
 
-
 def plot_poly(x, lines=None, faces=None,
               pl=None, h=None,
               **kwargs):
@@ -254,6 +253,7 @@ def plot_bimg(img, limits,
 def plot_spheres(x, r,
                  pl=None, h=None,
                  **kwargs):
+    x = np.atleast_2d(x)
     r = np2.scalar2array(r, shape=len(x), safe=True)
     h0 = [pv.Sphere(center=xi, radius=ri) for xi, ri in zip(x, r)]
     if h is None:
@@ -341,3 +341,25 @@ def load_meshes2numpy(files):
     faces = [pyvista2faces(f=m.faces)+n_cs[i] for i, m in enumerate(meshes)]
     points = np.concatenate([m.points for m in meshes])
     return points, faces
+
+
+def transform_meshes():
+
+    directory = "/Users/jote/Documents/Code/Python/src/rokinMeshes/rokinMeshes/JustinHand12/binary_stl/"
+    files = [f"{directory}/finger_dist_pill_skin_cal_combined.stl",
+             f"{directory}/finger_dist_pill_skin_cal_sphere.stl",
+             f"{directory}/finger_dist_pill_skin_cal1.stl",
+             f"{directory}/finger_dist_pill_skin_cal2.stl"]
+
+    for f in files:
+        mesh = PolyData(f)
+
+        mesh.points *= 1/1000
+
+        mesh.save(f, binary=True)
+        print(f"mesh saved to {f}")
+
+
+if __name__ == "__main__":
+    pass
+    # transform_meshes()

@@ -558,13 +558,13 @@ def project2null(A, x, clip=None, clip_mode=None, __rcond=__RCOND):
     """
     x = np2.clip2(x, clip=clip, mode=clip_mode)
     
-    n, m = A.shape[-2:]
     AT = np.swapaxes(A, -2, -1)
 
     A0 = np.eye(A.shape[-1]) - (AT @  np.linalg.pinv(AT, rcond=__rcond))
     x0 = (A0 @ x[..., np.newaxis])[..., 0]
 
     # same as:
+    # n, m = A.shape[-2:]
     # A_big = np.block([[np.eye(m), AT], [A, np.zeros((n, n))]])
     # b_big = np.zeros(x.shape[:-1] + (n+m,))
     # b_big[..., :m] = x

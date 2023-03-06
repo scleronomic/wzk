@@ -199,6 +199,16 @@ def el_add(a, b):
         raise ValueError(f"Unknown type {type(a)}")
 
 
+def el_shift(a, shift):
+
+    for i, aa in enumerate(a):
+        if isinstance(aa, list):
+            a[i] = el_shift(a=aa, shift=shift)
+        else:
+            a[i] += shift
+    return a
+
+
 def depth(a):
     return isinstance(a, (tuple, list, np.ndarray)) and max(map(depth, a)) + 1
 

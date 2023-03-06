@@ -42,12 +42,12 @@ TENH_USERSTORE = f"/volume/USERSTORE/{TENH_JO}"
 if PLATFORM_IS_LINUX:
     DIR_PAPER = f"{DLR_USERSTORE}/Paper"
 else:
-    DIR_PAPER = "/Users/jote/Documents/paper"
+    DIR_PAPER = "/Users/jote/Documents/PhD/paper"
 
 
-Humanoids20_ElasticCalibration = DIR_PAPER + "/20Humanoids_ElasticCalibration"
-Humanoids22_AutoCalibration = DIR_PAPER + "/22Humanoids_AutoCalibration"
-IROS22_OMPNet = DIR_PAPER + "/22IROS_OMPNet"
+Humanoids20_Calibration = DIR_PAPER + "/20Humanoids_Calibration"
+Humanoids22_Calibration = DIR_PAPER + "/22Humanoids_Calibration"
+IROS22_PLANNING = DIR_PAPER + "/22IROS_Planning"
 IROS23_IK = DIR_PAPER + "/23IROS_IK"
 IROS23_Representation = "/23IROS_Representation"
 TRO23_Planning = "/23TRO_Planning"

@@ -196,7 +196,7 @@ def get_path_adjusted(x, n=None, is_periodic=None, weighting=None, __m=5):
 
 def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
     """
-    Order the points given by 'x' [2d: (n, d)] according to a weighted euclidean distance
+    Order the points given by 'x' [2d: (n, d)] according to a weighted Euclidean distance
     so that always the nearest point comes next.
     Start with the first point in the array and end with the last if 'x_start' or 'x_end' aren't given.
     """
@@ -220,7 +220,7 @@ def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
         x_o = np.zeros((n + 2, d))
         x_o[-1, :] = end.ravel()
 
-    # Order the points, so that always the nearest is visited next, according to the euclidean distance
+    # Order the points, so that always the nearest is visited next, according to the Euclidean distance
     x_o[0, :] = start.ravel()
     for i in range(n):
         x_diff = np.linalg.norm(periodic_dof_wrapper(x - start, is_periodic=is_periodic) * weights, axis=-1)

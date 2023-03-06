@@ -126,7 +126,7 @@ def size_units2points(size, ax, reference="y"):
         Linewidth in Measurements units of the respective reference-axis
     ax: matplotlib axis
         The axis which is used to extract the relevant transformation
-        Measurements (Measurements limits and shape must not change afterwards)
+        Measurements (Measurements limits and shape must not change afterward)
     reference: string
         The axis that is taken as a reference for the Measurements fig_width_inch.
         Possible values: 'x' and 'y'. Defaults to 'y'.
