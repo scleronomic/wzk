@@ -160,7 +160,7 @@ def bimg2surf(img, limits, level=None):
         faces[:] = np.arange(3)
 
     else:
-        verts, faces, _, _ = measure.marching_cubes(img, level=level, spacing=(voxel_size,) * img.ndim)
+        verts, faces, _, _ = measure.marching_cubes(img, level=level, spacing=(voxel_size,) * img.ndim,)
         verts = verts + lower_left
 
     return verts, faces

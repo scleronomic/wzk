@@ -8,6 +8,7 @@ np.core.arrayprint._line_width = 80
 
 class DummyArray:
     """Allows indexing but always returns the same 'dummy' value"""
+
     def __init__(self, arr, shape):
         self.arr = arr
         self.shape = shape
@@ -45,7 +46,6 @@ class DummyArray:
 
 
 def initialize_array(shape, mode="zeros", dtype=None, order="c"):
-
     if mode == "zeros":
         return np.zeros(shape, dtype=dtype, order=order)
     elif mode == "ones":
@@ -113,6 +113,10 @@ def max_size(*args):
     return int(np.max([np.size(a) for a in args]))
 
 
+def max_len(*args):
+    return int(np.max([len(a) for a in args]))
+
+
 # scalar <-> matrix
 def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
     # standard numpy broadcasting rules apply
@@ -136,9 +140,35 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
         return res
 
 
+# def try_to_make_equal(*args):
+#     pass
+    # TODO find a good general approach to make apples and pears the same size
+    # x = np.ones((10, 3))
+    # y = "red"
+    # -> y = ["red"]*10
+
+    # x = np.ones((10, 3))
+    # y = ["red", "blue"]
+    # -> fails
+
+    # x = np.ones(3)
+    # y = ["blue"]
+    # -> y = ["blue"]*3
+
+    # x = np.ones(1, 3)
+    # y = ["blue"]
+    # -> works
+
+    # args = np.atleast_1d(*args)
+    #
+    # n = np2.max_len(*args)
+    # args = np2.scalar2array(*args)
+    # return args
+
+
 def unify(x):
     x = np.atleast_1d(x)
-    assert np.allclose(x-x.mean(), np.zeros_like(x))
+    assert np.allclose(x - x.mean(), np.zeros_like(x))
     x_mean = np.mean(x)
     return x_mean.astype(x.dtype)
 
@@ -157,7 +187,6 @@ def args2arrays(*args):
 
 # Shapes and Axis
 def axis_wrapper(axis, n_dim, invert=False):
-
     if axis is None:
         axis = np.arange(n_dim)
 
@@ -211,7 +240,7 @@ def align_shapes(a, b):
     """
     idx = find_subarray(a=a, b=b).item()
     aligned_shape = np.full(shape=len(a), fill_value=-1, dtype=int)
-    aligned_shape[idx:idx+len(b)] = 1
+    aligned_shape[idx:idx + len(b)] = 1
     return aligned_shape
 
 
@@ -244,15 +273,16 @@ def fill_with_air_left(arr, out):
     out[slicen(end=arr.shape)] = arr
 
 
-def __argfun(a, axis, fun):
+# replace numpy defaults with more general versions
 
+def __argfun(a, axis, fun):
     axis = axis_wrapper(axis=axis, n_dim=a.ndim)
     if len(axis) == 1:
         return fun(a, axis=axis)
 
     elif len(axis) == a.ndim:
         np.unravel_index(fun(a), shape=a.shape)
-
+        # TODO, what happens here?
     else:
         axis_inv = axis_wrapper(axis=axis, n_dim=a.ndim, invert=True)
         shape_inv = get_subshape(shape=a.shape, axis=axis_inv)
@@ -293,6 +323,32 @@ def allclose(a, b, rtol=1.e-5, atol=1.e-8, axis=None):
     return bool_arr
 
 
+def __wrapper_pair2list_fun(*args, fun):
+    assert len(args) >= 2
+    res = fun(args[0], args[1])
+    for a in args[2:]:
+        res = fun(res, a)
+    return res
+
+
+def minimum(*args):
+    return __wrapper_pair2list_fun(*args, fun=np.minimum)
+
+
+def maximum(*args):
+    return __wrapper_pair2list_fun(*args, fun=np.maximum)
+
+
+def logical_or(*args):
+    return __wrapper_pair2list_fun(*args, fun=np.logical_or)
+
+
+def logical_and(*args):
+    return __wrapper_pair2list_fun(*args, fun=np.logical_and)
+
+
+# -------
+
 def delete_args(*args, obj, axis=None):
     return tuple(np.delete(a, obj=obj, axis=axis) for a in args)
 
@@ -318,11 +374,11 @@ def __fill_index_with(idx, axis, shape, mode="slice"):
     """
     axis = axis_wrapper(axis=axis, n_dim=len(shape))
     if mode == "slice":
-        idx_with_ = [slice(None) for _ in range(len(shape)-len(axis))]
+        idx_with_ = [slice(None) for _ in range(len(shape) - len(axis))]
 
     elif mode == "orange":
         idx_with_ = np.ogrid[[range(s) for i, s in enumerate(shape) if i not in axis]]
-    
+
     elif mode is None:
         return idx
     else:
@@ -356,9 +412,9 @@ def interleave(arrays, axis=0, out=None):
         axis += len(shape)
     assert 0 <= axis < len(shape), "'axis' is out of bounds"
     if out is not None:
-        out = out.reshape(shape[:axis+1] + [len(arrays)] + shape[axis+1:])
+        out = out.reshape(shape[:axis + 1] + [len(arrays)] + shape[axis + 1:])
     shape[axis] = -1
-    return np.stack(arrays, axis=axis+1, out=out).reshape(shape)
+    return np.stack(arrays, axis=axis + 1, out=out).reshape(shape)
 
 
 # Functions
@@ -455,14 +511,14 @@ def get_element_overlap(arr1, arr2=None, verbose=0):
 def create_constant_diagonal(n, m, v, k):
     diag = np.eye(N=n, M=m, k=k) * v[0]
     for i in range(1, len(v)):
-        diag += np.eye(N=n, M=m, k=k+i) * v[i]
+        diag += np.eye(N=n, M=m, k=k + i) * v[i]
     return diag
 
 
 def banded_matrix(v_list, k0):
     m = np.diag(v_list[0], k=k0)
     for i, v in enumerate(v_list[1:], start=1):
-        m += np.diag(v, k=k0+i)
+        m += np.diag(v, k=k0 + i)
 
     return m
 
@@ -485,7 +541,6 @@ def get_first_row_occurrence(bool_arr):
 
 
 def fill_interval_indices(interval_list, n):
-
     if isinstance(interval_list, np.ndarray):
         interval_list = interval_list.tolist()
 
@@ -623,6 +678,17 @@ def get_exclusion_mask(a, exclude_values):
     return bool_a
 
 
+def matmul(a, b, axes_a=(-2, -1), axes_b=(-2, -1)):
+    if axes_a == (-2, -1) and axes_b == (-2, -1):
+        return a @ b
+
+    if axes_a == (-3, -2) and axes_b == (-2, -1) and np.ndim(a) == np.ndim(b) + 1:
+        return np.concatenate([(a[..., i] @ b)[..., np.newaxis]
+                               for i in range(a.shape[-1])], axis=-1)
+    else:
+        raise NotImplementedError
+
+
 def matsort(mat, order_j=None):
     """
     mat = np.where(np.random.random((500, 500)) > 0.01, 1, 0)
@@ -689,7 +755,7 @@ def tile_offset(a, reps, offsets=None):
             o = offsets
 
         assert len(o) == len(s)
-        offsets = [np.repeat(np.arange(rr), ss)*oo for ss, rr, oo in zip(s, r, o)]
+        offsets = [np.repeat(np.arange(rr), ss) * oo for ss, rr, oo in zip(s, r, o)]
         b += sum(np.meshgrid(*offsets, indexing='ij') + [0])  # noqa
     return b
 
@@ -849,7 +915,7 @@ def block_shuffle(arr, block_size, inside=False):
     if inside:
         idx = np.arange(n)
         for i in range(0, n, block_size):
-            np.random.shuffle(idx[i:i+block_size])
+            np.random.shuffle(idx[i:i + block_size])
         return arr[idx]
 
     else:
@@ -905,7 +971,7 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
 
 def get_stats(x, axis=None, return_array=False):
     stats = {"mean": np.mean(x, axis=axis),
-             "std":  np.std(x, axis=axis),
+             "std": np.std(x, axis=axis),
              "median": np.median(x, axis=axis),
              "min": np.min(x, axis=axis),
              "max": np.max(x, axis=axis)}
@@ -950,11 +1016,11 @@ def find_consecutives(x, n):
     if n == 1:
         return np.arange(len(x))
     assert n > 1
-    return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n-1), mode="valid") == 0)[0]
+    return np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(n - 1), mode="valid") == 0)[0]
 
 
 def find_largest_consecutives(x):
-    i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2-1), mode="valid") == 0)[0]
+    i2 = np.nonzero(np.convolve(np.abs(np.diff(x)), v=np.ones(2 - 1), mode="valid") == 0)[0]
     i2 -= np.arange(len(i2))
     _, c2 = np.unique(i2, return_counts=True)
     if c2.size == 0:
@@ -1095,10 +1161,10 @@ def range2tuple(r):
 def slice_add(a, b):
     a = slice2tuple(a)
     b = slice2tuple(b)
-    return slice(a[0]+b[0], a[1]+b[1], max(a[2], b[2]))
+    return slice(a[0] + b[0], a[1] + b[1], max(a[2], b[2]))
 
 
 def range_add(a, b):
     a = range2tuple(a)
     b = range2tuple(b)
-    return range(a[0]+b[0], a[1]+b[1], max(a[2], b[2]))
+    return range(a[0] + b[0], a[1] + b[1], max(a[2], b[2]))

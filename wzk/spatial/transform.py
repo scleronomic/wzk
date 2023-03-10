@@ -376,11 +376,11 @@ def offset_frame(f, i=None, vm=None,
     return f
 
 
-def apply_eye_wrapper(f, possible_eye):
-    if possible_eye is None or np.allclose(possible_eye, np.eye(possible_eye.shape[0])):
+def apply_f_or_none(f, f_or_none):
+    if f_or_none is None or np.allclose(f_or_none, np.eye(f_or_none.shape[0])):
         return f
     else:
-        return possible_eye @ f
+        return f_or_none @ f
 
 
 def invert(f):
