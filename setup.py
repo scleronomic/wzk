@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="wzk",
-    version="0.1.6",
+    version="0.1.7",
     author="Johannes Tenhumberg",
     author_email="johannes.tenhumberg@gmail.com",
     description="WZK - WerkZeugKasten - Collection of different Python Tools",
