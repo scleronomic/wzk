@@ -16,4 +16,6 @@ from .Patches2 import *
 from .DraggablePatches import *
 from .widgets import *
 
+from .specific import *
+
 from matplotlib.animation import FuncAnimation  # noqa

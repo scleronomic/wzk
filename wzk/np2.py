@@ -685,6 +685,9 @@ def matmul(a, b, axes_a=(-2, -1), axes_b=(-2, -1)):
     if axes_a == (-3, -2) and axes_b == (-2, -1) and np.ndim(a) == np.ndim(b) + 1:
         return np.concatenate([(a[..., i] @ b)[..., np.newaxis]
                                for i in range(a.shape[-1])], axis=-1)
+    elif axes_a == (-2, -1) and axes_b == (-3, -2) and np.ndim(b) == np.ndim(a) + 1:
+        return np.concatenate([(a @ b[..., i])[..., np.newaxis]
+                               for i in range(b.shape[-1])], axis=-1)
     else:
         raise NotImplementedError
 

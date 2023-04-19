@@ -7,14 +7,22 @@ from wzk.opt.optimizer import Naive
 class OPTimizer(object2.CopyableObject):
     __slots__ = ("type",                           # str                 | type of the optimizer: gd, sqp, ...
                  "type_root",                      # str                 | type of the root search algorithm
+                 
+                 "n_samples",                      # int                 | Number of samples
+                 
                  "n_steps",                        # int                 | Number of iterations
                  "stepsize",                       # float               |
+                 
                  "optimizer",                      # Optimizer           | Adam, RMSProp, ...  
+                 
+                 "limits",                         # fun()               | Limits of the variables
+                 "limits_mode",                    # str                 | "jump", "clip", "ignore"
+                 
                  "clip",                           # float[n_steps]      |
-                 "clip_mode",                      # str                 | 'jump', 'clip', 'ignore'
+                 "clip_mode",                      # str                 | "value", "norm", "norm-force" (see np2.clip2) 
+                 
+
                  "callback",                       # fun()               |
-                 "limits",                         # fun()               |
-                 "limits_mode",                    # str                 |
                  "n_processes",                    # int                 |
                  "use_loop_instead_of_processes",  # bool                |
                  "hesse_inv",                      # float[n_var][n_var] |
@@ -24,11 +32,13 @@ class OPTimizer(object2.CopyableObject):
                  "return_x_list",                  # bool                |  is this a suitable parameter? not really
                  )
 
-    def __init__(self, n_steps=100, stepsize=1, optimizer=Naive(), clip=0.1, n_processes=1,
+    def __init__(self, n_samples=1, n_steps=100, stepsize=1, optimizer=Naive(), clip=0.1, n_processes=1,
                  clip_mode="value", limits_mode="clip"):
         
         self.type = None
         self.type_root = "newton"
+        
+        self.n_samples = n_samples
         
         self.n_steps = n_steps
         self.stepsize = stepsize

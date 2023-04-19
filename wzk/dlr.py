@@ -44,13 +44,17 @@ if PLATFORM_IS_LINUX:
 else:
     DIR_PAPER = "/Users/jote/Documents/PhD/paper"
 
+# CONFERENCES = dict(iros="iros",
+#                    icra="icra",
+#                    humanoids="humanoids",
+#                    tro="tro")
 
-Humanoids20_Calibration = DIR_PAPER + "/20Humanoids_Calibration"
-Humanoids22_Calibration = DIR_PAPER + "/22Humanoids_Calibration"
-IROS22_PLANNING = DIR_PAPER + "/22IROS_Planning"
-IROS23_IK = DIR_PAPER + "/23IROS_IK"
-IROS23_Representation = "/23IROS_Representation"
-TRO23_Planning = "/23TRO_Planning"
+Humanoids20_Calibration = DIR_PAPER + "/20humanoids_calibration"
+Humanoids22_Calibration = DIR_PAPER + "/22humanoids_calibration"
+IROS22_PLANNING = DIR_PAPER + "/22iros_planning"
+IROS23_IK = DIR_PAPER + "/23iros_IK"
+IROS23_Representation = "/23iros_Representation"
+TRO23_Planning = "/23tro_Planning"
 
 # Projects
 __automatica22_dict = dict(dlr="/volume/USERSTORE/tenh_jo/Automatica2022",

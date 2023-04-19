@@ -1,7 +1,7 @@
-from .difference import *
-from . import transform_2d as twod
+from .difference import *  # noqa
+from . import transform_2d as twod  # noqa 
 
-from .transform import *
+from .transform import *  # noqa
 
 
 # Naming

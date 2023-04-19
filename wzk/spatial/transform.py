@@ -399,6 +399,12 @@ def invert(f):
     return f_inv
 
 
+def add_trans(f, x):
+    f1 = f.copy()
+    f1[..., :-1, -1] += x
+    return f1
+
+
 def Ax(A, x):
     if x.shape[-1] != A.shape[-1]:
         x = np.concatenate([x, np.ones_like(x[..., :1])], axis=-1)
