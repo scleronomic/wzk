@@ -8,6 +8,7 @@ from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
 
 # noinspection PyUnresolvedReferences
 from pyOpt import Optimization
+from scipy.optimize import least_squares  # TODO combine PyOpt and scipy to one
 
 
 def print_result(res, verbose):
@@ -69,4 +70,17 @@ def minimize_slsqp(fun, x0, options, verbose=0):
 
     vs = res.getVarSet()
     x = np.array([vs[key].value for key in range(len(x0))])
+    return x
+
+
+def minimize(method, fun, x0, options, verbose):
+    if method == "PyOpt-SLSQP":
+        x = minimize_slsqp(fun=fun, x0=x0, options=options, verbose=verbose - 1)
+    elif method == "PyOpt-COBYLA":
+        x = minimize_cobyla(fun=fun, x0=x0, options=options, verbose=verbose - 1)
+    elif method == "SciPy-LS":
+        x = least_squares(fun=fun, x0=x0, method="lm").x
+    else:
+        raise ValueError(f"Unknown optimizer: {method}")
+
     return x
