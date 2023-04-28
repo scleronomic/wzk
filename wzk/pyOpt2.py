@@ -8,7 +8,7 @@ from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
 
 # noinspection PyUnresolvedReferences
 from pyOpt import Optimization
-from scipy.optimize import least_squares  # TODO combine PyOpt and scipy to one
+from scipy.optimize import least_squares
 
 
 def print_result(res, verbose):
