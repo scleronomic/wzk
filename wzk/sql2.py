@@ -198,6 +198,15 @@ def get_columns(file, table, mode: object = None):
     return res
 
 
+def summary(file):
+    print(f"summary sql-file:'{file}'")
+    tables = get_tables(file=file)
+    for t in tables:
+        c = get_columns(file=file, table=t)
+        print(f"table: {t}")
+        print(" | ".join(c))
+
+
 def rename_tables(file: str, tables: dict) -> None:
     old_names = get_tables(file=file)
     print(f"rename_tables file:'{file}' {tables}")

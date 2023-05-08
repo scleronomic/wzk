@@ -7,20 +7,20 @@ PLATFORM_IS_LINUX = platform.system() == "Linux"
 USERNAME = os.path.expanduser("~").split(sep="/")[-1]
 TENH_JO = "tenh_jo"
 
-USERNAME_DICT = dict(mac="jote",
-                     dlr="tenh_jo",
-                     gcp="johannes_tenhumberg_gmail_com")
+LOCATION2USERNAME_DICT = dict(mac="jote",
+                              dlr="tenh_jo",
+                              gcp="johannes_tenhumberg_gmail_com")
 
-LOCATION_DICT = dict(jote="mac",
-                     tenh_jo="dlr",
-                     baeuml="dlr",
-                     bauml="dlr",
-                     johannes_tenhumberg_gmail_com="gcp")
+USERNAME2LOCATION_DICT = dict(jote="mac",
+                              tenh_jo="dlr",
+                              baeuml="dlr",
+                              bauml="dlr",
+                              johannes_tenhumberg_gmail_com="gcp")
 
 
 def where_am_i():
     try:
-        location = LOCATION_DICT[USERNAME]
+        location = USERNAME2LOCATION_DICT[USERNAME]
     except KeyError:
         location = "dlr"
 
@@ -29,18 +29,46 @@ def where_am_i():
 
 LOCATION = where_am_i()
 
+userstore = "/volume/USERSTORE"
+homelocal = "/home_local"
+home = "/home"
+
+
+def __wrapper_user(user=None):
+    if user is None:
+        user = USERNAME
+    return user
+
+
+def get_userstore(user):
+    user = __wrapper_user(user=user)
+    return f"{userstore}/{user}"
+
+
+def get_home(user):
+    user = __wrapper_user(user=user)
+    return f"{home}/{user}"
+
+
+def get_homelocal(user, host=None):
+    user = __wrapper_user(user=user)
+    if host is None:
+        return f"{homelocal}/{user}"
+    else:
+        return f"/net/{host}{homelocal}/{user}"
+
 
 # Alternative storage places for the samples
-DLR_USERSTORE = f"/volume/USERSTORE/{USERNAME}"  # Daily Back-up, relies on connection -> not for large Measurements
-DLR_HOMELOCAL = f"/home_local/{USERNAME}"        # No Back-up, but fastest drive -> use for calculation
-DLR_HOME = f"/home/{USERNAME}"
-DLR_USB = "/var/run/media/tenh_jo/DLR-MA"
+USERSTORE = get_userstore(user=USERNAME)  # Daily Back-up, relies on connection -> not for large Measurements
+HOMELOCAL = get_homelocal(user=USERNAME)  # No Back-up, but fastest drive -> use for calculation
+HOME = get_home(user=USERNAME)
+USB = f"/var/run/media/{TENH_JO}/DLR-MA"
 
-TENH_USERSTORE = f"/volume/USERSTORE/{TENH_JO}"
+USERSTORE_TENH = f"{userstore}/{TENH_JO}"
 
 # Paper
 if PLATFORM_IS_LINUX:
-    DIR_PAPER = f"{DLR_USERSTORE}/Paper"
+    DIR_PAPER = f"{USERSTORE}/paper"
 else:
     DIR_PAPER = "/Users/jote/Documents/PhD/paper"
 
@@ -57,7 +85,7 @@ IROS23_Representation = "/23iros_Representation"
 TRO23_Planning = "/23tro_Planning"
 
 # Projects
-__automatica22_dict = dict(dlr="/volume/USERSTORE/tenh_jo/Automatica2022",
+__automatica22_dict = dict(dlr=f"{userstore}/tenh_jo/Automatica2022",
                            mac="/Users/jote/Documents/PhD/data/mogen/Automatica2022",
                            gcp="/home/johannes_tenhumberg_gmail_com/sdb/Automatica2022")
 Automatica22 = __automatica22_dict[LOCATION]

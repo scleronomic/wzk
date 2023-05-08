@@ -30,8 +30,14 @@ def get_pythonpath():
 
 # ----------------------------------------------------------------------------------------------------------------------
 # shell commands
-def cp(src, dst):
-    subprocess.call(f"cp {src} {dst}", shell=True)
+def cp(src, dst, a=False):
+    """-a (improved recursive copy, including all files, sub-folders and symlinks)"""
+    if a:
+        if not src.endswith("/."):
+            src += "/."
+        subprocess.call(f"cp -a {src} {dst}", shell=True)
+    else:
+        subprocess.call(f"cp {src} {dst}", shell=True)
 
 
 def mv(src, dst):
@@ -68,6 +74,7 @@ def rmdirs(directory: Union[str, list]):
 def rm_files_in_dir(directory: str, file_list: list = None):
     if file_list is None:
         file_list = os.listdir(directory)
+
     for file in file_list:
         rm(os.path.join(directory, file))
 
@@ -152,7 +159,7 @@ def ensure_file_extension(file: str, ext: str):
 def remove_extension(file: str, ext: str):
     ext = ensure_extension_point(ext)
     file = ensure_file_extension(file=file, ext=ext)
-    file = file.replace(ext, "")
+    file = file[:-len(ext)]
     return file
 
 

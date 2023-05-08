@@ -13,15 +13,6 @@ MeshGeometry_DICT = dict(stl=mg.StlMeshGeometry,
                          dae=mg.DaeMeshGeometry)
 
 
-# TODO meshes as object
-# meshes.files
-# meshes.f_idx
-# meshes.f
-
-
-# spheres.x
-# spheres.r
-# spheres.f_idc
 def get_material(color="gray", alpha=1.0):
     # Set material color from URDF, converting for triplet of doubles to a single int.
     material = mg.MeshPhongMaterial()
@@ -222,17 +213,6 @@ def plot_robot_configuration(vis, robot, q,
     transform(vis=vis, h=h, f=f)
 
 
-def test_plot_bimg():
-    from mopla.world.random_obstacles import create_perlin_image
-    bimg = create_perlin_image(shape=(32, 32, 32), threshold=0.3)
-    limits = np.zeros((3, 2))
-    limits[:, 1] = 0.5
-    limits += 0.5
-
-    vis = Visualizer()
-    plot_bimg(vis=vis, h=None, bimg=bimg, limits=limits)
-
-
 def plot_lines(vis, h, x, lines, **kwargs):
     pass
     # TODO
@@ -282,6 +262,17 @@ def plot_coordinate_frames(vis, h, f, scale=1.0, **kwargs):
 
         return [plot_coordinate_frames(vis=vis, h=h, f=ff, scale=scale, color=cc, **kwargs)
                 for hh, ff, cc in zip(h, f, color)]
+
+
+def try_plot_bimg():
+    from wzk.perlin import perlin_noise_3d
+    bimg = perlin_noise_3d(shape=(32, 32, 32), res=4) < 0.3
+    limits = np.zeros((3, 2))
+    limits[:, 1] = 0.5
+    limits += 0.5
+
+    vis = Visualizer()
+    plot_bimg(vis=vis, h=None, bimg=bimg, limits=limits)
 
 
 def try_arrow():
