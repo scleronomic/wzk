@@ -79,7 +79,10 @@ def get_progress_bar(i, n, prefix="", suffix="", bar="█"):
     return f"\r{prefix} |{bar}| {suffix}"
 
 
-def progress_bar(i, n, prefix="", suffix="", bar_length=None):
+def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1):
+    if verbose <= 0:
+        return
+
     bar_length_max = 100
     if bar_length is None:
         bar_length = n

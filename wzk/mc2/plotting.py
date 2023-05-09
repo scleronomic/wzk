@@ -250,7 +250,7 @@ def plot_coordinate_frames(vis, h, f, scale=1.0, **kwargs):
         color = np2.scalar2array(color, shape=3)
 
         for i in range(3):
-            plot_arrow(vis=vis, h=f"{h}-{xyz_str[i]}", x=f, v=f[:3, i], length=scale, color=color[i], **kwargs)
+            plot_arrow(vis=vis, h=f"{h}-{xyz_str[i]}", x=f[:3, -1], v=f[:3, i], length=scale, color=color[i], **kwargs)
 
         return h
 
@@ -266,13 +266,13 @@ def plot_coordinate_frames(vis, h, f, scale=1.0, **kwargs):
 
 def try_plot_bimg():
     from wzk.perlin import perlin_noise_3d
-    bimg = perlin_noise_3d(shape=(32, 32, 32), res=4) < 0.3
+    bimg = perlin_noise_3d(shape=(256, 256, 256), res=32) < 0.3
     limits = np.zeros((3, 2))
-    limits[:, 1] = 0.5
-    limits += 0.5
+    limits[:, 1] = 3
+    # limits += 0.5
 
     vis = Visualizer()
-    plot_bimg(vis=vis, h=None, bimg=bimg, limits=limits)
+    plot_bimg(vis=vis, h=None, bimg=bimg, limits=limits, color="white")
 
 
 def try_arrow():
@@ -289,5 +289,22 @@ def try_arrow():
     vis["triad"].set_transform(f)
 
 
+def try_coordinate_frames(mode="A"):
+    vis = Visualizer()
+
+    if mode == "A":
+        plot_coordinate_frames(vis=vis, h=None, f=spatial.sample_frames(), color="red", scale=0.1)
+        plot_coordinate_frames(vis=vis, h=None, f=spatial.sample_frames(), color="green", scale=0.2)
+        plot_coordinate_frames(vis=vis, h=None, f=spatial.sample_frames(), color="blue", scale=0.3)
+
+    elif mode == "B":
+        plot_coordinate_frames(vis=vis, h=None, f=spatial.sample_frames(shape=5), color="blue", scale=0.3)
+
+    elif mode == "C":
+        plot_coordinate_frames(vis=vis, h=None, f=spatial.sample_frames(shape=5), color="blue", scale=0.3)
+
+
 if __name__ == "__main__":
-    try_arrow()
+    # try_arrow()
+    # try_plot_bimg()
+    try_coordinate_frames(mode="B")

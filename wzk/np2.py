@@ -125,7 +125,11 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
     res = []
     for voa in val_or_arr:
         try:
-            res_i = np.empty(shape=shape, dtype=type(voa))
+            if type(voa) == str:
+                res_i = np.empty(shape=shape, dtype=np.array(voa).dtype)
+            else:
+                res_i = np.empty(shape=shape, dtype=type(voa))
+
             res_i[:] = np.array(voa).copy()
             res.append(res_i)
 
@@ -1046,6 +1050,18 @@ def round2(x,
 
     except (TypeError, np.core._exceptions.UFuncTypeError):
         return np.array(x)
+
+
+def clip_periodic(x, a_min, a_max):
+    try:
+        x = x.copy()
+    except AttributeError:
+        pass
+
+    x -= a_min
+    x = np.mod(x, a_max-a_min)
+    x += a_min
+    return x
 
 
 def clip2(x, clip, mode, axis=-1):

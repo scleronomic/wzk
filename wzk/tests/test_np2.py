@@ -165,6 +165,22 @@ class Test(TestCase):
         for aa, rr in zip(arr, res):
             self.assertTrue(np.array_equal(np2.get_interval_indices(aa), rr))
 
+    def try_clip_periodic(self, verbose=0):
+        a_min = 5
+        a_max = 37
+
+        x = np.linspace(start=0, stop=100, num=10000)
+        x2 = np2.clip_periodic(x=x, a_min=a_min, a_max=a_max)
+
+        self.assertTrue(np.all(x2 >= a_min))
+        self.assertTrue(np.all(x2 <= a_max))
+
+        if verbose > 10:
+            from wzk import mpl2
+            fig, ax = mpl2.new_fig()
+            ax.plot(x, x2, color="blue")
+            ax.hlines(y=[a_min, a_max], xmin=np.min(x), xmax=np.max(x), color="red")
+
 
 if __name__ == "__main__":
     pass

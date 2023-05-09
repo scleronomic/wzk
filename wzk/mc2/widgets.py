@@ -1,72 +1,84 @@
 import numpy as np
 
 from pynput import keyboard
-import threading
-
-
-def wrapper_key(key):
-    try:
-        k = key.char  # single-char keys
-    except AttributeError:
-        k = key.name  # other keys
-    return k
+from wzk import np2
 
 
 class KeyListener:
-    def __init__(self, key, callback):
-        self.key = key
-        self.callback = callback
+    def __init__(self, key2callback: dict = None):
+        self.key2callback = key2callback
 
         self.listener = None
-        self.__thread = None
-        self.start_listener()
+        self.is_listening = False
+        self.start_listening()
 
-    def start_listener(self):
-        self.__thread = threading.Thread(target=self.__start_listener)
-        self.__thread.daemon = True
-        self.__thread.start()
+    @staticmethod
+    def wrapper_key(key):
+        try:
+            k = key.char  # single-char keys
+        except AttributeError:
+            k = key.name  # other keys
+        return k
 
-    def __start_listener(self):
-        self.listener = keyboard.Listener(on_press=self.on_press)
+    def add_callback(self, key2callback: dict = None, start_listening=True):
+        self.key2callback.update(key2callback)
+        if start_listening:
+            self.start_listening()
+
+    def start_listening(self, on_press=True, on_release=False):
+        if self.is_listening:
+            self.stop_listening()
+
+        if on_press and not on_release:
+            self.listener = keyboard.Listener(on_press=self.on_press)
+        elif on_release and not on_press:
+            self.listener = keyboard.Listener(on_release=self.on_press)
+        else:
+
+            raise NotImplementedError
+
         self.listener.start()
+        self.is_listening = True
+
+    def stop_listening(self):
+        self.listener.stop()
+        self.listener.join()
+        self.is_listening = False
 
     def on_press(self, k):
-        # todo provide here a dict, to handle all keys in a single thread/function
-        #   return the dict and extend it if necessary. I guess for this you have to
-        #   first join the existing thread and then start a new one.
-        #   two parts one is just the key listener with dict, the other are dedicated keylisteners left right up down wasd etc
-        k = wrapper_key(k)
-        if k == self.key:
-            self.callback()
+        k = self.wrapper_key(k)
+        if k in self.key2callback:
+            self.key2callback[k]()
 
 
 class KeySlider:
 
-    def __init__(self, callback, step, mi, ma):
+    def __init__(self, callback, step, mi, ma, periodic=False):
+        __factor = 20
         self.value = 0
 
         self.callback = callback
         self.step = step
         self.min = mi
         self.max = ma
+        self.periodic = periodic
 
-        # self.back_k
-        self.factor = int((ma - mi) / 20)
-        self.left = KeyListener(key="left", callback=lambda: self._update(step=-self.step))
-        self.right = KeyListener(key="right", callback=lambda: self._update(step=+self.step))
-        # self.up = KeyListener(key="up", callback=lambda: self._update(step=-self.step*self.factor))
-        # self.down = KeyListener(key="bottom", callback=lambda: self._update(step=+self.step*self.factor))
+        self.factor = int((ma - mi) / __factor)
 
-        # self.left.listener.start()  # start to listen on a separate thread
-        # self.right.listener.start()  # start to listen on a separate thread
-        # self.up.listener.start()  # start to listen on a separate thread
-        # self.down.listener.start()  # start to listen on a separate thread
-
-        # listener.join()  # remove if main thread is polling self.keys
+        # Create KeyListener
+        key2callback = dict(left=lambda: self._update(step=-self.step),
+                            right=lambda: self._update(step=+self.step),
+                            up=lambda: self._update(step=-self.step*self.factor),
+                            down=lambda: self._update(step=+self.step*self.factor))
+        self.listener = KeyListener(key2callback=key2callback)
 
     def _update(self, step):
         v2 = self.value + step
-        v2 = np.clip(v2, a_min=self.min, a_max=self.max)
+        if self.periodic:
+            v2 = np2.clip_periodic(x=v2, a_min=self.min, a_max=self.max)
+        else:
+            v2 = np.clip(x=v2, a_min=self.min, a_max=self.max)
+
         self.value = v2
         self.callback(v2)
 
@@ -77,9 +89,20 @@ def try_KeySlider():
         print("fun")
         print(i)
 
-    return KeySlider(callback=fun, step=1, mi=0, ma=1000)
+    return KeySlider(callback=fun, step=1, mi=0, ma=100, periodic=True)
+
+
+def try_KeyListener():
+    key2callback = dict(w=lambda: print("ww"),
+                        a=lambda: print("aa"),
+                        s=lambda: print("ss"),
+                        d=lambda: print("dd")
+                        )
+    kl = KeyListener(key2callback=key2callback)
+    return kl
 
 
 if __name__ == "__main__":
-    try_KeySlider()
-
+    pass
+    # try_KeyListener()
+    # try_KeySlider()

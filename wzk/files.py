@@ -1,4 +1,8 @@
 import os
+
+from os import *
+# from os.path import *
+
 import re
 import pickle
 import shutil
@@ -46,11 +50,6 @@ def mv(src, dst):
         return
 
     subprocess.call(f"mv {src} {dst}", shell=True)
-
-
-def ln(src, dst, symbolic=True):
-    s = " -s" if symbolic else ""
-    subprocess.call(f"ln {s}{src} {dst}", shell=True)
 
 
 def rm(file):
@@ -106,6 +105,15 @@ def mkdir_for_each(directory, new_sub_directory):
 
     directory_list = [f"{os.path.normpath(d)}/{new_sub_directory}" for d in directory_list]
     mkdirs(directory_list)
+
+
+def replace_with_link(src, file_list):
+    """
+    remove all files in the list and link them to src
+    """
+    for file in file_list:
+        rm(file)
+        os.symlink(src=src, dst=file)
 
 
 def __read_head_tail(file: str,

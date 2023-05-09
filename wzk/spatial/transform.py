@@ -327,6 +327,20 @@ def sample_frames_on_noisy_grid(x_grid, y_grid, z_grid,
     return f_list
 
 
+# Sanity Cecks
+# ----------------------------------------------------------------------------------------------------------------------
+def is_rotation(r):
+    rtr = r @ np.swapaxes(r, -2, -1)
+    b = np.allclose(rtr, np.eye(3), atol=1e-5)
+    return b
+
+
+def is_frame(f):
+    a = is_rotation(f[..., :-1, :-1])
+    b = np.allclose(f[..., -1, -1], 1)
+    return a and b
+
+
 # linalg
 # ----------------------------------------------------------------------------------------------------------------------
 def get_frames_between(f0, f1, n):
