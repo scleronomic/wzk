@@ -189,7 +189,6 @@ def __x_wrapper(x):
 
 
 def x_and_limits2txt(x, limits, names=None):
-    # def TODO, also make a mpl function for this
 
     # parameters
     m = 100

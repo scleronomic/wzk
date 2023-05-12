@@ -32,7 +32,7 @@ ax.plot(t, s_auto(t)/t, color="magenta", marker="o")
 ax.grid()
 ax.set_xlim(0, t_max)
 ax.set_ylim(0, 50)
-# TODO wings for life calculater
+
 # s_auto(t) = 7*t + sum_(0.5 + 1 + 1.5)
 print(v_auto(t))
 print(s_auto(t))
