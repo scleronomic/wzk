@@ -30,14 +30,14 @@ def input_timed(prompt, seconds, clear=True):
     s = sys.stdin.readline().strip() if i else None
 
     if clear:
-        clear_previous_line()
+        clear_previous_lines()
 
     return s
 
 
 def input_clear(prompt):
     s = input(prompt)
-    clear_previous_line()
+    clear_previous_lines()
     return s
 
 
@@ -47,7 +47,7 @@ def input_clear_loop(prompt, condition, error_prompt):
         s = input_clear(prompt)
 
         if i > 0:
-            clear_previous_line()
+            clear_previous_lines()
 
         if condition(s):
             return s
@@ -169,6 +169,57 @@ def print_correlation(bool_lists, names, dec=4):
     return total
 
 
+def __wrapper_names(names, n):
+    if names is None:
+        names = [f"{i}" for i in range(n)]
+
+    else:
+        names = [f"{i}-{name}" for i, name in enumerate(names)]
+
+    max_name = np.amax([len(name) for name in names])
+    names = [f"{name}{' ' * (max_name - len(name))}: " for name in names]
+    return names
+
+
+def __x_wrapper(x):
+    s = f"{x:.3f}"
+    if x >= 0:
+        s = "+" + s
+    return s
+
+
+def x_and_limits2txt(x, limits, names=None):
+    # def TODO, also make a mpl function for this
+
+    # parameters
+    m = 100
+    bar_left = "-"
+    bar_right = "-"
+    bar_x = "x"
+
+    n = len(x)
+    mi, ma = limits.T
+    y = (x - mi) / (ma - mi)
+    y = np.round(y * m).astype(int)
+    y = np.clip(a=y, a_min=1, a_max=m)
+
+    names = __wrapper_names(names=names, n=n)
+    s = ""
+    for i in range(n):
+        s += names[i]
+        s += f"{__x_wrapper(limits[i, 0])} |"
+        s += bar_left * (y[i] - 1)
+        s += bar_x
+        s += bar_right * (m - y[i])
+        s += f"| {__x_wrapper(limits[i, 1])}"
+        s += f"  ->  {__x_wrapper(x[i])}"
+        s += "\n"
+
+    return s
+
+
+# General Functipons
+# ----------------------------------------------------------------------------------------------------------------------
 def print2(*args, verbose=None,
            sep=" ", end="\n", file=None, flush=False):
     v = verbose_level_wrapper(verbose=verbose)
@@ -195,9 +246,11 @@ def print_array_3d(array_3d,
     print2("\n".join(s), verbose=verbose)
 
 
-def clear_previous_line():
-    sys.stdout.write("\033[F")  # back to previous line
-    sys.stdout.write("\033[K")  # clear line
+def clear_previous_lines(n=1):
+    for i in range(n):
+        sys.stdout.write("\033[K")  # clear line
+        sys.stdout.write("\033[F")  # back to previous line
+        sys.stdout.write("\033[K")  # clear line
 
 
 def color_text(s, color, background="w", weight=0):
@@ -277,7 +330,7 @@ class Verbosity:
         return f"(verbose: {self.verbose}, level: {self.level})"
 
 
-def test_verbosity():
+def try_verbosity():
     v10 = Verbosity(verbose=1, level=0)
 
     v20 = v10 + 1
@@ -286,3 +339,19 @@ def test_verbosity():
     print(v10)
     print(v20)
     print(v00)
+
+
+def try_clear_previous_line():
+    pass
+    print("A")
+    print("B")
+    print("C")
+
+    clear_previous_lines()
+
+    print("C2")
+    input()
+
+
+if __name__ == "__main__":
+    try_clear_previous_line()

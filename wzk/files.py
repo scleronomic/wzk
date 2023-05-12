@@ -14,8 +14,7 @@ import msgpack
 import numpy as np
 from scipy.io import loadmat as load_mat, savemat as save_mat  # noqa: F401
 
-from wzk.printing import progress_bar
-from wzk.time2 import get_timestamp
+from wzk import time2, printing, subprocess2
 
 
 __open_cmd_dict = {"Linux": "xdg-open",
@@ -244,7 +243,7 @@ def combine_npz_files(*, directory,
 
     for i, file in enumerate(file_list):
         if verbose > 0:
-            progress_bar(i=i, n=len(file_list))
+            printing.progress_bar(i=i, n=len(file_list))
 
         data = np.load(directory + file)
         if i == 0:
@@ -255,7 +254,7 @@ def combine_npz_files(*, directory,
                 new_dict[key] = np.concatenate([new_dict[key], data[key]])
 
     if save:
-        np.savez(directory + "combined_" + get_timestamp() + ".npz", **new_dict)
+        np.savez(directory + "combined_" + time2.get_timestamp() + ".npz", **new_dict)
     return new_dict
 
 
@@ -306,7 +305,7 @@ def clip_npz_file(n_samples: int,
     for key in data:
         new_dict[key] = data[key][:n_samples]
     if save:
-        np.savez(directory + file_name + "clipped_" + get_timestamp() + file_extension, **new_dict)
+        np.savez(directory + file_name + "clipped_" + time2.get_timestamp() + file_extension, **new_dict)
     return new_dict
 
 
@@ -323,6 +322,16 @@ def copy2clipboard(file: str):
     subprocess.run(["osascript",
                     "-e",
                     'set the clipboard to POSIX file "{}"'.format(file)])
+
+
+# chmod
+def chmod_file(file, mod):
+    subprocess2.call2(cmd=f"sudo chmod {mod} {file}")
+
+
+def chmod_dir(directory, mod):
+    subprocess2.call2(cmd=f"sudo chmod {mod} -R {directory}")
+
 
 
 # ----------------------------------------------------------------------------------------------------------------------

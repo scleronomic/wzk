@@ -120,6 +120,19 @@ def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
     return v, e, f
 
 
+def faces4_to_3(f4):
+    #  d c   =     c   +   d c
+    #  a b   =   a b   +   a
+    # abcd   +   abc   +   acd
+
+    assert f4.ndim == 2
+    n = len(f4)
+    f3 = np.zeros((2*n, 3), dtype=int)
+    f3[0::2, :] = f4[:, [0, 1, 2]]
+    f3[1::2, :] = f4[:, [0, 2, 3]]
+    return f3
+
+
 def box(limits):
     x = np.array([[limits[0, 0], limits[1, 0]],
                   [limits[0, 1], limits[1, 0]],
@@ -852,7 +865,7 @@ def test_string_of_pearls2surface():
 
 
 if __name__ == "__main__":
-    pass
+    test_string_of_pearls2surface()
     # test_discretize_triangle()
 
 

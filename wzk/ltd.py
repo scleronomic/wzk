@@ -334,3 +334,7 @@ def read_json2dict(file):
 def rename_dict_keys(d, new_keys_dict):
     for old_k in new_keys_dict:
         d[new_keys_dict[old_k]] = d.pop(old_k)
+
+
+def invert_dict(d):
+    return {v: k for k, v in d.items()}

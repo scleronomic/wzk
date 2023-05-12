@@ -126,3 +126,11 @@ def c_list_wrapper(c, n=20):
         raise ValueError
     c_list *= n // len(c_list) + 1
     return c_list
+
+
+def rgb2hex(rgb):
+    h = (int(rgb[0] * 255) * 256 ** 2 +
+         int(rgb[1] * 255) * 256 ** 1 +
+         int(rgb[2] * 255) * 256 ** 0)
+    return h
+
