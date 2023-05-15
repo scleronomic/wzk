@@ -977,14 +977,15 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
 
 
 def get_stats(x, axis=None, return_array=False):
-    stats = {"mean": np.mean(x, axis=axis),
+    stats = {"size": int(np.size(x, axis=axis)),
+             "mean": np.mean(x, axis=axis),
              "std": np.std(x, axis=axis),
              "median": np.median(x, axis=axis),
              "min": np.min(x, axis=axis),
              "max": np.max(x, axis=axis)}
 
     if return_array:
-        return np.array([stats["mean"], stats["std"], stats["median"], stats["min"], stats["max"]])
+        return np.array([stats["size"], stats["mean"], stats["std"], stats["median"], stats["min"], stats["max"]])
 
     return stats
 

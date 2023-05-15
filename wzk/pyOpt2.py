@@ -1,14 +1,13 @@
 import numpy as np
 
-# noinspection PyUnresolvedReferences
-from pyOpt.pySLSQP.pySLSQP import SLSQP
-# noinspection PyUnresolvedReferences
-from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
-# from pyOpt.pyNLPQLP.pyNLPQLP import NLPQLP
 
-# noinspection PyUnresolvedReferences
-from pyOpt import Optimization
-from scipy.optimize import least_squares
+# from pyOpt.pySLSQP.pySLSQP import SLSQP
+# from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
+# from pyOpt.pyNLPQLP.pyNLPQLP import NLPQLP
+# from pyOpt import Optimization
+
+from scipy import optimize
+# from scipy.optimize import least_squares, slsqp
 
 
 def print_result(res, verbose):
@@ -78,8 +77,13 @@ def minimize(method, fun, x0, options, verbose):
         x = minimize_slsqp(fun=fun, x0=x0, options=options, verbose=verbose - 1)
     elif method == "PyOpt-COBYLA":
         x = minimize_cobyla(fun=fun, x0=x0, options=options, verbose=verbose - 1)
+
     elif method == "SciPy-LS":
-        x = least_squares(fun=fun, x0=x0, method="lm").x
+        x = optimize.least_squares(fun=fun, x0=x0, method="lm").x
+    elif method == "SciPy-SLSQP":
+
+        x = optimize.minimize(fun=fun, x0=x0, method="slsqp").x
+
     else:
         raise ValueError(f"Unknown optimizer: {method}")
 

@@ -56,7 +56,7 @@ class KeyListener:
         self.is_listening = False
 
     def in_keys(self, k):
-        return [self.k in keys[:len(self.k)] for keys in self.key2callback]
+        return [k in keys[:len(k)] for keys in self.key2callback]
 
     def __combine_to_words(self, k):
         if not self.combine_to_words:
@@ -101,7 +101,7 @@ class KeyListener:
 
 class KeySlider(KeyListener):
     def __init__(self, callback, step, mi, ma, x=None, periodic=False,
-                 keys=None, start_listening=False):
+                 keys=None, start_listening=True, dtype=float):
         self.__factor = 20
         if x is None:
             self.value = (ma - mi) / 2
@@ -112,12 +112,14 @@ class KeySlider(KeyListener):
         self.step = step
         self.min = mi
         self.max = ma
+
         self.periodic = periodic
+        self.dtype = dtype
 
         self.factor = self._update_factor()
 
         self.keys = keys
-        super().__init__(key2callback={}, combine_to_words=False, start_listening=False)
+        super().__init__(key2callback={}, combine_to_words=False, start_listening=False, pass_key=True)
         self.add_callback(key2callback=self.get_key2callback(), start_listening=start_listening)
 
     def get_key2callback(self):
@@ -128,21 +130,32 @@ class KeySlider(KeyListener):
         k2k_i = ltd.invert_dict(k2k)
         k2s = dict(left=(-1, 0), right=(+1, 0), up=(-1, 1), down=(+1, 1))
 
-        key2callback = {k2k[k]: lambda kk: self._update(step=k2s[k2k_i[kk]]) for k in k2k}
+        key2callback = {k2k[k]: lambda kk: self.update(step=k2s[k2k_i[kk]]) for k in k2k}
         return key2callback
 
-    def _update(self, step):
-        step = self.step * step[0] * (1 + ((self.factor-1) * step[1]))
+    def update(self, step):
+        self.step_value(step=step)
+        self.clip_value()
+        self.cast_value()
 
-        v2 = self.value + step
-        if self.periodic:
-            v2 = np2.clip_periodic(x=v2, a_min=self.min, a_max=self.max)
-        else:
-            v2 = np.clip(a=v2, a_min=self.min, a_max=self.max)
-
-        self.value = v2
         if self.callback is not None:
-            self.callback(v2)
+            self.callback(self.value)
+
+    def step_value(self, step):
+        step = self.step * step[0] * (1 + ((self.factor - 1) * step[1]))
+        self.value = self.value + step
+
+    def clip_value(self):
+        if self.periodic:
+            self.value = np2.clip_periodic(x=self.value, a_min=self.min, a_max=self.max)
+        else:
+            self.value = np.clip(a=self.value, a_min=self.min, a_max=self.max)
+
+    def cast_value(self):
+        if self.dtype == float:
+            self.value = float(self.value)
+        elif self.dtype == int:
+            self.value = int(self.value)
 
     def set_value(self, v):
         self.value = v
@@ -184,14 +197,14 @@ class BoxLimitsKeySlider:
         key2callback["j"] = lambda k: self.on_jx("j")
         key2callback["x"] = lambda k: self.on_jx("x")
 
-        self.ks_x = KeySlider(callback=self.change_xj, step=1, mi=0, ma=self.__m, periodic=True)
-        self.ks_x.add_callback(key2callback=key2callback)
+        self.ks_x = KeySlider(callback=self.change_xj, step=1, mi=0, ma=self.__m, periodic=True, start_listening=False)
+        self.ks_x.add_callback(key2callback=key2callback, start_listening=False)
         self.ks_x.pass_key = True
         self.ks_x.combine_to_words = True
 
         ks_j = KeySlider(callback=self.change_j, step=1, mi=0, ma=self.n, periodic=True, x=0,
                          keys=dict(left="w", right="s"), start_listening=False)
-        self.ks_x.add_callback(key2callback=ks_j.key2callback)
+        self.ks_x.add_callback(key2callback=ks_j.key2callback, start_listening=True)
 
         self.print_state(clear_previous=False)
         self.change_j(j=0)
@@ -307,6 +320,6 @@ def try_KeyListener():
 if __name__ == "__main__":
     pass
     # try_KeyListener()
-    # try_KeySlider()
-
-    try_BoxLimitsKeySlider()
+    try_KeySlider()
+    #
+    # try_BoxLimitsKeySlider()

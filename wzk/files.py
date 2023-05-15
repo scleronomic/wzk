@@ -1,7 +1,5 @@
 import os
 
-from os import *
-# from os.path import *
 
 import re
 import pickle
@@ -170,20 +168,6 @@ def remove_extension(file: str, ext: str):
     return file
 
 
-def rel2abs_path(path: str, path_abs: str):
-    # abs_dir = '/Hello/HowAre/You/'
-    # path = 'Hello/HowAre/You/good.txt'
-    # path = 'good.txt'
-
-    path_abs = os.path.normpath(path=path_abs)
-    path = os.path.normpath(path=path)
-
-    if path_abs in path:
-        return path
-    else:
-        return os.path.normpath(path_abs + "/" + path)
-
-
 # –---------------------------------------------------------------------------------------------------------------------
 # pickle
 def save_pickle(obj, file: str):
@@ -201,14 +185,14 @@ def load_pickle(file: str):
 
 # msgpack
 def load_msgpack(file):
-    with open(file, "rb") as f:
+    with open(file, "r") as f:
         b = f.read()
     return msgpack.unpackb(b)
 
 
 def save_msgpack(file, nested_list):
     arr_bin = msgpack.packb(nested_list, use_bin_type=True)
-    with open(file, "wb") as f:
+    with open(file, "w") as f:
         f.write(arr_bin)
 
 
@@ -331,7 +315,6 @@ def chmod_file(file, mod):
 
 def chmod_dir(directory, mod):
     subprocess2.call2(cmd=f"sudo chmod {mod} -R {directory}")
-
 
 
 # ----------------------------------------------------------------------------------------------------------------------

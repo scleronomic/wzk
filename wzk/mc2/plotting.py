@@ -32,12 +32,12 @@ def rgba2material(rgba, material=None):
     return material
 
 
-def get_material(color=default_color, alpha=1.0):
+def get_material(color=default_color, alpha=1.0, wireframe=False):
     rgba = mpl2.colors.to_rgba(c=color, alpha=alpha)
 
     material = mg.MeshPhongMaterial()
     material = rgba2material(rgba=rgba, material=material)
-
+    material.wireframe = wireframe
     return material
 
 
@@ -113,8 +113,8 @@ def plot_faces(vis, h, x, faces, color=default_color, alpha=1.0):
     vis[h].set_object(geometry=mg.TriangularMeshGeometry(vertices=x, faces=faces), material=material)
 
 
-def plot_spheres(vis, h, x, r, color=default_color, alpha=1.0):
-    material = get_material(color=color, alpha=alpha)
+def plot_spheres(vis, h, x, r, color=default_color, alpha=1.0, wireframe=False):
+    material = get_material(color=color, alpha=alpha, wireframe=wireframe)
     x = np.atleast_2d(x)
     r = np.atleast_1d(r)
 
