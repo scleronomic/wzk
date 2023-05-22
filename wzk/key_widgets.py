@@ -2,7 +2,12 @@ import time
 
 import numpy as np
 
-from pynput import keyboard
+try:
+    from pynput import keyboard
+except ImportError:
+    keyboard = None
+
+
 from wzk import np2, printing, ltd
 
 

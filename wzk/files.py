@@ -200,14 +200,14 @@ def save_json(obj, file: str):
 
 def load_json(file: str):
     file = ensure_file_extension(file=file, ext=EXT_DICT["json"])
-    with open(file, "w") as f:
+    with open(file, "r") as f:
         obj = json.load(f)
     return obj
 
 
 # msgpack
 def load_msgpack(file):
-    with open(file, "r") as f:
+    with open(file, "rb") as f:
         b = f.read()
     return msgpack.unpackb(b)
 

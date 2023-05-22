@@ -24,6 +24,3 @@ from .time2 import tic, toc, tictoc, get_timestamp  # noqa
 # modules which require additional repositories
 # from .pyOpt2 import *
 # from .ray2 import *
-
-os.environ["PYTHONHASHSEED"] = "0"  # TODO combine all your system modifications in one place
-
