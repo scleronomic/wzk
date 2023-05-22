@@ -327,7 +327,7 @@ def sample_frames_on_noisy_grid(x_grid, y_grid, z_grid,
     return f_list
 
 
-# Sanity Cecks
+# Sanity Checks
 # ----------------------------------------------------------------------------------------------------------------------
 def is_rotation(r):
     rtr = r @ np.swapaxes(r, -2, -1)
@@ -429,7 +429,7 @@ def Ax(A, x):
     if A.ndim == 3 and x.ndim == 1:
         x = x[np.newaxis, :]
 
-    b = np.sum(A * x[..., np.newaxis, :], axis=-1)[:, :-1]
+    b = np.sum(A * x[..., np.newaxis, :], axis=-1)[..., :-1]
     return b
 
 

@@ -311,6 +311,14 @@ def repeat_dict(d, n):
     return d_repeat
 
 
+def dict_set_default(d, default):
+    for k, v in default.items():
+        if k not in d:
+            d[k] = v
+
+    return d
+
+
 def list_allclose(a, b):
     if isinstance(a, (tuple, list)):
         return np.array([np.allclose(aa, bb) for aa, bb in zip(a, b)])

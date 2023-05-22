@@ -1,5 +1,8 @@
 import numpy as np
 
+from wzk import mpl2
+
+
 v_car0 = 7
 a_car = 0.5
 a_cat_dt = 1
@@ -23,7 +26,7 @@ def s_auto(tt):
 
 t_max = 10
 t = np.arange(t_max+1)
-from wzk import mpl2
+
 
 fig, ax = mpl2.new_fig()
 ax.plot(t, v_auto(t), color="red", marker="o")

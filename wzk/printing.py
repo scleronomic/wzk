@@ -217,7 +217,7 @@ def x_and_limits2txt(x, limits, names=None):
     return s
 
 
-# General Functipons
+# General Functions
 # ----------------------------------------------------------------------------------------------------------------------
 def print2(*args, verbose=None,
            sep=" ", end="\n", file=None, flush=False):

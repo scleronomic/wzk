@@ -12,23 +12,23 @@ def get_route(manager, routing, assignment):
         route.append(manager.IndexToNode(index))
         index = assignment.Value(routing.NextVar(index))
 
-    return np.array(route)
+    return np.array(route, dtype=int)
 
 
-def solve_tsp(points, dist_mat=None, time_limit=10,
+def solve_tsp(x, dist_mat=None, time_limit=10,
               verbose=1):
     """
     Get the index list for the optimal route for all points, starting at the first
-    :param points:
+    :param x:
     :param dist_mat: optional
     :param time_limit: seconds
     :param verbose:
     :return:
     """
 
-    n = len(points)
+    n = len(x)
     if dist_mat is None:
-        dist_mat = distance_matrix(points, points)
+        dist_mat = distance_matrix(x, x)
 
     if not (dist_mat.dtype == np.int64 or dist_mat.dtype == np.int32 or dist_mat.dtype == np.int16):
         min_dist = dist_mat[dist_mat != 0].min()
@@ -67,6 +67,6 @@ def solve_tsp(points, dist_mat=None, time_limit=10,
 
     if verbose:
         cost = dist_mat[route, np.roll(route, - 1)].sum()
-        print(f"TSP Cost for {points.shape} points after {time_limit}s: {cost}")
+        print(f"TSP Cost for {x.shape} points after {time_limit}s: {cost}")
 
     return route

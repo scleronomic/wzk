@@ -1,8 +1,8 @@
 import os
 
-
 import re
 import pickle
+import json
 import shutil
 from typing import Union
 import platform
@@ -20,6 +20,12 @@ __open_cmd_dict = {"Linux": "xdg-open",
                    "Windows": "start"}
 
 # ICLOUD = 'Library/Mobile Documents/com~apple~CloudDocs'
+
+EXT_DICT = dict(pickle="pkl",
+                json="json",
+                txt="text", text="txt",
+                mat="mat",
+                msgpack="msgpack")
 
 
 def get_pythonpath():
@@ -171,16 +177,32 @@ def remove_extension(file: str, ext: str):
 # –---------------------------------------------------------------------------------------------------------------------
 # pickle
 def save_pickle(obj, file: str):
-    file = ensure_file_extension(file=file, ext="pickle")
+    file = ensure_file_extension(file=file, ext=EXT_DICT["pickle"])
 
     with open(file, "wb") as f:
         pickle.dump(obj, f)
 
 
 def load_pickle(file: str):
+    file = ensure_file_extension(file=file, ext=EXT_DICT["pickle"])
+
     with open(file, "rb") as f:
-        res = pickle.load(f)
-    return res
+        obj = pickle.load(f)
+    return obj
+
+
+# json
+def save_json(obj, file: str):
+    file = ensure_file_extension(file=file, ext=EXT_DICT["json"])
+    with open(file, "w") as f:
+        json.dump(obj, f, indent=4, sort_keys=True)
+
+
+def load_json(file: str):
+    file = ensure_file_extension(file=file, ext=EXT_DICT["json"])
+    with open(file, "w") as f:
+        obj = json.load(f)
+    return obj
 
 
 # msgpack
@@ -192,14 +214,13 @@ def load_msgpack(file):
 
 def save_msgpack(file, nested_list):
     arr_bin = msgpack.packb(nested_list, use_bin_type=True)
-    with open(file, "w") as f:
+    with open(file, "wb") as f:
         f.write(arr_bin)
 
 
 # txt
 def save_object2txt(obj, file: str):
-    if file[-4:] != ".txt" and "." not in file:
-        file += ".txt"
+    ensure_file_extension(file=file, ext="txt")
 
     with open(file, "w") as f:
         f.write("".join(["%s: %s\n" % (k, v) for k, v in obj.__dict__.items()]))

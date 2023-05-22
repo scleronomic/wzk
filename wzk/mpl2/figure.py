@@ -105,7 +105,6 @@ def save_fig(file: str = None, fig: mpl.figure.Figure = None, formats: Union[str
     if fig is None:
         fig = plt.gcf()
 
-
     if file is None:
         file = get_fig_suptitle(fig=fig)
 
