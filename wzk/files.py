@@ -35,8 +35,7 @@ def get_pythonpath():
         return []
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-# shell commands
+# --- shell ------------------------------------------------------------------------------------------------------------
 def cp(src, dst, a=False):
     """-a (improved recursive copy, including all files, sub-folders and symlinks)"""
     if a:
@@ -174,8 +173,7 @@ def remove_extension(file: str, ext: str):
     return file
 
 
-# –---------------------------------------------------------------------------------------------------------------------
-# pickle
+# –-- pickle -----------------------------------------------------------------------------------------------------------
 def save_pickle(obj, file: str):
     file = ensure_file_extension(file=file, ext=EXT_DICT["pickle"])
 
@@ -226,7 +224,7 @@ def save_object2txt(obj, file: str):
         f.write("".join(["%s: %s\n" % (k, v) for k, v in obj.__dict__.items()]))
 
 
-# ----------------------------------------------------------------------------------------------------------------------
+# --- NPY --------------------------------------------------------------------------------------------------------------
 # *.npy and *.npz files (maybe own module)
 def combine_npz_files(*, directory,
                       pattern=None, file_list=None,
@@ -338,8 +336,18 @@ def chmod_dir(directory, mod):
     subprocess2.call2(cmd=f"sudo chmod {mod} -R {directory}")
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Directory magic
+def are_files_identical(file_a, file_b):
+    with open(file_a, "rb") as f:
+        aa = f.read()
+
+    with open(file_b, "rb") as f:
+        bb = f.read()
+
+    return aa == bb
+
+
+# --- Directory Magic --------------------------------------------------------------------------------------------------
+#
 def split_files_into_dirs(file_list: list,
                           bool_fun,
                           dir_list: list,
