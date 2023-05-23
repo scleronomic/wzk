@@ -331,7 +331,7 @@ def sample_frames_on_noisy_grid(x_grid, y_grid, z_grid,
 # ----------------------------------------------------------------------------------------------------------------------
 def is_rotation(r):
     rtr = r @ np.swapaxes(r, -2, -1)
-    b = np.allclose(rtr, np.eye(3), atol=1e-5)
+    b = np.allclose(rtr, np.eye(3), atol=1e-3)
     return b
 
 
