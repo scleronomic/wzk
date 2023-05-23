@@ -79,7 +79,10 @@ def get_progress_bar(i, n, prefix="", suffix="", bar="█"):
     return f"\r{prefix} |{bar}| {suffix}"
 
 
-def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1):
+def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1, __time=[]):
+    # TODO additionally display the elapsed time, little hacky with mutable arguments
+    # TODO + estimated time of arrival (ETA)
+
     if verbose <= 0:
         return
 

@@ -317,7 +317,10 @@ def line_line(line_a: np.ndarray, line_b: np.ndarray, __return_mu: bool = False)
 
     x1, x2 = line_a
     x3, x4 = line_b
-
+    print("1", x1)
+    print("2", x2)
+    print("3", x3)
+    print("4", x4)
     # if x1.shape[-1] == 2:
     #     x1, x2, x3, x4 = two_to_three(x1, x2, x3, x4)
 
