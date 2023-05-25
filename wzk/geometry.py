@@ -230,12 +230,11 @@ def __clip_ppp(o: np.ndarray,
                vv: np.ndarray) -> (np.ndarray, np.ndarray):
 
     n = np.cross(u, v)
-
     if u.shape[-1] == 2:
         mua = np.cross(v, o) / n
         mub = -np.cross(u, o) / n
     else:
-        nn = (n*n).sum(axis=-1) + 1e-8  # assert you don't divide through zero
+        nn = (n*n).sum(axis=-1) + 1e-11  # assert you don't divide through zero
         mua = (+n * np.cross(v, o)).sum(axis=-1) / nn
         mub = (-n * np.cross(u, o)).sum(axis=-1) / nn
 
@@ -243,7 +242,9 @@ def __clip_ppp(o: np.ndarray,
     mua2 = mua + uv / uu * __flip_and_clip_mu(mu=mub)
     mub2 = mub + uv / vv * __flip_and_clip_mu(mu=mua)
 
-    return np.clip(mua2, 0, 1), np.clip(mub2, 0, 1)
+    mua2 = np.clip(mua2, 0, 1)
+    mub2 = np.clip(mub2, 0, 1)
+    return mua2, mub2
 
 
 def projection_point_plane(p: np.ndarray,
@@ -306,29 +307,30 @@ def line_line(line_a: np.ndarray, line_b: np.ndarray, __return_mu: bool = False)
        |           |
     (x2-x3) --- (x2-x4)
 
-     O ---> V
+     o ---> v
      |
      v
-     U
+     u
 
-     U = (x2-x3) - (x1-x3) = x2 - x1
-     U = (x1-x4) - (x1-x3) = x3 - x4
+     u = (x2-x3) - (x1-x3) = x2 - x1
+     v = (x1-x4) - (x1-x3) = x3 - x4
+     o = x1 - x3
     """
 
     x1, x2 = line_a
     x3, x4 = line_b
-    print("1", x1)
-    print("2", x2)
-    print("3", x3)
-    print("4", x4)
+
     # if x1.shape[-1] == 2:
     #     x1, x2, x3, x4 = two_to_three(x1, x2, x3, x4)
 
     u = x2 - x1
-    v = x4 - x3
+    v = x4 - x3  # attention, changed sign, to make it consistently AB = B-A
     o = x1 - x3
+
+    uu = (u*u).sum(axis=-1)
+    vv = (v*v).sum(axis=-1)
     return __line_line(x1=x1, x3=x3,
-                       o=o, u=u, v=v, uu=(u*u).sum(axis=-1), vv=(v*v).sum(axis=-1),
+                       o=o, u=u, v=v, uu=uu, vv=vv,
                        __return_mu=__return_mu)
 
 

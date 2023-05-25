@@ -106,8 +106,8 @@ class KeyListener:
 
 class KeySlider(KeyListener):
     def __init__(self, callback, step, mi, ma, x=None, periodic=False,
-                 keys=None, start_listening=True, dtype=float):
-        self.__factor = 20
+                 keys=None, start_listening=True, dtype=float, _factor=20):
+        self._factor = _factor
         if x is None:
             self.value = (ma - mi) / 2
         else:
@@ -144,6 +144,7 @@ class KeySlider(KeyListener):
         self.cast_value()
 
         if self.callback is not None:
+            print(self.value)
             self.callback(self.value)
 
     def step_value(self, step):
@@ -166,7 +167,7 @@ class KeySlider(KeyListener):
         self.value = v
 
     def _update_factor(self):
-        self.factor = int((self.max - self.min) / self.__factor)
+        self.factor = int((self.max - self.min) / self._factor)
         return self.factor
 
     def set_limits(self, mi=None, ma=None):

@@ -1,7 +1,7 @@
 from time import sleep
 import numpy as np
 import multiprocessing
-from wzk import change_tuple_order
+from wzk import ltd
 
 # Error under Python3.8 /MacOs -> AttributeError: Can't pickle local object 'mp_wrapper.<locals>.__fun_wrapper'
 # https://stackoverflow.com/questions/60518386/error-with-module-multiprocessing-under-python3-8
@@ -129,7 +129,7 @@ def mp_wrapper(*args, fun,
     results = [result_queue.get() for _ in range(n_processes)]
 
     # - order the results according to the process indices
-    results = change_tuple_order(results)
+    results = ltd.change_tuple_order(results)
     idx = np.argsort(results[0])
     results = [results[1][i] for i in idx]
 
@@ -138,7 +138,7 @@ def mp_wrapper(*args, fun,
 
 def combine_results(results):
     if isinstance(results[0], tuple):
-        results = change_tuple_order(results)
+        results = ltd.change_tuple_order(results)
         return tuple([np.concatenate(r, axis=0) if np.ndim(r[0]) > 0 else np.array(r)
                       for r in results])
     else:

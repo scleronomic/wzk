@@ -172,7 +172,7 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
 
 def unify(x):
     x = np.atleast_1d(x)
-    assert np.allclose(x - x.mean(), np.zeros_like(x))
+    assert np.allclose(x, x.mean())
     x_mean = np.mean(x)
     return x_mean.astype(x.dtype)
 
@@ -355,20 +355,6 @@ def logical_and(*args):
 
 def delete_args(*args, obj, axis=None):
     return tuple(np.delete(a, obj=obj, axis=axis) for a in args)
-
-
-def remove_outside_limits(x, limits, safety_factor=None, return_idx=False):
-    if safety_factor is not None:
-        limits = add_safety_limits(limits=limits, factor=safety_factor)
-
-    below_lower = np.sum(x < limits[:, 0], axis=-1) > 0
-    above_upper = np.sum(x > limits[:, 1], axis=-1) > 0
-    outside_limits = np.logical_or(below_lower, above_upper)
-    inside_limits = ~outside_limits
-    x = x[inside_limits]
-    if return_idx:
-        return x, inside_limits
-    return x
 
 
 def __fill_index_with(idx, axis, shape, mode="slice"):
@@ -774,11 +760,6 @@ def construct_array(shape, val, idx, init_mode="zeros", dtype=None,
     return a
 
 
-def get_limits(x, axis=-1):
-    axis = axis_wrapper(axis=axis, n_dim=x.ndim, invert=True)
-    limits = np.stack([x.min(axis=axis), x.max(axis=axis)], axis=1)
-    return limits
-
 
 def get_closest(x, y):
     d = np.linalg.norm(x[:, np.newaxis, :] - y[np.newaxis, :, :], axis=-1)
@@ -997,13 +978,6 @@ def verbose_reject_x(title, x, b):
         mean = b.mean()
     print(f"{title}: {b.sum()}/{b.size} ~ {np.round(mean * 100, 3)}%")
     return x[b]
-
-
-def add_safety_limits(limits, factor):
-    limits = np.atleast_1d(limits)
-    diff = np.diff(limits, axis=-1)[..., 0]
-    return np.array([limits[..., 0] - factor * diff,
-                     limits[..., 1] + factor * diff]).T
 
 
 def get_points_inbetween(x, extrapolate=False):

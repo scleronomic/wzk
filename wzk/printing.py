@@ -1,10 +1,10 @@
 import os
 import sys
 import select
-
+import time
 import numpy as np
 
-from wzk.np2 import get_stats
+from wzk import np2
 
 
 def quiet_mode_on():
@@ -79,7 +79,8 @@ def get_progress_bar(i, n, prefix="", suffix="", bar="█"):
     return f"\r{prefix} |{bar}| {suffix}"
 
 
-def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1, __time=[]):
+def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
+                 eta=False, __time=[-1]):
     # TODO additionally display the elapsed time, little hacky with mutable arguments
     # TODO + estimated time of arrival (ETA)
 
@@ -89,13 +90,22 @@ def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1, __time=
     bar_length_max = 100
     if bar_length is None:
         bar_length = n
-
     bar_length = min(bar_length, bar_length_max)
 
     if n == 0:
         i, n = 0, 1
-
     i += 1
+
+    if eta:
+        if __time[0] == -1:
+            __time[0] = time.time()
+            suffix += " | 0s | ETA: ??s"
+        else:
+            dt_s = (time.time() - __time[0])
+            s_per_i = dt_s/i
+            eta_s = (n-i) * s_per_i
+            suffix += f" | Elapsed: {dt_s:.3}s | ETA: {eta_s:.3}s"
+
     filled_length = int(round(bar_length * i / float(n)))
     s = get_progress_bar(i=filled_length, n=bar_length, prefix=prefix, suffix=suffix)
 
@@ -142,7 +152,7 @@ def print_stats(*args, names=None, dec=4):
     stats = []
     s = None
     for a in args:
-        s = get_stats(a)
+        s = np2.get_stats(a)
         stats.append([s[key] for key in s])
 
     cols = [key for key in s]

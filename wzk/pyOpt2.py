@@ -73,16 +73,23 @@ def minimize_slsqp(fun, x0, options, verbose=0):
 
 
 def minimize(method, fun, x0, options, verbose):
-    if method == "PyOpt-SLSQP":
-        x = minimize_slsqp(fun=fun, x0=x0, options=options, verbose=verbose - 1)
-    elif method == "PyOpt-COBYLA":
-        x = minimize_cobyla(fun=fun, x0=x0, options=options, verbose=verbose - 1)
+    if "PyOpt" in method:
+        if method == "PyOpt-SLSQP":
+            x = minimize_slsqp(fun=fun, x0=x0, options=options, verbose=verbose - 1)
+        elif method == "PyOpt-COBYLA":
+            x = minimize_cobyla(fun=fun, x0=x0, options=options, verbose=verbose - 1)
+        else:
+            raise ValueError(f"Unknown optimizer: {method}")
 
-    elif method == "SciPy-LS":
-        x = optimize.least_squares(fun=fun, x0=x0, method="lm").x
-    elif method == "SciPy-SLSQP":
+    elif "SciPy" in method:
+        if method == "SciPy-LS":
+            x = optimize.least_squares(fun=fun, x0=x0, method="lm").x
 
-        x = optimize.minimize(fun=fun, x0=x0, method="slsqp").x
+        else:
+            method = method.split("-")[1]
+            method = method.lower()
+            x = optimize.minimize(fun=fun, x0=x0, method=method, tol=1e-13,
+                                  options=dict(disp=True, maxiter=1000)).x
 
     else:
         raise ValueError(f"Unknown optimizer: {method}")
