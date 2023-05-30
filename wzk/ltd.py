@@ -283,6 +283,11 @@ def change_list_order(lst):
     return list(map(lambda *ll: list(ll), *lst))
 
 
+def list_of_dicts2dict_of_lists(d):
+    return {k: np.array([di[k] for di in d]) for k in d[0]}
+
+
+
 def get_first_non_empty(lst):
     """
     lst = [[], [], 1, [2, 3, 4], [], []] -> 1

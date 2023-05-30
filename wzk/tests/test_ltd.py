@@ -110,3 +110,13 @@ class Test(TestCase):
         pass
         # d = dict(a1=1, b1=2, c1=[3, 4], d1=dict(a2=11, b2=22, d2=dict(a3=111, b3=222, c3=333)))
         # o = ObjectDict(d)
+
+    def test_list_of_dicts2dict_of_lists(self):
+        d0 = [dict(a=1, b=2, c=3), dict(a=11, b=22, c=33), dict(a=111, b=222, c=333)]
+
+        d1_true = dict(a=np.array([1, 11, 111]),
+                       b=np.array([2, 22, 222]),
+                       c=np.array([3, 33, 333]))
+
+        d1 = ltd.list_of_dicts2dict_of_lists(d=d0)
+        self.assertTrue(d1_true == d1)
