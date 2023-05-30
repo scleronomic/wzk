@@ -53,7 +53,7 @@ def make_limits_symmetrical(limits, mode="largest"):
     return limits
 
 
-def add_safety_limits(limits, factor, offset=None):
+def add_safety_limits(limits, factor=None, offset=None):
     limits = np.atleast_1d(limits)
     diff = np.diff(limits, axis=-1)[..., 0]
 

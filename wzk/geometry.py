@@ -1,8 +1,7 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 
-from wzk.np2 import shape_wrapper
-from wzk import printing
+from wzk import printing, np2, math2, random2
 from wzk.cpp2py.min_sphere import min_sphere  # noqa
 
 
@@ -502,6 +501,23 @@ def rotation_between_vectors(a, b):
     return r
 
 
+# --- Random -----------------------------------------------------------------------------------------------------------
+def sample_spheres(n, r, limits):
+    max_iter = 100000
+    u = math2.get_upper(n)
+
+    for i in range(max_iter):
+        x = random2.random_uniform_ndim(low=limits[:, 0], high=limits[:, 1], shape=n)
+        dx = x[:, np.newaxis, :] - x[np.newaxis, :, :]
+        dxn = np.linalg.norm(dx, axis=-1)
+        dxn = dxn[u]
+
+        if np.all(dxn > 2 * r):
+            return x
+
+    raise RuntimeError(f"Not {n} spheres in {limits} found")
+
+
 def sample_points_on_disc(radius, shape=None):
     rho = np.sqrt(np.random.uniform(low=0, high=radius**2, size=shape))
     theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
@@ -513,7 +529,7 @@ def sample_points_on_disc(radius, shape=None):
 
 
 def sample_points_on_sphere_3d(shape):
-    shape = shape_wrapper(shape=shape)
+    shape = np2.shape_wrapper(shape=shape)
     x = np.empty(tuple(shape) + (3,))
     theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
     phi = arccos2(1 - 2 * np.random.uniform(low=0, high=1, size=shape))

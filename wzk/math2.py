@@ -551,6 +551,20 @@ def test_dxnorm_dx():
 __RCOND = 1e-5
 
 
+def get_upper(n):
+    u = np.zeros((n, n), dtype=bool)
+    for i in range(n):
+        for j in range(n):
+            if j > i:
+                u[i, j] = True
+
+    return u
+
+
+def get_lower(n):
+    return get_upper(n=n).T
+
+
 def project2null(A, x, clip=None, clip_mode=None, __rcond=__RCOND):
     """
     Clipping happens before and after the projection step.
