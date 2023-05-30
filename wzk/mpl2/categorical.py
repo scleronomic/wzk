@@ -4,8 +4,7 @@ import pandas as pd
 from wzk.mpl2 import (set_borders, change_tick_appearance, elongate_ticks_and_labels,
                       CurlyBrace, make_every_box_fancy)
 
-from wzk import change_tuple_order
-from wzk.ltd import get_indices
+from wzk import ltd
 
 from matplotlib import ticker
 
@@ -39,7 +38,7 @@ def value_counts(s, ordering=None):
 
     if ordering is not None:
         if isinstance(ordering[0], str):
-            ordering = get_indices(li=v, el=ordering)
+            ordering = ltd.get_indices(li=v, el=ordering)
         v = v[ordering]
         c = c[ordering]
 
@@ -203,7 +202,7 @@ def bar_plot(ax, df, col, ordering=None, x_label="", newline=None,
 def multi_bar_plot(ax, df, cols, ordering=None, colors=None, newline=None):
 
     bar_width = 0.8
-    labels, counts = change_tuple_order((value_counts(df[col], ordering=ordering) for col in cols))
+    labels, counts = ltd.change_tuple_order((value_counts(df[col], ordering=ordering) for col in cols))
     labels = labels[0]
     c_max = max([c.sum() for c in counts])
     heights = [c / c_max for c in counts]
@@ -230,7 +229,7 @@ def multi_bar_overlay_plot(ax, df, cols, ordering=None, colors=None, newline=Non
     bar_width = 0.8
 
     colors = np.array(colors)
-    labels, counts = change_tuple_order((value_counts(df[col], ordering=ordering) for col in cols))
+    labels, counts = ltd.change_tuple_order((value_counts(df[col], ordering=ordering) for col in cols))
     labels = labels[0]
     c_max = max([c.sum() for c in counts])
     heights = np.array([c / c_max for c in counts])
@@ -259,7 +258,7 @@ def multi_bar_overlay_plot(ax, df, cols, ordering=None, colors=None, newline=Non
 
 
 def multiple_choice_bar(ax, df, cols, ordering=None, colors=None, x_label="", newline=None):
-    labels, counts = change_tuple_order((value_counts(df[col], ordering=ordering) for col in cols))
+    labels, counts = ltd.change_tuple_order((value_counts(df[col], ordering=ordering) for col in cols))
 
     labels = np.array([la[0] for la in labels])
     counts = np.array([co[0] for co in counts])

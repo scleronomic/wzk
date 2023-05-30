@@ -16,7 +16,7 @@ default_color = "white"
 
 
 def rgba2material(rgba, material=None):
-    # TODO can I set linewidth etc also here?
+    # TODO can I set linewidth etc. also here?
     if material is None:
         material = mg.MeshPhongMaterial()
 

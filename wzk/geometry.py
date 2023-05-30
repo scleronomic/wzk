@@ -542,7 +542,7 @@ def sample_points_on_sphere_3d(shape):
 
 
 def sample_points_in_sphere_nd(shape, n_dim: int):
-    shape = shape_wrapper(shape=shape)
+    shape = np2.shape_wrapper(shape=shape)
     r = np.random.uniform(low=0, high=1, size=shape) ** (1/n_dim)
     x = np.random.normal(loc=0, scale=1, size=tuple(shape) + (n_dim,))
     x = x / np.linalg.norm(x, axis=-1, keepdims=True)
@@ -561,7 +561,7 @@ def sample_points_on_sphere_nd(shape, n_dim: int):
 
     safety = 1.2
 
-    shape = shape_wrapper(shape=shape)
+    shape = np2.shape_wrapper(shape=shape)
     volume_sphere = hyper_sphere_volume(n_dim)
     volume_cube = 2**n_dim
     safety_factor = int(np.ceil(safety * volume_cube/volume_sphere))

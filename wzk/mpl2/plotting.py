@@ -9,7 +9,7 @@ from wzk.mpl2.colors2 import arr2rgba
 from wzk.mpl2.axes import limits4axes, limits2extent, set_ax_limits
 from wzk.mpl2.legend import rectangle_legend
 
-from wzk import math2, np2, ltd
+from wzk import math2, np2, ltd, limits as limits2
 
 
 def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
@@ -336,7 +336,7 @@ def correlation_plot(a, b, name_a, name_b,
     limits = ((np.percentile(a_all, lower_perc), np.percentile(a_all, upper_perc)),
               (np.percentile(b_all, lower_perc), np.percentile(b_all, upper_perc)))
 
-    limits = np2.add_safety_limits(limits=limits, factor=0.01)
+    limits = limits2.add_safety_limits(limits=limits, factor=0.01)
 
     if regression_line:
         s, i, r, p, _ = linregress(a_all, b_all)

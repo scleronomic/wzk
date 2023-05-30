@@ -146,28 +146,28 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
 
 # def try_to_make_equal(*args):
 #     pass
-    # TODO find a good general approach to make apples and pears the same size
-    # x = np.ones((10, 3))
-    # y = "red"
-    # -> y = ["red"]*10
+# TODO find a good general approach to make apples and pears the same size
+# x = np.ones((10, 3))
+# y = "red"
+# -> y = ["red"]*10
 
-    # x = np.ones((10, 3))
-    # y = ["red", "blue"]
-    # -> fails
+# x = np.ones((10, 3))
+# y = ["red", "blue"]
+# -> fails
 
-    # x = np.ones(3)
-    # y = ["blue"]
-    # -> y = ["blue"]*3
+# x = np.ones(3)
+# y = ["blue"]
+# -> y = ["blue"]*3
 
-    # x = np.ones(1, 3)
-    # y = ["blue"]
-    # -> works
+# x = np.ones(1, 3)
+# y = ["blue"]
+# -> works
 
-    # args = np.atleast_1d(*args)
-    #
-    # n = np2.max_len(*args)
-    # args = np2.scalar2array(*args)
-    # return args
+# args = np.atleast_1d(*args)
+#
+# n = np2.max_len(*args)
+# args = np2.scalar2array(*args)
+# return args
 
 
 def unify(x):
@@ -760,7 +760,6 @@ def construct_array(shape, val, idx, init_mode="zeros", dtype=None,
     return a
 
 
-
 def get_closest(x, y):
     d = np.linalg.norm(x[:, np.newaxis, :] - y[np.newaxis, :, :], axis=-1)
     i_x = np.argmin(d, axis=0)
@@ -1034,7 +1033,7 @@ def clip_periodic(x, a_min, a_max):
         pass
 
     x -= a_min
-    x = np.mod(x, a_max-a_min)
+    x = np.mod(x, a_max - a_min)
     x += a_min
     return x
 

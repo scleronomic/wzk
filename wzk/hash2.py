@@ -7,7 +7,7 @@ default_method = hashlib.sha256
 
 def hash_file(file):
     with open(file, "rb") as f:
-        h = hashlib.file_digest(f, default_method_name).digest()
+        h = hashlib.file_digest(f, default_method_name).digest()  # noqa: raising-bad-type
     h = int.from_bytes(h, byteorder="little")
     return h
 

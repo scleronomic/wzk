@@ -1,11 +1,8 @@
 import numpy as np
-from wzk import pv2
-# from pyvista import examples
+from wzk import pv2, perlin
 
-# from wzk import video
-from mopla.world.random_obstacles import create_perlin_image
 
-img = create_perlin_image(shape=(64, 64, 64), n=100)
+img = np.array([perlin.perlin_noise_3d(shape=(64, 64, 64)) < 0.5 for _ in range(100)])
 
 s = img.sum(axis=(-1, -2, -3))
 idx_s_sorted = np.argsort(s)

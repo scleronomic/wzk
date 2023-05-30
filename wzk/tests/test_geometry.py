@@ -81,10 +81,10 @@ class Test(unittest.TestCase):
     def test_capsule_capsule_closest(self):
 
         offset = 0.01
-        capsule_a = np.array([[-offset,  0.0,  0.0],
-                               [-1, -1, -1]])
-        capsule_b = np.array([[+offset,  0.0,  0.0],
-                               [-1, -1, -1]])
+        capsule_a = np.array([[-offset, 0.0, 0.0],
+                              [-1, -1, -1]])
+        capsule_b = np.array([[+offset, 0.0, 0.0],
+                              [-1, -1, -1]])
 
         m = 10000
         for i in range(m):
@@ -94,7 +94,7 @@ class Test(unittest.TestCase):
             capsule_b[1] = np.random.random(3)
             capsule_b[1, 0] += offset
 
-            radius_a, radius_b = np.random.uniform(low=0, high=offset/2, size=2)
+            radius_a, radius_b = np.random.uniform(low=0, high=offset / 2, size=2)
 
             d_true = 2 * offset - radius_a - radius_b
             self.__check_capsule_capsule(capsule_a=capsule_a, capsule_b=capsule_b,

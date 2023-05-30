@@ -80,7 +80,7 @@ def get_progress_bar(i, n, prefix="", suffix="", bar="█"):
 
 
 def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
-                 eta=False, __time=[-1]):
+                 eta=False, __time=[-1]):  # noqa: dangerous-default-value
     # TODO additionally display the elapsed time, little hacky with mutable arguments
     # TODO + estimated time of arrival (ETA)
 
