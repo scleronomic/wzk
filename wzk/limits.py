@@ -61,7 +61,7 @@ def add_safety_limits(limits, factor=None, offset=None):
         assert factor is not None
         offset = factor * diff
 
-    assert np.all(offset < diff/2)
+    assert np.all(offset > -diff/2)
 
     return np.array([limits[..., 0] - offset,
                      limits[..., 1] + offset]).T
