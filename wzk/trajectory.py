@@ -8,8 +8,7 @@ dbees: scaled difference to the bee-line
 import numpy as np
 from scipy.interpolate import UnivariateSpline
 
-from wzk.math2 import angle2minuspi_pluspi
-from wzk import printing
+from wzk import printing, math2
 
 
 def full2inner(x):
