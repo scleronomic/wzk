@@ -67,6 +67,7 @@ def add_safety_limits(limits, factor=None, offset=None):
                      limits[..., 1] + offset]).T
 
 
+
 # --- Use limits ---
 def remove_outside_limits(x, limits, safety_factor=None, return_idx=False):
     if safety_factor is not None:
