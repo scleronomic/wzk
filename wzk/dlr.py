@@ -93,7 +93,7 @@ Humanoids23_Calibration = DIR_PAPER + "/23humanoids_calibration"
 # -- Projects ----------------------------------------------------------------------------------------------------------
 def get_dir_models(location, user):
     if user == "f_justin":
-        directory = f"{USERSTORE}/motion_planning/models"
+        directory = f"{USERSTORE}/packages/motion_planning"
     else:
         __DIR_MODELS_DICT = {DLR: f"{USERSTORE_TENH}/data/models",
                              MAC: f"{__DIR_BASE_DICT[MAC]}/data/mogen/Automatica2022",
