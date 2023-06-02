@@ -59,7 +59,24 @@ def grid_i2x(i, limits, shape, mode="c"):
     return np.asarray(lower_left + offset + i * voxel_size, dtype=float)
 
 
-def create_grid(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
+def create_grid(limits, shape, flatten=False):
+    n_dim = len(limits)
+    # voxel_size = limits2voxel_size(shape=shape, limits=limits)
+
+    ll = grid_i2x(i=np.zeros(n_dim), limits=limits, shape=shape)
+    ur = grid_i2x(i=np.array(shape)-1, limits=limits, shape=shape)
+
+    x = np.array(np.meshgrid(*[np.linspace(start=ll[i], stop=ur[i], num=shape[i]) for i in range(n_dim)],
+                             indexing="ij"))
+
+    x = np.moveaxis(x, 0, -1)
+    if flatten:
+        return x.reshape((np.prod(shape), n_dim))
+    return x
+
+
+def create_grid_2d(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
+    """TODO Only used for plotting, move to mpl2"""
     ll, ur, n, pad = np.atleast_1d(ll, ur, n, pad)
 
     w = ur - ll

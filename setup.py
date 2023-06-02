@@ -15,6 +15,7 @@ setup(
 
                       "matplotlib",
                       "pyvista",
+                      "meshcat",
                       "setuptools",
                       "msgpack",
                       # 'pyOpt @ git+https://github.com/madebr/pyOpt@master',

@@ -23,6 +23,7 @@ __USERNAME2LOCATION_DICT = {"jote": MAC,
                             "tenh_jo": DLR,
                             "baeuml": DLR,
                             "bauml": DLR,
+                            "f_justin": DLR,
                             "johannes_tenhumberg_gmail_com": GCP}
 
 
@@ -88,11 +89,21 @@ IROS23_IK = DIR_PAPER + "/23iros_IK"
 TRO23_Planning = "/23tro_Planning"
 Humanoids23_Calibration = DIR_PAPER + "/23humanoids_calibration"
 
+
 # -- Projects ----------------------------------------------------------------------------------------------------------
-__DIR_AUTOMATICA22_DICT = {DLR: f"{USERSTORE_TENH}/Automatica2022",
-                           MAC: f"{__DIR_BASE_DICT[MAC]}/data/mogen/Automatica2022",
-                           GCP: "/home/johannes_tenhumberg_gmail_com/sdb/Automatica2022"}
-DIR_AUTOMATICA22 = __DIR_AUTOMATICA22_DICT[LOCATION]
+def get_dir_models(location, user):
+    if user == "f_justin":
+        directory = f"{USERSTORE}/motion_planning/models"
+    else:
+        __DIR_MODELS_DICT = {DLR: f"{USERSTORE_TENH}/data/models",
+                             MAC: f"{__DIR_BASE_DICT[MAC]}/data/mogen/Automatica2022",
+                             GCP: "/home/johannes_tenhumberg_gmail_com/sdb/Automatica2022"}
+        directory = __DIR_MODELS_DICT[location]
+
+    return directory
+
+
+DIR_MODELS = get_dir_models(location=LOCATION, user=USERNAME)
 
 
 # --- DLR Remote Access ------------------------------------------------------------------------------------------------

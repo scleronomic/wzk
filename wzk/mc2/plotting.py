@@ -189,6 +189,7 @@ def get_default_color_alpha(**kwargs):
 
 def plot_arrow(vis, h, x, v, length=1.0, color=default_color, alpha=1.0):
     x, v = np2.squeeze_all(x, v)
+
     if np.ndim(x) == 2 or np.ndim(v) == 2:
         n = np2.max_size(x, v) // 3
         h, length, color, alpha = np2.scalar2array(h, length, color, alpha, shape=n)
@@ -217,7 +218,7 @@ def plot_arrow(vis, h, x, v, length=1.0, color=default_color, alpha=1.0):
     vis[h_cylinder].set_object(geometry=cylinder, material=material)
     vis[h_cone].set_object(geometry=cone, material=material)
 
-    vy = v
+    vy = v.astype(float)
     vx = geometry.get_orthonormal(vy)
     vz = np.ones(3)
     dcm = geometry.make_rhs(xyz=np.vstack([vx, vy, vz])).T

@@ -22,11 +22,11 @@ def spheres2limits(x, r):
     return limits
 
 
-def combine_limits(limits_a, limits_b, mode="larger"):
+def combine_limits(limits_a, limits_b, mode="largest"):
     if mode == "larger":
         lower = np.minimum(limits_a[:, 0], limits_b[:, 0])
         upper = np.maximum(limits_a[:, 1], limits_b[:, 1])
-    elif mode == "smaller":
+    elif mode == "smallest":
         lower = np.maximum(limits_a[:, 0], limits_b[:, 0])
         upper = np.minimum(limits_a[:, 1], limits_b[:, 1])
     else:
@@ -40,9 +40,9 @@ def make_limits_symmetrical(limits, mode="largest"):
     d2 = (limits[:, 1] - limits[:, 0]) / 2
     c = limits[:, 0] + d2
 
-    if mode == "larger":
+    if mode == "largest":
         d2 = np.max(d2)
-    elif mode == "smaller":
+    elif mode == "smallest":
         d2 = np.min(d2)
     else:
         raise ValueError
@@ -67,8 +67,7 @@ def add_safety_limits(limits, factor=None, offset=None):
                      limits[..., 1] + offset]).T
 
 
-
-# --- Use limits ---
+# --- Use limits -------------------------------------------------------------------------------------------------------
 def remove_outside_limits(x, limits, safety_factor=None, return_idx=False):
     if safety_factor is not None:
         limits = add_safety_limits(limits=limits, factor=safety_factor)

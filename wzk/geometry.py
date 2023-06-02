@@ -120,9 +120,11 @@ def cube(limits: np.ndarray = None) -> (np.ndarray, np.ndarray, np.ndarray):
 
 
 def faces4_to_3(f4):
-    #  d c   =     c   +   d c
-    #  a b   =   a b   +   a
-    # abcd   +   abc   +   acd
+    # d - c         c     d - c
+    # |   |  =    / |  +  | /
+    # a - b     a - b     a
+    #
+    # abcd   +  abc    +  acd
 
     assert f4.ndim == 2
     n = len(f4)
@@ -139,6 +141,21 @@ def box(limits):
                   [limits[0, 0], limits[1, 1]],
                   [limits[0, 0], limits[1, 0]]])
     return x
+
+
+def fit_plane(x):
+    x = np.atleast_2d(x)
+    n, _ = x.shape
+    assert n >= 3
+    centroid = x.mean(axis=0)
+    x = x - centroid[np.newaxis, :]
+
+    # Extract the left singular vectors
+    left = np.linalg.svd(x.T)[0]
+
+    normal = left[:, -1]
+
+    return centroid, normal
 
 
 def get_parallel_orthogonal(p: np.ndarray, v: np.ndarray) -> (np.ndarray, np.ndarray):
