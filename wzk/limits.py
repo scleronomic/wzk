@@ -23,7 +23,7 @@ def spheres2limits(x, r):
 
 
 def combine_limits(limits_a, limits_b, mode="largest"):
-    if mode == "larger":
+    if mode == "largest":
         lower = np.minimum(limits_a[:, 0], limits_b[:, 0])
         upper = np.maximum(limits_a[:, 1], limits_b[:, 1])
     elif mode == "smallest":
