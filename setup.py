@@ -14,7 +14,7 @@ setup(
                       "einops",
 
                       "matplotlib",
-                      "pyvista",
+                      #  "pyvista",
                       "meshcat",
                       "setuptools",
                       "msgpack",

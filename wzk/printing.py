@@ -114,17 +114,25 @@ def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
     sys.stdout.flush()
 
 
-def print_table(rows, columns, data, min_voxel_size=10, cell_format=".5f"):
+def print_table(rows, columns, data, min_voxel_size=10, cell_format=".5f", padding=0):
     max_voxel_size_c = max([len(c) for c in columns] + [min_voxel_size])
     max_voxel_size_r = max([len(r) for r in rows] + [min_voxel_size])
 
+    max_voxel_size_c += padding
+    max_voxel_size_r += padding
+
+
     row_format = "{:>" + str(max_voxel_size_r) + "}"
     header_format = row_format + ("{:>" + str(max_voxel_size_c) + "}") * len(columns)
-    data_format = row_format + ("{:>" + str(max_voxel_size_c) + cell_format + "}") * len(columns)
+    data_format = row_format + ("{:>" + str(max_voxel_size_c) + "}") * len(columns)
+    data_format_float = row_format + ("{:>" + str(max_voxel_size_c) + cell_format + "}") * len(columns)
 
     print(header_format.format("", *columns))
     for row_name, row_data in zip(rows, data):
-        print(data_format.format(row_name, *row_data))
+        if isinstance(row_data[0], float):
+            print(data_format_float.format(row_name, *row_data))
+        else:
+            print(data_format.format(row_name, *row_data))
 
 
 def print_dict(d, newline=True, message=None):

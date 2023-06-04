@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.sparse import csr_matrix
 from itertools import product
-from wzk import dtypes
+
+from wzk import dtypes2
 
 np.core.arrayprint._line_width = 80
 
@@ -73,7 +74,7 @@ def np_isinstance(o, c):
     """
 
     if isinstance(o, np.ndarray):
-        c = (dtypes.c2np[cc] for cc in c) if isinstance(c, tuple) else dtypes.c2np[c]
+        c = (dtypes2.c2np[cc] for cc in c) if isinstance(c, tuple) else dtypes2.c2np[c]
         return isinstance(o.flat[0], c)
 
     else:

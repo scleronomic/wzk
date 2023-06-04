@@ -8,10 +8,10 @@ from pandas.io import sql  # noqa
 
 import sqlite3
 
-from wzk.np2 import numeric2object_array
-from wzk.ltd import change_tuple_order, atleast_list
-from wzk.dtypes import str2np
-from wzk.strings import uuid4
+from wzk import ltd, dtypes2, strings
+from wzk.np2 import object2numeric_array, numeric2object_array  # noqa
+from wzk.image import compressed2img  # noqa
+
 
 _CMP = "_cmp"
 
@@ -68,7 +68,7 @@ def order2sql(order_by, dtype=str):
 
     else:
         if isinstance(order_by, (str, list)):
-            columns = atleast_list(order_by, convert=False)
+            columns = ltd.atleast_list(order_by, convert=False)
             asc_desc = ["ASC"] * len(columns)
 
         elif isinstance(order_by, dict):
@@ -175,7 +175,8 @@ def get_tables(file: str) -> list:
     with open_db_connection(file=file, close=True) as con:
         t = pd.read_sql_query(sql="SELECT name FROM sqlite_master WHERE type ='table' AND name NOT LIKE 'sqlite_%'",
                               con=con)
-    return t["name"].values
+    t = t["name"].values
+    return t.tolist()
 
 
 def get_columns(file, table, mode: object = None):
@@ -202,9 +203,14 @@ def summary(file):
     print(f"summary sql-file:'{file}'")
     tables = get_tables(file=file)
     for t in tables:
-        c = get_columns(file=file, table=t)
+        na, ty = get_columns(file=file, table=t, mode=["name", "type"])
         print(f"table: {t}")
-        print(" | ".join(c))
+
+        w = max([len(nai) for nai in na] + [len(tyi) for tyi in ty])
+        w += 3
+
+        print(f"\tcolumns: {' | '.join([nai.ljust(w) for nai in na])}")
+        print(f"\ttype   : {' | '.join([tyi.ljust(w) for tyi in ty])}")
 
 
 def rename_tables(file: str, tables: dict) -> None:
@@ -271,7 +277,7 @@ def concatenate_tables(file, table, table2=None, file2=None, lock=None):
 
 def values2bytes(value, column):
 
-    value = np.array(value, dtype=str2np(column))
+    value = np.array(value, dtype=dtypes2.str2np(column))
 
     if np.size(value[0]) > 1 and not isinstance(value[0], bytes) and not isinstance(value[0], str):
         return [xx.tobytes() for xx in value]
@@ -289,7 +295,7 @@ def values2bytes_dict(data: dict) -> dict:
 def bytes2values(value, column: str):
     # SQL saves everything in binary form -> convert back to numeric, expect the columns which are marked as cmp
     if isinstance(value[0], bytes) and not column.endswith(_CMP):
-        dtype = str2np(s=column)
+        dtype = dtypes2.str2np(s=column)
         value = np.array([np.frombuffer(v, dtype=dtype) for v in value])
 
     return value
@@ -298,7 +304,7 @@ def bytes2values(value, column: str):
 def delete_tables(file, tables):
 
     tables_old = get_tables(file=file)
-    tables = atleast_list(tables, convert=False)
+    tables = ltd.atleast_list(tables, convert=False)
     print(f"delete_tables file:'{file}' tables:{tables}")
     for t in tables:
         assert t in tables_old, f"table {t} not in {tables_old}"
@@ -375,7 +381,7 @@ def sort_table(file, table, order_by):
 
 
 def alter_table(file, table, columns, dtypes, order_by=None):
-    table_tmp = table + uuid4()
+    table_tmp = table + strings.uuid4()
     copy_table(file=file, table_src=table, table_dst=table_tmp, columns=columns, dtypes=dtypes, order_by=order_by)
     delete_tables(file, tables=table)
     rename_tables(file, tables={table_tmp: table})
@@ -395,7 +401,7 @@ def squeeze_table(file, table, verbose=1):
 
 
 def change_column_dtype(file, table, column, dtype, lock=None):
-    column_tmp = f"{column}{uuid4()}"
+    column_tmp = f"{column}{strings.uuid4()}"
     copy_column(file=file, table=table, column_src=column, column_dst=column_tmp, dtype=dtype)
     delete_columns(file=file, table=table, columns=column, lock=lock)
     copy_column(file=file, table=table, column_src=column_tmp, column_dst=column, dtype=dtype)
@@ -453,13 +459,15 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
     else:
         for col in columns:
             value = bytes2values(value=df.loc[:, col].values, column=col)
-            df.loc[:, col] = numeric2object_array(value)
-
+            try:
+                df.loc[:, col] = value.tolist()
+            except ValueError:
+                df.loc[:, col] = numeric2object_array(value)
         return df
 
 
-def set_values_sql(file, table,
-                   values, columns, rows=-1, lock=None):
+def set_values_sql(file: object, table: object,
+                   values: object, columns: object, rows: object = -1, lock: object = None):
     """
     values = ([...], [...], [...], ...)
     """
@@ -473,7 +481,7 @@ def set_values_sql(file, table,
     columns = "=?, ".join(map(str, columns))
     columns += "=?"
 
-    values_rows_sql = change_tuple_order(values + (rows,))
+    values_rows_sql = ltd.change_tuple_order(values + (rows,))
     values_rows_sql = list(values_rows_sql)
     query = f"UPDATE {table} SET {columns} WHERE ROWID=?"
 

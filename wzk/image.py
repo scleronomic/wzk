@@ -359,7 +359,7 @@ def img2compressed(img, n_dim: int, level: int = 9):
 
 def compressed2img(img_cmp, shape, n_dim=None, n_channels=None, dtype=None):
     """
-    Decompress the binary string back to an image of given shape
+    Decompress the binary string back to an array of given shape
     """
 
     shape2 = image_array_shape(shape=shape, n_dim=n_dim, n_channels=n_channels)
