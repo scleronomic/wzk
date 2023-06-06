@@ -15,7 +15,7 @@ setuptools~=65.6.3
 
 fire~=0.4.0
 msgpack~=1.0.4
-requests~=2.28.1
+requests~=2.31.1
 
 pyopt~=0.0.0
 ortools~=9.5.2237
