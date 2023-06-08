@@ -5,7 +5,10 @@ from wzk import ltd
 
 # Error under Python3.8 /MacOs -> AttributeError: Can't pickle local object 'mp_wrapper.<locals>.__fun_wrapper'
 # https://stackoverflow.com/questions/60518386/error-with-module-multiprocessing-under-python3-8
-multiprocessing.set_start_method("fork", force=True)
+try:
+    multiprocessing.set_start_method("fork", force=True)
+except ValueError:
+    multiprocessing.set_start_method("spawn", force=True)  # default fallback for other OS
 
 
 def n_processes_wrapper(n_processes, n_samples):

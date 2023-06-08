@@ -256,6 +256,15 @@ def get_frames_between(f0, f1, n):
     return f
 
 
+def get_mean_f(f):
+    assert f.ndim == 3
+    f_mean = f[0]
+    for i in range(1, len(f)):
+        f_mean = get_frames_between(f0=f_mean, f1=f[i], n=3)[1]
+
+    return f_mean
+
+
 def offset_frame(f, i=None, vm=None,
                  offset=0.01):
     """
