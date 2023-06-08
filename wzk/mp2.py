@@ -8,7 +8,7 @@ from wzk import ltd
 try:
     multiprocessing.set_start_method("fork", force=True)
 except ValueError:
-    multiprocessing.set_start_method("spawn", force=True)  # default fallback for other OS
+    multiprocessing.set_start_method("spawn", force=True)  # use fallback for other OS
 
 
 def n_processes_wrapper(n_processes, n_samples):
