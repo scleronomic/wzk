@@ -14,6 +14,9 @@ def get_timestamp(t=None, year=True, month=True, day=True, hour=True, minute=Tru
     if t is None:
         t = datetime.now()
 
+    if isinstance(t, (int, float)):
+        t = datetime.fromtimestamp(t)
+
     assert isinstance(t, datetime)
 
     # Create a boolean list indicating which elements to keep

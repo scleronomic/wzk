@@ -41,6 +41,15 @@ brackets_sissjs = "[{i}][{j}]"
 brackets_rirrjr = "({i})({j})"
 
 
+def clean_ends(s, e):
+    if s[:len(e)] == e:
+        s = s[len(e):]
+
+    if s[-len(e):] == e:
+        s = s[:-len(e)]
+    return s
+
+
 def brackets_wrapper(bracket, idx, multi=True):
     # n = len(idx)
     b = brackets_dict[bracket]

@@ -140,8 +140,23 @@ def read_tail(file: str, n: int = 1, squeeze: bool = True):
     return __read_head_tail(file=file, n=n, squeeze=squeeze, head_or_tail="tail")
 
 
-def list_files(directory: str):
-    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+def listdir(directory: str, only_files=False, sort=True,
+            ignore_files=(".DS_Store",), ignore_patterns=None):
+
+    fl = os.listdir(directory)
+    if only_files:
+        fl = [f for f in fl if os.path.isfile(os.path.join(directory, f))]
+
+    fl = [f for f in fl if f not in ignore_files]
+
+    if ignore_patterns is not None:
+        for p in ignore_patterns:
+            fl = [f for f in fl if not re.search(p, f)]
+
+    if sort:
+        fl = sorted(fl)
+
+    return fl
 
 
 def list_directories(directory: str):
@@ -239,7 +254,7 @@ def combine_npz_files(*, directory,
         assert ".npz" in pattern
         pattern = re.compile(pattern=pattern)
 
-        file_list = list_files(directory=directory)
+        file_list = listdir(directory=directory, only_files=True)
         file_list = sorted([file for file in file_list if pattern.match(file)])
 
     new_dict = {}
@@ -312,6 +327,7 @@ def clip_npz_file(n_samples: int,
     return new_dict
 
 
+# --- start ---
 def start_open(file: str):
     open_cmd = __open_cmd_dict[platform.system()]
     subprocess.Popen([f"{open_cmd} {file}"], shell=True)
@@ -327,7 +343,7 @@ def copy2clipboard(file: str):
                     'set the clipboard to POSIX file "{}"'.format(file)])
 
 
-# chmod
+# --- chmod ---
 def chmod_file(file, mod):
     subprocess2.call2(cmd=f"sudo chmod {mod} {file}")
 
@@ -347,7 +363,6 @@ def are_files_identical(file_a, file_b):
 
 
 # --- Directory Magic --------------------------------------------------------------------------------------------------
-#
 def split_files_into_dirs(file_list: list,
                           bool_fun,
                           dir_list: list,

@@ -121,7 +121,6 @@ def print_table(rows, columns, data, min_voxel_size=10, cell_format=".5f", paddi
     max_voxel_size_c += padding
     max_voxel_size_r += padding
 
-
     row_format = "{:>" + str(max_voxel_size_r) + "}"
     header_format = row_format + ("{:>" + str(max_voxel_size_c) + "}") * len(columns)
     data_format = row_format + ("{:>" + str(max_voxel_size_c) + "}") * len(columns)
@@ -129,7 +128,7 @@ def print_table(rows, columns, data, min_voxel_size=10, cell_format=".5f", paddi
 
     print(header_format.format("", *columns))
     for row_name, row_data in zip(rows, data):
-        if isinstance(row_data[0], float):
+        if isinstance(row_data[0], (int, float)):
             print(data_format_float.format(row_name, *row_data))
         else:
             print(data_format.format(row_name, *row_data))

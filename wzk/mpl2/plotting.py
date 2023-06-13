@@ -9,7 +9,7 @@ from wzk.mpl2.colors2 import arr2rgba
 from wzk.mpl2.axes import limits4axes, limits2extent, set_ax_limits
 from wzk.mpl2.legend import rectangle_legend
 
-from wzk import math2, np2, ltd, limits as limits2
+from wzk import math2, np2, ltd, limits as limits2, printing
 
 
 def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
@@ -85,7 +85,7 @@ def plot_projections_2d(x, dim_labels=None, ax=None, limits=None, aspect=1, titl
     comb = combinations(np.arange(n), 2)
     for i, c in enumerate(comb):
         i = np.unravel_index(i, shape=ax.shape)
-        ax[i].plot(*x[..., c].T, **kwargs)
+        ax[i].plot(*np.moveaxis(x[..., c], -1, 0), **kwargs)
         ax[i].set_xlabel(dim_labels[c[0]])
         ax[i].set_ylabel(dim_labels[c[1]])
         if limits is not None:
@@ -316,6 +316,29 @@ def hist_vlines(x, name, bins=100,
     if hl_name is not None:
         ax.legend()
     return ax, perc_i
+
+
+def vis_cost_landscape(fun, x0, stepsize, n, n_contour=50):
+    v0, v1 = np.random.random((2, len(x0)))
+    v0 *= stepsize / np.linalg.norm(v0)
+    v1 *= stepsize / np.linalg.norm(v1)
+
+    ll = x0 - n//2 * (v0 + v1)
+
+    c = np.zeros((n, n))
+    for i0 in range(n):
+        printing.progress_bar(i=i0, n=n, eta=True, prefix=f"Compute Cost Landscape {n}x{n}")
+        for i1 in range(n):
+            c[i0, i1] = fun(ll + v0*i0 + v1*i1)
+
+    sn2 = stepsize*n/2
+    x, y = np.meshgrid(np.linspace(-sn2, +sn2, n), np.linspace(-sn2, +sn2, n), indexing="ij")
+
+    fig, ax = new_fig(aspect=1)
+    imshow(img=c, ax=ax, limits=np.array([[-sn2, sn2], [-sn2, sn2]]), alpha=0.2)
+    ax.contour(x, y, c, np.linspace(np.min(c), np.max(c), n_contour))
+    ax.plot(0, 0, marker="x", color="black")
+    return ax
 
 
 #

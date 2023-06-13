@@ -84,10 +84,10 @@ DIR_PAPER = f"{__DIR_BASE}/paper"
 
 Humanoids20_Calibration = DIR_PAPER + "/20humanoids_calibration"
 Humanoids22_Calibration = DIR_PAPER + "/22humanoids_calibration"
+Humanoids23_Calibration = DIR_PAPER + "/23humanoids_calibration"
 IROS22_PLANNING = DIR_PAPER + "/22iros_planning"
 IROS23_IK = DIR_PAPER + "/23iros_IK"
 TRO23_Planning = "/23tro_Planning"
-Humanoids23_Calibration = DIR_PAPER + "/23humanoids_calibration"
 
 
 # -- Projects ----------------------------------------------------------------------------------------------------------

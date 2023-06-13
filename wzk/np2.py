@@ -354,8 +354,8 @@ def logical_and(*args):
 
 # -------
 
-def delete_args(*args, obj, axis=None):
-    return tuple(np.delete(a, obj=obj, axis=axis) for a in args)
+def delete_args(*args, i, axis=None):
+    return tuple(np.delete(a, obj=i, axis=axis) for a in args)
 
 
 def __fill_index_with(idx, axis, shape, mode="slice"):
