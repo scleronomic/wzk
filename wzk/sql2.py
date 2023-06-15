@@ -8,7 +8,7 @@ from pandas.io import sql  # noqa
 
 import sqlite3
 
-from wzk import ltd, dtypes2, strings
+from wzk import ltd, dtypes2, strings, files
 from wzk.np2 import object2numeric_array, numeric2object_array  # noqa
 from wzk.image import compressed2img  # noqa
 
@@ -496,6 +496,7 @@ def df2sql(df, file, table, dtype=None, if_exists="fail"):
                    - replace: If table exists, drop it, recreate it, and insert Measurements.
                    - append: If table exists, insert Measurements. Create if does not exist.
     """
+    file = files.ensure_file_extension(file=file, ext=".db")
     if df is None:
         print("No DataFrame was provided...")
         return

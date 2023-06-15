@@ -10,7 +10,8 @@ def git_pull_all():
     print("git pull...")
     for rep in repository_list:
         print(rep)
-        call(f"cd {path}/{rep}; git add .; git stash; git pull", shell=True)
+        if os.path.exists(f"{path}/{rep}"):
+            call(f"cd {path}/{rep}; git add .; git stash; git pull", shell=True)
 
 
 if __name__ == "__main__":
