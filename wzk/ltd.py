@@ -344,11 +344,11 @@ def read_json2dict(file):
 
 
 # Dicts
-def rename_dict_keys(d, new_keys_dict, inplace=True):
+def rename_dict_keys(d, new_keys_dict, inplace=True, default_value=None):
 
     if inplace:
         for old_k in new_keys_dict:
-            d[new_keys_dict[old_k]] = d.pop(old_k)
+            d[new_keys_dict[old_k]] = d.pop(old_k, default_value)
         return d
 
     else:
