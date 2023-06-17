@@ -113,7 +113,7 @@ def plot_faces(vis, h, x, faces, color=default_color, alpha=1.0):
     vis[h].set_object(geometry=mg.TriangularMeshGeometry(vertices=x, faces=faces), material=material)
 
 
-def plot_spheres(vis, h, x, r, color=default_color, alpha=1.0, wireframe=False):
+def plot_spheres(vis, h, x, r, color=default_color, alpha=1.0, wireframe=False, **kwargs):
     material = get_material(color=color, alpha=alpha, wireframe=wireframe)
     x = np.atleast_2d(x)
     r = np.atleast_1d(r)
@@ -167,15 +167,15 @@ def plot_bimg_mesh(vis, h, bimg, limits, level=0, color=default_color, alpha=1.0
 
 
 def plot_bimg(vis, h,
-              bimg, limits, mode="mesh", **kwargs):
-    if bimg is None:
+              img, limits, mode="mesh", **kwargs):
+    if img is None:
         return
 
     if mode == "mesh":
-        plot_bimg_mesh(vis=vis, h=h, bimg=bimg, limits=limits, **kwargs)
+        plot_bimg_mesh(vis=vis, h=h, bimg=img, limits=limits, **kwargs)
 
     elif mode == "voxel":
-        plot_bimg_voxel(vis=vis, h=h, bimg=bimg, limits=limits, **kwargs)
+        plot_bimg_voxel(vis=vis, h=h, bimg=img, limits=limits, **kwargs)
 
     else:
         raise ValueError(f"Unknown mode: '{mode}' | ['mesh', 'voxel']")
@@ -283,7 +283,7 @@ def __load_mesh(mesh):
     return MeshGeometry_DICT[ext].from_file(mesh)
 
 
-def plot_meshes(vis, h, meshes, f=None, color="white", alpha=1.):
+def plot_meshes(vis, h, meshes, f=None, color="white", alpha=1., **kwargs):
     material = get_material(color=color, alpha=alpha)
 
     for hh, mm in zip(h, meshes):

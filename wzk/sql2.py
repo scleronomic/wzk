@@ -242,7 +242,7 @@ def get_n_rows(file, table):
 
 
 def get_n_samples(file, i_worlds=-1):
-    i_worlds_all = get_values_sql(file=file, columns="i_world", values_only=True, table="paths")
+    i_worlds_all = get_values_sql(file=file, columns="i_world", table="paths")
     unique, counts = np.unique(i_worlds_all, return_counts=True)
     if i_worlds == -1:
         return counts
@@ -391,11 +391,11 @@ def squeeze_table(file, table, verbose=1):
     columns = get_columns(file=file, table=table, mode="name")
 
     for c in zip(columns):
-        v0 = get_values_sql(file=file, table=table, columns=c, rows=0, values_only=True)
+        v0 = get_values_sql(file=file, table=table, columns=c, rows=0, return_type="list")
         if np.size(v0) == 1:
             if verbose > 0:
                 print(c)
-            v = get_values_sql(file=file, table=table, columns=c, values_only=True)
+            v = get_values_sql(file=file, table=table, columns=c, return_type="list")
             v = np.squeeze(v)
             set_values_sql(file=file, table=table, values=(v.tolist(),), columns=c)
 
@@ -410,7 +410,7 @@ def change_column_dtype(file, table, column, dtype, lock=None):
 
 # Get and Set SQL values
 def get_values_sql(file: str, table: str, columns=None, rows=-1,
-                   values_only: bool = True, squeeze_col: bool = True, squeeze_row: bool = True):
+                   return_type: str = "list", squeeze_col: bool = True, squeeze_row: bool = True):
     """
     'i_samples' == i_samples_global
     """
@@ -440,7 +440,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
     if np.any(columns == "*"):
         columns = df.columns.values
 
-    if values_only:
+    if return_type == "list":
         for col in columns:
 
             value = bytes2values(value=df.loc[:, col].values, column=col)
@@ -456,14 +456,21 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
         return value_list
 
     # Return pandas.DataFrame
-    else:
+    elif return_type == "df" or return_type == "dict":
         for col in columns:
             value = bytes2values(value=df.loc[:, col].values, column=col)
             try:
                 df.loc[:, col] = value.tolist()
             except ValueError:
                 df.loc[:, col] = numeric2object_array(value)
-        return df
+
+        if return_type == "df":
+            return df
+        else:
+            return df2dict(df=df)
+
+    else:
+        raise ValueError(f"Invalid return_type '{return_type}'")
 
 
 def set_values_sql(file: object, table: object,
@@ -512,3 +519,10 @@ def df2sql(df, file, table, dtype=None, if_exists="fail"):
         df.to_sql(name=table, con=con, if_exists=if_exists, index=False, chunksize=None, dtype=dtype)
 
     set_journal_mode_wal(file=file)
+
+
+def df2dict(df, squeeze=True):
+    d = df.to_dict(orient="list")
+    if len(df) == 1 and squeeze:
+        d = {k: d[k][0] for k in d}
+    return d

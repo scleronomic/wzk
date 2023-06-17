@@ -200,8 +200,8 @@ class BoxLimitsKeySlider:
         # Create KeyListeners
         key2callback = {str(i): lambda k: self.change_j(k) for i in range(self.n)}
         key2callback["p"] = lambda k: self.return_x()
-        key2callback["j"] = lambda k: self.on_jx("j")
-        key2callback["x"] = lambda k: self.on_jx("x")
+        key2callback["j"] = lambda k: self.change_slider_mode("j")
+        key2callback["x"] = lambda k: self.change_slider_mode("x")
 
         self.ks_x = KeySlider(callback=self.change_xj, step=1, mi=0, ma=self.__m, periodic=True, start_listening=False)
         self.ks_x.add_callback(key2callback=key2callback, start_listening=False)
@@ -246,26 +246,26 @@ class BoxLimitsKeySlider:
         self._callback(self.slider_mode)
         self.print_state()
 
-    def on_jx(self, j_or_x):
+    def change_slider_mode(self, mode):
 
-        self.slider_mode = j_or_x
-        if j_or_x == "j":
+        self.slider_mode = mode
+        if mode == "j":
             self.ks_x.set_limits(mi=0, ma=self.n)
             self.ks_x.factor = 1
             self.ks_x.set_value(self.j)
 
-        elif j_or_x == "x":
+        elif mode == "x":
             self.ks_x.set_limits(mi=0, ma=self.__m)
             self.ks_x.set_value(self.get_x_discrete())
 
         else:
             raise ValueError
 
-    def _callback(self, j_or_x):
-        if j_or_x == "j":
+    def _callback(self, mode):
+        if mode == "j":
             if self.callback_j is not None:
                 self.callback_j(self.x, self.j)
-        elif j_or_x == "x":
+        elif mode == "x":
             if self.callback_x is not None:
                 self.callback_x(self.x, self.j)
 

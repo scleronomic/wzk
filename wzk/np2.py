@@ -126,10 +126,15 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
     res = []
     for voa in val_or_arr:
         try:
+
             if type(voa) == str:
-                res_i = np.empty(shape=shape, dtype=np.array(voa).dtype)
+                dtype = np.array(voa).dtype
+            elif isinstance(voa, np.ndarray):
+                dtype = voa.dtype
             else:
-                res_i = np.empty(shape=shape, dtype=type(voa))
+                dtype = type(voa)
+
+            res_i = np.empty(shape=shape, dtype=dtype)
 
             res_i[:] = np.array(voa).copy()
             res.append(res_i)

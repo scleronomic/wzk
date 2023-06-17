@@ -289,7 +289,7 @@ def offset_frame(f, i=None, vm=None,
 
 
 def apply_f_or_none(f, f_or_none):
-    if f_or_none is None or np.allclose(f_or_none, np.eye(f_or_none.shape[0])):
+    if f_or_none is None or np.allclose(f_or_none, np.eye(f_or_none.shape[-1])):
         return f
     else:
         return f_or_none @ f
@@ -318,6 +318,9 @@ def add_trans(f, x):
 
 
 def Ax(A, x):
+    if A is None:
+        return x
+
     if x.shape[-1] != A.shape[-1]:
         x = np.concatenate([x, np.ones_like(x[..., :1])], axis=-1)
 
