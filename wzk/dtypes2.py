@@ -10,6 +10,10 @@ __str2np = {"f": np.float64,
             "i32": np.int32,
             "i16": np.int16,
             "i8": np.int8,
+            "ui64": np.uint64,
+            "ui32": np.uint32,
+            "ui16": np.uint16,
+            "ui8": np.uint8,
             "b": bool,
             "cmp": object,  # byte strings can have varying length and otherwise there is a fuck-up
             # 'zlib': object,  # does this make sense to add?
