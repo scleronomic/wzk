@@ -148,7 +148,6 @@ def get_substeps_adjusted(x, n,
             x_n[i] = get_substeps_adjusted(x=x[i], n=n, is_periodic=is_periodic, weighting=weighting)
         return x_n
 
-
     m1 = m - 1
     steps = get_steps(q=x, is_periodic=is_periodic)
 

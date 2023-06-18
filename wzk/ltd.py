@@ -174,6 +174,18 @@ def weave_lists(*args):
     return [a for b in zip(*args) for a in b]
 
 
+def fill_constants_between(i, n):  # TODO move to np2
+    i = np.hstack([np.array(i, dtype=int), [n]])
+    if i[0] != 0:
+        i = np.insert(i, 0, 0)
+
+    j = np.zeros(n, dtype=int)
+    for v, (i0, i1) in enumerate(zip(i[:-1], i[1:])):
+        j[i0:i1] = v
+
+    return j
+
+
 def get_indices(li, el):
     if isinstance(li, np.ndarray):
         li = li.tolist()
@@ -287,7 +299,6 @@ def list_of_dicts2dict_of_lists(d):
     return {k: np.array([di[k] for di in d]) for k in d[0]}
 
 
-
 def get_first_non_empty(lst):
     """
     lst = [[], [], 1, [2, 3, 4], [], []] -> 1
@@ -343,7 +354,7 @@ def read_json2dict(file):
     return d
 
 
-# Dicts
+#  --- Dicts ----
 def rename_dict_keys(d, new_keys_dict, inplace=True, default_value=None):
 
     if inplace:

@@ -204,14 +204,14 @@ def summary(file):
     tables = get_tables(file=file)
     for t in tables:
         na, ty = get_columns(file=file, table=t, mode=["name", "type"])
-        print(f"table: {t}")
 
         w = max([len(nai) for nai in na] + [len(tyi) for tyi in ty])
         w += 3
 
+        print(f"table: {t}")
         print(f"\tcolumns: {' | '.join([nai.ljust(w) for nai in na])}")
         print(f"\ttype   : {' | '.join([tyi.ljust(w) for tyi in ty])}")
-
+        print(f"n_rows: {len(get_n_rows(file=file, table=t))}")
 
 def rename_tables(file: str, tables: dict) -> None:
     old_names = get_tables(file=file)
