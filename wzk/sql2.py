@@ -276,8 +276,10 @@ def concatenate_tables(file, table, table2=None, file2=None, lock=None):
 
 
 def values2bytes(value, column):
-
-    value = np.array(value, dtype=dtypes2.str2np(column))
+    try:
+        value = np.array(value, dtype=dtypes2.str2np(column))
+    except (ValueError, TypeError):
+        raise ValueError(f"Error for {column}")
 
     if np.size(value[0]) > 1 and not isinstance(value[0], bytes) and not isinstance(value[0], str):
         return [xx.tobytes() for xx in value]

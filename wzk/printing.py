@@ -111,6 +111,7 @@ def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
 
     if i == n:
         sys.stdout.write("\n")
+
     sys.stdout.flush()
 
 

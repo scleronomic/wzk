@@ -98,14 +98,18 @@ def numeric2object_array(arr):
     return arr_obj
 
 
-def array2array(a, shape):
+def array2array(a, shape, fill_value="empty"):
     a = np.atleast_1d(a)
     if np.size(a) == 1:
         return scalar2array(a.item(), shape=shape)
 
-    b = np.empty(shape, dtype=a.dtype)
     s = align_shapes(shape, a.shape)
     s = tuple([slice(None) if ss == 1 else np.newaxis for ss in s])
+    if fill_value == "empty":
+        b = np.empty(shape, dtype=a.dtype)
+    else:
+        b = np.full(shape, fill_value, dtype=a.dtype)
+
     b[:] = a[s]
     return b
 
@@ -962,6 +966,14 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
     return idx
 
 
+def combine_inhomogeneous_arrays(arr_list, shape, shape_i):
+    n = len(arr_list)
+    a_new = np.zeros((n,) + shape)
+    for i, a in enumerate(arr_list):
+        a = a.reshape(shape_i)
+        a_new[i, len(a)] = a  # TODO make mor general, look at np2
+
+
 def get_stats(x, axis=None, return_array=False):
     stats = {"size": int(np.size(x, axis=axis)),
              "mean": np.mean(x, axis=axis),
@@ -1095,7 +1107,7 @@ def arangen(start=None, end=None, step=None):
     return [np.arange(start[i], end[i], step[i]) for i in range(n)]
 
 
-# Slice Ellipsis Range
+#  --- Slice Ellipsis Range -----
 # Slice and range
 def slicen(start=None, end=None, step=None):
     """n dimensional slice"""
