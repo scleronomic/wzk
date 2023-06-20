@@ -88,7 +88,7 @@ def full2flat(x):
 def periodic_dof_wrapper(x,
                          is_periodic=None):
     if is_periodic is not None and any(is_periodic):
-        x[..., is_periodic] = angle2minuspi_pluspi(x[..., is_periodic])
+        x[..., is_periodic] = math2.angle2minuspi_pluspi(x[..., is_periodic])
     return x
 
 
@@ -309,8 +309,20 @@ def get_spline_coeffs(x, y, n=None, s=None):
         raise ValueError
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-# Splines
+def position2velocity(x, timestep):
+    v = np.zeros_like(x)
+    v[1:] = (x[..., 1:, :] - x[..., :-1, :]) / timestep
+    return v
+
+
+def position2acceleration(x, timestep):
+    v = position2velocity(x=x, timestep=timestep)
+    a = position2velocity(x=v, timestep=timestep)
+    return a
+
+
+# --- Splines ----------------------------------------------------------------------------------------------------------
+#
 def to_spline(x, n_c=4, start_end_mode=None):
 
     n_wp, n_dof = x.shape[-2:]
@@ -480,17 +492,3 @@ def combine_d_substeps__dx(d_dxs, n):
         return d_dx
     else:
         raise ValueError(f"{d_dxs.ndim}")
-
-
-def try1():
-    pass
-    # TODO copy to RobotPathData
-    # n_waypoints = 20
-    # n_substeps = 5
-    # n_dof = 2
-    #
-    # x = np.random.random((n_waypoints, n_dof))
-    # x_fine = get_substeps(x=x, n=n_substeps)
-    #
-    # do_dxfine = objective_function(x_fine)
-    # do_dx = trajectory.combine_d_substeps__dx(d_dxs=do_dxfine, n=n_substeps)

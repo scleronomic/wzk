@@ -236,6 +236,23 @@ def x_and_limits2txt(x, limits, names=None):
     return s
 
 
+def print_np2rkt(a):
+    s = repr(a)
+    s = s.replace("array", "")
+    s = s.replace("(", "")
+    s = s.replace(")", "")
+
+    s = s.replace(" ", "")
+    s = s.replace(",", " ")
+    s = s.replace("\n", "")
+
+    s = s.replace("[", "#[")
+
+    s = s.replace("]", "]\n")
+
+    print(s)
+
+
 # General Functions
 # ----------------------------------------------------------------------------------------------------------------------
 def print2(*args, verbose=None,
