@@ -363,9 +363,9 @@ def centroid_normal2f_plane(centroid, normal):
     dcm = np.eye(3, 3)
     dcm[2, :] = normal
     dcm[0, :] = geometry.get_orthonormal(normal)
-    dcm = geometry.make_rhs(dcm, order=(2, 0))
+    dcm2 = geometry.make_rhs(xyz=dcm, order=(2, 0))
 
-    f_plane = trans_dcm2frame(trans=centroid, dcm=dcm.T)
+    f_plane = trans_dcm2frame(trans=centroid, dcm=dcm2.T)
     return f_plane
 
 

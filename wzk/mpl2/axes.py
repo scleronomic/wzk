@@ -15,7 +15,7 @@ def get_pip(ax, x, y, width, height, **kwargs):
     # plt.pause(0.01)  # Necessary so
     # toc()
     p = ax.get_position()
-    return plt.axes([p.x0 + x * p.width, p.y0 + y * p.height,
+    return plt.axes([p.x_2d + x * p.width, p.y0 + y * p.height,
                      width * p.width, height * p.height], **kwargs)
 
 
@@ -29,7 +29,7 @@ def get_xaligned_axes(ax, y_distance=0.05, height=0.03, factor=1., **kwargs):
     kwargs: kwargs passed to matplotlib.pyplot.axes()
     """
     p = ax.get_position()
-    x0, y0, width0 = p.x0, p.y0, p.width
+    x0, y0, width0 = p.x_2d, p.y0, p.width
 
     x0 += (1 - factor) * width0 / 2
     width0 *= factor

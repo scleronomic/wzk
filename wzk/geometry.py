@@ -289,7 +289,9 @@ def projection_point_plane(p: np.ndarray,
 
     else:
         n = np.cross(u, v)
-        p0 = n * (n*o).sum(axis=-1) / (n*n).sum(axis=-1)
+
+
+        p0 = n * (n*o).sum(axis=-1, keepdims=True) / (n*n).sum(axis=-1)
         return p0 + p
 
 

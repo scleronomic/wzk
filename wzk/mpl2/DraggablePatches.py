@@ -300,7 +300,7 @@ class DraggablePatchList:
         if xy is not None:
             x, y = xy.T
 
-        n = np.max_size(x, y)
+        n = np2.max_size(x, y)
         n, idx = self.__n_index_wrapper(i=idx, n=n)
 
         xy_cur = self.get_xy(idx=idx)

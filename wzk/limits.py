@@ -8,6 +8,15 @@ def x2limits(x, axis=-1):
     return limits
 
 
+def limits2size(limits):
+    return limits[:, 1] - limits[:, 0]
+
+
+def limits2center(limits):
+    s2 = limits2size(limits)/2
+    return limits[:, 0] + s2
+
+
 def spheres2limits(x, r):
     x = np.atleast_2d(x)
     r = np.atleast_1d(r)
@@ -37,31 +46,31 @@ def combine_limits(limits_a, limits_b, mode="largest"):
 
 
 def make_limits_symmetrical(limits, mode="largest"):
-    d2 = (limits[:, 1] - limits[:, 0]) / 2
-    c = limits[:, 0] + d2
+    s2 = limits2size(limits=limits) / 2
+    c = limits2center(limits)
 
     if mode == "largest":
-        d2 = np.max(d2)
+        s2 = np.max(s2)
     elif mode == "smallest":
-        d2 = np.min(d2)
+        s2 = np.min(s2)
     else:
         raise ValueError
 
     limits = limits.copy()
-    limits[:, 0] = c - d2
-    limits[:, 1] = c + d2
+    limits[:, 0] = c - s2
+    limits[:, 1] = c + s2
     return limits
 
 
 def add_safety_limits(limits, factor=None, offset=None):
     limits = np.atleast_1d(limits)
-    diff = np.diff(limits, axis=-1)[..., 0]
+    s = limits2size(limits=limits)
 
     if offset is None:
         assert factor is not None
-        offset = factor * diff
+        offset = factor * s
 
-    assert np.all(offset > -diff/2)
+    assert np.all(offset > -s/2)
 
     return np.array([limits[..., 0] - offset,
                      limits[..., 1] + offset]).T
