@@ -74,7 +74,10 @@ def rmdirs(directory: Union[str, list]):
 
 def rm_files_in_dir(directory: str, file_list: list = None):
     if file_list is None:
-        file_list = os.listdir(directory)
+        if os.path.exists(directory):
+            file_list = listdir(directory)
+        else:
+            return
 
     for file in file_list:
         rm(os.path.join(directory, file))

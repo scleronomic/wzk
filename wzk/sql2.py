@@ -347,7 +347,11 @@ def delete_columns(file: str, table: str, columns, lock=None):
 
 
 def add_column(file, table, column, dtype, lock=None):
-    execute(file=file, query=f"ALTER TABLE {table} ADD COLUMN {column} {dtype}", lock=lock)
+    columns = get_columns(file=file, table=table, mode="name")
+    if column in columns:
+        print(f"columns {column} already exists")
+    else:
+        execute(file=file, query=f"ALTER TABLE {table} ADD COLUMN {column} {dtype}", lock=lock)
 
 
 def copy_column(file, table, column_src, column_dst, dtype, lock=None):
