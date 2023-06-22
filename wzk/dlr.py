@@ -6,6 +6,7 @@ PLATFORM_IS_LINUX = platform.system() == "Linux"
 
 USERNAME = os.path.expanduser("~").split(sep="/")[-1]
 TENH_JO = "tenh_jo"
+F_JUSTIN = "f_justin"
 
 userstore = "/volume/USERSTORE"
 homelocal = "/home_local"
@@ -69,6 +70,7 @@ HOME = get_home(user=USERNAME)
 USB = f"/var/run/media/{TENH_JO}/DLR-MA"
 
 USERSTORE_TENH = get_userstore(user=TENH_JO)
+USERSTORE_JUSTIN = f"{get_userstore(user=F_JUSTIN)}/packages/motion_planning"
 
 __DIR_BASE_DICT = {DLR: f"{USERSTORE_TENH}",
                    MAC: "/Users/jote/Documents/PhD"}

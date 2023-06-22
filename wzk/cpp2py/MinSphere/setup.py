@@ -29,4 +29,4 @@ setup(
 
 # # '/opt/homebrew/Cellar/cgal/5.5.1/include'
 # # '/opt/homebrew/Cellar/boost/1.81.0/include'
-# pip install -e .
+# pip install -e .  # TODO add to auto installer for wzk
