@@ -220,6 +220,13 @@ def trans_dcm2frame(trans=None, dcm=None):
 
 # --- Sanity Checks ----------------------------------------------------------------------------------------------------
 def is_rotation(r):
+    b0 = ~ ((r > 2).sum(axis=(-2, -1)) > 0)
+    if np.any(b0):
+        if r.ndim == 2:
+            return False
+        else:
+            raise NotImplementedError
+
     rtr = r @ np.swapaxes(r, -2, -1)
     b = np.allclose(rtr, np.eye(3), atol=1e-3)
     return b
@@ -228,7 +235,7 @@ def is_rotation(r):
 def is_frame(f):
     a = is_rotation(f[..., :-1, :-1])
     b = np.allclose(f[..., -1, -1], 1)
-    return a and b
+    return np.logical_and(a, b)
 
 
 # --- Linalg -----------------------------------------------------------------------------------------------------------

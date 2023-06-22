@@ -338,7 +338,7 @@ def to_spline(x, n_c=4, start_end_mode=None):
         c = np.zeros((n, n_c, n_dof))
         for i_n in range(n):
             for i_d in range(n_dof):
-                c[i_n, ..., i_d] = get_spline_coeffs(x=xx, y=x[:, i_d], n=n_c)
+                c[i_n, ..., i_d] = get_spline_coeffs(x=xx, y=x[i_n, :, i_d], n=n_c)
     else:
         raise ValueError
 
