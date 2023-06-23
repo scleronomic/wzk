@@ -370,4 +370,6 @@ def rename_dict_keys(d, new_keys_dict, inplace=True):
 
 
 def invert_dict(d):
-    return {v: k for k, v in d.items()}
+    d2 = {v: k for k, v in d.items()}
+    assert len(d2) == len(d)
+    return d2
