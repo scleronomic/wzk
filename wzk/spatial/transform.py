@@ -220,8 +220,8 @@ def trans_dcm2frame(trans=None, dcm=None):
 
 # --- Sanity Checks ----------------------------------------------------------------------------------------------------
 def is_rotation(r):
-    b0 = ~ ((r > 2).sum(axis=(-2, -1)) > 0)
-    if np.any(b0):
+    b_too_large_value = ((r > 2).sum(axis=(-2, -1)) > 0)
+    if np.any(b_too_large_value):
         if r.ndim == 2:
             return False
         else:
