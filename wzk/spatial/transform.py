@@ -228,7 +228,7 @@ def is_rotation(r):
             raise NotImplementedError
 
     rtr = r @ np.swapaxes(r, -2, -1)
-    b = np.allclose(rtr, np.eye(3), atol=1e-3)
+    b = np.allclose(rtr, np.eye(3), atol=5e-3)
     return b
 
 
