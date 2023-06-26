@@ -38,8 +38,8 @@ def best_fit_transform(A, B, scaling=False):
 
     # special reflection case
     if np.linalg.det(R) < 0:
-       Vt[-1, :] *= -1
-       R = np.dot(Vt.T, U.T)
+        Vt[-1, :] *= -1
+        R = np.dot(Vt.T, U.T)
 
     # compute scaling
     if scaling:

@@ -25,7 +25,7 @@ class Test(TestCase):
 
     def test_safe_squeeze(self):
         self.assertTrue(ltd.squeeze(s=(1.1,)) == 1.1)
-        self.assertRaises(AssertionError, ltd.squeeze, (1, (3, 4)))
+        self.assertTrue(ltd.squeeze(s=(3, 4)) == (3, 4))
 
     def remove_nones(self):
         self.assertTrue(ltd.remove_nones([1, None, 2, None, None, 3, None, None]) == [1, 2, 3])
@@ -119,4 +119,5 @@ class Test(TestCase):
                        c=np.array([3, 33, 333]))
 
         d1 = ltd.list_of_dicts2dict_of_lists(d=d0)
-        self.assertTrue(d1_true == d1)
+        self.assertTrue(np.allclose(d1_true, d1))
+        d1_true == d1

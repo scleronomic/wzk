@@ -55,7 +55,7 @@ def try_plot_bimg():
     # limits += 0.5
 
     vis = mc2.Visualizer()
-    mc2.plot_bimg(vis=vis, h=None, bimg=bimg, limits=limits, color="white")
+    mc2.plot_bimg(vis=vis, h=None, img=bimg, limits=limits, color="white")
 
 
 def try_arrow():

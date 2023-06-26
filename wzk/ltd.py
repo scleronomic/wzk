@@ -48,23 +48,18 @@ class AttrDict(dict):
         return AttrDict(copy.deepcopy(super()))
 
 
-class ObjectDict:
+def compare_dicts(a, b):
+    if a.keys() != b.keys():
+        return False
 
-    def __init__(self, d):
-        self.update(d)
-
-    def to_dict(self):
-        return self.__dict__
-
-    def update(self, new_dict):
-        if isinstance(new_dict, ObjectDict):
-            self.__dict__.update(new_dict.__dict__)
+    for v, k in a.items():
+        if isinstance(v, dict):
+            if not compare_dicts(v, b[k]):
+                return False
         else:
-            self.__dict__.update(new_dict)
-
-    def copy(self):
-        new = ObjectDict(self)
-        return new
+            if not np.allclose(a[k], b[k]):
+                return False
+    return True
 
 
 def totuple(a):
@@ -172,18 +167,6 @@ def atleast_tuple(*tuples, convert=True):
 def weave_lists(*args):
     # https://stackoverflow.com/a/27166171/7570817
     return [a for b in zip(*args) for a in b]
-
-
-def fill_constants_between(i, n):  # TODO move to np2
-    i = np.hstack([np.array(i, dtype=int), [n]])
-    if i[0] != 0:
-        i = np.insert(i, 0, 0)
-
-    j = np.zeros(n, dtype=int)
-    for v, (i0, i1) in enumerate(zip(i[:-1], i[1:])):
-        j[i0:i1] = v
-
-    return j
 
 
 def get_indices(li, el):

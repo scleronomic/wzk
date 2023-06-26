@@ -154,32 +154,6 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
         return res
 
 
-# def try_to_make_equal(*args):
-#     pass
-# TODO find a good general approach to make apples and pears the same size
-# x = np.ones((10, 3))
-# y = "red"
-# -> y = ["red"]*10
-
-# x = np.ones((10, 3))
-# y = ["red", "blue"]
-# -> fails
-
-# x = np.ones(3)
-# y = ["blue"]
-# -> y = ["blue"]*3
-
-# x = np.ones(1, 3)
-# y = ["blue"]
-# -> works
-
-# args = np.atleast_1d(*args)
-#
-# n = np2.max_len(*args)
-# args = np2.scalar2array(*args)
-# return args
-
-
 def unify(x):
     x = np.atleast_1d(x)
     assert np.allclose(x, x.mean())
@@ -295,8 +269,8 @@ def __argfun(a, axis, fun):
         return fun(a, axis=axis)
 
     elif len(axis) == a.ndim:
-        np.unravel_index(fun(a), shape=a.shape)
-        # TODO, what happens here?
+        return np.unravel_index(fun(a), shape=a.shape)
+
     else:
         axis_inv = axis_wrapper(axis=axis, n_dim=a.ndim, invert=True)
         shape_inv = get_subshape(shape=a.shape, axis=axis_inv)
@@ -966,14 +940,6 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
     return idx
 
 
-def combine_inhomogeneous_arrays(arr_list, shape, shape_i):
-    n = len(arr_list)
-    a_new = np.zeros((n,) + shape)
-    for i, a in enumerate(arr_list):
-        a = a.reshape(shape_i)
-        a_new[i, len(a)] = a  # TODO make mor general, look at np2
-
-
 def get_stats(x, axis=None, return_array=False):
     stats = {"size": int(np.size(x, axis=axis)),
              "mean": np.mean(x, axis=axis),
@@ -1100,6 +1066,7 @@ def round_dict(d, decimals=None):
     return d
 
 
+# --- arange ---
 def arangen(start=None, end=None, step=None):
     """n dimensional slice"""
     n = max_size(start, end, step)
@@ -1107,7 +1074,19 @@ def arangen(start=None, end=None, step=None):
     return [np.arange(start[i], end[i], step[i]) for i in range(n)]
 
 
-#  --- Slice Ellipsis Range -----
+def arange_between(i, n):
+    i = np.hstack([np.array(i, dtype=int), [n]])
+    if i[0] != 0:
+        i = np.insert(i, 0, 0)
+
+    j = np.zeros(n, dtype=int)
+    for v, (i0, i1) in enumerate(zip(i[:-1], i[1:])):
+        j[i0:i1] = v
+
+    return j
+
+
+#  --- Slice, Ellipsis, Range ------------------------------------------------------------------------------------------
 # Slice and range
 def slicen(start=None, end=None, step=None):
     """n dimensional slice"""

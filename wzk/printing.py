@@ -80,7 +80,7 @@ def get_progress_bar(i, n, prefix="", suffix="", bar="█"):
 
 
 def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
-                 eta=False, __time=[-1]):  # noqa: dangerous-default-value
+                 eta=False, __time=[-1.]):  # noqa: dangerous-default-value
 
     if verbose <= 0:
         return
@@ -95,7 +95,7 @@ def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
     i += 1
 
     if eta:
-        if __time[0] == -1 or i ==0:
+        if __time[0] == -1. or i == 0:
             __time[0] = time.time()
             suffix += " | 0s | ETA: ??s"
         else:

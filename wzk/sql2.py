@@ -213,6 +213,7 @@ def summary(file):
         print(f"\ttype   : {' | '.join([tyi.ljust(w) for tyi in ty])}")
         print(f"n_rows: {get_n_rows(file=file, table=t)}")
 
+
 def rename_tables(file: str, tables: dict) -> None:
     old_names = get_tables(file=file)
     print(f"rename_tables file:'{file}' {tables}")
@@ -479,8 +480,8 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
         raise ValueError(f"Invalid return_type '{return_type}'")
 
 
-def set_values_sql(file: object, table: object,
-                   values: object, columns: object, rows: object = -1, lock: object = None):
+def set_values_sql(file: str, table: str,
+                   values: tuple, columns, rows=-1, lock=None):
     """
     values = ([...], [...], [...], ...)
     """
