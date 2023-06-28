@@ -32,6 +32,7 @@ def rows2sql(rows: object, dtype: object = str, values=None) -> object:
                 rows = np.arange(len(values))
         else:
             rows = [int(rows)]
+
     elif isinstance(rows, np.ndarray) and rows.dtype == bool:
         rows = np.nonzero(rows)[0]
 

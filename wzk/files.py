@@ -97,6 +97,9 @@ def rm_files_for_each(directory, file_list):
 
 
 def mkdirs(directory: Union[str, list]):
+    if directory is None or directory == "":
+        return
+
     if isinstance(directory, list):
         for d in directory:
             mkdirs(d)

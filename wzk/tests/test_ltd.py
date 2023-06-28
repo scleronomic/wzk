@@ -119,5 +119,4 @@ class Test(TestCase):
                        c=np.array([3, 33, 333]))
 
         d1 = ltd.list_of_dicts2dict_of_lists(d=d0)
-        self.assertTrue(np.allclose(d1_true, d1))
-        d1_true == d1
+        self.assertTrue(ltd.compare_dicts(d1, d1_true))

@@ -1,7 +1,11 @@
 import numpy as np  # noqa
 
-from wzk import np2, mp2, object2
+from wzk import np2, mp2, object2, strings, time2, files
 from wzk.opt.optimizer import Naive
+
+
+__DEBUG = False
+__debug_directory = "/Users/jote/Documents/PhD/data/mopla/GD/debug"
 
 
 class OPTimizer(object2.CopyableObject):
@@ -85,6 +89,7 @@ def gradient_descent_mp(x, fun, grad, opt):
 
 
 def gradient_descent(x, fun, grad, opt):
+
     x = __x_wrapper(x)
 
     if opt.active_dims is not None:
@@ -100,12 +105,12 @@ def gradient_descent(x, fun, grad, opt):
         opt.hesse_weighting = np.full(opt.n_steps, fill_value=float(opt.hesse_weighting))
 
     # grad_max_evolution = []
-    if opt.return_x_list:
+    if opt.return_x_list or __DEBUG:
         x_list = np.zeros((opt.n_steps,) + x.shape)
-        f_list = np.zeros((opt.n_steps, len(x)))
+        o_list = np.zeros((opt.n_steps, len(x)))
     else:
         x_list = None
-        f_list = None
+        o_list = None
 
     # Gradient Descent Loop
     for i in range(opt.n_steps):
@@ -126,16 +131,21 @@ def gradient_descent(x, fun, grad, opt):
 
         x = opt.limits(x)
 
-        if opt.return_x_list:
+        if opt.return_x_list or __DEBUG:
             x_list[i] = x
-            f_list[i] = fun(x)  # only for debugging, is inefficient to call separately
+            o_list[i] = fun(x)  # only for debugging, is inefficient to call separately
 
-    f = fun(x=x)
+    o = fun(x=x)
+
+    if __DEBUG:
+        file = f"{__debug_directory}/gd_{time2.get_timestamp(millisecond=True)}__{strings.uuid4()}"
+        files.save_pickle(file=file, obj=dict(x=x_list, o=o_list))
 
     if opt.return_x_list:
-        return x, f, (x_list, f_list)
+        return x, o, (x_list, o_list)
     else:
-        return x, f
+
+        return x, o
 
 
 def __x_wrapper(x):
