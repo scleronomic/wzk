@@ -25,7 +25,7 @@ TYPE_BLOB = "BLOB"
 def rows2sql(rows: object, dtype: object = str, values=None) -> object:
     if isinstance(rows, (int, np.int8, np.int16, np.int32, np.int64,
                          np.uint, np.uint8, np.uint16, np.uint32, np.uint64)):
-        if rows == -1:
+        if rows == -1 or rows == [-1]:
             if values is None:
                 return -1
             else:
