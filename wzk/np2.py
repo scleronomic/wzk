@@ -118,6 +118,10 @@ def max_size(*args):
     return int(np.max([np.size(a) for a in args]))
 
 
+def argmax_size(*args):
+    return int(np.argmax([np.size(a) for a in args]))
+
+
 def max_len(*args):
     return int(np.max([len(a) for a in args]))
 

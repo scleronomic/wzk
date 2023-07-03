@@ -545,7 +545,7 @@ def sample_points_on_disc(radius, shape=None):
     return xy
 
 
-def sample_points_on_sphere_3d(shape):
+def sample_points_on_sphere_3d(shape=None):
     shape = np2.shape_wrapper(shape=shape)
     x = np.empty(tuple(shape) + (3,))
     theta = np.random.uniform(low=0, high=2*np.pi, size=shape)
