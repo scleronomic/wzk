@@ -84,12 +84,14 @@ DIR_DATA_CAL = f"{DIR_DATA}/calibration"
 # --- Paper ------------------------------------------------------------------------------------------------------------
 DIR_PAPER = f"{__DIR_BASE}/paper"
 
-Humanoids20_Calibration = DIR_PAPER + "/20humanoids_calibration"
-Humanoids22_Calibration = DIR_PAPER + "/22humanoids_calibration"
-Humanoids23_Calibration = DIR_PAPER + "/23humanoids_calibration"
-IROS22_PLANNING = DIR_PAPER + "/22iros_planning"
-IROS23_IK = DIR_PAPER + "/23iros_IK"
-TRO23_Planning = "/23tro_Planning"
+humanoids20_calibration = DIR_PAPER + "/2020-humanoids-calibration"
+iros22_planning = DIR_PAPER + "/22iros_planning"
+humanoids22_calibration = DIR_PAPER + "/2022-humanoids-calibration"
+humanoids23_ik = DIR_PAPER + "/2023-humanoids-ik"
+humanoids23_calibration = DIR_PAPER + "/2023-humanoids-calibration"
+humanoids23_tower = DIR_PAPER + "/2023-humanoids-tower"
+
+# TRO23_Planning = "/23tro_Planning"
 
 
 # -- Projects ----------------------------------------------------------------------------------------------------------
