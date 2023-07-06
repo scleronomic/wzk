@@ -2,6 +2,17 @@ import time
 import datetime
 import subprocess
 
+PxWxD = "SnapeSev44"  # TODO set in environment variable
+
+
+def check(in_or_out):
+    assert in_or_out in ["in", "out"]
+    cmd = f"/home/seth_da/usr/bin/zerf --check-{in_or_out}"
+    cmd = f"yes {PxWxD} | {cmd}"
+    subprocess.call(cmd, shell=True)
+
+    print(f"{datetime.datetime.now()}: checked {in_or_out}")
+
 
 def main():
     count = 0
@@ -15,17 +26,15 @@ def main():
 
             if 8 <= now.hour <= 10:
                 if not checked_in:
-                    subprocess.call("check-in", shell=True)
-
+                    check("in")
                     checked_in = True
-                    print(f"{now}: logged in")
 
             if 17 <= now.hour <= 19:
                 if checked_in:
-                    subprocess.call("check-out", shell=True)
+                    check("out")
                     checked_in = False
                     count += 1
-                    print(f"{now}: logged out")
+                    print(f"{now}: logged ")
 
             if count >= max_count:
                 break
