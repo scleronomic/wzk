@@ -39,6 +39,7 @@ def main():
             if count >= max_count:
                 break
 
+        print("sleep")
         time.sleep(3600)
 
 
