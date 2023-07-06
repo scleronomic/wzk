@@ -1,10 +1,9 @@
 import numpy as np
 
-
-# from pyOpt.pySLSQP.pySLSQP import SLSQP
-# from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
+from pyOpt.pySLSQP.pySLSQP import SLSQP
+from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
 # from pyOpt.pyNLPQLP.pyNLPQLP import NLPQLP
-# from pyOpt import Optimization
+from pyOpt import Optimization
 
 from scipy import optimize
 # from scipy.optimize import least_squares, slsqp

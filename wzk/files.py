@@ -197,7 +197,7 @@ def remove_extension(file: str, ext: str):
 # –-- pickle -----------------------------------------------------------------------------------------------------------
 def save_pickle(obj, file: str):
     file = ensure_file_extension(file=file, ext=EXT_DICT["pickle"])
-
+    mkdirs(directory=os.path.split(file)[0])
     with open(file, "wb") as f:
         pickle.dump(obj, f)
 
@@ -213,6 +213,7 @@ def load_pickle(file: str):
 # json
 def save_json(obj, file: str):
     file = ensure_file_extension(file=file, ext=EXT_DICT["json"])
+    mkdirs(directory=os.path.split(file)[0])
     with open(file, "w") as f:
         json.dump(obj, f, indent=4, sort_keys=True)
 
@@ -233,14 +234,15 @@ def load_msgpack(file):
 
 def save_msgpack(file, nested_list):
     arr_bin = msgpack.packb(nested_list, use_bin_type=True)
+    mkdirs(directory=os.path.split(file)[0])
     with open(file, "wb") as f:
         f.write(arr_bin)
 
 
 # txt
 def save_object2txt(obj, file: str):
-    ensure_file_extension(file=file, ext="txt")
-
+    file = ensure_file_extension(file=file, ext="txt")
+    mkdirs(directory=os.path.split(file)[0])
     with open(file, "w") as f:
         f.write("".join(["%s: %s\n" % (k, v) for k, v in obj.__dict__.items()]))
 
