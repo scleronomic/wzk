@@ -2,6 +2,7 @@ import numpy as np
 
 from pyOpt.pySLSQP.pySLSQP import SLSQP
 from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
+
 # from pyOpt.pyNLPQLP.pyNLPQLP import NLPQLP
 from pyOpt import Optimization
 
@@ -26,15 +27,21 @@ def fun_wrapper(fun):
     return fun2
 
 
+def create_opt_problem(fun, x0, lower=-1, upper=+1):
+    opt_prob = Optimization("", fun_wrapper(fun))
+    for i, x0_i in enumerate(x0):
+        opt_prob.addVar(f"x{i+1}", "c", lower=x0_i+lower, upper=x0_i+upper, value=x0_i)
+    opt_prob.addObj("f")
+    return opt_prob
+
+
 def minimize_cobyla(fun, x0, options, verbose=0):
     cobyla = COBYLA(pll_type=options["pll_type"])
     cobyla.setOption("IPRINT", 3)
     cobyla.setOption("MAXFUN", 10000)
 
-    opt_prob = Optimization("", fun_wrapper(fun))
-    for i, x0_i in enumerate(x0):
-        opt_prob.addVar(f"x{i+1}", "c", lower=x0_i-1, upper=x0_i+1, value=x0_i)
-    opt_prob.addObj("f")
+    opt_prob = create_opt_problem(fun=fun, x0=x0)
+
     cobyla(opt_prob)
 
     res = opt_prob.solution(0)
@@ -54,11 +61,8 @@ def minimize_slsqp(fun, x0, options, verbose=0):
     except KeyError:
         pass
 
-    opt_prob = Optimization("", fun_wrapper(fun))
-    for i, x0_i in enumerate(x0):
-        opt_prob.addVar(f"x{i+1}", "c", lower=x0_i-1, upper=x0_i+1, value=x0_i)
-        # opt_prob.addVar(f"x{i+1}", 'c', lower=-10, upper=+10, value=x0_i)
-    opt_prob.addObj("f")
+    opt_prob = create_opt_problem(fun=fun, x0=x0)
+
     slsqp(opt_prob,
           sens_type=options["sens_type"],
           sens_step=options["sens_step"])

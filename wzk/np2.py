@@ -945,6 +945,11 @@ def find_block_shuffled_order(a, b, block_size, threshold, verbose=1):
 
 
 def get_stats(x, axis=None, return_array=False):
+    """
+    order :size, mean, std, median, min, max
+
+    """
+
     stats = {"size": int(np.size(x, axis=axis)),
              "mean": np.mean(x, axis=axis),
              "std": np.std(x, axis=axis),

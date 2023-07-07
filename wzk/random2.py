@@ -91,3 +91,14 @@ def fun2n(fun, n,
     else:
         Warning(f"Maximum number of iterations reached! Only {len(x)} samples could be generated")
         return x
+
+
+def choose_from_sections(n_total, n_sections, n_choose_per_section, flatten=True):
+    np.random.seed()   # TODO somewhere was something not random
+    n_i = np.array_split(np.arange(n_total), n_sections)
+
+    n_choose_per_section = np2.scalar2array(n_choose_per_section, shape=n_sections)
+    i = [np.random.choice(arr, size=m) for arr, m in zip(n_i, n_choose_per_section)]
+    if flatten:
+        i = np.concatenate(i, axis=0)
+    return i

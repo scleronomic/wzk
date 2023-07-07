@@ -52,7 +52,7 @@ def compare_dicts(a, b):
     if a.keys() != b.keys():
         return False
 
-    for v, k in a.items():
+    for k, v in a.items():
         if isinstance(v, dict):
             if not compare_dicts(v, b[k]):
                 return False
