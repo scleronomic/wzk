@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 
-from wzk import np2
+from wzk import np2, limits as limits2, math2, grid
 
 
 def p_normal_skew(x, loc=0.0, scale=1.0, a=0.0):
@@ -102,3 +102,26 @@ def choose_from_sections(n_total, n_sections, n_choose_per_section, flatten=True
     if flatten:
         i = np.concatenate(i, axis=0)
     return i
+
+
+def choose_from_uniform_grid(x, n):
+    n_samples, n_dim = x.shape
+
+    limits = limits2.x2limits(x=x, axis=1)
+    limits = limits2.make_limits_symmetrical(limits=limits)
+
+    def fun(_s):
+        _shape = (_s,) * n_dim
+        _i = grid.grid_x2i(x=x, limits=limits, shape=_shape)
+        _u = np.unique(_i, axis=0)
+        return len(_u) - n
+
+    s = math2.bisection(f=fun, a=10, b=100, tol=0, verbose=0)
+    shape = (int(np.ceil(s)),) * n_dim
+
+    ix = grid.grid_x2i(x=x, limits=limits, shape=shape)
+    u, inv = np.unique(ix, axis=0, return_inverse=True)
+    iu = np.random.choice(np.arange(len(u)), n, replace=False)
+
+    i = [np.random.choice(np.nonzero(inv == j)[0]) for j in iu]
+    return np.array(i, dtype=int)

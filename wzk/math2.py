@@ -328,7 +328,7 @@ def d_rosenbrock2d(xy, a=1, b=100):
     return np.concatenate([dx[..., np.newaxis], dy[..., np.newaxis]], axis=-1)
 
 
-def bisection(f, a, b, tol, verbose=0, __depth=0):
+def bisection(f, a, b, tol, max_depth=50, verbose=0, __depth=0,):
     """
     aka binary search
 
@@ -339,7 +339,6 @@ def bisection(f, a, b, tol, verbose=0, __depth=0):
     Recursive implementation
     """
     # check if a and b bound a root
-    max_depth = 50
     assert a < b
 
     fa, fb = f(a), f(b)
@@ -369,8 +368,7 @@ def bisection(f, a, b, tol, verbose=0, __depth=0):
     if verbose > 0:
         print(f"depth {__depth}: a {a}, b {b}, m {m}, f(m) {fm}")
 
-    if np.abs(fm) < tol or __depth > max_depth:  # stopping condition, report m as root
-        print(m)
+    if np.abs(fm) <= tol or __depth > max_depth:  # stopping condition, report m as root
         return m
 
     elif np.sign(fa) == np.sign(fm):  # m is an improvement on a

@@ -61,7 +61,7 @@ def mp_wrapper(*args, fun,
     elif isinstance(args[0], int):
         n_samples = args[0]
     else:
-        n_samples = np.shape(args[0])[0]
+        n_samples = len((args[0]))
 
     n_processes = n_processes_wrapper(n_processes=n_processes, n_samples=n_samples)
 
@@ -69,8 +69,12 @@ def mp_wrapper(*args, fun,
         return fun(*args)
 
     if len(args) == 0:
+        def fun_i():
+            np.random.seed(None)
+            return fun()
+
         def __fun_wrapper(i_process, queue):
-            queue.put((i_process, fun()))
+            queue.put((i_process, fun_i()))
 
     else:
         n_samples_pp, n_samples_pp_cs = \

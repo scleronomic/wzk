@@ -93,7 +93,7 @@ def progress_bar(i, n, prefix="", suffix="", bar_length=None, verbose=1,
     if n == 0:
         i, n = 0, 1
     i += 1
-
+    suffix += f"({i}/{n})"
     if eta:
         if __time[0] == -1. or i == 0 or i == 1:
             __time[0] = time.time()
