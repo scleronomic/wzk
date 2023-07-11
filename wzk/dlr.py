@@ -15,6 +15,7 @@ home = "/home"
 MAC = "mac"
 DLR = "dlr"
 GCP = "gcp"
+GBK = "gbk"
 
 
 __LOCATION2USERNAME_DICT = {MAC: "jote",
@@ -73,7 +74,9 @@ USERSTORE_TENH = get_userstore(user=TENH_JO)
 USERSTORE_JUSTIN = f"{get_userstore(user=F_JUSTIN)}/packages/motion_planning"
 
 __DIR_BASE_DICT = {DLR: f"{USERSTORE_TENH}",
-                   MAC: "/Users/jote/Documents/PhD"}
+                   MAC: "/Users/jote/Documents/PhD",
+                   GCP: "/home/johannes_tenhumberg_gmail_com",
+                   GBK: "gs://tenh_jo"}
 __DIR_BASE = __DIR_BASE_DICT[LOCATION]
 
 # --- Data -------------------------------------------------------------------------------------------------------------
