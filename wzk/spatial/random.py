@@ -65,7 +65,15 @@ def round_dcm(dcm, decimals=0):
 
 
 def sample_frames(x_low=np.zeros(3), x_high=np.ones(3), shape=None):
+    if isinstance(x_low, (float, int)):
+        x_low = np.ones(3) * x_low
+
+    if isinstance(x_high, (float, int)):
+        x_high = np.ones(3) * x_high
+
     assert len(x_low) == 3  # n_dim == 3
+    assert len(x_high) == 3  # n_dim == 3
+
     return spatial.trans_quat2frame(trans=random2.random_uniform_ndim(low=x_low, high=x_high, shape=shape),
                                     quat=sample_quaternions(shape=shape))
 
