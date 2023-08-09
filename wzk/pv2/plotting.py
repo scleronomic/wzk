@@ -345,11 +345,13 @@ def load_meshes2numpy(files):
 
 def transform_meshes():
 
-    directory = "/Users/jote/Documents/Code/Python/src/rokin-meshes/rokin-meshes/JustinHand12/binary_stl/"
-    files = [f"{directory}/finger_dist_pill_skin_cal_combined.stl",
-             f"{directory}/finger_dist_pill_skin_cal_sphere.stl",
-             f"{directory}/finger_dist_pill_skin_cal1.stl",
-             f"{directory}/finger_dist_pill_skin_cal2.stl"]
+    directory = "/Users/jote/Documents/Code/Python/src/rokin-meshes/rokin-meshes/JustinHand12/binary_stl"
+    files = [
+             # f"{directory}/finger_dist_pill_skin_cal_combined.stl",
+             # f"{directory}/finger_dist_pill_skin_cal_sphere.stl",
+             # f"{directory}/finger_dist_pill_skin_cal1.stl",
+             # f"{directory}/finger_dist_pill_skin_cal2.stl",
+             f"{directory}/finger_dist_cal-taxel_pin.stl"]
 
     for f in files:
         mesh = PolyData(f)
@@ -362,4 +364,4 @@ def transform_meshes():
 
 if __name__ == "__main__":
     pass
-    # transform_meshes()
+    transform_meshes()

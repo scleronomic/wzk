@@ -9,6 +9,11 @@ from wzk import np2, ltd
 golden_ratio = (np.sqrt(5.0) + 1) / 2
 
 
+def make_mono_descending(x):  # TODO better name and place
+    for i in range(len(x)):
+        x[i] = x[:i+1].min()
+    return x
+
 def number2digits(num):
     return [int(x) for x in str(num)]
 

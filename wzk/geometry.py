@@ -386,7 +386,7 @@ def __line2capsule(xa: np.ndarray,
     ra, rb = np.atleast_1d(ra, rb)
     d = xb - xa
     n = np.linalg.norm(d, axis=-1)
-    d_n = d / n[..., np.newaxis]
+    d_n = d / (n[..., np.newaxis] + 1e-9)
     xa = xa + d_n * ra[..., np.newaxis]
     xb = xb - d_n * rb[..., np.newaxis]
 

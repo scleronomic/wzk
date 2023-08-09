@@ -134,7 +134,7 @@ def get_steps_between(start, end, n, is_periodic=None):
 
 
 def get_substeps_adjusted(x, n,
-                          is_periodic=None, weighting=None):
+                          is_periodic=None, weighting=None, enforce_equal_steps=False):
 
     *shape, m, d = x.shape
 
@@ -156,6 +156,9 @@ def get_substeps_adjusted(x, n,
 
     # Distribute the waypoints equally along the linear sequences of the initial path
     steps_length = np.linalg.norm(steps, axis=-1)
+    if enforce_equal_steps:
+        steps_length[:] = 1
+
     if np.sum(steps_length) == 0:
         relative_steps_length = np.full(m1, fill_value=1 / m1)
     else:
@@ -186,7 +189,7 @@ def get_substeps_adjusted(x, n,
     return x_n
 
 
-def get_path_adjusted(x, n=None, is_periodic=None, weighting=None, __m=5):
+def get_path_adjusted(x, n=None, is_periodic=None, weighting=None, enforce_equal_steps=False, __m=5):
     n0 = x.shape[-2]
     if n is None:
         n = n0
@@ -195,7 +198,8 @@ def get_path_adjusted(x, n=None, is_periodic=None, weighting=None, __m=5):
 
     n = int(n)
     return get_substeps_adjusted(x=x, n=(n - 1) * (n0*__m) + 1,
-                                 is_periodic=is_periodic, weighting=weighting)[..., ::(n0*__m), :]
+                                 is_periodic=is_periodic, weighting=weighting,
+                                 enforce_equal_steps=enforce_equal_steps)[..., ::(n0*__m), :]
 
 
 def order_path(x, start=None, end=None, is_periodic=None, weights=1.):
@@ -420,7 +424,7 @@ def fromto_spline2(x, n_c=4, x_mode="sdbee", start_end_mode="x->0"):
     else:
         raise ValueError(f"Unknown x_mode='{x_mode}'")
 
-    x_spline = get_path_adjusted(x=x_spline)
+    x_spline = get_path_adjusted(x=x_spline, )
     return x_spline
 
 
