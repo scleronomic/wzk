@@ -87,11 +87,11 @@ DIR_DATA_CAL = f"{DIR_DATA}/calibration"
 # --- Paper ------------------------------------------------------------------------------------------------------------
 DIR_PAPER = f"{__DIR_BASE}/paper"
 
-humanoids20_calibration = DIR_PAPER + "/2020-humanoids-calibration"
+humanoids21_elastic = DIR_PAPER + "/2021-humanoids-elastic"
+humanoids22_rgb = DIR_PAPER + "/2022-humanoids-rgb"
+humanoids23_contact = DIR_PAPER + "/2023-humanoids-contact"
 iros22_planning = DIR_PAPER + "/2022-iros-planning"
-humanoids22_calibration = DIR_PAPER + "/2022-humanoids-calibration"
 humanoids23_ik = DIR_PAPER + "/2023-humanoids-ik"
-humanoids23_calibration = DIR_PAPER + "/2023-humanoids-calibration"
 
 # TRO23_Planning = "/23tro_Planning"
 

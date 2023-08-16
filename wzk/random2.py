@@ -116,7 +116,7 @@ def choose_from_uniform_grid(x, n):
         _u = np.unique(_i, axis=0)
         return len(_u) - n
 
-    s = math2.bisection(f=fun, a=10, b=100, tol=0, verbose=0)
+    s = math2.bisection(f=fun, a=2, b=100, tol=0, verbose=0)
     shape = (int(np.ceil(s)),) * n_dim
 
     ix = grid.grid_x2i(x=x, limits=limits, shape=shape)
