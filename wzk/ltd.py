@@ -47,6 +47,9 @@ class AttrDict(dict):
     def deepcopy(self):
         return AttrDict(copy.deepcopy(super()))
 
+    def to_dict(self):
+        return self.__dict__
+
 
 def compare_dicts(a, b):
     if a.keys() != b.keys():

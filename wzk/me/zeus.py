@@ -24,12 +24,12 @@ def main():
         now = datetime.datetime.now()
         if now.weekday() < 5:
 
-            if 8 <= now.hour <= 10:
+            if 8 <= now.hour <= 12:
                 if not checked_in:
                     check("in")
                     checked_in = True
 
-            if 17 <= now.hour <= 19:
+            if 18 <= now.hour <= 19:
                 if checked_in:
                     check("out")
                     checked_in = False
@@ -40,7 +40,7 @@ def main():
                 break
 
         print("sleep")
-        time.sleep(3600)
+        time.sleep(600)
 
 
 if __name__ == "__main__":
