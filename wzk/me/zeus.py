@@ -2,7 +2,7 @@ import time
 import datetime
 import subprocess
 
-PxWxD = "SnapeSev44"  # TODO set in environment variable
+PxWxD = "RiddleTom77"  # TODO set in environment variable
 
 
 def check(in_or_out):
