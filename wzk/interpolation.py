@@ -4,7 +4,7 @@ from scipy.signal import savgol_filter
 from scipy.linalg import solve_banded
 from scipy.stats import norm
 
-from mopla.Optimizer import fill_linear_connection, get_substeps
+from mopla.optimizer import fill_linear_connection, get_substeps
 from wzk import new_fig
 
 
