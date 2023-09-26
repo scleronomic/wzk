@@ -16,7 +16,7 @@ def check(in_or_out):
 
 def main():
     count = 0
-    max_count = 5
+    max_count = 3
 
     checked_in = False
     while True:
@@ -24,12 +24,12 @@ def main():
         now = datetime.datetime.now()
         if now.weekday() < 5:
 
-            if 8 <= now.hour <= 12:
+            if 7 <= now.hour <= 8:
                 if not checked_in:
                     check("in")
                     checked_in = True
 
-            if 18 <= now.hour <= 19:
+            if 19 <= now.hour <= 20:
                 if checked_in:
                     check("out")
                     checked_in = False
