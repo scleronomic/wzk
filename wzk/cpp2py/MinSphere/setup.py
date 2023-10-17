@@ -3,8 +3,8 @@ from setuptools import Extension, setup
 
 
 HOMEBREW_PREFIX = "/opt/homebrew/Cellar"
-BOOST_VERSION = "1.81.0_1"
-CGAL_VERSION = "5.5.1"
+BOOST_VERSION = "1.82.0_1"  # TODO automatically find the version
+CGAL_VERSION = "5.6"
 
 boost_include_dir = os.environ.get("BOOST_INCLUDE_DIR",  # either user-defined
                                    f"{HOMEBREW_PREFIX}/boost/{BOOST_VERSION}/include")  # or installed via homebrew

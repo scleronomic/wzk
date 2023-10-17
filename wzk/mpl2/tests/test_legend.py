@@ -21,7 +21,7 @@ class Test(TestCase):
         fig, ax = new_fig(aspect=1)
         arrow_a = ax.arrow(0, 0, np.cos(0.3), np.sin(0.3), head_width=0.1, color="r", label="A")
         arrow_b = ax.arrow(0, 0, np.cos(0.5), np.sin(0.5), head_width=0.05, color="b", label="B")
-        arrow_c = ax.arrow(0, 0, np.cos(0.9), np.sin(0.9), head_width=0.05, color="matrix", label="C")
+        arrow_c = ax.arrow(0, 0, np.cos(0.9), np.sin(0.9), head_width=0.05, color="m", label="C")
         ax.legend([arrow_a, arrow_b, arrow_c], ["My label - A", "Dummy - B", "Another One - C"],
                   handlelength=1, borderpad=1.2, labelspacing=1.2,
                   handler_map={legend.patches.FancyArrow: legend.make_legend_arrow_wrapper(theta=0.9,

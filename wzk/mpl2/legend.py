@@ -1,8 +1,48 @@
 import numpy as np
 
-from matplotlib import patches
-from matplotlib.legend_handler import HandlerPatch
+from matplotlib import patches, collections, transforms
+from matplotlib.legend_handler import HandlerPatch, HandlerPathCollection
+
 from wzk.np2 import flatten_without_last
+
+
+class HandlerMultiPathCollection(HandlerPathCollection):
+    """
+    Handler for PathCollections, which are used by scatter
+    """
+    def __init__(self, offsets_x=None, **kwargs):
+        super().__init__(**kwargs)
+        self.offsets_x = offsets_x
+
+    def create_collection(self, orig_handle, sizes, offsets, offset_transform):
+
+        if offsets is not None:
+            center = np.mean([(o[0]) for o in offsets])
+            offsets = [(center, o[1]) for o in offsets]
+
+        p = type(orig_handle)(orig_handle.get_paths(), sizes=sizes,
+                              offsets=offsets,
+                              offset_transform=offset_transform,
+                              )
+        return p
+
+    @staticmethod
+    def get_pc(ax,
+               paths, sizes,
+               facecolors, edgecolors=None):
+        PC = collections.PathCollection(paths, sizes, transOffset=ax.transData,
+                                        facecolors=facecolors, edgecolors=edgecolors)
+        PC.set_transform(transforms.IdentityTransform())
+        return PC
+
+    def get_pc2(self, ax, h_list):
+        paths = [h.get_paths()[0] for h in h_list]
+        sizes = [h.get_sizes()[0] for h in h_list]
+        facecolors = [h.get_facecolors()[0] for h in h_list]
+        edgecolors = [h.get_edgecolors()[0] for h in h_list]
+        # alphas = [h.get_edgecolors()[0] for h in h_list]
+        return self.get_pc(ax=ax, paths=paths, sizes=sizes,
+                           facecolors=facecolors, edgecolors=edgecolors)
 
 
 # Annotations
