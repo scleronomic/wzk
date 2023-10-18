@@ -31,7 +31,7 @@ def set_style(s=("ieee",)):
     params = {}
     if "ieee" in s:
         params.update({
-            # 'text.usetex': False,
+            'text.usetex': True,
             "pdf.fonttype": 42,  # Font type 3 error on paper submission, https://tex.stackexchange.com/a/526373/217246
             "ps.fonttype": 42,
 
@@ -47,7 +47,7 @@ def set_style(s=("ieee",)):
             # 'figure.figsize': ieee2c,
             # 'figure.dpi': 300,
 
-            "savefig.dpi": 300,
+            "savefig.dpi": 600,
             "savefig.bbox": "standard",
             "savefig.pad_inches": 0.1,
             "savefig.transparent": True

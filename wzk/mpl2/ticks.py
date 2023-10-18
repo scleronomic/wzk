@@ -168,6 +168,13 @@ def remove_ticks(ax, v, axis="x"):
         ax.set_yticks(__remove_ticks(_axis="y"))
 
 
+def position2axis(position):
+    p_list = ["bottom", "top", "left", "right"]
+    ip = p_list.index(position)
+    axis = "x" if ip//2 == 0 else "y"
+    return axis, ip
+
+
 def change_tick_appearance(ax, position, v, size=None, color=None):
     """
     x: bottom, top
@@ -181,9 +188,7 @@ def change_tick_appearance(ax, position, v, size=None, color=None):
             h_i.set_markeredgecolor(c)
 
     # Handle different positions and axis
-    p_list = ["bottom", "top", "left", "right"]
-    ip = p_list.index(position)
-    axis = "x" if ip//2 == 0 else "y"
+    axis, ip = position2axis(position=position)
     h = ax.xaxis.get_majorticklines() if axis == "x" else ax.yaxis.get_majorticklines()
 
     idx = get_ticks_index(ax=ax, axis=axis, v=v, squeeze=False)
@@ -191,6 +196,27 @@ def change_tick_appearance(ax, position, v, size=None, color=None):
 
     for i in idx:
         __apply(h_i=h[i], s=size, c=color)
+
+
+def change_label_appearance(ax, position, v, color, xt=0., yt=0.):
+
+    def __apply(h_i, _color, _xt, _yt):
+        if _color is not None:
+            h_i.set_color(_color)
+        __transform_label(ax=ax, h_label=h_i, xt=_xt, yt=_yt)
+        # if c is not None:
+        #     h_i.set_markeredgecolor(c)
+
+    # Handle different positions and axis
+    axis, ip = position2axis(position=position)
+    h = ax.xaxis.get_ticklabels() if axis == "x" else ax.yaxis.get_ticklabels()
+
+    idx = get_ticks_index(ax=ax, axis=axis, v=v, squeeze=False)
+
+    for i in idx:
+        __apply(h_i=h[i], _color=color, _xt=xt, _yt=yt)
+
+
 
 
 def add_ticks(ax, ticks, labels=None, axis="x"):
@@ -243,26 +269,30 @@ def set_ticks_and_labels(ax, ticks=None, labels=None, axis="x"):
         __set_ticks(_set_ticks=ax.set_yticks, _set_ticklabels=ax.set_yticklabels, _ticks=ticks, _labels=labels)
 
 
+
+def __transform_label(ax, h_label, xt=0., yt=0., ha=None, va=None):
+    if xt != 0 or yt != 0:
+        offset = transforms.ScaledTranslation(xt=xt, yt=yt, scale_trans=ax.get_figure().dpi_scale_trans)
+        h_label.set_transform(h_label.get_transform() + offset)
+
+    if va is not None:
+        h_label.set_va(va)
+    if ha is not None:
+        h_label.set_ha(ha)
+
+
 def transform_tick_labels(ax, xt=0., yt=0., rotation=0., axis="x", ha=None, va=None):
-    offset = transforms.ScaledTranslation(xt=xt, yt=yt, scale_trans=ax.get_figure().dpi_scale_trans)
 
     if rotation != 0:
         ax.tick_params(axis=axis, rotation=rotation)
 
-    def __set_alignment(lbl):
-        if va is not None:
-            lbl.set_va(va)
-        if ha is not None:
-            lbl.set_ha(ha)
-
     if "x" in axis or "both" in axis:
         for label in ax.xaxis.get_majorticklabels():
-            label.set_transform(label.get_transform() + offset)
-            __set_alignment(lbl=label)
+            __transform_label(ax=ax, h_label=label, xt=xt, yt=yt, ha=ha, va=va)
+
     if "y" in axis or "both" in axis:
         for label in ax.yaxis.get_majorticklabels():
-            label.set_transform(label.get_transform() + offset)
-            __set_alignment(lbl=label)
+            __transform_label(ax=ax, h_label=label, xt=xt, yt=yt, ha=ha, va=va)
 
 
 def handle_newline(newline, n):
