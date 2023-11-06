@@ -89,7 +89,7 @@ def test_unit_circle():
 
 
 def test_gui():
-    n = 3
+    n = 5
     p = np.random.random((n, 2))
     u = np.linspace(0., 1, 20)
 
@@ -99,21 +99,28 @@ def test_gui():
     dcl = DraggableCircleList(ax=ax, xy=p, radius=0.02, color="r")
     nurbs = NURBS(p=p, degree=3)
     x = nurbs.evaluate(u)
-    h = ax.plot(*x.T, color="k", marker="o", lw=3)[0]
+    h_spline = ax.plot(*x.T, color="k", marker="o", lw=3)[0]
+    h_base = ax.plot(*p.T, color="r", marker="o", lw=2)[0]
+
 
     def update(*args):  # noqa
-        nurbs.p = dcl.get_xy()
-        xx = nurbs.evaluate(u)
-        h.set_xdata(xx[:, 0])
-        h.set_ydata(xx[:, 1])
+        x_base = dcl.get_xy()
+
+        nurbs.p = x_base
+        x_spline = nurbs.evaluate(u)
+        h_spline.set_xdata(x_spline[:, 0])
+        h_spline.set_ydata(x_spline[:, 1])
+        h_base.set_xdata(x_base[:, 0])
+        h_base.set_ydata(x_base[:, 1])
 
     dcl.set_callback_drag(update)
 
 
 if __name__ == "__main__":
-    pass
+    # pass
     # pass
     # test_random_jac()
     # test_basis_function()
     # test_unit_circle()
     # test_random()
+    test_gui()

@@ -218,7 +218,6 @@ def change_label_appearance(ax, position, v, color, xt=0., yt=0.):
 
 
 
-
 def add_ticks(ax, ticks, labels=None, axis="x"):
 
     assert axis in ("x", "y", "xy", "both")
@@ -267,7 +266,6 @@ def set_ticks_and_labels(ax, ticks=None, labels=None, axis="x"):
 
     if "y" in axis or axis == "both":
         __set_ticks(_set_ticks=ax.set_yticks, _set_ticklabels=ax.set_yticklabels, _ticks=ticks, _labels=labels)
-
 
 
 def __transform_label(ax, h_label, xt=0., yt=0., ha=None, va=None):
