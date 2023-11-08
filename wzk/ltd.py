@@ -77,6 +77,8 @@ def totuple(a):
 def tolist(a):
     if isinstance(a, str) and len(a) == 1:
         return a
+    if isinstance(a, np.ndarray):
+        return a.tolist()
     try:
         return list(tolist(i) for i in a)
     except TypeError:
