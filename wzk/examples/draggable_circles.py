@@ -17,7 +17,7 @@ h_x = ax.plot(*x.T, marker="o", color="blue")[0]
 h_img = mpl2.imshow(img=img, mask=~img, limits=limits, ax=ax, cmap="binary", zorder=-1)
 
 
-def callback(*args):
+def callback(*args):  # noqa
     x_cur = dcl.get_xy()
     img_cur = bimage.spheres2bimg(x=x_cur, r=r, shape=shape, limits=limits)
 

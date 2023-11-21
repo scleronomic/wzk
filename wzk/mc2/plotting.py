@@ -113,7 +113,7 @@ def plot_faces(vis, h, x, faces, color=default_color, alpha=1.0):
     vis[h].set_object(geometry=mg.TriangularMeshGeometry(vertices=x, faces=faces), material=material)
 
 
-def plot_spheres(vis, h, x, r, color=default_color, alpha=1.0, wireframe=False, **kwargs):
+def plot_spheres(vis, h, x, r, color=default_color, alpha=1.0, wireframe=False, **kwargs):  # noqa
     material = get_material(color=color, alpha=alpha, wireframe=wireframe)
     x = np.atleast_2d(x)
     r = np.atleast_1d(r)
@@ -283,7 +283,7 @@ def __load_mesh(mesh):
     return MeshGeometry_DICT[ext].from_file(mesh)
 
 
-def plot_meshes(vis, h, meshes, f=None, color="white", alpha=1., **kwargs):
+def plot_meshes(vis, h, meshes, f=None, color="white", alpha=1., **kwargs):  # noqa
     material = get_material(color=color, alpha=alpha)
 
     for hh, mm in zip(h, meshes):

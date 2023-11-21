@@ -271,14 +271,15 @@ def projection_point_plane(p: np.ndarray,
     """
     Projection of point p on the plane ouv.
     Defined by its origin o and two vectors spanning the plane u and v.
-              p .
-                |
-                v
-         v ^  - - -
-          /        /
-         o ----->
-               u
-
+    |
+    |          p .
+    |            |
+    |            v
+    |     v ^  - - -
+    |      /        /
+    |     o ----->
+    |           u
+    |
     If clip is True, the projection is clipped / projected on the sheet o, o+u, o+u+v, o+v
     """
 

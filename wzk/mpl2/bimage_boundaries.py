@@ -85,7 +85,7 @@ def combine_edges(ij_edges, clean=True):
 
         while ij_edges.size != 0:
             # Get next boundary edge (edge with common node)
-            ij = np.nonzero((ij_edges == xy_cl[-1]).all(axis=2))
+            ij = np.nonzero(np.all(ij_edges == xy_cl[-1], axis=2))
             if ij[0].size > 0:
                 i = ij[0][0]
                 j = ij[1][0]

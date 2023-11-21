@@ -18,7 +18,7 @@ def vis_rotvec():
     x = np.zeros((5, 3))
     x[:, 2] = np.arange(5)
     rv = np.zeros((5, 3))
-    # rv[:, :] = np.array([[0.3, 0.2, 0.1]])  # its not the same as multiplying a z rotation matrix on that frame
+    # rv[:, :] = np.array([[0.3, 0.2, 0.1]])  # it's not the same as multiplying a z rotation matrix on that frame
     rv[1, 2] += np.pi/2
     rv[2, 2] += np.pi
     rv[3, 2] += 2*np.pi

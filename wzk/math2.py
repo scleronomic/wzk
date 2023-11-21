@@ -14,6 +14,7 @@ def make_mono_descending(x):  # TODO better name and place
         x[i] = x[:i+1].min()
     return x
 
+
 def number2digits(num):
     return [int(x) for x in str(num)]
 

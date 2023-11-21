@@ -38,7 +38,7 @@ def dcm2euler(dcm, seq="ZXZ"):
 
 def dcm2quaternions(dcm):
     return Rotation.from_matrix(dcm.reshape((-1, 3, 3))
-                                ).as_quat().reshape(dcm.shape[:-2] + (4,))
+                                ).as_quat(canonical=False).reshape(dcm.shape[:-2] + (4,))
 
 
 def dcm2rotvec(dcm):
@@ -387,4 +387,3 @@ def check_side_of_plane(o, u, v, x):
 
     side = x[:, 2] > 0
     return side
-

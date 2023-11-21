@@ -217,7 +217,6 @@ def change_label_appearance(ax, position, v, color, xt=0., yt=0.):
         __apply(h_i=h[i], _color=color, _xt=xt, _yt=yt)
 
 
-
 def add_ticks(ax, ticks, labels=None, axis="x"):
 
     assert axis in ("x", "y", "xy", "both")

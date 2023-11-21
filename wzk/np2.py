@@ -436,7 +436,7 @@ def find_subarray(a, b):
 
     window = len(b)
     a_window = rolling_window(a=a, window=window)
-    idx = np.nonzero((a_window == b).sum(axis=-1) == window)[0]
+    idx = np.nonzero(np.sum(a_window == b, axis=-1) == window)[0]
     return idx
 
 
@@ -710,7 +710,7 @@ def matsort(mat, order_j=None):
 def idx2boolmat(idx, n=100):
     """
     The last dimension of idx contains the indices. n-1 is the maximal possible index
-    Returns matrix with shape np.shape(idx)[:-1] + (n,)
+    Returns matrix with shape 'np.shape(idx)[:-1] + (n, )'
 
     """
 
@@ -776,13 +776,13 @@ def block_view(a, shape, aslist=False, require_aligned_blocks=True):
                                 If False, "leftover" items that cannot be made into complete blocks
                                 will be discarded from the output view.
     Here's a 2D example (this function also works for ND):
-    # >>> a = np.arange(1,21).reshape(4,5)
-    # >>> print(a)
+    # >>> arr = np.arange(1,21).reshape(4,5)
+    # >>> print(arr)
     [[ 1  2  3  4  5]
      [ 6  7  8  9 10]
      [11 12 13 14 15]
      [16 17 18 19 20]]
-    # >>> view = blockwise_view(a, (2,2), require_aligned_blocks=False)
+    # >>> view = blockwise_view(arr, (2,2), require_aligned_blocks=False)
     # >>> print(view)
     [[[[ 1  2]
        [ 6  7]]

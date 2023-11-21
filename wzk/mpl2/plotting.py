@@ -98,7 +98,7 @@ def color_plot_connected(y, color_s, x=None, connect_jumps=True, ax=None, **kwar
     """
     Parameter
     ---------
-    ax: matplotlib.axes
+    ax: matplotlib-axes
     y: array_like
         y-Measurements
     color_s: array_like
@@ -140,7 +140,7 @@ def line_2colored(x, y, colors, ax=None, **kwargs):
     Plot a line with 2 colors.
     Parameter
     ---------
-    ax: matplotlib.axes
+    ax: matplotlib-axes
     x:
         x-Measurements, 2 points
     y:

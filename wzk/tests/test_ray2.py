@@ -6,7 +6,7 @@
 #
 #
 # def speed():
-#     # nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros']
+#     # nodes = ['rmc-lx0062', 'philotes', 'polyxo', 'poros',
 #     #          'rmc-galene', 'rmc-lx0271', 'rmc-lx0141', 'rmc-lx0392']
 #     # n_cpu = start_ray_cluster(head=None, nodes=nodes, perc=50)
 #     n_cpu = 30
