@@ -1,12 +1,12 @@
 import os
 import sys
 
-import pkg_resources
 from subprocess import call
+from importlib import metadata
 
 
 def upgrade_all():
-    packages = [dist.project_name for dist in pkg_resources.working_set]
+    packages = [dist.name for dist in metadata.distributions()]
     call("pip install --upgrade " + " ".join(packages), shell=True)
 
 

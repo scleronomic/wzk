@@ -345,7 +345,7 @@ def load_meshes2numpy(files):
 
 def transform_meshes():
 
-    directory = "/Users/jote/Documents/Code/Python/src/rokin-meshes/rokin-meshes/JustinHand12/binary_stl"
+    directory = "/Users/jote/Documents/Code/Python/src/rokin-meshes/rokin-meshes/DLRHand12/binary_stl"
     files = [
              # f"{directory}/finger_dist_pill_skin_cal_combined.stl",
              # f"{directory}/finger_dist_pill_skin_cal_sphere.stl",
