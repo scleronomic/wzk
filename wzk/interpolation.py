@@ -366,9 +366,10 @@ def dummy2():
     # y_fine_diff_fine_smooth_cs = np.cumsum(np.concatenate([y[:1],
     #                                                        np.repeat(y_fine_diff_fine_smooth[0], 4),
     #                                                        y_fine_diff_fine_smooth / 5 ]))
-    y_fine_diff_fine_cs = np.cumsum(np.concatenate([y[:1],
-                                                    np.repeat(y_fine_diff_fine[0], n_fraction-1) / n_fraction,
-                                                    y_fine_diff_fine / n_fraction]))
+    # y_fine_diff_fine_cs = np.cumsum(np.concatenate([y[:1],
+    #                                                 np.repeat(y_fine_diff_fine[0], n_fraction-1) / n_fraction,
+    #                                                 y_fine_diff_fine / n_fraction]))
+
     y_fine_diff_cs = np.cumsum(np.concatenate([y[:1], y_fine_diff]))
     y_fine_diff2_cs = np.cumsum(np.concatenate([y[:1], y_fine_diff2]))
     # y_fine_diff_fine_smooth_cs = np.cumsum(y_fine_diff_fine_smooth / 5) + y[0]
