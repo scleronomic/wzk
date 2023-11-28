@@ -1,7 +1,6 @@
 import numpy as np
 
-from wzk.np2 import block_shuffle
-from wzk.ltd import change_tuple_order
+from wzk import random2, ltd
 
 
 def n2train_test(n, split=0.2):
@@ -36,13 +35,13 @@ def train_test_split(*args,
     if shuffle:
         if seed is not None:
             np.random.seed(seed)
-        idx = block_shuffle(n, block_size=shuffle_block_size)
+        idx = random2.block_shuffle(n, block_size=shuffle_block_size)
         args = [a[idx] for a in args]
 
     if split == -1:
-        return change_tuple_order((a, a) for a in args)
+        return ltd.change_tuple_order((a, a) for a in args)
     else:
         n_train, n_test = n2train_test(n=n, split=split)
 
-        train_test_tuple = change_tuple_order(np.split(a, [n_train]) for a in args)
+        train_test_tuple = ltd.change_tuple_order(np.split(a, [n_train]) for a in args)
         return train_test_tuple  # ttt

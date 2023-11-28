@@ -1,9 +1,8 @@
 import zlib
 import numpy as np
-from scipy.signal import convolve2d
 from skimage.io import imread, imsave  # noqa
 
-from wzk import np2, ltd, math2
+from wzk import np2, math2
 from wzk.grid import limits2voxel_size, grid_x2i, grid_i2x  # noqa
 
 from wzk.bimage import sample_bimg_i
@@ -122,25 +121,6 @@ def add_padding(img, padding, value):
     return new_img
 
 
-def block_collage(*, img_arr, inner_border=None, outer_border=None, fill_boarder=0, dtype=float):
-
-    assert img_arr.ndim == 4
-    n_rows, n_cols, n_x, n_y = img_arr.shape
-
-    bv_i, bh_i = ltd.tuple_extract(inner_border, default=(0, 0), mode="repeat")
-    bv_o, bh_o = ltd.tuple_extract(outer_border, default=(0, 0), mode="repeat")
-
-    img = np.full(shape=(n_x * n_rows + bv_i * (n_rows - 1) + 2*bv_o,
-                         n_y * n_cols + bh_i * (n_cols - 1) + 2*bh_o), fill_value=fill_boarder, dtype=dtype)
-
-    for r in range(n_rows):
-        for c in range(n_cols):
-            img[bv_o + r * (n_y + bv_i):bv_o + (r + 1) * (n_y + bv_i) - bv_i,
-                bh_o + c * (n_x + bh_i):bh_o + (c + 1) * (n_x + bh_i) - bh_i] = img_arr[r, c]
-
-    return img
-
-
 def pooling(mat, kernel, method="max", pad=False):
     """
     Non-overlapping pooling on 2D or 3D Measurements.
@@ -181,132 +161,6 @@ def pooling(mat, kernel, method="max", pad=False):
         result = np.nanmean(mat_pad.reshape(new_shape), axis=(1, 3))
 
     return result
-
-
-def tile_2d(*, pattern, v_in_row, v_to_next_row, offset=(0, 0),
-            shape):
-    """
-
-    Examples:
-
-    # Point A
-    pattern = np.ones((1, 1))
-    shape = (11, 11)
-    offset = (0, 0)
-    v_in_row = 4
-    v_to_next_row = (1, 2)
-
-    # [[1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0]]
-
-    # Point B
-    pattern = np.ones((1, 1))
-    shape = (11, 11)
-    offset = (0, 0)
-    v_in_row = 5
-    v_to_next_row = (1, 2)
-
-    # [[1 0 0 0 0 1 0 0 0 0 1]
-    #  [0 0 1 0 0 0 0 1 0 0 0]
-    #  [0 0 0 0 1 0 0 0 0 1 0]
-    #  [0 1 0 0 0 0 1 0 0 0 0]
-    #  [0 0 0 1 0 0 0 0 1 0 0]
-    #  [1 0 0 0 0 1 0 0 0 0 1]
-    #  [0 0 1 0 0 0 0 1 0 0 0]
-    #  [0 0 0 0 1 0 0 0 0 1 0]
-    #  [0 1 0 0 0 0 1 0 0 0 0]
-    #  [0 0 0 1 0 0 0 0 1 0 0]
-    #  [1 0 0 0 0 1 0 0 0 0 1]]
-
-    # Dumbbell
-    pattern = np.ones((2, 2))
-    pattern[0, 1] = 0
-    pattern[1, 0] = 0
-    shape = (16, 16)
-    offset = (0, 0)
-    v_in_row = 7
-    v_to_next_row = (1, 3)
-
-    # [[1 0 0 0 0 1 0 1 0 0 0 0 1 0 1 0]
-    #  [0 1 0 1 0 0 0 0 1 0 1 0 0 0 0 1]
-    #  [0 0 0 0 1 0 1 0 0 0 0 1 0 1 0 0]
-    #  [1 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0]
-    #  [0 0 0 1 0 1 0 0 0 0 1 0 1 0 0 0]
-    #  [0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 1]
-    #  [0 0 1 0 1 0 0 0 0 1 0 1 0 0 0 0]
-    #  [1 0 0 0 0 1 0 1 0 0 0 0 1 0 1 0]
-    #  [0 1 0 1 0 0 0 0 1 0 1 0 0 0 0 1]
-    #  [0 0 0 0 1 0 1 0 0 0 0 1 0 1 0 0]
-    #  [1 0 1 0 0 0 0 1 0 1 0 0 0 0 1 0]
-    #  [0 0 0 1 0 1 0 0 0 0 1 0 1 0 0 0]
-    #  [0 1 0 0 0 0 1 0 1 0 0 0 0 1 0 1]
-    #  [0 0 1 0 1 0 0 0 0 1 0 1 0 0 0 0]
-    #  [1 0 0 0 0 1 0 1 0 0 0 0 1 0 1 0]
-    #  [0 1 0 1 0 0 0 0 1 0 1 0 0 0 0 1]]
-
-    # Triangle
-    pattern = np.ones((2, 2))
-    pattern[0, 1] = 0
-    shape = (10, 10)
-    offset = (0, 0)
-    v_in_row = 8
-    v_to_next_row = (1, 3)
-
-    # [[1 0 0 0 0 1 1 0 1 0]
-    #  [1 1 0 1 0 0 0 0 1 1]
-    #  [0 0 0 1 1 0 1 0 0 0]
-    #  [0 1 0 0 0 0 1 1 0 1]
-    #  [0 1 1 0 1 0 0 0 0 1]
-    #  [0 0 0 0 1 1 0 1 0 0]
-    #  [1 0 1 0 0 0 0 1 1 0]
-    #  [0 0 1 1 0 1 0 0 0 0]
-    #  [1 0 0 0 0 1 1 0 1 0]
-    #  [1 1 0 1 0 0 0 0 1 1]]
-
-    # Cross
-    pattern = np.zeros((3, 3))
-    pattern[1, :] = 1
-    pattern[:, 1] = 1
-    shape = (13, 13)
-    offset = (1, 1)
-    v_in_row = 4
-    v_to_next_row = (3, 2)
-
-    # [[1 1 0 1 1 1 0 1 1 1 0 1 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0 0 1]
-    #  [0 0 1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 1 1 1 0 1 1 1 0 1 1 1 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1 0 0]
-    #  [1 0 0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 1 0 1 1 1 0 1 1 1 0 1 1]
-    #  [1 0 0 0 1 0 0 0 1 0 0 0 1]
-    #  [0 0 1 0 0 0 1 0 0 0 1 0 0]
-    #  [0 1 1 1 0 1 1 1 0 1 1 1 0]
-    #  [0 0 1 0 0 0 1 0 0 0 1 0 0]
-    #  [1 0 0 0 1 0 0 0 1 0 0 0 1]
-    #  [1 1 0 1 1 1 0 1 1 1 0 1 1]]
-    """
-    nodes = np.zeros((shape[0]+v_to_next_row[0], shape[1]+v_in_row))
-
-    for ii, i in enumerate(range(0, nodes.shape[0], v_to_next_row[0])):
-        nodes[i, range((ii*v_to_next_row[1]) % v_in_row, nodes.shape[1], v_in_row)] = 1
-
-    img = convolve2d(nodes, pattern, mode="full")
-
-    ll = (v_to_next_row[0] + offset[0],
-          v_to_next_row[1] + offset[1])
-
-    return img[ll[0]:ll[0]+shape[0],
-               ll[1]:ll[1]+shape[1]]
 
 
 def check_overlap(a, b, return_arr=False):

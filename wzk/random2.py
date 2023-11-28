@@ -125,3 +125,37 @@ def choose_from_uniform_grid(x, n):
 
     i = [np.random.choice(np.nonzero(inv == j)[0]) for j in iu]
     return np.array(i, dtype=int)
+
+
+def block_shuffle(arr, block_size, inside=False):
+    """
+    Shuffle the array along the first dimension,
+    if block_size > 1, keep as many elements together and shuffle the n // block_size blocks
+    """
+
+    if isinstance(arr, int):
+        n = arr
+        arr = np.arange(n)
+    else:
+        n = arr.shape[0]
+
+    if block_size == 1:
+        np.random.shuffle(arr)
+        return arr
+
+    assert block_size > 0
+    assert isinstance(block_size, int)
+    assert n % block_size == 0
+    n_blocks = n // block_size
+
+    if inside:
+        idx = np.arange(n)
+        for i in range(0, n, block_size):
+            np.random.shuffle(idx[i:i + block_size])
+        return arr[idx]
+
+    else:
+        idx_block = np.arange(n_blocks)
+        np.random.shuffle(idx_block)
+        idx_ele = np2.expand_block_indices(idx_block=idx_block, block_size=block_size, squeeze=True)
+        return arr[idx_ele]

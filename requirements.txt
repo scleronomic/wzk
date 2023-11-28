@@ -10,7 +10,7 @@ zlib~=1.2.12
 pyvista~=0.37.0
 matplotlib~=3.6.2
 
-ray~=1.9.2
+ray~=2.8
 setuptools~=68.2.2
 
 fire~=0.4.0

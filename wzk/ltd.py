@@ -3,6 +3,7 @@ import json
 from collections.abc import Iterable
 from collections import namedtuple
 import copy
+
 import numpy as np
 
 
