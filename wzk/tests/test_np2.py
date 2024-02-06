@@ -181,6 +181,21 @@ class Test(TestCase):
             ax.plot(x, x2, color="blue")
             ax.hlines(y=[a_min, a_max], xmin=np.min(x), xmax=np.max(x), color="red")
 
+    def test_diag_wrapper(self):
+        a = np.array([[2, 0, 0, 0],
+                      [0, 2, 0, 0],
+                      [0, 0, 2, 0],
+                      [0, 0, 0, 2]])
+        b = np.array([[2, 0, 0],
+                      [0, 3, 0],
+                      [0, 0, 4]])
+
+        self.assertTrue(np.allclose(np2.diag_wrapper(n=4, x=2), a))
+        self.assertTrue(np.allclose(np2.diag_wrapper(n=3, x=[2, 3, 4]), b))
+
+        self.assertTrue(np.allclose(np2.diag_wrapper(n=4, x=a), a))
+        self.assertTrue(np.allclose(np2.diag_wrapper(n=3, x=b), b))
+
 
 if __name__ == "__main__":
     pass

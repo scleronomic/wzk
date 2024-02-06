@@ -428,39 +428,49 @@ def numeric_derivative(fun, x, eps=1e-5, axis=-1, mode="central",
 
 
 # Magic
-def magic(n):
+def magic(n, m=None):
     """
     Equivalent of the MATLAB function:
     M = magic(n) returns an n-by-n matrix constructed from the integers 1 through n2 with equal row and column sums.
     https://stackoverflow.com/questions/47834140/numpy-equivalent-of-matlabs-magic
+
+    when a rectangle shape is given, the function returns just the sub-matrix. here the original properties do no
+    longer hold.
     """
 
-    n = int(n)
+    if m is None:
+        m = n
+
+    shape = (n, m)
+    n = int(max(n, m))
 
     if n < 1:
         raise ValueError("Size must be at least 1")
     if n == 1:
-        return np.array([[1]])
+        mat = np.array([[1]])
     elif n == 2:
-        return np.array([[1, 3], [4, 2]])
+        mat = np.array([[1, 3],
+                         [4, 2]])
     elif n % 2 == 1:
         p = np.arange(1, n+1)
-        return n*np.mod(p[:, None] + p - (n+3)//2, n) + np.mod(p[:, None] + 2*p-2, n) + 1
+        mat = n*np.mod(p[:, None] + p - (n+3)//2, n) + np.mod(p[:, None] + 2*p-2, n) + 1
     elif n % 4 == 0:
         j = np.mod(np.arange(1, n+1), 4) // 2
         k = j[:, None] == j
-        m = np.arange(1, n*n+1, n)[:, None] + np.arange(n)
-        m[k] = n*n + 1 - m[k]
+        mat = np.arange(1, n*n+1, n)[:, None] + np.arange(n)
+        mat[k] = n*n + 1 - m[k]
     else:
         p = n//2
-        m = magic(p)
-        m = np.block([[m, m+2*p*p], [m+3*p*p, m+p*p]])
+        mat = magic(p)
+        mat = np.block([[mat, mat+2*p*p], [mat+3*p*p, mat+p*p]])
         i = np.arange(p)
         k = (n-2)//4
         j = np.concatenate([np.arange(k), np.arange(n-k+1, n)])
-        m[np.ix_(np.concatenate([i, i+p]), j)] = m[np.ix_(np.concatenate([i+p, i]), j)]
-        m[np.ix_([k, k+p], [0, k])] = m[np.ix_([k+p, k], [0, k])]
-    return m
+        mat[np.ix_(np.concatenate([i, i+p]), j)] = m[np.ix_(np.concatenate([i+p, i]), j)]
+        mat[np.ix_([k, k+p], [0, k])] = m[np.ix_([k+p, k], [0, k])]
+
+    mat = mat[:shape[0], :shape[1]]
+    return mat
 
 
 # Clustering

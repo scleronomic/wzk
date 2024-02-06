@@ -11,6 +11,21 @@ from scipy import optimize
 
 # bayes_opt and pyswarms seem so infinitely slow compared to SLSQP, not sure when they are better suited
 
+class SolverPar:
+
+    __slots__ = ["name", "options"]
+
+    def __init__(self, name="PyOpt-SLSQP"):
+
+        self.name = name
+        self.options = {"maxiter": 1000,
+                        "disp": False,  # True
+                        "ftol": 1e-7,
+                        "sens_step": 1e-7,
+                        "sens_type": "fd",  # "fd" or "cs"
+                        "pll_type": None}  # "POA" or None  | I measured no speed difference
+
+
 def print_result(res, verbose):
     if verbose > 1:
         print("------ Result ------")
@@ -135,32 +150,32 @@ def minimize_swarms(fun, x0, options, verbose=0):
     return x
 
 
-def minimize(method, fun, x0, options, verbose):
-    if "PyOpt" in method:
-        if method == "PyOpt-SLSQP":
+def minimize(solver, fun, x0, options, verbose):
+    if "PyOpt" in solver:
+        if solver == "PyOpt-SLSQP":
             x = minimize_slsqp(fun=fun, x0=x0, options=options, verbose=verbose - 1)
-        elif method == "PyOpt-COBYLA":
+        elif solver == "PyOpt-COBYLA":
             x = minimize_cobyla(fun=fun, x0=x0, options=options, verbose=verbose - 1)
         else:
-            raise ValueError(f"Unknown optimizer: {method}")
+            raise ValueError(f"Unknown optimizer: {solver}")
 
-    elif "SciPy" in method:
-        if method == "SciPy-LS":
+    elif "SciPy" in solver:
+        if solver == "SciPy-LS":
             x = optimize.least_squares(fun=fun, x0=x0, method="lm").x
 
         else:
-            method = method.split("-")[1]
-            method = method.lower()
-            x = optimize.minimize(fun=fun, x0=x0, method=method, tol=1e-13,
+            solver = solver.split("-")[1]
+            solver = solver.lower()
+            x = optimize.minimize(fun=fun, x0=x0, method=solver, tol=1e-13,
                                   options=dict(disp=True, maxiter=1000)).x
 
-    elif "Bayes" in method:
+    elif "Bayes" in solver:
         x = minimize_bayes_opt(fun=fun, x0=x0, options=options)
 
-    elif "Swarms" in method:
+    elif "Swarms" in solver:
         x = minimize_swarms(fun=fun, x0=x0, options=options)
 
     else:
-        raise ValueError(f"Unknown optimizer: {method}")
+        raise ValueError(f"Unknown optimizer: {solver}")
 
     return x

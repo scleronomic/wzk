@@ -370,6 +370,20 @@ def replace_tail_roll_list(arr_list, arr_new_list):
     return (replace_tail_roll(a=arr, b=arr_new) for (arr, arr_new) in zip(arr_list, arr_new_list))
 
 
+
+
+def diag_wrapper(n, x):
+    x = np.asarray(x)
+
+    if np.all(x.shape == (n, n)):
+        pass
+    else:
+        d = np.eye(n)
+        d[range(n), range(n)] = x
+
+    return d
+
+
 def create_constant_diagonal(n, m, v, k):
     diag = np.eye(N=n, M=m, k=k) * v[0]
     for i in range(1, len(v)):

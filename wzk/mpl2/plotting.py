@@ -15,7 +15,7 @@ from wzk import math2, np2, ltd, limits as limits2, printing
 def imshow(img: np.ndarray, ax: plt.Axes = None, h=None,
            cmap=None,
            limits: np.ndarray = None, origin: str = "lower", axis_order: str = "ij->yx",
-           mask: np.ndarray | bool = None, vmin: float = None, vmax: float = None, **kwargs):
+           mask: np.ndarray = None, vmin: float = None, vmax: float = None, **kwargs):
     """
 
     ## origin: upper
