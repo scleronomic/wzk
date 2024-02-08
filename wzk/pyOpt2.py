@@ -46,7 +46,7 @@ def fw_objective_pyopt(fun):
 def create_opt_problem(fun, x0, lower=-1., upper=+1.):
     opt_prob = Optimization("", fw_objective_pyopt(fun))
     for i, x0_i in enumerate(x0):
-        opt_prob.addVar(f"x{i+1}", "c", lower=x0_i+lower, upper=x0_i+upper, value=x0_i)
+        opt_prob.addVar(f"x{i+1}", "c", lower=lower, upper=upper, value=x0_i)
     opt_prob.addObj("f")
     return opt_prob
 

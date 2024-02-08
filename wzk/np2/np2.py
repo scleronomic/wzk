@@ -370,10 +370,10 @@ def replace_tail_roll_list(arr_list, arr_new_list):
     return (replace_tail_roll(a=arr, b=arr_new) for (arr, arr_new) in zip(arr_list, arr_new_list))
 
 
-
-
-def diag_wrapper(n, x):
+def diag_wrapper(x, n=None):
     x = np.asarray(x)
+    if n is None:
+        n = x.shape[0]
 
     if np.all(x.shape == (n, n)):
         pass
