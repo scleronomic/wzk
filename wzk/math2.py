@@ -458,7 +458,7 @@ def magic(n, m=None):
         j = np.mod(np.arange(1, n+1), 4) // 2
         k = j[:, None] == j
         mat = np.arange(1, n*n+1, n)[:, None] + np.arange(n)
-        mat[k] = n*n + 1 - m[k]
+        mat[k] = n*n + 1 - mat[k]
     else:
         p = n//2
         mat = magic(p)
@@ -466,8 +466,8 @@ def magic(n, m=None):
         i = np.arange(p)
         k = (n-2)//4
         j = np.concatenate([np.arange(k), np.arange(n-k+1, n)])
-        mat[np.ix_(np.concatenate([i, i+p]), j)] = m[np.ix_(np.concatenate([i+p, i]), j)]
-        mat[np.ix_([k, k+p], [0, k])] = m[np.ix_([k+p, k], [0, k])]
+        mat[np.ix_(np.concatenate([i, i+p]), j)] = mat[np.ix_(np.concatenate([i+p, i]), j)]
+        mat[np.ix_([k, k+p], [0, k])] = mat[np.ix_([k+p, k], [0, k])]
 
     mat = mat[:shape[0], :shape[1]]
     return mat
@@ -668,6 +668,7 @@ def solve_cho_damped(A, b, damping):
     x = x[..., 0]
     return x
     
+
 
 if __name__ == "__main__":
     test_dxnorm_dx()

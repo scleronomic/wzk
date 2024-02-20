@@ -6,6 +6,8 @@ from pyOpt.pyCOBYLA.pyCOBYLA import COBYLA
 from pyOpt import Optimization
 
 from scipy import optimize
+from wzk.opt import random
+
 # from scipy.optimize import least_squares, slsqp
 
 
@@ -19,8 +21,8 @@ class SolverPar:
 
         self.name = name
         self.options = {"maxiter": 1000,
-                        "disp": False,  # True
-                        "ftol": 1e-7,
+                        "disp": True,  # True
+                        "ftol": 1e-12,
                         "sens_step": 1e-7,
                         "sens_type": "fd",  # "fd" or "cs"
                         "pll_type": None}  # "POA" or None  | I measured no speed difference
@@ -168,6 +170,14 @@ def minimize(solver, fun, x0, options, verbose):
             solver = solver.lower()
             x = optimize.minimize(fun=fun, x0=x0, method=solver, tol=1e-13,
                                   options=dict(disp=True, maxiter=1000)).x
+
+    elif "wzk" in solver:
+        if solver == "wzk-randomball":
+            n_outer = 500
+            n_inner = 50
+            x, o = random.random_ball_search(fun=fun, x0=x0, n_outer=n_outer, n_inner=n_inner)
+        else:
+            raise ValueError(f"Unknown optimizer: {solver}")
 
     elif "Bayes" in solver:
         x = minimize_bayes_opt(fun=fun, x0=x0, options=options)

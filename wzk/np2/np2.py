@@ -424,7 +424,7 @@ def verbose_reject_x(title, x, b):
     else:
         mean = b.mean()
     print(f"{title}: {b.sum()}/{b.size} ~ {np.round(mean * 100, 3)}%")
-    return x[b]
+    return x[b].copy()
 
 
 def get_points_inbetween(x, extrapolate=False):

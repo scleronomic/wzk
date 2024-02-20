@@ -54,12 +54,12 @@ def mp_wrapper(*args, fun,
     """
 
     time_sleep = 0.01  # s
-    time_sleep2 = 0.01  # s
 
     if len(args) == 0:
         n_samples = n_processes
-    elif isinstance(args[0], int):
+    elif len(args) == 1 and isinstance(args[0], int):
         n_samples = args[0]
+        # args = []
     else:
         n_samples = len((args[0]))
 
@@ -81,16 +81,17 @@ def mp_wrapper(*args, fun,
             get_n_samples_per_process(n_samples=n_samples, n_processes=n_processes)
 
         if isinstance(args[0], int):
-            if max_chunk_size is not None:
+            if max_chunk_size is None:
+                def fun_i(i_process):
+                    np.random.seed(None)
+                    return fun(n_samples_pp[i_process])
+
+            else:
                 def fun_i(i_process):
                     np.random.seed(None)
                     n_s = n_samples_pp[i_process]
                     ns_pp, ns_pp_cs = get_n_samples_per_process(n_samples=n_s, n_processes=n_s // max_chunk_size)
                     return combine_results([fun(ns_pp_i) for ns_pp_i in ns_pp])
-            else:
-                def fun_i(i_process):
-                    np.random.seed(None)
-                    return fun(n_samples_pp[i_process])
 
         else:
             if max_chunk_size is not None:
@@ -130,7 +131,7 @@ def mp_wrapper(*args, fun,
 
     # Wait for the processes to finish
     for i in range(n_processes):
-        process_list[i].join(timeout=time_sleep2)
+        process_list[i].join(timeout=time_sleep)
 
     # Combine and return the results
     results = [result_queue.get() for _ in range(n_processes)]
