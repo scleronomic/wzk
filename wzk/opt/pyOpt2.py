@@ -13,6 +13,12 @@ from wzk.opt import random
 
 # bayes_opt and pyswarms seem so infinitely slow compared to SLSQP, not sure when they are better suited
 
+default_options = dict(maxiter=1000,
+                       disp=True,  # True
+                       ftol=1e-12,
+                       sens_step=1e-7,
+                       sens_type="fd",  # "fd" or "cs"
+                       pll_type=None)  # "POA" or None  | I measured no speed difference)
 class SolverPar:
 
     __slots__ = ["name", "options"]
@@ -20,12 +26,7 @@ class SolverPar:
     def __init__(self, name="PyOpt-SLSQP"):
 
         self.name = name
-        self.options = {"maxiter": 1000,
-                        "disp": True,  # True
-                        "ftol": 1e-12,
-                        "sens_step": 1e-7,
-                        "sens_type": "fd",  # "fd" or "cs"
-                        "pll_type": None}  # "POA" or None  | I measured no speed difference
+        self.options = default_options.copy()
 
 
 def print_result(res, verbose):
@@ -152,7 +153,10 @@ def minimize_swarms(fun, x0, options, verbose=0):
     return x
 
 
-def minimize(solver, fun, x0, options, verbose):
+def minimize(fun, x0, solver="PyOpt-SLSQP", options=None, verbose=0):
+    if options is None:
+        options = default_options.copy()
+
     if "PyOpt" in solver:
         if solver == "PyOpt-SLSQP":
             x = minimize_slsqp(fun=fun, x0=x0, options=options, verbose=verbose - 1)
@@ -173,7 +177,7 @@ def minimize(solver, fun, x0, options, verbose):
 
     elif "wzk" in solver:
         if solver == "wzk-randomball":
-            n_outer = 500
+            n_outer = 200
             n_inner = 50
             x, o = random.random_ball_search(fun=fun, x0=x0, n_outer=n_outer, n_inner=n_inner)
         else:

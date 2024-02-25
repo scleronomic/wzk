@@ -2,6 +2,7 @@ import numpy as np
 
 
 def random_ball_search(fun, n_outer, n_inner, x0, verbose=0):
+    x0 = x0.ravel()
     n_x = len(x0)
 
     x_outer = np.zeros((n_outer+1, n_x))
@@ -37,6 +38,7 @@ def random_ball_search(fun, n_outer, n_inner, x0, verbose=0):
 
 
 def random_line_search(fun, n_outer, n_inner, x0):
+    x0 = x0.ravel()
     n_x = len(x0)
 
     x_outer = np.zeros((n_outer+1, n_x))
