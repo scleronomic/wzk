@@ -29,6 +29,11 @@ def turn_ticks_and_labels_off(ax):
     turn_ticklabels_off(ax=ax)
 
 
+def set_spine_width(ax, lw):
+    for axis in ['top', 'bottom', 'left', 'right']:
+        ax.spines[axis].set_linewidth(lw)
+
+
 def __position2tlbr(position="default"):
     """map keywords to booleans indicating which axis are active"""
     bottom = top = left = right = False
