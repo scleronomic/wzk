@@ -156,6 +156,7 @@ def add_small2big(idx, small, big, mode_crop="center", mode_add="add"):
 
 
 def get_exclusion_mask(a, exclude_values):
+    exclude_values = np.atleast_1d(exclude_values)
     bool_a = np.ones_like(a, dtype=bool)
     for v in exclude_values:
         bool_a[a == v] = False

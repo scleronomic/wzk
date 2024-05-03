@@ -288,7 +288,7 @@ def plot_coordinate_frames(f,
             opacity = np.ones(3)
 
         color, opacity = np2.scalar2array(color, opacity, shape=3, safe=False)
-        h0 = [pv.Arrow(start=f[:3, -1]+shift[i]*f[:3, i], direction=f[:3, i], scale=scale) for i in range(3)]
+        h0 = [pv.Arrow(start=f[:3, -1]+shift[i]*f[:3, i], direction=np.sign(scale)*f[:3, i], scale=np.abs(scale)) for i in range(3)]
         if h is None:
             h1 = [pl.add_mesh(h0i, color=color[i], opacity=opacity[i], **kwargs) for i, h0i in enumerate(h0)]
             h = (h0, h1)
