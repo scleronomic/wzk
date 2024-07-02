@@ -6,7 +6,7 @@ try:  # must be imported before skimage / did not find out why yet
 except ImportError:
     pass
 
-from . import limits, files, opt
+from . import limits, files
 from .strings import uuid4
 
 from .mpl2.figure import new_fig  # must be imported before matplotlib
