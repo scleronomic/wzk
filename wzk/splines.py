@@ -45,7 +45,7 @@ class NURBS:
         f_in = self.divide(u - self.k[i],  self.k[i+n] - self.k[i])
         return f_in
 
-    def n_in(self, u, i, n):
+    def n_in(self, u, i, n):  # TODO precompute a lot of this stuff and make it more numpy like
         if n == 0:
             k0 = self.k[i]
             k1 = self.k[i+1]
@@ -85,3 +85,71 @@ class NURBS:
 
         r_in = self.divide(r_in, temp)
         return r_in
+
+
+def try_multidim_nurbs():
+    n_dim = 4
+    n_base = 5
+    p = np.random.random((n_base, n_dim))
+
+    nurbs = NURBS(p=p)
+    u = np.linspace(0, 1, 50)
+    x = nurbs.evaluate(u)
+
+    from wzk import mpl2
+
+    mpl2.plot_projections_2d(p, color="red")
+    mpl2.plot_projections_2d(x, color="blue")
+
+
+def try_nurbs_jacobi():
+    n_dim = 2
+    n_base = 5
+    p = np.random.random((n_base, n_dim))
+
+    nurbs = NURBS(p=p)
+    u = np.linspace(0, 1, 50)
+    x_spline = nurbs.evaluate(u)
+    j = nurbs.evaluate_jac(u)
+
+    from wzk import mpl2
+    fig, ax = mpl2.new_fig()
+
+    h_spline = ax.plot(*x_spline.T, color="k", marker="o", lw=3)[0]
+    h_base = ax.plot(*p.T, color="r", marker="o", lw=2)[0]
+
+    dx = np.zeros((len(u), 2))
+    dx[[1, -2], :] = -1
+    dx[25, :] = +1
+    for i in range(100):
+        print(i)
+        dp = (j[:, :, np.newaxis] * dx[:, np.newaxis, :]).sum(axis=0)
+        p = p + 0.01 * dp
+        _nurbs = NURBS(p=p)
+        _x_spline = _nurbs.evaluate(u)
+        h_base.set_xdata(p[:, 0])
+        h_base.set_ydata(p[:, 1])
+        h_spline.set_xdata(_x_spline[:, 0])
+        h_spline.set_ydata(_x_spline[:, 1])
+        mpl2.plt.pause(0.05)
+
+
+if __name__ == '__main__':
+    # try_multidim_nurbs()
+
+    try_nurbs_jacobi()
+
+    # input()
+
+# todo does the jacobi does not depend at all on the position of the basis points
+
+
+# TODO make 2d examples work with splines.
+#   try also new idea of just wiggeling a little to get a solution
+
+# TODO copy all the justin examples to my local machine and
+#   convert them to pickle
+#
+
+# TODO check how much time it needs to test 100 paths for feasibility. pretty sure I can use some heuristics
+#   to capture most of the behaviour seen in the request dataset

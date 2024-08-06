@@ -293,25 +293,6 @@ def sdbee2x(sdbee, se, eps=1e-4):
     return x
 
 
-def get_spline_coeffs(x, y, n=None, s=None):
-    if n is None:
-        spl = UnivariateSpline(x=x, y=y, s=s)
-        return spl.get_coeffs()
-
-    else:
-        s = len(x)
-        for i in range(100):
-            c = get_spline_coeffs(x=x, y=y, s=s)
-            if len(c) == n:
-                return c
-
-            if len(c) < n:
-                s *= 0.75
-            else:
-                s *= 1.5
-
-        raise ValueError
-
 
 def position2velocity(x, timestep):
     v = np.zeros_like(x)
@@ -356,6 +337,26 @@ def to_spline(x, n_c=4, start_end_mode=None):
         raise ValueError(f"Unknown start_end_mode='{start_end_mode}'")
 
     return c
+
+
+def get_spline_coeffs(x, y, n=None, s=None):
+    if n is None:
+        spl = UnivariateSpline(x=x, y=y, s=s)
+        return spl.get_coeffs()
+
+    else:
+        s = len(x)
+        for i in range(100):
+            c = get_spline_coeffs(x=x, y=y, s=s)
+            if len(c) == n:
+                return c
+
+            if len(c) < n:
+                s *= 0.75
+            else:
+                s *= 1.5
+
+        raise ValueError
 
 
 def set_spline_coeffs(spl, coeffs):
