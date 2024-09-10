@@ -1,0 +1,1 @@
+from openGJK import gjk

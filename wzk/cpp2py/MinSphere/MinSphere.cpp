@@ -2,6 +2,7 @@
 
 #include <CGAL/Cartesian_d.h>
 #include <CGAL/Min_sphere_of_spheres_d.h>
+
 #include <vector>
 #include <Python.h>
 

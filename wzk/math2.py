@@ -530,6 +530,36 @@ def vis_k_farthest_neighbors():
     ax.plot(*x[idx, :].T, ls="", marker="x", color="r", markersize=10)
 
 
+def wls(x, y, w):
+    """weighted least squares"""
+
+    xw = np.swapaxes(x, -1, -2) @ w
+    xwx = xw @ x
+    xwy = xw @ y
+    beta = np.linalg.inv(xwx) @ xwy
+    return beta
+
+
+def wls_1d(x, y, w):
+    """
+    weighted least squares - 1D
+
+    find best fit for:
+    beta_0 + x*beta_1 = y
+
+    """
+
+    w_sum = np.sum(w)
+    xw_sum = np.sum(x * w) / w_sum
+    yw_sum = np.sum(y * w) / w_sum
+
+    beta_1 = np.sum(w * (x - xw_sum) * (y - yw_sum)) / np.sum(w * (x - xw_sum)**2)
+    beta_0 = yw_sum - beta_1 * xw_sum
+
+    return beta_0, beta_1
+
+
+
 # Combinatorics
 def binomial(n, k):
     return np.math.factorial(n) // np.math.factorial(k) // np.math.factorial(n - k)

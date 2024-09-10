@@ -20,10 +20,10 @@ def get():
 
 def get_conda_site_packages():
     python_xy = f"python{sys.version_info[0]}{sys.version_info[1]}"
-    cs = os.environ.get("CONDA_PREFIX") + f"/lib/{python_xy}/site-packages/"
+    cs = os.environ.get("CONDA_PREFIX") + f"/lib/{python_xy}/site-packages"
     return cs
 
 
 def get_conda_include():
-    ci = os.environ.get("CONDA_PREFIX") + "/include/"
+    ci = os.environ.get("CONDA_PREFIX") + "/include"
     return ci

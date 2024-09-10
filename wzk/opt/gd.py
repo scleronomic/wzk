@@ -135,7 +135,7 @@ def gradient_descent(x, fun, grad, opt):
             x_list[i] = x
             o_list[i] = fun(x)  # only for debugging, is inefficient to call separately
 
-    o = fun(x=x)
+    o = fun(x)
 
     if __DEBUG:
         file = f"{__debug_directory}/gd_{time2.get_timestamp(millisecond=True)}__{strings.uuid4()}"
