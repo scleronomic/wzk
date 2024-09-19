@@ -293,7 +293,6 @@ def sdbee2x(sdbee, se, eps=1e-4):
     return x
 
 
-
 def position2velocity(x, timestep):
     v = np.zeros_like(x)
     v[1:] = (x[..., 1:, :] - x[..., :-1, :]) / timestep
