@@ -1,1 +1,1 @@
-from openGJK import gjk
+from .openGJK import gjk

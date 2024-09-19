@@ -822,7 +822,7 @@ def get_x_intersections(x_a, x_b, threshold=0.001, verbose=0):
         b_b = np.zeros(len(x_b), dtype=bool)
         for i in range(len(x_a)):
             if verbose > 0:
-                printing.progress_bar(i=i, n=len(x_a))
+                printing.progress_bar(i=i, n=len(x_a), )
             dn_ab = np.linalg.norm(x_a[i, :] - x_b[np.newaxis, :, :], axis=-1)
             intersection = dn_ab < threshold
             b_a[i] = np.any(intersection)

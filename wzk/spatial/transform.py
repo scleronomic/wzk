@@ -174,7 +174,7 @@ def trans_rotvec2frame(trans=None, rotvec=None):
     return f
 
 
-def trans_euler2frame(trans=None, euler=None, seq="ZXZ"):
+def trans_euler2frame(trans: object = None, euler: object = None, seq: object = "ZXZ") -> object:
     s = np2.get_max_shape(trans, euler)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)

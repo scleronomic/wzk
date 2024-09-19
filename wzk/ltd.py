@@ -307,7 +307,7 @@ def repeat_dict(d, n):
     for i in range(n):
         d_i = {}
         for key in d:
-            if isinstance(d[key], (tuple, list, np.ndarray)):
+            if isinstance(d[key], (tuple, list, np.ndarray)) and len(d[key]) == n:
                 d_i[key] = d[key][i]
             else:
                 d_i[key] = d[key]
