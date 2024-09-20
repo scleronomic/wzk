@@ -1,15 +1,16 @@
 import os
 from setuptools import Extension, setup
+from wzk import files
 
 
 HOMEBREW_PREFIX = "/opt/homebrew/Cellar"
-BOOST_VERSION = "1.85.0"  # TODO automatically find the version
-CGAL_VERSION = "5.6.1"
+BOOST_DIR = f"{HOMEBREW_PREFIX}/boost"
+CGAL_DIR = f"{HOMEBREW_PREFIX}/cgal"
 
 boost_include_dir = os.environ.get("BOOST_INCLUDE_DIR",  # either user-defined
-                                   f"{HOMEBREW_PREFIX}/boost/{BOOST_VERSION}/include")  # or installed via homebrew
+                                   f"{BOOST_DIR}/{files.listdir(BOOST_DIR)[0]}/include")  # or installed via homebrew
 cgal_include_dir = os.environ.get("CGAL_INCLUDE_DIR",  # either user-defined
-                                  f"{HOMEBREW_PREFIX}/cgal/{CGAL_VERSION}/include")  # or installed via homebrew
+                                  f"{CGAL_DIR}/{files.listdir(CGAL_DIR)[0]}/include")  # or installed via homebrew
 
 ext = Extension(
     name="wzkMinSphere",
