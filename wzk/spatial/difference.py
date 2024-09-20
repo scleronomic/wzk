@@ -20,7 +20,9 @@ def frame_logarithm(f0, f1, verbose=0):
     dr[..., 0] = ddcm[..., 2, 1] - ddcm[..., 1, 2]
     dr[..., 1] = ddcm[..., 0, 2] - ddcm[..., 2, 0]
     dr[..., 2] = ddcm[..., 1, 0] - ddcm[..., 0, 1]
-
+    # [0, z2, y1]
+    # [z1, 0, x2]
+    # [y2, x1, 0]
     t = np.trace(ddcm, axis1=-2, axis2=-1)[..., np.newaxis]
     en = np.linalg.norm(dr, axis=-1, keepdims=True)
 
