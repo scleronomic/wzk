@@ -16,7 +16,7 @@ else:
 ext = Extension(
     name='gjkepa',
     sources=['./gjkepa.cpp'],
-    extra_compile_args=['-std=c++1y', '-ffast-math', '-Ofast', '-fpermissive'],  # TODO  '-std=c++1y' <-> '-std=c++14'
+    extra_compile_args=['-std=c++1y', '-ffast-math', '-Ofast', '-fpermissive'],
     include_dirs=[file],
     library_dirs=[],
     libraries=[],

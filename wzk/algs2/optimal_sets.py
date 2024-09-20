@@ -40,7 +40,7 @@ def greedy(n, k, fun, i0=None, verbose=0):
 def detmax(fun, x0=None, n=100, k=30, excursion=10, method="add->remove", max_loop=3,
            verbose=0):
     """
-    method:  'add->remove' TODO citation
+    method:  'add->remove'
              'remove->add'
     """
 

@@ -9,7 +9,7 @@ from wzk import np2, ltd
 golden_ratio = (np.sqrt(5.0) + 1) / 2
 
 
-def make_mono_descending(x):  # TODO better name and place
+def make_monotonous_descending(x):
     for i in range(len(x)):
         x[i] = x[:i+1].min()
     return x

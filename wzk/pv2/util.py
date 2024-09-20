@@ -43,3 +43,14 @@ def reduce_mesh_resolution(mesh, detail="normal"):
     mesh, __ = pymesh.remove_isolated_vertices(mesh)
 
     return mesh
+
+
+def create_grid_2d(ll: (float, float), ur: (float, float), n: (int, int), pad: (float, float)):
+    ll, ur, n, pad = np.atleast_1d(ll, ur, n, pad)
+
+    w = ur - ll
+    s = (w - pad * (n - 1)) / n
+
+    x = ll[0] + np.arange(n[0]) * (s[0] + pad[0])
+    y = ll[1] + np.arange(n[1]) * (s[1] + pad[1])
+    return (x, y), s
