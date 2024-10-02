@@ -9,11 +9,10 @@ with open(file=file) as f:
 
 # Lets parse some bibtex string.
 bib_database = bibtexparser.parse_string(bibtex_string,
-    # Middleware layers to transform parsed entries.
-    # Here, we split multiple authors from each other and then extract first name, last name, ... for each
-    append_middleware=[middlewares.SeparateCoAuthors(), middlewares.SplitNameParts()],
-)
-
+                                         append_middleware=[middlewares.SeparateCoAuthors(),
+                                                            middlewares.SplitNameParts()],)
+# Middleware layers to transform parsed entries.
+# Here, we split multiple authors from each other and then extract first name, last name, ... for each
 
 authors = []
 for entry in bib_database.blocks:

@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from itertools import product
 
@@ -307,7 +308,7 @@ def assimilate_orders_of_magnitude(a, b, base=10):
     b_mean = np.abs(b).mean()
     np.log1p()
     a_mean_log = np.log(a_mean)
-    b_mean_log = np.log1(b_mean)
+    b_mean_log = np.log(b_mean)
 
     c = np.power(base, (a_mean_log + b_mean_log) / 2)
 
@@ -450,7 +451,7 @@ def magic(n, m=None):
         mat = np.array([[1]])
     elif n == 2:
         mat = np.array([[1, 3],
-                         [4, 2]])
+                        [4, 2]])
     elif n % 2 == 1:
         p = np.arange(1, n+1)
         mat = n*np.mod(p[:, None] + p - (n+3)//2, n) + np.mod(p[:, None] + 2*p-2, n) + 1
@@ -559,10 +560,9 @@ def wls_1d(x, y, w):
     return beta_0, beta_1
 
 
-
 # Combinatorics
 def binomial(n, k):
-    return np.math.factorial(n) // np.math.factorial(k) // np.math.factorial(n - k)
+    return math.factorial(n) // math.factorial(k) // math.factorial(n - k)
 
 
 def random_subset(n, k, m, dtype=np.uint16):
@@ -575,7 +575,7 @@ def irwin_hall_distribution(x, n=2):
     https://en.wikipedia.org/wiki/Irwin-Hall_distribution
     """
 
-    pre_factor = 1 / 2 / np.math.factorial(n - 1)
+    pre_factor = 1 / 2 / math.factorial(n - 1)
 
     f_xn = 0
     for k in range(n + 1):
@@ -697,7 +697,6 @@ def solve_cho_damped(A, b, damping):
     x = AT @ solve_cho(AAT, b)[..., np.newaxis]
     x = x[..., 0]
     return x
-    
 
 
 if __name__ == "__main__":

@@ -1,21 +1,8 @@
 import numpy as np
-from itertools import combinations
-from wzk import tic, toc, get_points_on_multicircles, min_sphere, print_progress, print_stats, sample_points_on_disc
-from wzk.mpl import new_fig, plt, DraggableCircle, plot_circles
-from scipy.spatial import ConvexHull
-
-from Kinematic.frames import sample_matrix, sample_frames
-from Kinematic.SelfCollision.cpp2.gjkepa import hull_hull
 
 
-
-import numpy as np
-from itertools import combinations
-
-from Kinematic.SelfCollision.cpp import gjkepa
-from Kinematic.SelfCollision.self_collision import get_robot_info, collision_matrix2pairs
-from Kinematic.Robots import Justin19
-from wzk import safe_unify, depth
+def hull_hull(xa, xb, ra, rb, na, nb, ab, c):
+    pass
 
 
 def get_abc():

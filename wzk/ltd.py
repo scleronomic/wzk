@@ -192,9 +192,9 @@ def el_add(a, b):
 
     lst = [aa + bb for aa, bb in zip(a, b)]
 
-    if type(a) == list:
+    if isinstance(a, list):
         return lst
-    elif type(a) == tuple:
+    elif isinstance(a, tuple):
         return tuple(lst)
     else:
         raise ValueError(f"Unknown type {type(a)}")

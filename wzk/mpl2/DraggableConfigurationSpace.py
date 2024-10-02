@@ -4,7 +4,7 @@ from wzk import math2, limits as limits2
 from wzk.mpl2 import DraggableEllipseList, new_fig
 
 
-def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):
+def draggable_configurations(x: np.ndarray, limits, circle_ratio=1/3, **kwargs):
     x = np.squeeze(x)
     n_wp, n_dof = x.shape
 
@@ -51,7 +51,7 @@ def draggable_configurations(x, limits, circle_ratio=1/3, **kwargs):
 
 class DraggableConfigSpace:
 
-    def __init__(self, x, limits, circle_ratio=1/3, **kwargs):
+    def __init__(self, x: np.ndarray, limits, circle_ratio=1/3, **kwargs):
         self.x = np.squeeze(x)
         self.n_wp, self.n_dof = self.x.shape
 

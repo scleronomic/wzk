@@ -9,7 +9,7 @@ from . import find
 from . import reshape
 from .range import slicen
 
-np.core.arrayprint._line_width = 80
+np.core.arrayprint._line_width = 80  # noqa
 
 
 class DummyArray:
@@ -303,7 +303,7 @@ def block_view(a, shape, aslist=False, require_aligned_blocks=True):
     view = np.lib.stride_tricks.as_strided(a, shape=view_shape, strides=(inter_block_strides + intra_block_strides))
 
     if aslist:
-        return list(map(view.__getitem__, np.rndindex(outershape)))
+        return list(map(view.__getitem__, np.ndindex(outershape)))
     return view
 
 
@@ -377,7 +377,7 @@ def diag_wrapper(x, n=None):
         n = x.shape[0]
 
     if np.all(x.shape == (n, n)):
-        pass
+        return x
     else:
         d = np.eye(n)
         d[range(n), range(n)] = x

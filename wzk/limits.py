@@ -62,7 +62,7 @@ def make_limits_symmetrical(limits, mode="largest"):
     return limits
 
 
-def add_safety_limits(limits, factor=None, offset=None):
+def add_safety_limits(limits: np.ndarray, factor=None, offset=None):
     limits = np.atleast_1d(limits)
     s = limits2size(limits=limits)
 

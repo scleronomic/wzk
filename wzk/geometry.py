@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from scipy.spatial import ConvexHull
 
@@ -599,12 +600,15 @@ def hyper_sphere_volume(n_dim: int, r: float = 1.):
     """https: # en.wikipedia.org / wiki / Volume_of_an_n - ball"""
     n2 = n_dim  # 2
     if n_dim % 2 == 0:
-        return (np.pi ** n2) / np.math.factorial(n2) * r**n_dim
+        return (np.pi ** n2) / math.factorial(n2) * r**n_dim
     else:
-        return 2*(np.math.factorial(n2)*(4*np.pi)**n2) / np.math.factorial(n_dim) * r**n_dim
+        return 2*(math.factorial(n2)*(4*np.pi)**n2) / math.factorial(n_dim) * r**n_dim
 
 
-def get_points_on_circle(x, r, n=10, endpoint=False):
+def get_points_on_circle(x: np.ndarray,
+                         r: np.ndarray,
+                         n: int = 10,
+                         endpoint: bool = False):
     r = np.atleast_1d(r)
     theta = np.linspace(0, 2*np.pi, num=n, endpoint=endpoint)
     sc = np.stack((np.sin(theta), np.cos(theta))).T

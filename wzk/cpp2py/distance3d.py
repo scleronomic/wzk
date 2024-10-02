@@ -15,7 +15,7 @@ collider2 = colliders.ConvexHullVertices(points2)
 dist, p1, p2, simplex = gjk.gjk(collider1, collider2)
 mtv, minkowski_faces, success = epa.epa(simplex, collider1, collider2)
 assert success
-assert all(p1 == p2)
+assert np.allclose(p1, p2)
 print(p1)
 print(mtv)
 

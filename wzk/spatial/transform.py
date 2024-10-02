@@ -15,7 +15,7 @@ from wzk.spatial.util import initialize_frames, fill_frames_trans
 
 
 # vectorized versions of scipy's Rotation.from_x().to_y()
-def euler2dcm(euler, seq="ZXZ"):
+def euler2dcm(euler: np.ndarray, seq="ZXZ"):
     """ZXZ == roll pitch yaw"""
     return Rotation.from_euler(seq, angles=euler.reshape((-1, 3)),
                                ).as_matrix().reshape(euler.shape[:-1] + (3, 3))
@@ -174,7 +174,7 @@ def trans_rotvec2frame(trans=None, rotvec=None):
     return f
 
 
-def trans_euler2frame(trans: object = None, euler: object = None, seq: object = "ZXZ") -> object:
+def trans_euler2frame(trans: np.ndarray = None, euler: np.ndarray = None, seq: str = "ZXZ") -> np.ndarray:
     s = np2.get_max_shape(trans, euler)
 
     f = initialize_frames(shape=s[:-1], n_dim=3)
@@ -363,6 +363,7 @@ def try_cross_order():
     r1 = np.cross(np.cross(j0, r), j1)
     r2 = np.cross(np.cross(j1, r), j0)
     tr = r0 - r1 + r2
+    print(tr)
 
 
 # --- Functions --------------------------------------------------------------------------------------------------------

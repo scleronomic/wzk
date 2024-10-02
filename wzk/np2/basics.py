@@ -28,7 +28,7 @@ def scalar2array(*val_or_arr, shape, squeeze=True, safe=True):
     for voa in val_or_arr:
         try:
 
-            if type(voa) == str:
+            if isinstance(voa, str):
                 dtype = np.array(voa).dtype
             elif isinstance(voa, np.ndarray):
                 dtype = voa.dtype
@@ -72,7 +72,7 @@ def __fill_index_with(idx, axis, shape, mode="slice"):
         idx_with_ = [slice(None) for _ in range(len(shape) - len(axis))]
 
     elif mode == "orange":
-        idx_with_ = np.ogrid[[range(s) for i, s in enumerate(shape) if i not in axis]]
+        idx_with_ = np.ogrid[*[range(s) for i, s in enumerate(shape) if i not in axis]]
 
     elif mode is None:
         return idx
@@ -190,7 +190,7 @@ def round2(x,
     try:
         return np.round(x, decimals=decimals)
 
-    except (TypeError, np.core._exceptions.UFuncTypeError):
+    except (TypeError, np.core._exceptions.UFuncTypeError):  # noqa
         return np.array(x)
 
 

@@ -46,7 +46,7 @@ def perlin_noise_2d(shape, res, tileable=(False, False), interpolant=__interpola
 
     shape, res, tileable, delta, d = __input_wrapper(n_dim=2, shape=shape, res=res, tileable=tileable, seed=seed)
 
-    grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]].transpose(1, 2, 0) % 1
+    grid = np.transpose(np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1]], axes=(1, 2, 0)) % 1
 
     # Gradients
     angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
@@ -115,7 +115,7 @@ def perlin_noise_3d(shape, res=1, tileable=None,
     shape, res, tileable, delta, d = __input_wrapper(n_dim=3, shape=shape, res=res, tileable=tileable, seed=seed)
 
     grid = np.mgrid[0:res[0]:delta[0], 0:res[1]:delta[1], 0:res[2]:delta[2]]
-    grid = grid.transpose(1, 2, 3, 0) % 1
+    grid = np.transpose(grid, axes=(1, 2, 3, 0)) % 1
     # Gradients
     # angles = 2*np.pi*np.random.random((res[0]+1, res[1]+1))
 

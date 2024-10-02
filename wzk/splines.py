@@ -145,7 +145,7 @@ if __name__ == '__main__':
 
 
 # TODO make 2d examples work with splines.
-#   try also new idea of just wiggeling a little to get a solution
+#   try also new idea of just wiggling a little to get a solution
 
 # TODO copy all the justin examples to my local machine and
 #   convert them to pickle

@@ -192,7 +192,8 @@ class DraggablePatch(DummyPatch):
 class DraggableCircle(patches.Circle, DraggablePatch):
     def __init__(self,
                  ax,
-                 xy, radius,
+                 xy: (np.ndarray, list, tuple),
+                 radius,
                  vary_xy=(True, True), callback=None,
                  limits=None,
                  wsad=None,

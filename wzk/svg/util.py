@@ -3,10 +3,6 @@ import math
 from typing import Dict
 
 
-class Point(Dict[str, float]):
-    pass
-
-
 def deg_to_rads(deg: float) -> float:
     return math.pi * deg / 180
 
@@ -19,7 +15,8 @@ def is_null_or_undefined(value: float) -> bool:
     return bool(value is None)
 
 
-def rotate_point(origin_x: float, origin_y: float, x: float, y: float, radians_x: float, radians_y: float) -> Point:
+def rotate_point(origin_x: float, origin_y: float, x: float, y: float, radians_x: float, radians_y: float) -> Dict[str, float]:
+
     v = {'x': x - origin_x, 'y': y - origin_y}
     vx = (v['x'] * math.cos(radians_x)) - (v['y'] * math.sin(radians_x))
     vy = (v['x'] * math.sin(radians_y)) + (v['y'] * math.cos(radians_y))
@@ -28,14 +25,15 @@ def rotate_point(origin_x: float, origin_y: float, x: float, y: float, radians_x
 
 ##
 
-from typing import Dict
 
 def calculate_linear(t: float, p1: float, p2: float) -> float:
     return p1 + t * (p2 - p1)
 
+
 def calculate_point_quadratic(t: float, p1: float, p2: float, p3: float) -> float:
     one_minus_t = 1 - t
     return (one_minus_t * one_minus_t) * p1 + 2 * one_minus_t * t * p2 + (t * t) * p3
+
 
 def calculate_point_cubic(t: float, p1: float, p2: float, p3: float, p4: float) -> float:
     t2 = t * t

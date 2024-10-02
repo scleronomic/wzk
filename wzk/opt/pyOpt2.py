@@ -18,7 +18,7 @@ default_options = dict(maxiter=1000,
                        ftol=1e-12,
                        sens_step=1e-7,
                        sens_type="fd",  # "fd" or "cs"
-                       pll_type=None)  # "POA" or None  | I measured no speed difference)
+                       pll_type=None)  # "POA" or None  | (I measured no speed difference)
 
 
 class SolverPar:

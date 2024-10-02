@@ -1,5 +1,5 @@
 import numpy as np
-from wzk import printing
+from wzk import printing, math2, mp2, mpl2
 
 
 def idx_times_all(idx, n):
@@ -114,7 +114,6 @@ def detmax(fun, x0=None, n=100, k=30, excursion=10, method="add->remove", max_lo
     if verbose >= 1:
         print(" Objective: {:.4} | Configuration: {}".format(o, x0))
     return x0, o
-
 
 
 def random(n, k, m, fun, chunk=1000,

@@ -42,7 +42,7 @@ def fill_with_air_left(arr, out):
     out[slicen(end=arr.shape)] = arr
 
 
-def array2array(a, shape, fill_value="empty"):
+def array2array(a: np.ndarray, shape, fill_value: str = "empty"):
     a = np.atleast_1d(a)
     if np.size(a) == 1:
         return scalar2array(a.item(), shape=shape)

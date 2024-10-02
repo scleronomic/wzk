@@ -22,7 +22,7 @@ TYPE_REAL = "REAL"
 TYPE_BLOB = "BLOB"
 
 
-def rows2sql(rows: object, dtype: object = str, values=None) -> object:
+def rows2sql(rows: (int, list, np.ndarray), dtype: object = str, values=None) -> object:
     if isinstance(rows, (int, np.int8, np.int16, np.int32, np.int64,
                          np.uint, np.uint8, np.uint16, np.uint32, np.uint64)):
         if rows == -1 or rows == [-1]:
@@ -93,8 +93,11 @@ def order2sql(order_by, dtype=str):
     
     
 @contextmanager
-def open_db_connection(file, close=True,
-                       lock=None, check_same_thread=False, isolation_level="DEFERRED"):
+def open_db_connection(file: str,
+                       lock=None,
+                       close: bool = True,
+                       check_same_thread: bool = False,
+                       isolation_level: str = "DEFERRED"):
     """
     Safety wrapper for the database call.
     """
@@ -239,7 +242,7 @@ def get_n_rows(file, table):
     """
     Only works if the rowid's are [0, ....i_max]
     """
-    with open_db_connection(file=file, close=True) as con:
+    with open_db_connection(file=file, close=True, lock=None, ) as con:
         return pd.read_sql_query(con=con, sql=f"SELECT COALESCE(MAX(rowid), 0) FROM {table}").values[0, 0]
 
 

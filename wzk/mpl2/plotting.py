@@ -356,8 +356,8 @@ def correlation_plot(a, b, name_a, name_b,
     a_all = np.concatenate(a)
     b_all = np.concatenate(b)
 
-    limits = ((np.percentile(a_all, lower_perc), np.percentile(a_all, upper_perc)),
-              (np.percentile(b_all, lower_perc), np.percentile(b_all, upper_perc)))
+    limits = np.array([[np.percentile(a_all, lower_perc), np.percentile(a_all, upper_perc)],
+                       [np.percentile(b_all, lower_perc), np.percentile(b_all, upper_perc)]])
 
     limits = limits2.add_safety_limits(limits=limits, factor=0.01)
 
