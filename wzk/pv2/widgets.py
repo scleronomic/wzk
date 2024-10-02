@@ -3,7 +3,7 @@ import numpy as np
 import pyvista as pv
 
 from wzk import geometry, spatial
-from wzk.grid import create_grid_2d
+from wzk.pv2.util import create_grid_2d
 
 
 class RHSWidget:
