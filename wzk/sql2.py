@@ -247,7 +247,7 @@ def get_n_rows(file, table):
 
 
 def get_n_samples(file, i_worlds=-1):
-    i_worlds_all = get_values_sql(file=file, columns="i_world", table="paths")
+    i_worlds_all = get_values(file=file, columns="i_world", table="paths")
     unique, counts = np.unique(i_worlds_all, return_counts=True)
     if i_worlds == -1:
         return counts
@@ -402,13 +402,13 @@ def squeeze_table(file, table, verbose=1):
     columns = get_columns(file=file, table=table, mode="name")
 
     for c in zip(columns):
-        v0 = get_values_sql(file=file, table=table, columns=c, rows=0, return_type="list")
+        v0 = get_values(file=file, table=table, columns=c, rows=0, return_type="list")
         if np.size(v0) == 1:
             if verbose > 0:
                 print(c)
-            v = get_values_sql(file=file, table=table, columns=c, return_type="list")
+            v = get_values(file=file, table=table, columns=c, return_type="list")
             v = np.squeeze(v)
-            set_values_sql(file=file, table=table, values=(v.tolist(),), columns=c)
+            set_values(file=file, table=table, values=(v.tolist(),), columns=c)
 
 
 def change_column_dtype(file, table, column, dtype, lock=None):
@@ -420,7 +420,7 @@ def change_column_dtype(file, table, column, dtype, lock=None):
 
 
 # Get and Set SQL values
-def get_values_sql(file: str, table: str, columns=None, rows=-1,
+def get_values(file: str, table: str, columns=None, rows=-1,
                    return_type: str = "list", squeeze_col: bool = True, squeeze_row: bool = True):
     """
     'i_samples' == i_samples_global
@@ -484,7 +484,7 @@ def get_values_sql(file: str, table: str, columns=None, rows=-1,
         raise ValueError(f"Invalid return_type '{return_type}'")
 
 
-def set_values_sql(file: str, table: str,
+def set_values(file: str, table: str,
                    values: tuple, columns, rows=-1, lock=None):
     """
     values = ([...], [...], [...], ...)

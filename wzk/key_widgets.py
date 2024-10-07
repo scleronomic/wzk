@@ -3,7 +3,7 @@ import time
 import numpy as np
 
 try:
-    from pynput import keyboard
+    from pynput import keyboard  # TODO: remove this after linux install works fine
 except ImportError:
     keyboard = None
 

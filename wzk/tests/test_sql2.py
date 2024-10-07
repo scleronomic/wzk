@@ -78,11 +78,11 @@ class Test(TestCase):
 
         #
         sql2.concatenate_tables(file=file1, table=table_b, table2=table_a)
-        df2 = sql2.get_values_sql(file=file1, table=table_b, rows=[3, 4, 5], return_type="df")
+        df2 = sql2.get_values(file=file1, table=table_b, rows=[3, 4, 5], return_type="df")
         self.assertTrue(np.all(df == df2))
 
         sql2.concatenate_tables(file=file2, table=table_a, file2=file1, table2=table_b)
-        df2 = sql2.get_values_sql(file=file2, table=table_a, rows=[6, 7, 8], return_type="df")
+        df2 = sql2.get_values(file=file2, table=table_a, rows=[6, 7, 8], return_type="df")
         self.assertTrue(np.all(df == df2))
         #
 
@@ -96,8 +96,8 @@ class Test(TestCase):
         c = "B"
         r = [0, 1]
         v = [-2, -20]
-        sql2.set_values_sql(file=file, table=table, values=(v,), columns=c, rows=r)
-        v1 = sql2.get_values_sql(file=file, table=table, rows=r, columns=c, return_type="list")
+        sql2.set_values(file=file, table=table, values=(v,), columns=c, rows=r)
+        v1 = sql2.get_values(file=file, table=table, rows=r, columns=c, return_type="list")
         self.assertTrue(np.array_equal(v, v1))
 
     def test_set_values_2(self):
@@ -110,9 +110,9 @@ class Test(TestCase):
         c = "A_f32"
         r = [0, 1]
         v = np.arange(2*20*4).reshape((2, 20, 4))
-        # v0 = get_values_sql(file=file, table=table, rows=r, columns=c, return_type="list")
-        sql2.set_values_sql(file=file, table=table, values=(v,), columns=c, rows=r)
-        v1 = sql2.get_values_sql(file=file, table=table, rows=r, columns=c, return_type="list")
+        # v0 = get_values(file=file, table=table, rows=r, columns=c, return_type="list")
+        sql2.set_values(file=file, table=table, values=(v,), columns=c, rows=r)
+        v1 = sql2.get_values(file=file, table=table, rows=r, columns=c, return_type="list")
         v1 = v1.reshape((2, 20, 4))
         self.assertTrue(np.array_equal(v, v1))
 
@@ -127,8 +127,8 @@ class Test(TestCase):
         r = np.arange(11)
         v = np.random.random(11)
         sql2.add_column(file=file, table=table, column=c, dtype=sql2.TYPE_REAL)
-        sql2.set_values_sql(file=file, table=table, values=(v,), columns=c, rows=r)
-        v1 = sql2.get_values_sql(file=file, table=table, rows=r, columns=c, return_type="list")
+        sql2.set_values(file=file, table=table, values=(v,), columns=c, rows=r)
+        v1 = sql2.get_values(file=file, table=table, rows=r, columns=c, return_type="list")
         self.assertTrue(np.array_equal(v, v1))
 
     def test_delete_rows(self):
@@ -145,7 +145,7 @@ class Test(TestCase):
         n_rows = sql2.get_n_rows(file=file, table=table)
         self.assertTrue(n_rows == 1)
 
-        df2 = sql2.get_values_sql(file=file, table=table, squeeze_row=True, squeeze_col=True)
+        df2 = sql2.get_values(file=file, table=table, squeeze_row=True, squeeze_col=True)
         self.assertTrue(np.array_equal(df.iloc[2, :].values, df2))
 
     def test_get_columns(self):
@@ -167,7 +167,7 @@ class Test(TestCase):
         #
         sql2.change_column_dtype(file, table, column="aa", dtype=sql2.TYPE_INTEGER)
         sql2.delete_columns(file=file, table=table, columns=["bb", "cc"])
-        self.assertTrue(np.all(sql2.get_values_sql(file=file, table=table, return_type="list") == 0))
+        self.assertTrue(np.all(sql2.get_values(file=file, table=table, return_type="list") == 0))
 
     def test_alter_table(self):
         file = f"{directory}/dummy_test_alter_table.db"
@@ -180,7 +180,7 @@ class Test(TestCase):
         new_types = [sql2.TYPE_TEXT, sql2.TYPE_INTEGER, sql2.TYPE_REAL]
         sql2.alter_table(file=file, table=table, columns=new_columns, dtypes=new_types)
 
-        data2 = sql2.get_values_sql(file=file, table=table, return_type="list")
+        data2 = sql2.get_values(file=file, table=table, return_type="list")
         bb, aa, cc = data2
 
         c = sql2.get_columns(file=file, table=table, mode="name")
@@ -198,7 +198,7 @@ class Test(TestCase):
 
         #
         sql2.sort_table(file=file, table=table, order_by=["A", "ROWID"])
-        data2 = sql2.get_values_sql(file=file, table=table)
+        data2 = sql2.get_values(file=file, table=table)
         print(data2)
-        a2 = sql2.get_values_sql(file=file, table=table, columns="A")
+        a2 = sql2.get_values(file=file, table=table, columns="A")
         self.assertTrue(np.all(np.argsort(a2) == np.arange(len(a2))))
