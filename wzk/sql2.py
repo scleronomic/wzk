@@ -204,18 +204,21 @@ def get_columns(file, table, mode: object = None):
 
 
 def summary(file):
+    __default_width = 20
+
     print(f"summary sql-file:'{file}'")
     tables = get_tables(file=file)
     for t in tables:
         na, ty = get_columns(file=file, table=t, mode=["name", "type"])
 
         w = max([len(nai) for nai in na] + [len(tyi) for tyi in ty])
-        w += 3
+        w = max(w+3, __default_width)
 
         print(f"table: {t}")
         print(f"\tcolumns: {' | '.join([nai.ljust(w) for nai in na])}")
         print(f"\ttype   : {' | '.join([tyi.ljust(w) for tyi in ty])}")
-        print(f"n_rows: {get_n_rows(file=file, table=t)}")
+        print(f"\tn_rows: {get_n_rows(file=file, table=t)}")
+        print()
 
 
 def rename_tables(file: str, tables: dict) -> None:
@@ -230,19 +233,21 @@ def rename_tables(file: str, tables: dict) -> None:
 
 
 def rename_columns(file: str, table: str, columns: dict) -> None:
+    old_list = get_columns(file=file, table=table, mode="name")
     print(f"rename_columns file:'{file}' table:'{table}' {columns}")
     with open_db_connection(file=file, close=True) as con:
         cur = con.cursor()
         for old in columns:
-            new = columns[old]
-            cur.execute(f"ALTER TABLE `{table}` RENAME COLUMN `{old}` TO `{new}`")
+            if old in old_list:
+                new = columns[old]
+                cur.execute(f"ALTER TABLE `{table}` RENAME COLUMN `{old}` TO `{new}`")
 
 
 def get_n_rows(file, table):
     """
     Only works if the rowid's are [0, ....i_max]
     """
-    with open_db_connection(file=file, close=True, lock=None, ) as con:
+    with open_db_connection(file=file, close=True, lock=None) as con:
         return pd.read_sql_query(con=con, sql=f"SELECT COALESCE(MAX(rowid), 0) FROM {table}").values[0, 0]
 
 
@@ -346,9 +351,13 @@ def delete_rows(file: str, table: str, rows, lock=None):
 
 def delete_columns(file: str, table: str, columns, lock=None):
     columns = columns2sql(columns, dtype=list)
+    old_columns = get_columns(file=file, table=table, mode="name")
+
     for col in columns:
-        execute(file=file, lock=lock, query=f"ALTER TABLE {table} DROP COLUMN {col}")
+        if col in old_columns or col == "*":
+            execute(file=file, lock=lock, query=f"ALTER TABLE {table} DROP COLUMN {col}")
     vacuum(file)
+
 
 
 def add_column(file, table, column, dtype, lock=None):
@@ -537,3 +546,55 @@ def df2dict(df, squeeze=True):
     if len(df) == 1 and squeeze:
         d = {k: d[k][0] for k in d}
     return d
+
+
+class Col:
+    __slots__ = ("name",
+                 "type_sql",
+                 "type_np",
+                 "shape")
+
+    def __init__(self, name, type_sql, type_np, shape):
+        self.name: str = name
+        self.type_sql: str = type_sql
+        self.type_np: str = type_np
+        self.shape: (int, tuple) = shape
+
+    def __call__(self):
+        return self.name
+
+    def __repr__(self):
+        return f"SQL Column ({self.name} | {self.type_sql} | {self.type_np} | {self.shape})"
+
+
+class Table:
+    __slots__ = ("table",
+                 "cols")
+
+    def __init__(self, table=None, cols=None):
+        self.table: str = table
+        self.cols: list[Col] = cols
+
+    def __call__(self):
+        return self.table
+
+    def __getitem__(self, item):
+        self.cols.__getitem__(item)
+
+    def __len__(self):
+        return len(self.cols)
+
+    def __iter__(self):
+        return self.cols.__iter__()
+
+    def names(self):
+        return [c.name for c in self.cols]
+
+    def types_sql(self):
+        return [c.type_sql for c in self.cols]
+
+    def types_dict_sql(self):
+        return {c.name: c.type_sql for c in self.cols}
+
+    def types_np(self):
+        return [c.type_np for c in self.cols]
