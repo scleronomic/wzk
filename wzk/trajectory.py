@@ -4,6 +4,7 @@ bee:   direct line between a and b
 dbee:  difference to the bee-line
 dbees: scaled difference to the bee-line
 """
+# TODO move to mopla at some point
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline
