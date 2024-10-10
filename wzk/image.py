@@ -3,8 +3,6 @@ import numpy as np
 from skimage.io import imread, imsave  # noqa
 
 from wzk import np2, math2
-from wzk.grid import limits2voxel_size, grid_x2i, grid_i2x  # noqa
-
 from wzk.bimage import sample_bimg_i
 
 
