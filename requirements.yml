@@ -15,7 +15,6 @@ dependencies:
 - einops>=0.6.0
 - zlib>=1.2.12
 - pyvista>=0.37.0
-- pymesh>=0.0.0
 - matplotlib>=3.6.2
 - fire>=0.4.0
 - msgpack>=1.0.4

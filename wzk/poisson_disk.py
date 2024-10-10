@@ -43,7 +43,7 @@ def aaa(t, d):
     #               [+0.2, -0.5],
     #               [+0.4, -0.5],
     #               [+0.6, -0.5]])
-    i = grid.grid_x2i(x, limits=limits, shape=g.shape)
+    i = grid.x2i(x, limits=limits, shape=g.shape)
     g[i[:, 0], i[:, 1]] = np.arange(len(x))
     h = None
     active = [True] * len(x)
@@ -67,7 +67,7 @@ def aaa(t, d):
             if np.linalg.norm(x1-x0) > 1:
                 continue
 
-            i1 = grid.grid_x2i(x1, limits=limits, shape=g.shape)
+            i1 = grid.x2i(x1, limits=limits, shape=g.shape)
             # if all(np.linalg.norm(x1 - x, axis=-1) >= r):
             if g[i1[0], i1[1]] == -1:
                 g[i1[0], i1[1]] = len(x) + 1

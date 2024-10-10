@@ -1,6 +1,8 @@
 import numpy as np
-import pymesh
-
+try:
+    import pymesh
+except ImportError:
+    pass
 
 def reduce_mesh_resolution(mesh, detail="normal"):
     bbox_min, bbox_max = mesh.bbox

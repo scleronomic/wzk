@@ -147,7 +147,7 @@ def plot_bimg_voxel(vis, h,
     voxel_size = grid.limits2voxel_size(shape=bimg.shape, limits=limits)
 
     i = np.array(np.nonzero(bimg)).T
-    x = grid.grid_i2x(i=i, limits=limits, shape=bimg.shape, mode="c")
+    x = grid.i2x(i=i, limits=limits, shape=bimg.shape, mode="c")
     for j, xx in enumerate(x):
         vis[f"{h}/voxel-{j}"].set_object(geometry=mg.Box([voxel_size] * 3), material=material)
         vis[f"{h}/voxel-{j}"].set_transform(mt.translation_matrix(xx))

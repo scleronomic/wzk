@@ -51,13 +51,13 @@ def closest_grid_boundary(*, x, half_side, limits, shape, idx=None):
     """
 
     if idx is None:
-        idx = grid.grid_x2i(x=x, limits=limits, shape=shape)
+        idx = grid.x2i(x=x, limits=limits, shape=shape)
 
     idx = np2.flatten_without_last(x=idx)
     rel_idx = __closest_boundary_rel_idx(half_side=half_side)
 
     idx = idx[:, np.newaxis, :] + rel_idx[np.newaxis, :, np.newaxis]
-    x_closest = grid.grid_i2x(i=idx, limits=limits, shape=shape, mode="b")
+    x_closest = grid.i2x(i=idx, limits=limits, shape=shape, mode="b")
 
     x_closest[:, half_side, :] = x
 
@@ -173,7 +173,7 @@ def mesh2bimg(p, shape, limits, f=None):
     if img.ndim == 2:
         p2 = np.concatenate([p, p[:1]], axis=0)
         p2 = trajectory.get_substeps_adjusted(x=p2, n=2 * len(p) * max(shape))
-        i2 = grid.grid_x2i(x=p2, limits=limits, shape=shape)
+        i2 = grid.x2i(x=p2, limits=limits, shape=shape)
         img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
             np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1)] = 1
 
@@ -183,7 +183,7 @@ def mesh2bimg(p, shape, limits, f=None):
             p = ch.points
             f = ch.simplices  # noqa
         p2 = geometry.discretize_triangle_mesh(p=p, f=f, voxel_size=voxel_size)
-        i2 = grid.grid_x2i(x=p2, limits=limits, shape=shape)
+        i2 = grid.x2i(x=p2, limits=limits, shape=shape)
         img[np.clip(i2[:, 0], a_min=0, a_max=img.shape[0]-1),
             np.clip(i2[:, 1], a_min=0, a_max=img.shape[1]-1),
             np.clip(i2[:, 2], a_min=0, a_max=img.shape[2]-1)] = 1
@@ -208,7 +208,7 @@ def spheres2bimg(x, r, shape, limits,
     voxel_size = grid.limits2voxel_size(shape=shape, limits=limits)
 
     for i in range(n):
-        j = grid.grid_x2i(x[i], limits=limits, shape=shape)
+        j = grid.x2i(x[i], limits=limits, shape=shape)
         d = int((r[i] // voxel_size) * 2 + 3)
         if stencil_dict:
             stencil = stencil_dict[d]
@@ -242,7 +242,7 @@ def sample_bimg_x(img, limits, n, cell_noise=True, replace=True):
     """
 
     i = sample_bimg_i(img=img, n=n, replace=replace)
-    x = grid.grid_i2x(i=i, limits=limits, shape=img.shape, mode="c")
+    x = grid.i2x(i=i, limits=limits, shape=img.shape, mode="c")
     if cell_noise:
         voxel_size2 = grid.limits2voxel_size(shape=img.shape, limits=limits) / 2
         cell_noise = np.random.uniform(low=-voxel_size2, high=+voxel_size2, size=(n, img.ndim))

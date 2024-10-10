@@ -28,7 +28,7 @@ def __mode2offset(voxel_size, mode="c"):
         raise NotImplementedError(f"Unknown mode: '{mode}'")
 
 
-def grid_x2i(x, limits, shape):
+def x2i(x, limits, shape):
     """
     Get the indices of the grid cell at the coordinates 'x' in a grid with symmetric cells.
     Always use mode='boundary'
@@ -43,7 +43,7 @@ def grid_x2i(x, limits, shape):
     return np.asarray((x - lower_left) / voxel_size, dtype=int)
 
 
-def grid_i2x(i, limits, shape, mode="c"):
+def i2x(i, limits, shape, mode="c"):
     """
     Get the coordinates of the grid at the index "i" in a grid with symmetric cells.
     borders: 0 | 2 | 4 | 6 | 8 | 10
@@ -63,8 +63,8 @@ def create_grid(limits, shape, flatten=False):
     n_dim = len(limits)
     # voxel_size = limits2voxel_size(shape=shape, limits=limits)
 
-    ll = grid_i2x(i=np.zeros(n_dim), limits=limits, shape=shape)
-    ur = grid_i2x(i=np.array(shape)-1, limits=limits, shape=shape)
+    ll = i2x(i=np.zeros(n_dim), limits=limits, shape=shape)
+    ur = i2x(i=np.array(shape)-1, limits=limits, shape=shape)
 
     x = np.array(np.meshgrid(*[np.linspace(start=ll[i], stop=ur[i], num=shape[i]) for i in range(n_dim)],
                              indexing="ij"))
@@ -73,5 +73,3 @@ def create_grid(limits, shape, flatten=False):
     if flatten:
         return x.reshape((np.prod(shape), n_dim))
     return x
-
-
