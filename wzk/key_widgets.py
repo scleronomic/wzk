@@ -217,6 +217,9 @@ class BoxLimitsKeySlider:
         self.print_state(clear_previous=False)
         self.change_j(j=0)
 
+    def stop_listening(self):
+        self.ks_x.stop_listening()
+
     def return_x(self, verbose=1):
         if verbose > 0:
             print(repr(self.x), end="")
@@ -300,10 +303,13 @@ def try_x_and_limits2txt():
 
 
 def try_BoxLimitsKeySlider():
-    names = ["Why", "is", "it", "so", "hard?"]
+    print("test BoxLimitsKeySlider with Arrow Keys and `x j p`")
+
+    names = ["Joint1", "Joint2", "Joint3", "Joint4", "Joint5"]
     x, limits = __get_samples_x_limits(n=5)
-    _ = BoxLimitsKeySlider(limits=limits, x=x, names=names)
-    input()
+    kl = BoxLimitsKeySlider(limits=limits, x=x, names=names)
+    input("Press enter to to next test")
+    kl.stop_listening()
 
 
 def try_KeySlider():
@@ -312,7 +318,9 @@ def try_KeySlider():
     def fun(i):
         print(f"fun({i})")
 
-    return KeySlider(callback=fun, step=1, mi=0, ma=100, periodic=True)
+    kl = KeySlider(callback=fun, step=1, mi=0, ma=100, periodic=True)
+    input("Press enter to to next test")
+    kl.stop_listening()
 
 
 def try_KeyListener():
@@ -323,14 +331,17 @@ def try_KeyListener():
                         d=lambda: print("dd")
                         )
     kl = KeyListener(key2callback=key2callback)
-    return kl
+    input("Press enter to to next test")
+    kl.stop_listening()
 
 
 if __name__ == "__main__":
     pass
+
     try_KeyListener()
-    input()
+
     try_KeySlider()
+
+    try_BoxLimitsKeySlider()
+
     input()
-    #
-    # try_BoxLimitsKeySlider()
