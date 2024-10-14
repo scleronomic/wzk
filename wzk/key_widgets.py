@@ -106,13 +106,14 @@ class KeyListener:
 
 class KeySlider(KeyListener):
     def __init__(self, callback, step, mi, ma, x=None, periodic=False,
-                 keys=None, start_listening=True, dtype=float, _factor=20):
+                 keys=None, start_listening=True, dtype=float, verbose=0, _factor=20):
         self._factor = _factor
         if x is None:
             self.value = (ma - mi) / 2
         else:
             self.value = x
 
+        self.verbose = verbose
         self.callback = callback
         self.step = step
         self.min = mi
@@ -144,7 +145,8 @@ class KeySlider(KeyListener):
         self.cast_value()
 
         if self.callback is not None:
-            print(self.value)
+            if self.verbose > 0:
+                print(self.value)
             self.callback(self.value)
 
     def step_value(self, step):
@@ -305,15 +307,16 @@ def try_BoxLimitsKeySlider():
 
 
 def try_KeySlider():
+    print("test KeySlider with Arrow Keys")
 
     def fun(i):
-        print("fun")
-        print(i)
+        print(f"fun({i})")
 
     return KeySlider(callback=fun, step=1, mi=0, ma=100, periodic=True)
 
 
 def try_KeyListener():
+    print("test KeyListener with `w,a,s,d`")
     key2callback = dict(w=lambda: print("ww"),
                         a=lambda: print("aa"),
                         s=lambda: print("ss"),
@@ -325,7 +328,9 @@ def try_KeyListener():
 
 if __name__ == "__main__":
     pass
-    # try_KeyListener()
+    try_KeyListener()
+    input()
     try_KeySlider()
+    input()
     #
     # try_BoxLimitsKeySlider()
