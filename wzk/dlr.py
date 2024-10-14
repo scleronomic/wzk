@@ -2,6 +2,8 @@ import os
 import platform
 
 
+# TODO move this file to a private repo and think about how to replace the functionality
+
 PLATFORM_IS_LINUX = platform.system() == "Linux"
 
 USERNAME = os.path.expanduser("~").split(sep="/")[-1]
